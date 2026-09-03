@@ -8,7 +8,7 @@ namespace Qbc.Workboard.Api.IntegrationTests.Support;
 public sealed class WorkboardApiFactory : WebApplicationFactory<Api.Program>
 {
     private readonly string _connectionString =
-        $"Server=.\\SQLEXPRESS;Database=QbcWorkboardApiTests{Guid.NewGuid():N};Trusted_Connection=True;TrustServerCertificate=True";
+        SqlServerTestDatabase.CreateConnectionString("QbcWorkboardApiTests");
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

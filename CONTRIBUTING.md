@@ -134,7 +134,9 @@ dotnet test backend/Qbc.Workboard.slnx --configuration Release
 ```
 
 Backend integration tests create and remove uniquely named databases on the
-local `SQLEXPRESS` instance.
+local `SQLEXPRESS` instance. To use another SQL Server instance, set
+`QBC_TEST_SQLSERVER_CONNECTION_STRING` to an instance-level connection string;
+the test hosts supply their own unique database names.
 
 ### Angular checks
 

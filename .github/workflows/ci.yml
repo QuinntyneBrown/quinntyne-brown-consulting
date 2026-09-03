@@ -7,6 +7,20 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: Qbc_${{ github.run_id }}!aA
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'Qbc_${{ github.run_id }}!aA' -C -b -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v5
@@ -27,6 +41,9 @@ jobs:
         working-directory: frontend
         run: npm run build
       - name: Test backend
+        env:
+          QBC_TEST_SQLSERVER_CONNECTION_STRING: >-
+            Server=localhost,1433;User ID=sa;Password=Qbc_${{ github.run_id }}!aA;Encrypt=False;TrustServerCertificate=True;Connect Timeout=30
         run: dotnet test backend/Qbc.Workboard.slnx --configuration Release
       - name: Install Playwright browsers
         working-directory: frontend

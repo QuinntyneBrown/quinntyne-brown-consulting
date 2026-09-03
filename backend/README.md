@@ -35,8 +35,9 @@ framework or persistence dependency.
 - SQL Server Express available as `.\SQLEXPRESS`
 
 Override `ConnectionStrings__Workboard` to use another accessible SQL Server
-instance. The committed integration-test fixtures currently use the local
-`SQLEXPRESS` instance with Windows authentication.
+instance. Integration-test fixtures use the local `SQLEXPRESS` instance with
+Windows authentication by default. Set `QBC_TEST_SQLSERVER_CONNECTION_STRING`
+to an instance-level connection string to run them against another SQL Server.
 
 ## Restore, build, and test
 

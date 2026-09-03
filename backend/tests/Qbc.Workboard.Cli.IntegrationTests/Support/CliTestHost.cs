@@ -16,8 +16,7 @@ public sealed class CliTestHost : IAsyncDisposable
 
     public static CliTestHost Create(bool requireForce = true)
     {
-        var connectionString =
-            $"Server=.\\SQLEXPRESS;Database=QbcWorkboardCliTests{Guid.NewGuid():N};Trusted_Connection=True;TrustServerCertificate=True";
+        var connectionString = SqlServerTestDatabase.CreateConnectionString("QbcWorkboardCliTests");
         var console = new TestConsoleWriter();
         var host = new CliHostBuilder().Build(builder =>
         {

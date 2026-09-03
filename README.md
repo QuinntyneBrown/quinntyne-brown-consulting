@@ -78,8 +78,10 @@ the local `SQLEXPRESS` instance with Windows authentication.
 - [SQL Server Express](https://www.microsoft.com/sql-server/sql-server-downloads)
 
 An accessible SQL Server instance may replace local SQL Server Express by
-overriding `ConnectionStrings__Workboard`. The committed integration-test hosts
-currently assume `Server=.\SQLEXPRESS`.
+overriding `ConnectionStrings__Workboard`. Backend integration tests use
+`Server=.\SQLEXPRESS` by default and accept an instance-level connection string
+through `QBC_TEST_SQLSERVER_CONNECTION_STRING`; every test host assigns its own
+unique database name.
 
 ## Quick start
 
@@ -203,9 +205,11 @@ npm test
 ```
 
 The backend tests create uniquely named SQL Server databases and delete them on
-disposal. The Playwright suite starts only the Angular application and uses a
-fresh, stateful API mock for each test while running against Chromium, Firefox,
-and WebKit. No backend process or test database is required by the browser suite.
+disposal. Set `QBC_TEST_SQLSERVER_CONNECTION_STRING` to run them against a SQL
+Server instance other than local `SQLEXPRESS`. The Playwright suite starts only
+the Angular application and uses a fresh, stateful API mock for each test while
+running against Chromium, Firefox, and WebKit. No backend process or test
+database is required by the browser suite.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the red-green-refactor workflow,
 coding conventions, and pull-request checklist.
