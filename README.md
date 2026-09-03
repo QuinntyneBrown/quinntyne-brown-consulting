@@ -50,10 +50,25 @@ artifacts/publish/Qbc.Workboard.Api.exe --urls http://localhost:5050
 
 The SQLite connection string can be overridden with `ConnectionStrings__Workboard`. EF Core applies pending migrations at startup. Set `SeedDevelopmentData=true` only when representative development data is wanted.
 
+## Design system
+
+The design system is a first-class deliverable in its own right. `design-system/` is a standalone,
+deployable static web app documenting the tokens, components, dialogs, and screen patterns of QBC
+Workboard. It has no runtime dependency on `backend/`, `frontend/`, or `docs/`.
+
+```powershell
+Set-Location design-system
+npm ci
+npm start
+```
+
+See the [design system README](design-system/README.md) for the contract gate, the test suite, and
+the GitHub Pages deployment.
+
 ## Product documentation
 
 - [High-level requirements](docs/specs/L1.md)
 - [Detailed requirements and acceptance criteria](docs/specs/L2.md)
 - [Detailed designs](docs/detailed-designs)
 - [Acceptance evidence](docs/acceptance-evidence.md)
-
+- [Design system](design-system/README.md)

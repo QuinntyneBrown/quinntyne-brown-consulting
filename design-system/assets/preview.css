@@ -1,0 +1,104 @@
+/* Product-screen stylesheet for the isolated preview frame.
+   This file loads tokens.css and nothing else from the documentation site, so an
+   iframed pattern is a true product screen rather than a documentation page wearing
+   product clothes. It holds only the page-level layout the mock expresses as plain
+   classes; everything with a visual identity is a component. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--qbc-panel); }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--qbc-panel);
+  color: var(--qbc-ink);
+  font-family: var(--qbc-font-sans);
+  font-size: var(--qbc-fs-base);
+  line-height: var(--qbc-lh-base);
+}
+
+:focus-visible {
+  outline: 3px solid var(--qbc-focus-ring);
+  outline-offset: 2px;
+}
+
+/* Component and dialog specimens are staged centred; a pattern fills the frame. */
+#preview[data-type="component"],
+#preview[data-type="dialog"] {
+  display: grid;
+  min-height: 100vh;
+  padding: 28px;
+  background: var(--qbc-soft);
+  place-items: center;
+}
+#preview[data-type="component"] > *,
+#preview[data-type="dialog"] > * { max-width: 100%; }
+
+/* ------------------------------------------------------------ page layout */
+
+.page-head {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 42px;
+}
+.page-head h1 {
+  margin: 0;
+  font-size: var(--qbc-fs-display);
+  letter-spacing: var(--qbc-tracking-display);
+  line-height: var(--qbc-lh-display);
+}
+.page-head p { max-width: 650px; margin: 10px 0 0; color: var(--qbc-ink-soft); }
+.page-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.board { display: grid; gap: 20px; grid-template-columns: repeat(3, minmax(250px, 1fr)); }
+
+.toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 22px; }
+.toolbar qbc-text-input { flex: 1; max-width: 430px; }
+.toolbar qbc-select { width: auto; min-width: 150px; }
+
+.data-list {
+  overflow: hidden;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-xl);
+}
+
+.hierarchy-list { display: grid; gap: 18px; }
+
+.assistant-grid {
+  display: grid;
+  gap: 17px;
+  grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+}
+
+.sprint-list { display: grid; gap: 10px; }
+
+.form-grid { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
+.task-editor { grid-column: 1 / -1; padding-top: 4px; }
+.task-list { display: grid; gap: 7px; margin-bottom: 10px; }
+
+.pattern-note {
+  max-width: 60ch;
+  padding: 28px 30px;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-xl);
+  background: var(--qbc-sprint-hero-bg);
+}
+.pattern-note h2 { margin: 0 0 8px; font-size: var(--qbc-fs-4xl); letter-spacing: var(--qbc-tracking-heading); }
+.pattern-note p { margin: 0; color: var(--qbc-ink-soft); }
+
+@media (max-width: 1000px) {
+  .board { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .page-head { display: block; margin-bottom: 30px; }
+  .page-actions { margin-top: 20px; }
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .toolbar qbc-text-input, .toolbar qbc-select { width: 100%; max-width: none; }
+  .data-list { overflow: visible; border: 0; }
+  .form-grid { grid-template-columns: 1fr; }
+  .task-editor { grid-column: auto; }
+}

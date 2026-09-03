@@ -3,19 +3,65 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "api": {
+      "projectType": "library",
+      "root": "projects/api",
+      "sourceRoot": "projects/api/src",
+      "prefix": "qbc",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/api/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/api/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/api/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
+    "components": {
+      "projectType": "library",
+      "root": "projects/components",
+      "sourceRoot": "projects/components/src",
+      "prefix": "qbc",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/components/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/components/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/components/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    },
     "qbc-workboard": {
       "projectType": "application",
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/qbc-workboard",
+      "sourceRoot": "projects/qbc-workboard/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "src/main.ts",
-            "tsConfig": "tsconfig.app.json",
-            "assets": [{ "glob": "**/*", "input": "public" }],
-            "styles": ["src/styles.scss"],
+            "browser": "projects/qbc-workboard/src/main.ts",
+            "tsConfig": "projects/qbc-workboard/tsconfig.app.json",
+            "assets": [{ "glob": "**/*", "input": "projects/qbc-workboard/public" }],
+            "styles": ["projects/qbc-workboard/src/styles.scss"],
             "outputPath": "dist/qbc-workboard"
           },
           "configurations": {
@@ -45,4 +91,3 @@
     }
   }
 }
-

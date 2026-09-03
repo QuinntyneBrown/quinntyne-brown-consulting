@@ -1,0 +1,7 @@
+global using Qbc.Workboard.Api.Contracts.Requests;
+global using Qbc.Workboard.Api.IntegrationTests.Support;
+global using Qbc.Workboard.Application.Features.Assistants.Dtos;
+global using Qbc.Workboard.Application.Features.Hierarchy.Dtos;
+global using Qbc.Workboard.Application.Features.Sprints.Dtos;
+global using Qbc.Workboard.Application.Features.Stories.Dtos;
+global using Qbc.Workboard.Domain.Enums;

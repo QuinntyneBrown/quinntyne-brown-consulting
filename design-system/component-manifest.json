@@ -1,0 +1,1926 @@
+{
+  "schemaVersion": 1,
+  "product": {
+    "name": "QBC Workboard Design System",
+    "version": "1.0.0",
+    "description": "The standalone visual language, component API, and product-pattern reference for QBC Workboard."
+  },
+  "categories": [
+    {
+      "id": "actions",
+      "label": "Actions",
+      "description": "Buttons, icon actions, and the brand lockup."
+    },
+    {
+      "id": "status",
+      "label": "Status",
+      "description": "Pills, chips, badges, and availability."
+    },
+    {
+      "id": "surfaces",
+      "label": "Surfaces",
+      "description": "Containers, identity, meters, and empty states."
+    },
+    {
+      "id": "forms",
+      "label": "Forms",
+      "description": "Labelled inputs and validation feedback."
+    },
+    {
+      "id": "navigation",
+      "label": "Navigation",
+      "description": "The responsive workspace frame."
+    },
+    {
+      "id": "overlays",
+      "label": "Overlays",
+      "description": "Focused modal tasks and transient feedback."
+    },
+    {
+      "id": "work",
+      "label": "Work items",
+      "description": "Stories, sprints, initiatives, and assistants."
+    }
+  ],
+  "components": [
+    {
+      "selector": "qbc-icon",
+      "name": "Icon",
+      "category": "actions",
+      "source": "qbc-icon.js",
+      "description": "The workspace glyph set, centralised so every icon shares one sizing contract.",
+      "attributes": [
+        {
+          "name": "name",
+          "type": "icon",
+          "default": "board",
+          "values": [
+            "board",
+            "backlog",
+            "initiatives",
+            "assistants",
+            "menu",
+            "add",
+            "close",
+            "search",
+            "arrow-left",
+            "arrow-right",
+            "more",
+            "alert",
+            "empty",
+            "initiative"
+          ],
+          "description": "Glyph to render."
+        },
+        {
+          "name": "size",
+          "type": "string",
+          "default": "16",
+          "description": "Rendered size in pixels."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "",
+          "description": "Accessible name. Leave empty to mark the glyph decorative."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "board",
+          "title": "Navigation glyph",
+          "description": "Decorative by default, so the surrounding control carries the label.",
+          "markup": "<qbc-icon name=\"board\" size=\"18\"></qbc-icon>"
+        },
+        {
+          "id": "labelled",
+          "title": "Labelled glyph",
+          "description": "Supply a label when the glyph is the only content.",
+          "markup": "<qbc-icon name=\"alert\" size=\"18\" label=\"Warning\"></qbc-icon>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-button",
+      "name": "Button",
+      "category": "actions",
+      "source": "qbc-button.js",
+      "description": "Primary, secondary, quiet, and destructive actions at three densities.",
+      "attributes": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "default": "primary",
+          "values": [
+            "primary",
+            "secondary",
+            "quiet",
+            "danger"
+          ],
+          "description": "Visual priority of the action."
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "default": "md",
+          "values": [
+            "md",
+            "sm",
+            "xs"
+          ],
+          "description": "Control density. Small suits table rows, extra small suits card footers."
+        },
+        {
+          "name": "full",
+          "type": "boolean",
+          "default": false,
+          "description": "Expands the button to the available width."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": false,
+          "description": "Prevents activation and dims the control."
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "default": "button",
+          "values": [
+            "button",
+            "submit",
+            "reset"
+          ],
+          "description": "Native button type."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Visible label."
+        },
+        {
+          "name": "leading",
+          "description": "Leading icon or glyph."
+        }
+      ],
+      "events": [
+        {
+          "name": "click",
+          "description": "Native click from the internal button."
+        }
+      ],
+      "examples": [
+        {
+          "id": "primary",
+          "title": "Primary action",
+          "description": "One clear next step per view.",
+          "markup": "<qbc-button><qbc-icon slot=\"leading\" name=\"add\" size=\"14\"></qbc-icon>New story</qbc-button>"
+        },
+        {
+          "id": "danger",
+          "title": "Destructive action",
+          "description": "Reserved for consequences that need explicit emphasis.",
+          "markup": "<qbc-button variant=\"danger\">Delete permanently</qbc-button>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-icon-button",
+      "name": "Icon button",
+      "category": "actions",
+      "source": "qbc-icon-button.js",
+      "description": "Compact icon-only action with a required accessible label.",
+      "attributes": [
+        {
+          "name": "icon",
+          "type": "icon",
+          "default": "close",
+          "values": [
+            "board",
+            "backlog",
+            "initiatives",
+            "assistants",
+            "menu",
+            "add",
+            "close",
+            "search",
+            "arrow-left",
+            "arrow-right",
+            "more",
+            "alert",
+            "empty",
+            "initiative"
+          ],
+          "description": "Glyph to render."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Action",
+          "description": "Accessible action name. Required, because there is no visible text."
+        },
+        {
+          "name": "variant",
+          "type": "enum",
+          "default": "default",
+          "values": [
+            "default",
+            "bare"
+          ],
+          "description": "Container treatment. Bare drops the border, for dialog headers."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": false,
+          "description": "Prevents activation."
+        }
+      ],
+      "slots": [],
+      "events": [
+        {
+          "name": "click",
+          "description": "Native click from the internal button."
+        }
+      ],
+      "examples": [
+        {
+          "id": "close",
+          "title": "Close a dialog",
+          "description": "The label is the only accessible name this control has.",
+          "markup": "<qbc-icon-button icon=\"close\" label=\"Close dialog\"></qbc-icon-button>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-brand",
+      "name": "Brand lockup",
+      "category": "actions",
+      "source": "qbc-brand.js",
+      "description": "The QBC Workboard mark and wordmark. The mark is a letterform, not an image asset.",
+      "attributes": [
+        {
+          "name": "mark",
+          "type": "string",
+          "default": "Q",
+          "description": "Letterform shown inside the accent tile."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "default": "QBC",
+          "description": "Wordmark."
+        },
+        {
+          "name": "tagline",
+          "type": "string",
+          "default": "Workboard",
+          "description": "Secondary line beneath the wordmark."
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "default": "",
+          "description": "Optional link target for the lockup."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "default",
+          "title": "Sidebar lockup",
+          "description": "A typographic mark, so there is no logo file to keep in sync.",
+          "markup": "<qbc-brand></qbc-brand>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-pill",
+      "name": "Pill",
+      "category": "status",
+      "source": "qbc-pill.js",
+      "description": "Status label covering the lifecycle, readiness, board, sprint, and availability vocabularies.",
+      "attributes": [
+        {
+          "name": "tone",
+          "type": "enum",
+          "default": "muted",
+          "values": [
+            "ready",
+            "active",
+            "done",
+            "available",
+            "draft",
+            "todo",
+            "toDo",
+            "progress",
+            "inProgress",
+            "planned",
+            "limited",
+            "archived",
+            "muted",
+            "unavailable",
+            "completed"
+          ],
+          "description": "Semantic status. Both spellings of the board statuses resolve to the same tone."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Status text. Always present, so status never depends on colour alone."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "ready",
+          "title": "Readiness",
+          "description": "Green marks work that is ready or complete.",
+          "markup": "<qbc-pill tone=\"ready\">Ready</qbc-pill>"
+        },
+        {
+          "id": "completed",
+          "title": "Completed sprint",
+          "description": "The mock stylesheet defines no rule for this value, so it renders unstyled there.",
+          "markup": "<qbc-pill tone=\"completed\">Completed</qbc-pill>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-tag",
+      "name": "Tag",
+      "category": "status",
+      "source": "qbc-tag.js",
+      "description": "Neutral metadata chip, used for assistant specialties.",
+      "attributes": [],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Tag text."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "specialty",
+          "title": "Specialty",
+          "description": "Free text, never colour-coded by value.",
+          "markup": "<qbc-tag>Research</qbc-tag>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-points",
+      "name": "Points chip",
+      "category": "status",
+      "source": "qbc-points.js",
+      "description": "Story estimate in a squircle, deliberately a different shape from a count badge.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "default": "",
+          "description": "Estimate to display. Leave empty for an unestimated story."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "five",
+          "title": "Estimated story",
+          "description": "Estimates use a fixed Fibonacci set: 1, 2, 3, 5, 8, 13.",
+          "markup": "<qbc-points value=\"5\"></qbc-points>"
+        },
+        {
+          "id": "none",
+          "title": "Not estimated",
+          "description": "An em dash reads as absent rather than as zero.",
+          "markup": "<qbc-points></qbc-points>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-count",
+      "name": "Count badge",
+      "category": "status",
+      "source": "qbc-count.js",
+      "description": "Quantity badge in a capsule, used on board column headers.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "default": "0",
+          "description": "Quantity to display."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "three",
+          "title": "Column count",
+          "description": "The capsule shape distinguishes a quantity from an estimate.",
+          "markup": "<qbc-count value=\"3\"></qbc-count>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-availability",
+      "name": "Availability",
+      "category": "status",
+      "source": "qbc-availability.js",
+      "description": "Assistant availability with a status dot that changes colour per state.",
+      "attributes": [
+        {
+          "name": "status",
+          "type": "enum",
+          "default": "available",
+          "values": [
+            "available",
+            "limited",
+            "unavailable"
+          ],
+          "description": "Availability state."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "available",
+          "title": "Available",
+          "description": "Green dot, matching the ready and done pills.",
+          "markup": "<qbc-availability status=\"available\"></qbc-availability>"
+        },
+        {
+          "id": "limited",
+          "title": "Limited",
+          "description": "The mock hard-codes one green dot for all three states, so they look identical there.",
+          "markup": "<qbc-availability status=\"limited\"></qbc-availability>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-card",
+      "name": "Card",
+      "category": "surfaces",
+      "source": "qbc-card.js",
+      "description": "General bordered container at the large radius.",
+      "attributes": [
+        {
+          "name": "padding",
+          "type": "enum",
+          "default": "md",
+          "values": [
+            "none",
+            "md",
+            "lg"
+          ],
+          "description": "Internal padding."
+        },
+        {
+          "name": "interactive",
+          "type": "boolean",
+          "default": false,
+          "description": "Adds a pointer cursor and a hover fill."
+        },
+        {
+          "name": "raised",
+          "type": "boolean",
+          "default": false,
+          "description": "Adds the soft card elevation the mock gives story cards."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Card content."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "default",
+          "title": "Content container",
+          "description": "The default surface for grouped content.",
+          "markup": "<qbc-card>Grouped workspace content.</qbc-card>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-avatar",
+      "name": "Avatar",
+      "category": "surfaces",
+      "source": "qbc-avatar.js",
+      "description": "Initials-only identity mark. This product has no image avatars.",
+      "attributes": [
+        {
+          "name": "name",
+          "type": "string",
+          "default": "",
+          "description": "Person name. Initials come from the first two words."
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "default": "sm",
+          "values": [
+            "sm",
+            "lg"
+          ],
+          "description": "Small suits card footers, large suits assistant cards."
+        },
+        {
+          "name": "unassigned",
+          "type": "boolean",
+          "default": false,
+          "description": "Renders the grey unassigned state with an em dash."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "assigned",
+          "title": "Assigned owner",
+          "description": "Accent tint with up to two uppercase initials.",
+          "markup": "<qbc-avatar name=\"Maya Chen\"></qbc-avatar>"
+        },
+        {
+          "id": "unassigned",
+          "title": "No owner",
+          "description": "Grey tint and an em dash, never a blank circle.",
+          "markup": "<qbc-avatar unassigned></qbc-avatar>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-empty-state",
+      "name": "Empty state",
+      "category": "surfaces",
+      "source": "qbc-empty-state.js",
+      "description": "Purposeful empty view: icon tile, heading, explanation, and a next action.",
+      "attributes": [
+        {
+          "name": "icon",
+          "type": "icon",
+          "default": "empty",
+          "values": [
+            "board",
+            "backlog",
+            "initiatives",
+            "assistants",
+            "menu",
+            "add",
+            "close",
+            "search",
+            "arrow-left",
+            "arrow-right",
+            "more",
+            "alert",
+            "empty",
+            "initiative"
+          ],
+          "description": "Glyph shown in the accent tile."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Nothing here yet",
+          "description": "Heading."
+        },
+        {
+          "name": "subtitle",
+          "type": "string",
+          "default": "",
+          "description": "Explanation of what to do next."
+        },
+        {
+          "name": "bare",
+          "type": "boolean",
+          "default": false,
+          "description": "Drops the dashed border, for use inside a board column."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "The next action, usually a single button."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "board",
+          "title": "No active sprint",
+          "description": "Every empty state offers a relevant next action where one exists.",
+          "markup": "<qbc-empty-state title=\"No active sprint\" subtitle=\"Start a planned sprint to bring ready stories onto the board.\"><qbc-button>Choose a sprint</qbc-button></qbc-empty-state>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-progress",
+      "name": "Progress",
+      "category": "surfaces",
+      "source": "qbc-progress.js",
+      "description": "Completion meter carrying a full accessible value triplet.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "number",
+          "default": 0,
+          "description": "Completion percentage from 0 to 100."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "",
+          "description": "Accessible name for the meter."
+        },
+        {
+          "name": "mini",
+          "type": "boolean",
+          "default": false,
+          "description": "The narrow 110px variant used on epic rows."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "sprint",
+          "title": "Sprint progress",
+          "description": "The mock exposes only an aria-label; this adds the value triplet.",
+          "markup": "<qbc-progress value=\"45\" label=\"45% complete\"></qbc-progress>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-section-label",
+      "name": "Section label",
+      "category": "surfaces",
+      "source": "qbc-section-label.js",
+      "description": "Small heading with an optional trailing action, used inside dialogs.",
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Section",
+          "description": "Section heading."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "default": "",
+          "description": "Supporting text beneath the heading."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Trailing action."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "tasks",
+          "title": "Task section",
+          "description": "Pairs a heading with the action that adds to it.",
+          "markup": "<qbc-section-label title=\"Tasks\" hint=\"A lightweight checklist inside this story.\"><qbc-button size=\"sm\" variant=\"secondary\">Add</qbc-button></qbc-section-label>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-field",
+      "name": "Field",
+      "category": "forms",
+      "source": "qbc-field.js",
+      "description": "Label, required marker, and hint wrapper around any slotted control.",
+      "attributes": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Label",
+          "description": "Visible field label."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "default": "",
+          "description": "Supporting guidance below the control."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": false,
+          "description": "Shows the required marker."
+        },
+        {
+          "name": "full",
+          "type": "boolean",
+          "default": false,
+          "description": "Spans both columns of a form grid."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "The form control. It must carry its own accessible name, because a slotted control is a light-DOM child of the host rather than a descendant of the shadow label, so implicit label association does not reach it."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "wrapped",
+          "title": "Wrapping a control",
+          "description": "Use when the control is not one of the provided inputs.",
+          "markup": "<qbc-field label=\"Sprint\" hint=\"Only planned sprints accept stories.\"><select aria-label=\"Sprint\"><option>Backlog</option></select></qbc-field>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-text-input",
+      "name": "Text input",
+      "category": "forms",
+      "source": "qbc-text-input.js",
+      "description": "Labelled single-line input with hint and required support.",
+      "attributes": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "",
+          "description": "Visible field label."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "",
+          "description": "Initial value."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "default": "",
+          "description": "Example value or expected format."
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "default": "text",
+          "values": [
+            "text",
+            "email",
+            "password",
+            "number",
+            "date",
+            "search"
+          ],
+          "description": "Native input type."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "default": "",
+          "description": "Supporting guidance below the input."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": false,
+          "description": "Marks the field required."
+        }
+      ],
+      "slots": [],
+      "events": [
+        {
+          "name": "input",
+          "description": "Native input event, from inside the open shadow root."
+        }
+      ],
+      "examples": [
+        {
+          "id": "title",
+          "title": "Story title",
+          "description": "Labels stay visible once content is entered.",
+          "markup": "<qbc-text-input label=\"Story title\" placeholder=\"Describe the outcome\" required></qbc-text-input>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-textarea",
+      "name": "Textarea",
+      "category": "forms",
+      "source": "qbc-textarea.js",
+      "description": "Labelled multi-line input for descriptions and acceptance criteria.",
+      "attributes": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "",
+          "description": "Visible field label."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "",
+          "description": "Initial value."
+        },
+        {
+          "name": "placeholder",
+          "type": "string",
+          "default": "",
+          "description": "Example value or expected format."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "default": "",
+          "description": "Supporting guidance below the control."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": false,
+          "description": "Marks the field required."
+        }
+      ],
+      "slots": [],
+      "events": [
+        {
+          "name": "input",
+          "description": "Native input event, from inside the open shadow root."
+        }
+      ],
+      "examples": [
+        {
+          "id": "description",
+          "title": "User story",
+          "description": "The mock requires description and acceptance criteria before a story can be groomed.",
+          "markup": "<qbc-textarea label=\"User story\" placeholder=\"As a… I want… so that…\" required></qbc-textarea>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-select",
+      "name": "Select",
+      "category": "forms",
+      "source": "qbc-select.js",
+      "description": "Labelled select built from a compact option list.",
+      "attributes": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "",
+          "description": "Visible field label."
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "",
+          "description": "Selected value."
+        },
+        {
+          "name": "options",
+          "type": "string",
+          "default": "",
+          "description": "Options as a comma-separated list of value:Label pairs."
+        },
+        {
+          "name": "hint",
+          "type": "string",
+          "default": "",
+          "description": "Supporting guidance below the control."
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": false,
+          "description": "Marks the field required."
+        }
+      ],
+      "slots": [],
+      "events": [
+        {
+          "name": "change",
+          "description": "Re-dispatched as a composed event so it crosses the shadow boundary, carrying the selected value on detail.value. The native change event alone would not escape."
+        }
+      ],
+      "examples": [
+        {
+          "id": "points",
+          "title": "Story points",
+          "description": "Estimates use a fixed Fibonacci set.",
+          "markup": "<qbc-select label=\"Story points\" options=\":Choose points,1:1,2:2,3:3,5:5,8:8,13:13\" required></qbc-select>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-form-error",
+      "name": "Form error",
+      "category": "forms",
+      "source": "qbc-form-error.js",
+      "description": "Inline validation summary that announces itself to assistive technology.",
+      "attributes": [],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Error text."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "grooming",
+          "title": "Grooming failure",
+          "description": "States what is missing, rather than that something went wrong.",
+          "markup": "<qbc-form-error>Add description, acceptance criteria, and story points before marking this story Ready.</qbc-form-error>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-app-shell",
+      "name": "App shell",
+      "category": "navigation",
+      "source": "qbc-app-shell.js",
+      "description": "Workspace frame: skip link, fixed sidebar, top bar, and the routed content region.",
+      "attributes": [
+        {
+          "name": "nav-open",
+          "type": "boolean",
+          "default": false,
+          "description": "Opens the mobile navigation drawer."
+        }
+      ],
+      "slots": [
+        {
+          "name": "sidebar",
+          "description": "The workspace sidebar."
+        },
+        {
+          "name": "topbar",
+          "description": "The top bar."
+        },
+        {
+          "name": "default",
+          "description": "Routed page content."
+        }
+      ],
+      "events": [
+        {
+          "name": "qbc-dismiss-nav",
+          "description": "Fired when the drawer scrim is activated."
+        }
+      ],
+      "examples": [
+        {
+          "id": "shell",
+          "title": "Workspace frame",
+          "description": "The sidebar is fixed at every width and slides off-canvas below 760px.",
+          "markup": "<qbc-app-shell><qbc-sidebar slot=\"sidebar\"></qbc-sidebar><qbc-topbar slot=\"topbar\" breadcrumb=\"Workspace / Board\"></qbc-topbar><p>Page content.</p></qbc-app-shell>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-sidebar",
+      "name": "Sidebar",
+      "category": "navigation",
+      "source": "qbc-sidebar.js",
+      "description": "Fixed 224px navigation rail that becomes an off-canvas drawer on mobile.",
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": false,
+          "description": "Slides the drawer into view below 760px."
+        },
+        {
+          "name": "footer",
+          "type": "string",
+          "default": "Quinntyne Brown Consulting Inc.",
+          "description": "Company line pinned to the bottom."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Navigation items."
+        },
+        {
+          "name": "brand",
+          "description": "Brand lockup. Defaults to the QBC lockup when empty."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "nav",
+          "title": "Workspace navigation",
+          "description": "Four destinations, and the active one is identified by fill as well as by text.",
+          "markup": "<qbc-sidebar><qbc-nav-item icon=\"board\" label=\"Board\" active></qbc-nav-item><qbc-nav-item icon=\"backlog\" label=\"Backlog\"></qbc-nav-item><qbc-nav-item icon=\"initiatives\" label=\"Initiatives\"></qbc-nav-item><qbc-nav-item icon=\"assistants\" label=\"Assistants\"></qbc-nav-item></qbc-sidebar>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-nav-item",
+      "name": "Navigation item",
+      "category": "navigation",
+      "source": "qbc-nav-item.js",
+      "description": "One destination in the sidebar, with idle, hover, and active states.",
+      "attributes": [
+        {
+          "name": "icon",
+          "type": "icon",
+          "default": "board",
+          "values": [
+            "board",
+            "backlog",
+            "initiatives",
+            "assistants",
+            "menu",
+            "add",
+            "close",
+            "search",
+            "arrow-left",
+            "arrow-right",
+            "more",
+            "alert",
+            "empty",
+            "initiative"
+          ],
+          "description": "Leading glyph."
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Destination",
+          "description": "Visible label."
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "default": "",
+          "description": "Link target."
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": false,
+          "description": "Marks the current route."
+        }
+      ],
+      "slots": [],
+      "events": [],
+      "examples": [
+        {
+          "id": "active",
+          "title": "Current destination",
+          "description": "Active state uses accent text on an accent wash.",
+          "markup": "<qbc-nav-item icon=\"board\" label=\"Board\" active></qbc-nav-item>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-topbar",
+      "name": "Top bar",
+      "category": "navigation",
+      "source": "qbc-topbar.js",
+      "description": "Menu toggle, breadcrumb, and the global action for the current workspace.",
+      "attributes": [
+        {
+          "name": "breadcrumb",
+          "type": "string",
+          "default": "Workspace / Board",
+          "description": "Current location. Hidden below 760px."
+        },
+        {
+          "name": "menu-label",
+          "type": "string",
+          "default": "Open navigation",
+          "description": "Accessible name for the menu toggle."
+        },
+        {
+          "name": "nav-open",
+          "type": "boolean",
+          "default": false,
+          "description": "Reflects drawer state onto aria-expanded."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Global actions, usually the New story button."
+        }
+      ],
+      "events": [
+        {
+          "name": "qbc-menu-toggle",
+          "description": "Fired when the mobile menu button is activated."
+        }
+      ],
+      "examples": [
+        {
+          "id": "topbar",
+          "title": "Workspace top bar",
+          "description": "The breadcrumb gives way to the menu button on small screens.",
+          "markup": "<qbc-topbar breadcrumb=\"Workspace / Board\"><qbc-button><qbc-icon slot=\"leading\" name=\"add\" size=\"14\"></qbc-icon>New story</qbc-button></qbc-topbar>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-dialog",
+      "name": "Dialog",
+      "category": "overlays",
+      "source": "qbc-dialog.js",
+      "description": "Focused modal task with a sticky header, a scrolling body, and a tinted action footer.",
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": false,
+          "description": "Shows the dialog."
+        },
+        {
+          "name": "static",
+          "type": "boolean",
+          "default": false,
+          "description": "Renders inline without a scrim, for documentation."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Dialog",
+          "description": "Dialog heading, used as the accessible name."
+        },
+        {
+          "name": "subtitle",
+          "type": "string",
+          "default": "",
+          "description": "Supporting line beneath the heading."
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "default": "md",
+          "values": [
+            "md",
+            "sm"
+          ],
+          "description": "Dialog width."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Dialog body."
+        },
+        {
+          "name": "actions",
+          "description": "Footer actions, right aligned."
+        }
+      ],
+      "events": [
+        {
+          "name": "qbc-close",
+          "description": "Cancelable. detail.reason is escape, backdrop, close, or programmatic."
+        }
+      ],
+      "examples": [
+        {
+          "id": "form",
+          "title": "Entity form",
+          "description": "One task per dialog, with the destructive option never adjacent to the primary one.",
+          "markup": "<qbc-dialog static open title=\"New story\" subtitle=\"Describe the outcome this story delivers.\"><qbc-text-input label=\"Story title\" placeholder=\"Describe the outcome\" required></qbc-text-input><qbc-button slot=\"actions\" variant=\"secondary\" data-dialog-close>Cancel</qbc-button><qbc-button slot=\"actions\" data-dialog-confirm>Create</qbc-button></qbc-dialog>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-confirm-dialog",
+      "name": "Confirm dialog",
+      "category": "overlays",
+      "source": "qbc-confirm-dialog.js",
+      "description": "Narrow centred confirmation that names the record and its consequence.",
+      "attributes": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": false,
+          "description": "Shows the dialog."
+        },
+        {
+          "name": "static",
+          "type": "boolean",
+          "default": false,
+          "description": "Renders inline without a scrim, for documentation."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Are you sure?",
+          "description": "Question, used as the accessible name."
+        },
+        {
+          "name": "copy",
+          "type": "string",
+          "default": "",
+          "description": "Consequence of confirming."
+        },
+        {
+          "name": "confirm-label",
+          "type": "string",
+          "default": "Confirm",
+          "description": "Label for the destructive action."
+        }
+      ],
+      "slots": [],
+      "events": [
+        {
+          "name": "qbc-confirm",
+          "description": "Fired when the destructive action is chosen."
+        },
+        {
+          "name": "qbc-close",
+          "description": "Cancelable. detail.reason is escape, backdrop, cancel, confirm, or programmatic."
+        }
+      ],
+      "examples": [
+        {
+          "id": "delete",
+          "title": "Permanent deletion",
+          "description": "Cancel is always available, and the copy names what is lost.",
+          "markup": "<qbc-confirm-dialog static open title=\"Delete QBC-104?\" copy=\"This permanently removes the story and its tasks. This cannot be undone.\" confirm-label=\"Delete permanently\"></qbc-confirm-dialog>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-toast",
+      "name": "Toast",
+      "category": "overlays",
+      "source": "qbc-toast.js",
+      "description": "Transient confirmation or error, announced politely without moving focus.",
+      "attributes": [
+        {
+          "name": "tone",
+          "type": "enum",
+          "default": "default",
+          "values": [
+            "default",
+            "error"
+          ],
+          "description": "Message kind."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Message text."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "success",
+          "title": "Operation confirmed",
+          "description": "Says what happened to which record.",
+          "markup": "<qbc-toast>QBC-101 is ready for a sprint.</qbc-toast>"
+        },
+        {
+          "id": "error",
+          "title": "Actionable error",
+          "description": "Errors state the next step, not just the failure.",
+          "markup": "<qbc-toast tone=\"error\">Add story points before marking this story Ready.</qbc-toast>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-story-card",
+      "name": "Story card",
+      "category": "work",
+      "source": "qbc-story-card.js",
+      "description": "The board unit of work: key, estimate, title, context, owner, and movement actions.",
+      "attributes": [
+        {
+          "name": "story-key",
+          "type": "string",
+          "default": "QBC-000",
+          "description": "Story identifier."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Untitled story",
+          "description": "Story title."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "default": "",
+          "description": "Epic name and task progress, truncated to one line."
+        },
+        {
+          "name": "points",
+          "type": "string",
+          "default": "",
+          "description": "Estimate. Leave empty for an unestimated story."
+        },
+        {
+          "name": "owner",
+          "type": "string",
+          "default": "",
+          "description": "Assigned assistant. Leave empty for unassigned."
+        },
+        {
+          "name": "draggable-card",
+          "type": "boolean",
+          "default": false,
+          "description": "Shows the grab cursor for pointer dragging."
+        },
+        {
+          "name": "dragging",
+          "type": "boolean",
+          "default": false,
+          "description": "Dims the card while it is being dragged."
+        }
+      ],
+      "slots": [
+        {
+          "name": "actions",
+          "description": "Movement and edit actions."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "card",
+          "title": "Board story",
+          "description": "The card carries no status pill, because the column is the status.",
+          "markup": "<qbc-story-card story-key=\"QBC-101\" title=\"See a concise project health summary\" context=\"Client project portal · 1/2 tasks\" points=\"5\" owner=\"Noah Williams\"><qbc-button slot=\"actions\" variant=\"quiet\" size=\"xs\">Edit</qbc-button></qbc-story-card>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-board-column",
+      "name": "Board column",
+      "category": "work",
+      "source": "qbc-board-column.js",
+      "description": "One workflow state on the sprint board, with a count and a drop target.",
+      "attributes": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "To do",
+          "description": "Column heading."
+        },
+        {
+          "name": "count",
+          "type": "string",
+          "default": "0",
+          "description": "Number of stories in the column."
+        },
+        {
+          "name": "drag-over",
+          "type": "boolean",
+          "default": false,
+          "description": "Highlights the column as an active drop target."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Story cards."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "column",
+          "title": "Workflow column",
+          "description": "Columns are not colour-coded; position and heading carry the meaning.",
+          "markup": "<qbc-board-column label=\"In progress\" count=\"1\"><qbc-story-card story-key=\"QBC-101\" title=\"See a concise project health summary\" context=\"Client project portal\" points=\"5\" owner=\"Noah Williams\"></qbc-story-card></qbc-board-column>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-sprint-hero",
+      "name": "Sprint hero",
+      "category": "work",
+      "source": "qbc-sprint-hero.js",
+      "description": "Active sprint summary: goal, dates, completion count, and progress.",
+      "attributes": [
+        {
+          "name": "eyebrow",
+          "type": "string",
+          "default": "Current sprint",
+          "description": "Small uppercase label above the goal."
+        },
+        {
+          "name": "goal",
+          "type": "string",
+          "default": "",
+          "description": "Sprint goal, shown as the heading."
+        },
+        {
+          "name": "dates",
+          "type": "string",
+          "default": "",
+          "description": "Formatted sprint date range."
+        },
+        {
+          "name": "complete",
+          "type": "number",
+          "default": 0,
+          "description": "Stories completed."
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "default": 0,
+          "description": "Stories committed."
+        }
+      ],
+      "slots": [
+        {
+          "name": "actions",
+          "description": "Sprint-level actions."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "hero",
+          "title": "Active sprint",
+          "description": "The only gradient surface in the system.",
+          "markup": "<qbc-sprint-hero eyebrow=\"Current sprint · Sprint 14\" goal=\"Give clients a calm, current view of delivery\" dates=\"Aug 31, 2026 – Sep 13, 2026\" complete=\"2\" total=\"5\"></qbc-sprint-hero>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-data-row",
+      "name": "Data row",
+      "category": "work",
+      "source": "qbc-data-row.js",
+      "description": "Backlog row that reflows from a five-column grid into a labelled card below 760px.",
+      "attributes": [
+        {
+          "name": "story-key",
+          "type": "string",
+          "default": "QBC-000",
+          "description": "Story identifier."
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Untitled story",
+          "description": "Story title."
+        },
+        {
+          "name": "context",
+          "type": "string",
+          "default": "",
+          "description": "Initiative and epic breadcrumb."
+        }
+      ],
+      "slots": [
+        {
+          "name": "state",
+          "description": "Readiness pill."
+        },
+        {
+          "name": "points",
+          "description": "Estimate chip."
+        },
+        {
+          "name": "sprint",
+          "description": "Sprint assignment control."
+        },
+        {
+          "name": "actions",
+          "description": "Row actions."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "row",
+          "title": "Backlog row",
+          "description": "Not a table, so each cell can become a labelled block on mobile.",
+          "markup": "<qbc-data-row story-key=\"QBC-101\" title=\"See a concise project health summary\" context=\"Client Delivery Excellence / Client project portal\"><qbc-pill slot=\"state\" tone=\"ready\">Ready</qbc-pill><qbc-points slot=\"points\" value=\"5\"></qbc-points><qbc-button slot=\"actions\" variant=\"quiet\" size=\"sm\">Edit</qbc-button></qbc-data-row>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-initiative-card",
+      "name": "Initiative card",
+      "category": "work",
+      "source": "qbc-initiative-card.js",
+      "description": "An initiative with its tinted header, roll-up counts, and indented epic list.",
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Untitled initiative",
+          "description": "Initiative name."
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "default": "",
+          "description": "What the initiative moves forward."
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "default": "",
+          "description": "Roll-up counter, such as 2 epics · 7 stories."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Epic rows."
+        },
+        {
+          "name": "actions",
+          "description": "Initiative actions."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "initiative",
+          "title": "Initiative with epics",
+          "description": "Hierarchy is expressed by indentation, not by disclosure widgets.",
+          "markup": "<qbc-initiative-card title=\"Client Delivery Excellence\" description=\"Make every engagement legible to the client.\" summary=\"2 epics · 7 stories\"><qbc-epic-row title=\"Client project portal\" summary=\"A calm status surface · 4 stories\" progress=\"50\"></qbc-epic-row></qbc-initiative-card>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-epic-row",
+      "name": "Epic row",
+      "category": "work",
+      "source": "qbc-epic-row.js",
+      "description": "One epic inside an initiative, with a compact completion meter.",
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Untitled epic",
+          "description": "Epic name."
+        },
+        {
+          "name": "summary",
+          "type": "string",
+          "default": "",
+          "description": "Epic summary and story count."
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "default": 0,
+          "description": "Completion percentage."
+        }
+      ],
+      "slots": [
+        {
+          "name": "actions",
+          "description": "Epic actions."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "epic",
+          "title": "Epic",
+          "description": "The meter is hidden below 760px, where the row has no room for it.",
+          "markup": "<qbc-epic-row title=\"Client project portal\" summary=\"A calm status surface · 4 stories\" progress=\"50\"></qbc-epic-row>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-assistant-card",
+      "name": "Assistant card",
+      "category": "work",
+      "source": "qbc-assistant-card.js",
+      "description": "An assistant with role, specialties, availability, and current workload.",
+      "attributes": [
+        {
+          "name": "name",
+          "type": "string",
+          "default": "Unnamed assistant",
+          "description": "Assistant name."
+        },
+        {
+          "name": "role",
+          "type": "string",
+          "default": "",
+          "description": "Free-text role. Roles are never colour-coded."
+        },
+        {
+          "name": "availability",
+          "type": "enum",
+          "default": "available",
+          "values": [
+            "available",
+            "limited",
+            "unavailable"
+          ],
+          "description": "Current availability."
+        },
+        {
+          "name": "stats",
+          "type": "string",
+          "default": "",
+          "description": "Workload summary, such as 3 stories · 2 open tasks."
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "description": "Specialty tags."
+        },
+        {
+          "name": "actions",
+          "description": "Assistant actions."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "assistant",
+          "title": "Assistant",
+          "description": "Specialties are free text rendered as neutral chips.",
+          "markup": "<qbc-assistant-card name=\"Amara Okafor\" role=\"AI Delivery Assistant\" availability=\"limited\" stats=\"2 stories · 1 open task\"><qbc-tag>Research</qbc-tag><qbc-tag>Quality</qbc-tag></qbc-assistant-card>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-sprint-row",
+      "name": "Sprint row",
+      "category": "work",
+      "source": "qbc-sprint-row.js",
+      "description": "One sprint in the sprint manager, with a status pill and status-valid actions.",
+      "attributes": [
+        {
+          "name": "name",
+          "type": "string",
+          "default": "Sprint",
+          "description": "Sprint name."
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "default": "planned",
+          "values": [
+            "planned",
+            "active",
+            "completed"
+          ],
+          "description": "Sprint lifecycle state."
+        },
+        {
+          "name": "meta",
+          "type": "string",
+          "default": "",
+          "description": "Date range and goal."
+        }
+      ],
+      "slots": [
+        {
+          "name": "actions",
+          "description": "Actions valid for this status."
+        }
+      ],
+      "events": [],
+      "examples": [
+        {
+          "id": "active",
+          "title": "Active sprint",
+          "description": "Only one sprint is active at a time.",
+          "markup": "<qbc-sprint-row name=\"Sprint 14\" status=\"active\" meta=\"Aug 31, 2026 – Sep 13, 2026 · Give clients a calm view of delivery\"><qbc-button slot=\"actions\" variant=\"secondary\" size=\"sm\">Complete</qbc-button></qbc-sprint-row>"
+        }
+      ]
+    },
+    {
+      "selector": "qbc-task-item",
+      "name": "Task item",
+      "category": "work",
+      "source": "qbc-task-item.js",
+      "description": "One checklist item inside a story, with a quiet borderless title field.",
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string",
+          "default": "",
+          "description": "Task title."
+        },
+        {
+          "name": "assignee",
+          "type": "string",
+          "default": "",
+          "description": "Assigned assistant name."
+        },
+        {
+          "name": "done",
+          "type": "boolean",
+          "default": false,
+          "description": "Marks the task complete and strikes the title through."
+        }
+      ],
+      "slots": [],
+      "events": [
+        {
+          "name": "change",
+          "description": "Fired when the checkbox is toggled. detail.done carries the new state."
+        }
+      ],
+      "examples": [
+        {
+          "id": "open",
+          "title": "Open task",
+          "description": "The title field is borderless until hovered or focused.",
+          "markup": "<qbc-task-item title=\"Draft the summary query\" assignee=\"Noah Williams\"></qbc-task-item>"
+        },
+        {
+          "id": "done",
+          "title": "Completed task",
+          "description": "Completion is shown by the checkbox and the strikethrough, not by colour alone.",
+          "markup": "<qbc-task-item title=\"Agree the health metrics\" assignee=\"Maya Chen\" done></qbc-task-item>"
+        }
+      ]
+    }
+  ],
+  "dialogs": [
+    {
+      "id": "story-form",
+      "name": "Story form",
+      "description": "Create or edit a story, including its task checklist.",
+      "scenarios": [
+        {
+          "id": "create",
+          "name": "New story"
+        },
+        {
+          "id": "edit",
+          "name": "Edit story with tasks"
+        }
+      ]
+    },
+    {
+      "id": "initiative-form",
+      "name": "Initiative form",
+      "description": "Name an outcome the work moves forward.",
+      "scenarios": [
+        {
+          "id": "create",
+          "name": "New initiative"
+        }
+      ]
+    },
+    {
+      "id": "epic-form",
+      "name": "Epic form",
+      "description": "Group stories under an initiative.",
+      "scenarios": [
+        {
+          "id": "create",
+          "name": "New epic"
+        }
+      ]
+    },
+    {
+      "id": "assistant-form",
+      "name": "Assistant form",
+      "description": "Record role, specialties, and availability.",
+      "scenarios": [
+        {
+          "id": "create",
+          "name": "New assistant"
+        }
+      ]
+    },
+    {
+      "id": "sprint-form",
+      "name": "Sprint form",
+      "description": "Define a fixed two-week interval and its goal.",
+      "scenarios": [
+        {
+          "id": "create",
+          "name": "New sprint"
+        }
+      ]
+    },
+    {
+      "id": "sprint-manager",
+      "name": "Sprint manager",
+      "description": "Plan, start, and complete sprints from one list.",
+      "scenarios": [
+        {
+          "id": "default",
+          "name": "All sprints"
+        }
+      ]
+    },
+    {
+      "id": "confirm",
+      "name": "Confirm",
+      "description": "Destructive confirmation naming the record and the consequence.",
+      "scenarios": [
+        {
+          "id": "archive",
+          "name": "Archive story"
+        },
+        {
+          "id": "delete",
+          "name": "Delete permanently"
+        },
+        {
+          "id": "complete-sprint",
+          "name": "Complete sprint"
+        }
+      ]
+    }
+  ],
+  "patterns": [
+    {
+      "id": "shell-navigation",
+      "name": "Shell and navigation",
+      "description": "The responsive workspace frame at both ends of the breakpoint.",
+      "scenarios": [
+        {
+          "id": "desktop",
+          "name": "Persistent sidebar"
+        },
+        {
+          "id": "mobile",
+          "name": "Off-canvas drawer"
+        }
+      ]
+    },
+    {
+      "id": "board",
+      "name": "Sprint board",
+      "description": "The committed work of the single active sprint.",
+      "scenarios": [
+        {
+          "id": "active",
+          "name": "Active sprint"
+        },
+        {
+          "id": "empty",
+          "name": "No active sprint"
+        }
+      ]
+    },
+    {
+      "id": "backlog",
+      "name": "Backlog",
+      "description": "Search, filter, groom, and schedule stories.",
+      "scenarios": [
+        {
+          "id": "default",
+          "name": "Populated backlog"
+        },
+        {
+          "id": "empty",
+          "name": "No matching stories"
+        }
+      ]
+    },
+    {
+      "id": "initiatives",
+      "name": "Initiatives",
+      "description": "Initiative to epic to story hierarchy.",
+      "scenarios": [
+        {
+          "id": "default",
+          "name": "Initiatives with epics"
+        },
+        {
+          "id": "empty",
+          "name": "No initiatives"
+        }
+      ]
+    },
+    {
+      "id": "assistants",
+      "name": "Assistants",
+      "description": "The assistant directory and its workload roll-up.",
+      "scenarios": [
+        {
+          "id": "default",
+          "name": "Assistant directory"
+        },
+        {
+          "id": "empty",
+          "name": "No assistants"
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,10 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "paths": {
+      "@qbc/api": ["projects/api/src/public-api.ts"],
+      "@qbc/components": ["projects/components/src/public-api.ts"]
+    },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -25,4 +29,3 @@
     "strictTemplates": true
   }
 }
-

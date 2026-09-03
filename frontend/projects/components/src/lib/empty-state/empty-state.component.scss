@@ -1,0 +1,5 @@
+.empty-state { padding: 64px 28px; border: 1px dashed #d7deda; border-radius: var(--radius); text-align: center; }
+h2 { margin: 0; font-size: 18px; }
+p { margin: 7px auto 19px; color: var(--muted); }
+.empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
+.empty-actions:empty { display: none; }

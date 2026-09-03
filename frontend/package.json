@@ -1,10 +1,13 @@
 {
-  "name": "qbc-workboard",
+  "name": "qbc-workboard-workspace",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "ng serve --proxy-config proxy.conf.json",
-    "build": "ng build",
+    "start": "ng serve qbc-workboard --proxy-config proxy.conf.json",
+    "build": "npm run build:api && npm run build:components && npm run build:app",
+    "build:api": "ng build api",
+    "build:components": "ng build components",
+    "build:app": "ng build qbc-workboard",
     "test:e2e": "dotnet build ../backend/Qbc.Workboard.slnx --configuration Release && playwright test"
   },
   "dependencies": {
@@ -21,6 +24,7 @@
     "@angular/build": "21.2.23",
     "@angular/cli": "21.2.23",
     "@angular/compiler-cli": "21.2.22",
+    "ng-packagr": "21.2.7",
     "@axe-core/playwright": "4.11.1",
     "@playwright/test": "1.55.1",
     "typescript": "5.9.3"

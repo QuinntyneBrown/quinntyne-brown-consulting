@@ -11,3 +11,8 @@ artifacts/
 *.db
 *.db-shm
 *.db-wal
+design-system/node_modules/
+design-system/dist/
+design-system/test-results/
+design-system/playwright-report/
+design-system/blob-report/

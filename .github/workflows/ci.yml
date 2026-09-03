@@ -33,3 +33,23 @@ jobs:
         run: npm run test:e2e
       - name: Publish single-host application
         run: dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish
+
+  design-system:
+    name: Design-system contract and browser tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+      - name: Restore design-system dependencies
+        working-directory: design-system
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: design-system
+        run: npx playwright install --with-deps chromium
+      - name: Validate contract and run browser tests
+        working-directory: design-system
+        run: npm test

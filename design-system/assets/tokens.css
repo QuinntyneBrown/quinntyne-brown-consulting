@@ -1,0 +1,144 @@
+/* QBC Workboard — design tokens.
+   Source of truth: docs/mocks/styles.css. Every value here is preserved verbatim from the
+   mock; what the mock left as an anonymous literal is given a name for the first time.
+   This file is the only place a --qbc-* token is declared. */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Ink ------------------------------------------------------------ */
+  --qbc-ink:        #18201d;  /* body text, toast surface, skip link */
+  --qbc-ink-soft:   #68726d;  /* secondary text, labels, quiet button */
+  --qbc-ink-faint:  #87918c;  /* story key */
+
+  /* ---- Lines ---------------------------------------------------------- */
+  --qbc-line:        #e4e9e6; /* every default border and divider */
+  --qbc-line-strong: #d8dfdb; /* form control border */
+  --qbc-line-dashed: #d7deda; /* empty-state dashed border */
+  --qbc-line-card:   #e8ece9; /* story card border */
+
+  /* ---- Surfaces ------------------------------------------------------- */
+  --qbc-panel:           #ffffff; /* page background, cards, controls */
+  --qbc-soft:            #f5f7f5; /* board column, hover, tag and points chip */
+  --qbc-surface-raised:  #fbfcfb; /* sidebar, dialog footer, initiative header */
+  --qbc-surface-hover:   #fcfdfc; /* data row hover */
+  --qbc-sprint-hero-bg:  linear-gradient(110deg, #f8fbf9, #fff);
+
+  /* ---- Accent — forest green, the only chromatic action colour --------- */
+  --qbc-accent:      #276749;
+  --qbc-accent-dark: #184c35;
+  --qbc-accent-soft: #e8f3ed;
+
+  /* ---- Status hues ---------------------------------------------------- */
+  --qbc-blue:        #315f88;  --qbc-blue-soft:   #eaf1f8; /* draft, to do */
+  --qbc-amber:       #8a6100;  --qbc-amber-soft:  #fff4d9; /* in progress, planned, limited */
+  --qbc-danger:      #a33a37;  --qbc-danger-soft: #faeceb; /* destructive, errors */
+
+  /* ---- Interaction ---------------------------------------------------- */
+  --qbc-nav-ink:          #5e6863;
+  --qbc-nav-icon:         #83908a;
+  --qbc-placeholder:      #a0a9a4;
+  --qbc-dot-available:    #47a175;
+  --qbc-focus-ring:       rgba(39, 103, 73, .25);
+  --qbc-focus-ring-field: rgba(39, 103, 73, .1);
+  --qbc-scrim:            rgba(18, 25, 22, .4);
+
+  /* ---- Typography ----------------------------------------------------- */
+  /* Inter is requested but never shipped anywhere in this repository. On a machine
+     without Inter installed the stack falls through to system-ui, and the 620/680/750
+     weights round to the nearest available weight. See the Typography foundation. */
+  --qbc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --qbc-fs-2xs:     11px; /* pill, tag, eyebrow, story key, hint, points */
+  --qbc-fs-xs:      12px; /* field label, dense buttons, card context */
+  --qbc-fs-sm:      13px; /* breadcrumb, toast, section label */
+  --qbc-fs-md:      14px; /* column head, sprint row title */
+  --qbc-fs-base:    15px; /* body, story card title */
+  --qbc-fs-lg:      16px; /* assistant card title */
+  --qbc-fs-xl:      17px; /* initiative title */
+  --qbc-fs-2xl:     18px; /* empty state title, brand mark */
+  --qbc-fs-3xl:     21px; /* dialog title */
+  --qbc-fs-4xl:     22px; /* sprint hero title */
+  --qbc-fs-display: clamp(30px, 3vw, 42px); /* page heading */
+
+  --qbc-lh-display: 1.12;
+  --qbc-lh-snug:    1.4;
+  --qbc-lh-base:    1.5;
+
+  --qbc-fw-medium:   600;
+  --qbc-fw-nav:      620;
+  --qbc-fw-button:   680;
+  --qbc-fw-semibold: 700;
+  --qbc-fw-bold:     750;
+  --qbc-fw-heavy:    800;
+
+  --qbc-tracking-display: -.035em;
+  --qbc-tracking-heading: -.02em;
+  --qbc-tracking-key:     .04em;
+  --qbc-tracking-brand:   .06em;
+  --qbc-tracking-eyebrow: .1em;
+
+  /* ---- Spacing —- 4px base. Guidance for new work. The mock's own rhythm is
+     freely tuned, so components reproduce its literal values where they fall
+     off this scale rather than silently regularising the design. ---------- */
+  --qbc-s-1: 4px;   --qbc-s-2: 8px;   --qbc-s-3: 12px;  --qbc-s-4: 16px;
+  --qbc-s-5: 20px;  --qbc-s-6: 24px;  --qbc-s-7: 32px;  --qbc-s-8: 40px;
+  --qbc-s-9: 56px;  --qbc-s-10: 80px;
+
+  /* ---- Radius --------------------------------------------------------- */
+  --qbc-r-2xs:     6px;  /* tag */
+  --qbc-r-xs:      7px;  /* points chip */
+  --qbc-r-sm:      8px;  /* skip link, form error */
+  --qbc-r-control: 9px;  /* every button, every input, nav link, task row, toast */
+  --qbc-r-md:      10px; /* brand mark, sprint row, progress track */
+  --qbc-r-lg:      11px; /* story card, mobile data row */
+  --qbc-r-tile:    13px; /* empty-state icon */
+  --qbc-r-xl:      14px; /* cards, board columns, panels, data list */
+  --qbc-r-2xl:     16px; /* dialog */
+  --qbc-r-pill:    20px; /* pill, count badge */
+  --qbc-r-round:   50%;  /* avatar, dialog icon, availability dot */
+
+  /* ---- Elevation ------------------------------------------------------ */
+  --qbc-shadow-card:    0 2px 3px rgba(24, 32, 29, .025);
+  --qbc-shadow-overlay: 0 18px 50px rgba(24, 32, 29, .12);
+
+  /* ---- Motion --------------------------------------------------------- */
+  --qbc-dur-fast: 180ms; /* page enter */
+  --qbc-dur-base: 200ms; /* toast enter, drawer slide */
+  --qbc-ease: ease-out;
+
+  /* ---- Layout --------------------------------------------------------- */
+  --qbc-sidebar-w:   224px;
+  --qbc-topbar-h:    82px;
+  --qbc-page-max:    1440px;
+  --qbc-gutter:      clamp(28px, 4.5vw, 72px);
+  --qbc-control-h:   42px; /* inputs and selects */
+  --qbc-button-h:    40px; /* buttons; 2px shorter than a field, as in the mock */
+
+  /* Breakpoints are documented here but must be repeated literally in @media
+     rules, because CSS cannot resolve var() inside a media query.
+     The mock's values are authoritative: the Angular port drifted to 999/759. */
+  --qbc-bp-wide:   1000px;
+  --qbc-bp-mobile: 760px;
+
+  /* ---- Z-index — three layers, as in the mock ------------------------- */
+  --qbc-z-sidebar: 20;
+  --qbc-z-toast:   90;
+  --qbc-z-skip:    100;
+}
+
+/* Responsive retune. Components read the tokens and stay media-query-free. */
+@media (max-width: 760px) {
+  :root {
+    --qbc-gutter: 18px;
+    --qbc-topbar-h: 70px;
+  }
+}
+
+/* The mock declares three animations and no reduced-motion guard. This closes that gap. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --qbc-dur-fast: 1ms;
+    --qbc-dur-base: 1ms;
+  }
+}

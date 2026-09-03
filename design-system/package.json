@@ -1,0 +1,20 @@
+{
+  "name": "@qbc/design-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone QBC Workboard design-system product, component API, and responsive pattern catalog.",
+  "scripts": {
+    "start": "vite --host 127.0.0.1 --port 5175",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 5175",
+    "serve:test": "npm run build && vite preview --host 127.0.0.1 --port 4175",
+    "validate": "node scripts/validate.mjs",
+    "test:browser": "playwright test",
+    "test": "npm run validate && npm run test:browser"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "vite": "^7.1.3"
+  }
+}

@@ -1,0 +1,57 @@
+name: Deploy design system
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'design-system/**'
+      - '.github/workflows/deploy-design-system.yml'
+
+# Two rapid pushes touching design-system/ must not race the upload.
+concurrency:
+  group: deploy-design-system-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+
+      - run: npm ci
+        working-directory: design-system
+
+      - run: npx playwright install --with-deps chromium
+        working-directory: design-system
+
+      - run: npm test
+        working-directory: design-system
+
+      # The test web server builds as a side effect; build explicitly so the
+      # uploaded site never depends on that coupling.
+      - run: npm run build
+        working-directory: design-system
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: design-system/dist
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
