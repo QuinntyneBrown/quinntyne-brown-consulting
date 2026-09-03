@@ -7,7 +7,7 @@ Person(consultant, "QBC consultant", "Searches, filters, and grooms stories")
 System_Boundary(workboard, "QBC Workboard") {
   Container(spa, "Web application", "Angular", "Filters backlog data and presents grooming actions")
   Container(api, "Workboard API", "ASP.NET Core", "Queries backlog context and enforces readiness")
-  ContainerDb(db, "Workspace database", "SQLite", "Stores story planning state")
+  ContainerDb(db, "Workspace database", "SQL Server Express", "Stores story planning state")
 }
 
 Rel(consultant, spa, "Uses", "HTTPS")

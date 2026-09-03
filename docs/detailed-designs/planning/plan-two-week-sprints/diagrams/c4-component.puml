@@ -14,7 +14,7 @@ Container_Boundary(api, "Workboard API") {
   Component(controller, "SprintsController", "ASP.NET Core controller", "Exposes sprint resources and actions")
   Component(handlers, "Sprint planning handlers", "MediatR handlers", "Save, start, assign, and delete plans")
   Component(aggregates, "Sprint / Story", "Domain aggregates", "Own lifecycle, readiness, and assignment")
-  ComponentDb(db, "Workspace database", "SQLite", "Stores sprint plans and stories")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores sprint plans and stories")
 }
 
 Rel(consultant, manager, "Uses")

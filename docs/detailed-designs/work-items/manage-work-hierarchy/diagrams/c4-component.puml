@@ -13,7 +13,7 @@ Container_Boundary(api, "Workboard API") {
   Component(controllers, "InitiativesController / EpicsController", "ASP.NET Core controllers", "Expose hierarchy resources")
   Component(handlers, "Hierarchy handlers", "MediatR handlers", "Save, query, move, and guard deletion")
   Component(domain, "Initiative / Epic", "Domain entities", "Own parent relationships")
-  ComponentDb(db, "Workspace database", "SQLite", "Stores initiatives, epics, and stories")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores initiatives, epics, and stories")
 }
 
 Rel(consultant, page, "Views and acts through")

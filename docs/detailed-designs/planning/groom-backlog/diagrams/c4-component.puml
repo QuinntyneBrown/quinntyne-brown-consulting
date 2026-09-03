@@ -14,7 +14,7 @@ Container_Boundary(api, "Workboard API") {
   Component(controller, "StoriesController", "ASP.NET Core controller", "Exposes backlog and grooming actions")
   Component(handler, "GroomStoryCommandHandler", "MediatR handler", "Applies readiness validation")
   Component(policy, "StoryReadinessPolicy", "Domain policy", "Checks required grooming fields")
-  ComponentDb(db, "Workspace database", "SQLite", "Stores stories and planning state")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores stories and planning state")
 }
 
 Rel(consultant, filter, "Searches and filters with")

@@ -14,7 +14,7 @@ Container_Boundary(api, "Workboard API") {
   Component(controller, "AssistantsController", "ASP.NET Core controller", "Exposes profiles and workloads")
   Component(handlers, "Assistant command handlers", "MediatR handlers", "Save profiles and guard deletion")
   Component(domain, "Assistant", "Domain entity", "Owns profile and availability")
-  ComponentDb(db, "Workspace database", "SQLite", "Stores profiles and assignment references")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores profiles and assignment references")
 }
 
 Rel(consultant, page, "Uses")

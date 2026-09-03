@@ -7,7 +7,7 @@ Person(consultant, "QBC consultant", "Uses the web product")
 System_Boundary(workboard, "QBC Workboard") {
   Container(spa, "Web application", "Angular", "Consumes typed API resources")
   Container(api, "Workboard API", "ASP.NET Core", "Hosts controllers and the composition root")
-  ContainerDb(db, "Workspace database", "SQLite", "Stores all workspace records durably")
+  ContainerDb(db, "Workspace database", "SQL Server Express", "Stores all workspace records durably")
 }
 
 Rel(consultant, spa, "Uses", "HTTPS")

@@ -16,7 +16,7 @@ This record captures the observable ATDD boundaries used while implementing the 
 - `dotnet test backend/Qbc.Workboard.slnx --configuration Release`: 4 passed, 0 failed.
 - `npm run test:e2e`: 13 passed, 0 failed, with 8 intentional cross-project skips for checks that run once in Chromium.
 - `dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish`: succeeded; a production smoke test returned HTTP 200 for the Angular `/board` fallback and the workspace API.
-- Backend integration tests use a separate temporary SQLite database per test class and invoke the real ASP.NET Core controller, MediatR, validation, EF Core, and Problem Details path.
+- Backend integration tests use a separate named SQL Express database per test class and invoke the real ASP.NET Core controller, MediatR, validation, EF Core, and Problem Details path.
 - Browser specifications contain scenario intent only; selectors, navigation, interactions, route interception, and assertions are owned by Page Objects.
 - Browser data is recreated before the test server starts, so results do not depend on a developer database or an earlier run.
 - Package restore/build output is warning-free, production dependencies have no reported npm audit findings, and production publish produces one ASP.NET-hosted application.

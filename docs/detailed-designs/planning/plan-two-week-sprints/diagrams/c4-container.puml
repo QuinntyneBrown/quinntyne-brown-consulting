@@ -7,7 +7,7 @@ Person(consultant, "QBC consultant", "Creates and starts sprint plans")
 System_Boundary(workboard, "QBC Workboard") {
   Container(spa, "Web application", "Angular", "Renders sprint manager and assignment controls")
   Container(api, "Workboard API", "ASP.NET Core", "Enforces sprint and story planning rules")
-  ContainerDb(db, "Workspace database", "SQLite", "Stores sprints and story assignments")
+  ContainerDb(db, "Workspace database", "SQL Server Express", "Stores sprints and story assignments")
 }
 
 Rel(consultant, spa, "Uses", "HTTPS")

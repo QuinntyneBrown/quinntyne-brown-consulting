@@ -9,7 +9,7 @@ System_Boundary(workboard, "QBC Workboard test environment") {
   Container(spa, "Web application", "Angular", "Renders product behavior")
   Container(apiTests, "Backend integration suite", ".NET test host", "Exercises the real ASP.NET Core pipeline")
   Container(api, "Workboard API", "ASP.NET Core", "Runs controllers, MediatR, and persistence")
-  ContainerDb(db, "Isolated test database", "SQLite", "Stores scenario-owned data")
+  ContainerDb(db, "Isolated test database", "SQL Server Express", "Stores scenario-owned data")
 }
 System_Ext(changeRecord, "Change record", "Stores acceptance evidence")
 

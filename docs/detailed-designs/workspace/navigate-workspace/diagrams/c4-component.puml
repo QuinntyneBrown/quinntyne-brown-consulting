@@ -13,7 +13,7 @@ Container_Boundary(spa, "Angular web application") {
 Container_Boundary(api, "Workboard API") {
   Component(controller, "WorkspaceController", "ASP.NET Core controller", "Exposes the bootstrap query")
   Component(handler, "GetWorkspaceQueryHandler", "MediatR handler", "Builds the route projection")
-  ComponentDb(db, "Workspace database", "SQLite", "Stores workspace data")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores workspace data")
 }
 
 Rel(consultant, nav, "Selects route using")

@@ -75,7 +75,7 @@ the Angular workspace and persists product data through its API.
 ### Containers
 
 The browser downloads the `qbc-workboard` application. The application calls the
-ASP.NET Core API, which owns persistence in SQLite.
+ASP.NET Core API, which owns persistence in SQL Server Express.
 
 ![C4 container view for the Angular workspace](diagrams/c4-container.png)
 

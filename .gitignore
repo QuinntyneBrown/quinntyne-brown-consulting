@@ -1,6 +1,5 @@
 backend/**/bin/
 backend/**/obj/
-backend/src/Qbc.Workboard.Api/data/
 frontend/node_modules/
 frontend/dist/
 frontend/.angular/
@@ -8,11 +7,9 @@ frontend/playwright-report/
 frontend/test-results/
 frontend/.playwright/
 artifacts/
-*.db
-*.db-shm
-*.db-wal
 design-system/node_modules/
 design-system/dist/
 design-system/test-results/
 design-system/playwright-report/
 design-system/blob-report/
+eng/logs/

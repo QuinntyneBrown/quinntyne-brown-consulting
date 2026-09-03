@@ -49,7 +49,7 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
         modelBuilder.Entity<Sprint>(entity =>
         {
             entity.HasKey(item => item.Id);
-            entity.Property(item => item.Name).IsRequired().UseCollation("NOCASE");
+            entity.Property(item => item.Name).IsRequired().UseCollation("SQL_Latin1_General_CP1_CI_AS");
             entity.Property(item => item.Goal).IsRequired();
             entity.Property(item => item.Status).HasConversion<string>();
             entity.HasIndex(item => item.Name).IsUnique();
@@ -80,6 +80,10 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
             entity.HasOne<Assistant>().WithMany().HasForeignKey(item => item.AssistantId).OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<StoryKeySequence>(entity => entity.HasKey(item => item.Id));
+        modelBuilder.Entity<StoryKeySequence>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Id).ValueGeneratedNever();
+        });
     }
 }

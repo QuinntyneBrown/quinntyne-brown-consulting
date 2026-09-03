@@ -29,7 +29,7 @@ product tests.
 The quality slice defines two acceptance harnesses and one delivery record.
 
 - **`WorkboardApiFactory`** — ASP.NET Core integration-test host that wires real
-  controllers, MediatR behaviors, handlers, and an isolated SQLite database.
+  controllers, MediatR behaviors, handlers, and an isolated SQL Express database.
 - **`IntegrationDatabase`** — per-test database scope that applies migrations,
   seeds scenario-owned data, and disposes after the test.
 - **`ApiAcceptanceTest`** — base fixture for typed HTTP requests and Problem

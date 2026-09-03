@@ -10,9 +10,9 @@ export default defineConfig({
   use: { baseURL: 'http://127.0.0.1:4200', trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   webServer: [
     {
-      command: 'node e2e/reset-test-database.mjs && dotnet run --project ../backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --no-build -- --urls http://127.0.0.1:5050',
+      command: 'dotnet run --project ../backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj --configuration Release --no-build -- database reset --force && dotnet run --project ../backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --no-build -- --urls http://127.0.0.1:5050',
       url: 'http://127.0.0.1:5050/api/workspace?route=board',
-      env: { ASPNETCORE_ENVIRONMENT: 'Development', ConnectionStrings__Workboard: 'Data Source=playwright.db', SeedDevelopmentData: 'true' },
+      env: { ASPNETCORE_ENVIRONMENT: 'Development', ConnectionStrings__Workboard: 'Server=.\\SQLEXPRESS;Database=QbcWorkboardPlaywright;Trusted_Connection=True;TrustServerCertificate=True', SeedDevelopmentData: 'true' },
       reuseExistingServer: false,
       timeout: 120_000
     },

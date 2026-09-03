@@ -4,7 +4,7 @@ QBC Workboard is a responsive, single-user Scrum workspace for Quinntyne Brown C
 
 ## Technology
 
-- .NET 10 controller API with Clean Architecture, MediatR 12.5.0, EF Core, and SQLite
+- .NET 10 controller API with Clean Architecture, MediatR 12.5.0, EF Core, and SQL Server Express
 - Angular 21 with Signals and interface-driven service consumption
 - xUnit integration acceptance tests through the ASP.NET Core host
 - Playwright Page Objects across Chromium, Firefox, and WebKit, with axe accessibility checks
@@ -35,7 +35,7 @@ npm ci
 npm start
 ```
 
-Open `http://localhost:4200`. Development data is stored in `backend/src/Qbc.Workboard.Api/data/qbc-workboard.db` and is ignored by Git.
+Open `http://localhost:4200`. Development data is stored in the `QbcWorkboard` database on the local `SQLEXPRESS` instance.
 
 ## Verify
 
@@ -49,7 +49,7 @@ npm run test:e2e
 
 Individual Angular projects can also be verified with `npm run build:api`, `npm run build:components`, and `npm run build:app` from `frontend/`.
 
-The Playwright command uses an isolated SQLite database, resets it before the test host starts, and provisions deterministic test data.
+The Playwright command uses the isolated `QbcWorkboardPlaywright` SQL Express database, resets it before the test host starts, and provisions deterministic test data.
 
 ## Publish as one application
 
@@ -60,7 +60,37 @@ dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configur
 artifacts/publish/Qbc.Workboard.Api.exe --urls http://localhost:5050
 ```
 
-The SQLite connection string can be overridden with `ConnectionStrings__Workboard`. EF Core applies pending migrations at startup. Set `SeedDevelopmentData=true` only when representative development data is wanted.
+The SQL Server connection string can be overridden with `ConnectionStrings__Workboard`. EF Core applies pending migrations at startup. Set `SeedDevelopmentData=true` only when representative development data is wanted.
+
+## Maintain the local database
+
+The installable .NET tool initializes or resets the configured local SQL Express database through the same infrastructure used by the API. Create the package and install it globally from the local package source:
+
+```powershell
+dotnet pack backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj --configuration Release --output artifacts/packages
+dotnet tool install --global Qbc.Workboard.Cli --add-source artifacts/packages
+qbc-workboard --help
+```
+
+After installation, use the `qbc-workboard` command:
+
+```powershell
+# Apply migrations without deleting existing records
+qbc-workboard database initialize
+
+# Apply migrations and seed representative development records when empty
+qbc-workboard database initialize --seed
+
+# Permanently delete all records and recreate an empty, fully migrated database
+qbc-workboard database reset --force
+
+# Reset and then add representative development records
+qbc-workboard database reset --force --seed
+```
+
+The CLI reads `appsettings.json`, environment variables, and other standard Microsoft configuration providers. Override the target with `ConnectionStrings__Workboard`. The `DatabaseReset__RequireForce` option defaults to `true`.
+
+Upgrade or remove the globally installed tool with `dotnet tool update --global Qbc.Workboard.Cli --add-source artifacts/packages` or `dotnet tool uninstall --global Qbc.Workboard.Cli`.
 
 ## Design system
 

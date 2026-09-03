@@ -30,7 +30,7 @@ box "Backend — Workboard Application and Domain" #ECFDF3
 end box
 box "Backend — Workboard Infrastructure" #FFF4E5
   participant "WorkboardDbContext" as context
-  database "SQLite workspace database" as db
+  database "SQL Server Express workspace database" as db
 end box
 
 actor -> client : Submit product action

@@ -1,35 +1,26 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Qbc.Workboard.Infrastructure.Persistence;
 
 public sealed class WorkboardDbInitializer
 {
     private readonly WorkboardDbContext _db;
-    private readonly IConfiguration _configuration;
+    private readonly WorkboardDatabaseOptions _options;
 
-    public WorkboardDbInitializer(WorkboardDbContext db, IConfiguration configuration)
+    public WorkboardDbInitializer(WorkboardDbContext db, IOptions<WorkboardDatabaseOptions> options)
     {
         _db = db;
-        _configuration = configuration;
+        _options = options.Value;
     }
 
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
-    {
-        var connectionString = _db.Database.GetConnectionString();
-        if (connectionString is not null && connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase))
-        {
-            var dataSource = connectionString[(connectionString.IndexOf("Data Source=", StringComparison.OrdinalIgnoreCase) + 12)..].Split(';')[0];
-            var directory = Path.GetDirectoryName(Path.GetFullPath(dataSource));
-            if (!string.IsNullOrWhiteSpace(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-        }
+    public Task InitializeAsync(CancellationToken cancellationToken = default) =>
+        InitializeAsync(_options.SeedDevelopmentData, cancellationToken);
 
+    public async Task InitializeAsync(bool seedDevelopmentData, CancellationToken cancellationToken = default)
+    {
         await _db.Database.MigrateAsync(cancellationToken);
-        var shouldSeed = bool.TryParse(_configuration["SeedDevelopmentData"], out var seed) && seed;
-        if (!shouldSeed || await _db.Set<Initiative>().AnyAsync(cancellationToken))
+        if (!seedDevelopmentData || await _db.Set<Initiative>().AnyAsync(cancellationToken))
         {
             return;
         }

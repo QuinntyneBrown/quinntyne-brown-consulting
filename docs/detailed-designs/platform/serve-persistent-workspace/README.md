@@ -15,7 +15,7 @@ handler
 *unit of work* — transaction boundary that commits all changes or none
 
 The backend uses .NET, ASP.NET Core controllers, MediatR 12.5.0, Entity Framework
-Core, and SQLite. SQLite provides the persistent store for the single-workspace
+Core, and SQL Server Express. SQL Server Express provides the persistent store for the single-workspace
 product. The API returns RFC 9457 Problem Details for validation and failure
 responses.
 
@@ -27,7 +27,7 @@ The `backend/` solution separates four projects with inward dependencies.
   policies without framework or persistence dependencies.
 - **`Qbc.Workboard.Application`** — commands, queries, handlers, validators,
   projections, and persistence interfaces.
-- **`Qbc.Workboard.Infrastructure`** — EF Core `WorkboardDbContext`, SQLite
+- **`Qbc.Workboard.Infrastructure`** — EF Core `WorkboardDbContext`, SQL Server
   mappings, migrations, repositories, and unit-of-work implementation.
 - **`Qbc.Workboard.Api`** — composition root, ASP.NET Core controllers,
   Problem Details mapping, OpenAPI, and dependency injection.
@@ -74,7 +74,7 @@ inside the product boundary and has no external runtime dependency.
 ### Containers
 
 The API hosts controllers and the application composition root. EF Core commits
-workspace state to SQLite.
+workspace state to SQL Server Express.
 
 ![C4 container view for the persistent workspace](diagrams/c4-container.png)
 

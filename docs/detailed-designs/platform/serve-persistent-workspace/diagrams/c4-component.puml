@@ -14,7 +14,7 @@ Container_Boundary(api, "Workboard API") {
 }
 Container_Boundary(infrastructure, "Workboard Infrastructure") {
   Component(context, "WorkboardDbContext", "EF Core", "Implements the persistence contract")
-  ComponentDb(db, "Workspace database", "SQLite", "Persists records and relationships")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Persists records and relationships")
 }
 
 Rel(spa, controllers, "Calls", "JSON/HTTPS")
