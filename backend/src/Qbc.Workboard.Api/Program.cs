@@ -9,7 +9,11 @@ public sealed class Program
 {
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            Args = args,
+            ContentRootPath = AppContext.BaseDirectory
+        });
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

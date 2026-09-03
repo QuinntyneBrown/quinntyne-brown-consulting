@@ -21,11 +21,8 @@ public sealed class CliTestHost : IAsyncDisposable
         var console = new TestConsoleWriter();
         var host = new CliHostBuilder().Build(builder =>
         {
-            builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Workboard"] = connectionString,
-                ["DatabaseReset:RequireForce"] = requireForce.ToString()
-            });
+            builder.Configuration["ConnectionStrings:Workboard"] = connectionString;
+            builder.Configuration["DatabaseReset:RequireForce"] = requireForce.ToString();
             builder.Services.AddSingleton<IConsoleWriter>(console);
         });
         return new CliTestHost(host, console);

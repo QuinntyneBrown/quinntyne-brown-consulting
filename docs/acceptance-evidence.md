@@ -13,7 +13,7 @@ This record captures the observable ATDD boundaries used while implementing the 
 
 ## Current release checks
 
-- `dotnet test backend/Qbc.Workboard.slnx --configuration Release`: 4 passed, 0 failed.
+- `dotnet test backend/Qbc.Workboard.slnx --configuration Release`: 11 passed, 0 failed across API and CLI integration tests.
 - `npm run test:e2e`: 13 passed, 0 failed, with 8 intentional cross-project skips for checks that run once in Chromium.
 - `dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish`: succeeded; a production smoke test returned HTTP 200 for the Angular `/board` fallback and the workspace API.
 - Backend integration tests use a separate named SQL Express database per test class and invoke the real ASP.NET Core controller, MediatR, validation, EF Core, and Problem Details path.

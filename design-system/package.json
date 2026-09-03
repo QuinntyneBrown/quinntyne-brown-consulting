@@ -2,6 +2,7 @@
   "name": "@qbc/design-system",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Standalone QBC Workboard design-system product, component API, and responsive pattern catalog.",
   "scripts": {

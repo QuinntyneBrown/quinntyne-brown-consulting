@@ -1,6 +1,7 @@
 {
   "name": "@qbc/api",
   "version": "1.0.0",
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^21.0.0",
     "@angular/core": "^21.0.0"

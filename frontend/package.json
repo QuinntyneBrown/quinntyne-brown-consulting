@@ -2,6 +2,7 @@
   "name": "qbc-workboard-workspace",
   "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "ng serve qbc-workboard --proxy-config proxy.conf.json",
     "build": "npm run build:api && npm run build:components && npm run build:app",

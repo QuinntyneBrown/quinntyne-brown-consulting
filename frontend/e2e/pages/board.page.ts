@@ -16,7 +16,15 @@ export class BoardPage {
 
   async moveStoryForward(title: string): Promise<void> {
     const card = this.page.locator('.story-card').filter({ hasText: title });
+    const moveResponse = this.page.waitForResponse(response =>
+      response.request().method() === 'POST' && response.url().endsWith('/move')
+    );
+    const boardResponse = this.page.waitForResponse(response =>
+      response.request().method() === 'GET' && response.url().endsWith('/api/sprints/active/board')
+    );
     await card.getByRole('button', { name: new RegExp(`Move ${title} forward`) }).click();
+    expect((await moveResponse).ok()).toBeTruthy();
+    expect((await boardResponse).ok()).toBeTruthy();
     await expect(this.page.getByText('Story moved.')).toBeVisible();
   }
 
@@ -38,6 +46,11 @@ export class BoardPage {
   }
 
   async completeActiveSprintIfPresent(): Promise<void> {
+    await expect(
+      this.page
+        .getByRole('region', { name: 'Current sprint summary' })
+        .or(this.page.getByRole('heading', { name: 'No active sprint' }))
+    ).toBeVisible();
     const complete = this.page.getByRole('button', { name: 'Complete sprint' });
     if (await complete.count() === 0) return;
     await complete.click();
