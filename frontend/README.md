@@ -23,8 +23,10 @@ Promises inside the API library.
 ## Prerequisites
 
 - Node.js 22 with npm
-- .NET 10 SDK
-- SQL Server Express available as `.\SQLEXPRESS` for end-to-end tests
+- .NET 10 SDK for local full-stack development
+- SQL Server Express available as `.\SQLEXPRESS` for local full-stack development
+
+The end-to-end suite requires only Node.js and the installed Playwright browsers.
 
 ## Install and run
 
@@ -61,16 +63,18 @@ Install Playwright browsers once, then run the acceptance suite:
 
 ```powershell
 npx playwright install
+npm run typecheck:e2e
 npm run test:e2e
 ```
 
-The command builds the backend, resets the dedicated
-`QbcWorkboardPlaywright` SQL Server database, starts the API and Angular server,
-and runs the Page Object Model suite in Chromium, Firefox, and WebKit.
+The command starts the Angular server and runs the Page Object Model suite in
+Chromium, Firefox, and WebKit. A Playwright fixture intercepts every `/api`
+request with a fresh, stateful mock for each test, so reload and CRUD scenarios
+remain deterministic without starting .NET or creating a test database.
 
-The reset is destructive only to the database named in
-`ConnectionStrings__Workboard` inside `playwright.config.ts`. Confirm that value
-before running tests after a local configuration change.
+Every frontend service route has an explicit handler. An unhandled API request
+fails the test, making contract growth visible instead of silently reaching a
+developer backend.
 
 ## Conventions
 

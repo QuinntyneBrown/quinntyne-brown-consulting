@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../fixtures/workboard.fixture';
 import { AccessibilityPage } from '../pages/accessibility.page';
 import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';

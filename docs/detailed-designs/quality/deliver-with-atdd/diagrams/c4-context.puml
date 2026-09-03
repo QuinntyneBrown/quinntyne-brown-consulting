@@ -5,7 +5,7 @@ title System Context — Deliver vertical slices with ATDD
 
 Person(implementer, "Product implementer", "Implements executable behavior through ATDD")
 System(workboard, "QBC Workboard", "Product under acceptance test")
-System(testHarness, "Acceptance test harness", "Backend integration and Playwright end-to-end tests")
+System(testHarness, "Acceptance test harness", "Backend integration tests and isolated Playwright browser tests")
 System_Ext(changeRecord, "Change record", "Stores red and green acceptance evidence")
 
 Rel(implementer, testHarness, "Selects and runs acceptance scenario in")

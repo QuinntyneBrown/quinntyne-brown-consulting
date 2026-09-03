@@ -8,21 +8,12 @@ export default defineConfig({
   workers: 1,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: { baseURL: 'http://127.0.0.1:4200', trace: 'retain-on-failure', screenshot: 'only-on-failure' },
-  webServer: [
-    {
-      command: 'dotnet run --project ../backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj --configuration Release --no-build -- database reset --force && dotnet run --project ../backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --no-build -- --urls http://127.0.0.1:5050',
-      url: 'http://127.0.0.1:5050/api/workspace?route=board',
-      env: { ASPNETCORE_ENVIRONMENT: 'Development', ConnectionStrings__Workboard: 'Server=.\\SQLEXPRESS;Database=QbcWorkboardPlaywright;Trusted_Connection=True;TrustServerCertificate=True', SeedDevelopmentData: 'true' },
-      reuseExistingServer: false,
-      timeout: 120_000
-    },
-    {
-      command: 'npm start -- --host 127.0.0.1 --port 4200',
-      url: 'http://127.0.0.1:4200/board',
-      reuseExistingServer: false,
-      timeout: 120_000
-    }
-  ],
+  webServer: {
+    command: 'npm start -- --host 127.0.0.1 --port 4200',
+    url: 'http://127.0.0.1:4200/board',
+    reuseExistingServer: false,
+    timeout: 120_000
+  },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },

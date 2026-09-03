@@ -15,8 +15,9 @@ This record captures the observable ATDD boundaries used while implementing the 
 
 - `dotnet test backend/Qbc.Workboard.slnx --configuration Release`: 11 passed, 0 failed across API and CLI integration tests.
 - `npm run test:e2e`: 13 passed, 0 failed, with 8 intentional cross-project skips for checks that run once in Chromium.
+- `npm run typecheck:e2e`: passed with the mock API, fixture, specifications, Page Objects, and Playwright configuration checked under the workspace's strict TypeScript rules.
 - `dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish`: succeeded; a production smoke test returned HTTP 200 for the Angular `/board` fallback and the workspace API.
 - Backend integration tests use a separate named SQL Express database per test class and invoke the real ASP.NET Core controller, MediatR, validation, EF Core, and Problem Details path.
-- Browser specifications contain scenario intent only; selectors, navigation, interactions, route interception, and assertions are owned by Page Objects.
-- Browser data is recreated before the test server starts, so results do not depend on a developer database or an earlier run.
+- Browser specifications contain scenario intent only; selectors, navigation, interactions, and assertions are owned by Page Objects, while the auto fixture owns the shared API interception boundary.
+- Every browser test receives fresh in-memory API state that survives reloads within the scenario. Unhandled `/api` requests fail the test, and the suite starts neither .NET nor SQL Server.
 - Package restore/build output is warning-free, production dependencies have no reported npm audit findings, and production publish produces one ASP.NET-hosted application.

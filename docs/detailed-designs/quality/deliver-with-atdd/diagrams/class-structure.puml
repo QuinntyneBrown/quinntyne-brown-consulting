@@ -32,6 +32,18 @@ class AcceptanceSpec {
   +runScenario(): Promise<void>
 }
 
+class WorkboardFixture {
+  +workboardApi: WorkboardApiMock
+  +install(page: Page): Promise<void>
+  +verifyNoUnexpectedRequests(): void
+}
+
+class WorkboardApiMock {
+  +requestCount: number
+  +unexpectedRequests: string[]
+  +install(page: Page): Promise<void>
+}
+
 class WorkboardPage {
   +navigateTo(route: WorkspaceRoute): Promise<void>
   +openNewStory(): Promise<void>
@@ -54,6 +66,8 @@ ApiAcceptanceTest *-- WorkboardApiFactory
 ApiAcceptanceTest *-- IntegrationDatabase
 AcceptanceSpec --> WorkboardPage
 AcceptanceSpec --> FeaturePage
+AcceptanceSpec --> WorkboardFixture
+WorkboardFixture *-- WorkboardApiMock
 WorkboardPage <|-- FeaturePage
 ApiAcceptanceTest ..> AcceptanceEvidence : produces
 AcceptanceSpec ..> AcceptanceEvidence : produces

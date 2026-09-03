@@ -9,7 +9,8 @@
     "build:api": "ng build api",
     "build:components": "ng build components",
     "build:app": "ng build qbc-workboard",
-    "test:e2e": "dotnet build ../backend/Qbc.Workboard.slnx --configuration Release && playwright test"
+    "typecheck:e2e": "tsc --project tsconfig.e2e.json",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@angular/common": "21.2.22",
@@ -25,9 +26,13 @@
     "@angular/build": "21.2.23",
     "@angular/cli": "21.2.23",
     "@angular/compiler-cli": "21.2.22",
-    "ng-packagr": "21.2.7",
     "@axe-core/playwright": "4.11.1",
     "@playwright/test": "1.55.1",
+    "@types/node": "22.18.0",
+    "ng-packagr": "21.2.7",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "playwright-core": "1.55.1"
   }
 }

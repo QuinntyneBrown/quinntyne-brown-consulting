@@ -189,6 +189,7 @@ npm run build
 
 # Browser acceptance tests
 npx playwright install
+npm run typecheck:e2e
 npm run test:e2e
 
 # Standalone design system
@@ -199,8 +200,9 @@ npm test
 ```
 
 The backend tests create uniquely named SQL Server databases and delete them on
-disposal. The Playwright suite resets `QbcWorkboardPlaywright`, starts the real
-API and Angular application, and runs against Chromium, Firefox, and WebKit.
+disposal. The Playwright suite starts only the Angular application and uses a
+fresh, stateful API mock for each test while running against Chromium, Firefox,
+and WebKit. No backend process or test database is required by the browser suite.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the red-green-refactor workflow,
 coding conventions, and pull-request checklist.

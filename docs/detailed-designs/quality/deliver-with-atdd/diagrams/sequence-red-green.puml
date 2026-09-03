@@ -19,6 +19,7 @@ box "Frontend — Playwright acceptance harness" #E0F2FE
   participant "AcceptanceSpec" as spec
   participant "FeaturePage" as pageObject
   participant "Angular web application" as spa
+  participant "WorkboardApiMock" as mockApi
 end box
 box "Backend — Integration acceptance harness" #D1FADF
   participant "ApiAcceptanceTest" as integration
@@ -35,10 +36,11 @@ end box
 actor -> actor : Select L2-035 Given/When/Then scenario
 alt user-visible acceptance boundary
   actor -> spec : Write scenario intent
+  spec -> mockApi : Install fresh API contract state
   spec -> pageObject : Invoke page-object action
   pageObject -> spa : Drive rendered UI
-  spa -> behavior : Invoke absent or incorrect behavior
-  behavior --> spa : Unmet result
+  spa -> mockApi : Invoke public HTTP contract
+  mockApi --> spa : Deterministic response
   spa --> pageObject : Observable failure
   pageObject --> spec : Failed expectation
   spec --> actor : Expected red result
@@ -56,10 +58,8 @@ actor -> behavior : Add L2-036 smallest coherent implementation
 actor -> spec : Run affected Playwright acceptance tests
 spec -> pageObject : Execute scenario through page object
 pageObject -> spa : Drive implemented behavior
-spa -> behavior : Invoke behavior
-behavior -> db : Read or commit when required
-db --> behavior : Result
-behavior --> spa : Accepted result
+spa -> mockApi : Invoke public HTTP contract
+mockApi --> spa : Persisted scenario state
 spa --> pageObject : Render outcome
 pageObject --> spec : Expected observation
 spec --> actor : Green result

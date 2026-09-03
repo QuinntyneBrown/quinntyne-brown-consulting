@@ -1,0 +1,289 @@
+import type { WorkboardApiState } from './workboard-api-state';
+
+export function createWorkboardApiState(): WorkboardApiState {
+  const mayaId = '10000000-0000-4000-8000-000000000001';
+  const noahId = '10000000-0000-4000-8000-000000000002';
+  const amaraId = '10000000-0000-4000-8000-000000000003';
+  const clientInitiativeId = '20000000-0000-4000-8000-000000000001';
+  const aiInitiativeId = '20000000-0000-4000-8000-000000000002';
+  const portalEpicId = '30000000-0000-4000-8000-000000000001';
+  const playbookEpicId = '30000000-0000-4000-8000-000000000002';
+  const copilotEpicId = '30000000-0000-4000-8000-000000000003';
+  const completedSprintId = '40000000-0000-4000-8000-000000000013';
+  const activeSprintId = '40000000-0000-4000-8000-000000000014';
+  const plannedSprintId = '40000000-0000-4000-8000-000000000015';
+
+  return {
+    assistants: [
+      {
+        id: mayaId,
+        fullName: 'Maya Chen',
+        role: 'Product delivery assistant',
+        specialties: ['Discovery', 'Delivery'],
+        availability: 'available',
+        storyCount: 0,
+        incompleteTaskCount: 0,
+        blockingAssignments: []
+      },
+      {
+        id: noahId,
+        fullName: 'Noah Williams',
+        role: 'Software development assistant',
+        specialties: ['Architecture', 'Quality'],
+        availability: 'limited',
+        storyCount: 0,
+        incompleteTaskCount: 0,
+        blockingAssignments: []
+      },
+      {
+        id: amaraId,
+        fullName: 'Amara Okafor',
+        role: 'AI delivery assistant',
+        specialties: ['AI', 'Research'],
+        availability: 'available',
+        storyCount: 0,
+        incompleteTaskCount: 0,
+        blockingAssignments: []
+      }
+    ],
+    initiatives: [
+      {
+        id: clientInitiativeId,
+        name: 'Client delivery excellence',
+        description: 'Make every engagement transparent, predictable, and easy to steer.'
+      },
+      {
+        id: aiInitiativeId,
+        name: 'Applied AI advantage',
+        description: 'Turn responsible AI experiments into repeatable client value.'
+      }
+    ],
+    epics: [
+      {
+        id: portalEpicId,
+        initiativeId: clientInitiativeId,
+        name: 'Client delivery portal',
+        summary: 'Give clients a clear view of outcomes, decisions, and milestones.'
+      },
+      {
+        id: playbookEpicId,
+        initiativeId: clientInitiativeId,
+        name: 'Delivery playbook',
+        summary: 'Standardize the small practices that keep consulting work moving.'
+      },
+      {
+        id: copilotEpicId,
+        initiativeId: aiInitiativeId,
+        name: 'Engagement copilot',
+        summary: 'Support teams with responsible, grounded AI assistance.'
+      }
+    ],
+    sprints: [
+      {
+        id: completedSprintId,
+        name: 'Sprint 13',
+        goal: 'Establish a useful client delivery baseline.',
+        startDate: '2026-08-03',
+        endDate: '2026-08-16',
+        status: 'completed',
+        storyCount: 0,
+        storyKeys: []
+      },
+      {
+        id: activeSprintId,
+        name: 'Sprint 14',
+        goal: 'Make engagement status and decisions effortless to understand.',
+        startDate: '2026-08-17',
+        endDate: '2026-08-30',
+        status: 'active',
+        storyCount: 0,
+        storyKeys: []
+      },
+      {
+        id: plannedSprintId,
+        name: 'Sprint 15',
+        goal: 'Validate the next responsible AI delivery increment.',
+        startDate: '2026-08-31',
+        endDate: '2026-09-13',
+        status: 'planned',
+        storyCount: 0,
+        storyKeys: []
+      }
+    ],
+    stories: [
+      {
+        id: '50000000-0000-4000-8000-000000000101',
+        key: 'QBC-101',
+        epicId: portalEpicId,
+        epicName: 'Client delivery portal',
+        initiativeName: 'Client delivery excellence',
+        title: 'Publish a concise engagement health summary',
+        description: 'As a client, I want a concise health summary so that I can steer the engagement quickly.',
+        acceptanceCriteria: 'Status, risks, and next milestone are visible in one place.',
+        points: 5,
+        assistantId: mayaId,
+        assistantName: 'Maya Chen',
+        lifecycle: 'active',
+        isReady: true,
+        sprintId: activeSprintId,
+        sprintName: 'Sprint 14',
+        sprintStatus: 'active',
+        boardStatus: 'inProgress',
+        tasks: [
+          {
+            id: '60000000-0000-4000-8000-000000000101',
+            title: 'Draft the engagement summary',
+            isComplete: true,
+            assistantId: mayaId,
+            assistantName: 'Maya Chen'
+          },
+          {
+            id: '60000000-0000-4000-8000-000000000102',
+            title: 'Validate status with the delivery lead',
+            isComplete: false,
+            assistantId: noahId,
+            assistantName: 'Noah Williams'
+          }
+        ]
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000102',
+        key: 'QBC-102',
+        epicId: portalEpicId,
+        epicName: 'Client delivery portal',
+        initiativeName: 'Client delivery excellence',
+        title: 'Capture a client decision',
+        description: 'As a consultant, I want to capture a client decision so that delivery context is not lost.',
+        acceptanceCriteria: 'The decision, owner, and follow-up are visible to the engagement team.',
+        points: 3,
+        assistantId: mayaId,
+        assistantName: 'Maya Chen',
+        lifecycle: 'active',
+        isReady: true,
+        sprintId: activeSprintId,
+        sprintName: 'Sprint 14',
+        sprintStatus: 'active',
+        boardStatus: 'toDo',
+        tasks: [
+          {
+            id: '60000000-0000-4000-8000-000000000103',
+            title: 'Confirm the decision format',
+            isComplete: false,
+            assistantId: mayaId,
+            assistantName: 'Maya Chen'
+          }
+        ]
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000103',
+        key: 'QBC-103',
+        epicId: copilotEpicId,
+        epicName: 'Engagement copilot',
+        initiativeName: 'Applied AI advantage',
+        title: 'Evaluate answers against engagement evidence',
+        description: 'As a consultant, I want AI answers grounded in evidence so that advice remains trustworthy.',
+        acceptanceCriteria: 'Every answer identifies the engagement evidence it used.',
+        points: 5,
+        assistantId: amaraId,
+        assistantName: 'Amara Okafor',
+        lifecycle: 'active',
+        isReady: true,
+        sprintId: activeSprintId,
+        sprintName: 'Sprint 14',
+        sprintStatus: 'active',
+        boardStatus: 'toDo',
+        tasks: [],
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000104',
+        key: 'QBC-104',
+        epicId: playbookEpicId,
+        epicName: 'Delivery playbook',
+        initiativeName: 'Client delivery excellence',
+        title: 'Create a weekly delivery checklist',
+        description: 'As a delivery lead, I want a weekly checklist so that the engagement stays healthy.',
+        acceptanceCriteria: 'The checklist covers outcomes, risks, decisions, and next steps.',
+        points: 2,
+        assistantId: noahId,
+        assistantName: 'Noah Williams',
+        lifecycle: 'active',
+        isReady: true,
+        sprintId: activeSprintId,
+        sprintName: 'Sprint 14',
+        sprintStatus: 'active',
+        boardStatus: 'done',
+        tasks: [
+          {
+            id: '60000000-0000-4000-8000-000000000104',
+            title: 'Review the checklist with a delivery lead',
+            isComplete: true,
+            assistantId: noahId,
+            assistantName: 'Noah Williams'
+          }
+        ]
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000105',
+        key: 'QBC-105',
+        epicId: copilotEpicId,
+        epicName: 'Engagement copilot',
+        initiativeName: 'Applied AI advantage',
+        title: 'Create an AI engagement risk canvas',
+        description: 'As an AI lead, I want a risk canvas so that responsible delivery decisions are explicit.',
+        acceptanceCriteria: 'The canvas covers data, model, human, and operational risks.',
+        points: 3,
+        assistantId: amaraId,
+        assistantName: 'Amara Okafor',
+        lifecycle: 'active',
+        isReady: true,
+        sprintId: null,
+        sprintName: null,
+        sprintStatus: null,
+        boardStatus: 'toDo',
+        tasks: []
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000106',
+        key: 'QBC-106',
+        epicId: portalEpicId,
+        epicName: 'Client delivery portal',
+        initiativeName: 'Client delivery excellence',
+        title: 'Share milestone notes with the client',
+        description: 'As a consultant, I want to draft milestone notes before sharing them.',
+        acceptanceCriteria: '',
+        points: null,
+        assistantId: null,
+        assistantName: null,
+        lifecycle: 'draft',
+        isReady: false,
+        sprintId: null,
+        sprintName: null,
+        sprintStatus: null,
+        boardStatus: 'toDo',
+        tasks: []
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000097',
+        key: 'QBC-97',
+        epicId: playbookEpicId,
+        epicName: 'Delivery playbook',
+        initiativeName: 'Client delivery excellence',
+        title: 'Retire the legacy kickoff worksheet',
+        description: 'An obsolete approach retained for historical context.',
+        acceptanceCriteria: 'The obsolete worksheet is no longer used.',
+        points: 1,
+        assistantId: null,
+        assistantName: null,
+        lifecycle: 'archived',
+        isReady: false,
+        sprintId: null,
+        sprintName: null,
+        sprintStatus: null,
+        boardStatus: 'toDo',
+        tasks: []
+      }
+    ],
+    nextStoryNumber: 107,
+    nextEntityNumber: 1
+  };
+}

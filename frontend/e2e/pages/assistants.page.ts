@@ -35,7 +35,7 @@ export class AssistantsPage {
           body: JSON.stringify({ detail: 'Assistant storage is temporarily unavailable.' })
         });
       } else {
-        await route.continue();
+        await route.fallback();
       }
     });
     await this.page.getByRole('button', { name: /New assistant/ }).first().click();
