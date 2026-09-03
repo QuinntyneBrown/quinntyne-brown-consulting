@@ -231,6 +231,11 @@ and five responsive product patterns. The Angular application uses the matching
 35-component surface from `@qbc/components`; a manifest gate keeps both
 inventories aligned without coupling their runtimes.
 
+Browse the live catalog on GitHub Pages:
+<https://quinntynebrown.github.io/quinntyne-brown-consulting/>.
+
+To run it locally instead:
+
 ```powershell
 Set-Location design-system
 npm ci
