@@ -4,9 +4,9 @@
 
 Deploy QBC Workboard as one code-only .NET 10 application on an Azure App
 Service Free (`F1`) Linux plan, backed by one Azure SQL Database created with
-the free database offer. Use the included `azurewebsites.net` hostname, App
-Service authentication with Microsoft Entra ID, and a system-assigned managed
-identity for database access.
+the free database offer. Use the included `azurewebsites.net` hostname, allow
+anonymous application access, and use a system-assigned managed identity for
+database access.
 
 The target Azure charge is **USD $0 per month and $0 per year**, provided all
 eligibility and usage assumptions below remain true. The price is the public
@@ -29,7 +29,7 @@ site, separate API, VM, and paid network resources are unnecessary.
 
 ```mermaid
 flowchart LR
-    User[Trusted user] -->|HTTPS and Entra sign-in| Web[App Service F1<br/>.NET 10 + Angular]
+    User[Anonymous visitor] -->|HTTPS| Web[App Service F1<br/>.NET 10 + Angular]
     Deploy[GitHub Actions or local ZIP deploy] --> Web
     Web -->|Managed identity<br/>SQL over TLS| Db[(Azure SQL Database<br/>free offer)]
 ```
@@ -46,7 +46,7 @@ storage limit.
 | App Service plan | Linux `F1`; shared compute, 60 CPU minutes/day, 1 GB RAM, 1 GB storage | $0.00 | $0.00 |
 | Web app | One code-only .NET 10 app in the F1 plan | $0.00 | $0.00 |
 | Azure SQL Database | Free offer; 100,000 vCore-seconds, 32 GB data, and 32 GB backup storage/month | $0.00 | $0.00 |
-| Identity | System-assigned managed identity and App Service Entra authentication | $0.00 incremental | $0.00 incremental |
+| Identity | System-assigned managed identity and GitHub deployment OIDC | $0.00 incremental | $0.00 incremental |
 | Hostname and TLS | Default `*.azurewebsites.net` hostname and platform certificate | $0.00 | $0.00 |
 | **Estimated Azure total** | While every free-tier guard and limit is retained | **$0.00** | **$0.00** |
 
@@ -128,9 +128,9 @@ Proceed only when all of the following are true:
 - The workload fits 60 CPU minutes and 165 MB outbound bandwidth per day, 1 GB
   of App Service storage, 100,000 database vCore-seconds per month, and 32 GB of
   database data.
-- The users can sign in through the selected Microsoft Entra tenant. Every
-  authorized user sees the same workspace because Workboard does not implement
-  per-user authorization.
+- Public read/write access is acceptable. Workboard has one shared workspace
+  and does not implement authentication, authorization, or per-user data
+  isolation.
 - Temporary unavailability, database auto-pause, cold starts, and no supported
   zero-downtime deployment are acceptable.
 
@@ -204,24 +204,13 @@ offer banner and $0 estimate are visible before submission:
    the database until next month** when a free limit is reached.
 5. Do not enable Defender for SQL or additional logging under this cost plan.
 
-### 3. Secure application and database access
+### 3. Keep public application access and secure database access
 
-Workboard currently has no authentication of its own. Before opening the app to
-users, configure [App Service built-in authentication](https://learn.microsoft.com/en-us/entra/identity-platform/multi-service-web-app-authentication-app-service):
-
-1. Add Microsoft as the identity provider using a workforce, current-tenant,
-   single-tenant app registration.
-2. Set **Require authentication** and redirect unauthenticated website requests
-   to sign-in.
-3. If the tenant contains people who should not use this shared workspace,
-   restrict the built-in authorization policy to the operator's Entra object ID
-   or an explicitly assigned group. Test with an unauthorized tenant account.
-
-The deployed setup uses the single-tenant `qbc-workboard-web-auth` app
-registration and an allowed-principals policy containing only the operator. Its
-client secret is stored only in the App Service setting
-`MICROSOFT_PROVIDER_AUTHENTICATION_SECRET` and expires on September 3, 2027.
-Replace the Entra credential and App Service setting together before that date.
+The deployed web app intentionally permits anonymous requests and does not use
+App Service built-in authentication. Every visitor can read and modify the same
+workspace through the browser or API. Keep HTTPS-only enabled, do not store
+confidential, personal, or client data, and treat all persisted content as
+publicly writable demo data.
 
 Use the web app's managed identity to avoid a database password. Temporarily
 allow the operator's current IP through the SQL firewall, connect as the Entra
@@ -325,11 +314,11 @@ mandatory. Add `--seed` only when representative data is explicitly wanted.
 
 The deployment is ready when all checks pass:
 
-- An incognito request to the root URL redirects to Microsoft sign-in, and an
-  unapproved identity cannot enter.
-- An approved user can open the board and
-  `/api/workspace?route=board` returns HTTP 200 after authentication.
-- Creating or editing a work item survives an app restart and browser refresh.
+- An incognito request to the root URL returns HTTP 200 without a sign-in
+  redirect or authentication challenge.
+- An anonymous request to `/api/workspace?route=board` returns HTTP 200.
+- An anonymous visitor can create, edit, and delete work items, and retained
+  work survives an app restart and browser refresh.
 - The database contains the EF migrations history and `SeedDevelopmentData`
   remains false unless demo data was intentionally requested.
 - App Service shows F1, SQL shows **Free offer applied**, SQL limit behaviour is
@@ -354,6 +343,9 @@ The deployment is ready when all checks pass:
 - Do not leave SQL Server Management Studio, the portal query editor, the
   Azure-target CLI, or a log stream connected. Idle tools can delay SQL
   auto-pause or consume F1 quota.
+- Public traffic can exhaust the F1 CPU or bandwidth quota and the SQL free
+  compute allowance. Review the existing alerts and remove abusive demo data;
+  do not weaken the database firewall in response to anonymous traffic.
 - Keep the `QuinnCli` firewall rule limited to the operator's current public IP;
   remove it whenever remote CLI maintenance is not required.
 - Retain each previously deployed ZIP artifact for application rollback. Use
@@ -415,6 +407,5 @@ that option should not be enabled as a convenience.
 - [Azure SQL Database free offer](https://learn.microsoft.com/en-us/azure/azure-sql/database/free-offer?view=azuresql)
 - [Azure SQL free offer FAQ](https://learn.microsoft.com/en-us/azure/azure-sql/database/free-offer-faq?view=azuresql)
 - [App Service managed identity with Azure SQL](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-sql-database)
-- [App Service authentication](https://learn.microsoft.com/en-us/azure/app-service/overview-authentication-authorization)
 - [Default App Service hostname TLS](https://learn.microsoft.com/en-us/azure/app-service/overview-tls)
 - [GitHub Actions deployment to App Service](https://learn.microsoft.com/en-us/azure/app-service/deploy-github-actions)

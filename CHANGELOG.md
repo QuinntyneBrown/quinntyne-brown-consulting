@@ -26,6 +26,9 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- The Azure Workboard is publicly accessible with anonymous read/write access;
+  visitor-facing Microsoft Entra authentication has been removed while
+  passwordless deployment and database identities remain in place.
 - The root README now documents the current SQL Server architecture, database
   CLI, combined publish, test suites, design system, and project limitations.
 - QBC Workboard now composes every button, form control, dialog, navigation

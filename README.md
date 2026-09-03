@@ -10,9 +10,9 @@ stories, tasks, assistants, backlog grooming, sprint planning, and active-sprint
 execution in one persistent application.
 
 > [!IMPORTANT]
-> QBC Workboard currently targets one trusted workspace and does not implement
-> authentication or authorization. Do not expose an instance to an untrusted
-> network.
+> The deployed QBC Workboard is intentionally public and does not implement
+> authentication or authorization. Every visitor can view and change the shared
+> workspace, so do not store confidential, personal, or client data in it.
 
 The project is under active development and does not yet publish tagged
 releases. Requirements and data migrations may change before the first release.
