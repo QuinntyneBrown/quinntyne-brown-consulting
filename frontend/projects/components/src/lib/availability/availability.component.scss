@@ -1,0 +1,4 @@
+span { display: inline-flex; gap: 6px; align-items: center; color: var(--qbc-ink-soft); font-size: 11px; text-transform: capitalize; }
+i { width: 8px; height: 8px; border-radius: 50%; background: #47a175; }
+.limited i { background: var(--qbc-amber); }
+.unavailable i { background: var(--qbc-ink-faint); }

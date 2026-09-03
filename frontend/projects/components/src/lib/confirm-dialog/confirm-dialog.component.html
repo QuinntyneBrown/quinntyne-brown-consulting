@@ -1,11 +1,7 @@
-<dialog #dialog [attr.aria-labelledby]="titleId" (cancel)="close(false)">
-  <div class="confirm-body">
+<qbc-dialog #dialog [title]="title" [subtitle]="copy" size="sm" (closed)="close(false)">
+  <div body class="confirm-body">
     <div class="dialog-icon" aria-hidden="true">!</div>
-    <h2 [id]="titleId">{{ title }}</h2>
-    <p>{{ copy }}</p>
   </div>
-  <div class="dialog-actions">
-    <button class="secondary-button" type="button" (click)="close(false)">Cancel</button>
-    <button class="danger-button" type="button" (click)="close(true)">{{ confirmLabel }}</button>
-  </div>
-</dialog>
+  <qbc-button actions variant="secondary" (click)="close(false)">Cancel</qbc-button>
+  <qbc-button actions variant="danger" (click)="close(true)">{{ confirmLabel }}</qbc-button>
+</qbc-dialog>

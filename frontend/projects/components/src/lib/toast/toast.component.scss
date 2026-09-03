@@ -1,0 +1,4 @@
+:host { display: block; max-width: 380px; }
+div { padding: 12px 16px; border-radius: var(--qbc-r-control); color: #fff; background: var(--qbc-ink); box-shadow: var(--qbc-shadow-overlay); font-size: 13px; animation: toast-in 200ms ease-out; }
+.error { background: var(--qbc-danger); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }

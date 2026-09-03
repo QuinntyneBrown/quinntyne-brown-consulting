@@ -1,0 +1,14 @@
+:host { display: block; }
+:host(.qbc-full) { grid-column: 1 / -1; }
+label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
+label span { color: var(--qbc-danger); }
+.visually-hidden { position: absolute; overflow: hidden; width: 1px; height: 1px; margin: -1px; clip: rect(0,0,0,0); white-space: nowrap; }
+.control { position: relative; }
+.control qbc-icon { position: absolute; top: 50%; left: 13px; color: var(--qbc-ink-faint); transform: translateY(-50%); }
+input { width: 100%; height: var(--qbc-control-h); padding: 0 12px; border: 1px solid var(--qbc-line-strong); border-radius: var(--qbc-r-control); color: var(--qbc-ink); background: var(--qbc-panel); }
+.with-icon input { padding-left: 38px; }
+input.sm { height: 34px; }
+input::placeholder { color: var(--qbc-placeholder); }
+input:focus { border-color: var(--qbc-accent); outline: 3px solid var(--qbc-focus-ring-field); outline-offset: 0; }
+input:disabled { cursor: not-allowed; opacity: .52; }
+small { display: block; margin-top: 5px; color: var(--qbc-ink-soft); font-size: 11px; }

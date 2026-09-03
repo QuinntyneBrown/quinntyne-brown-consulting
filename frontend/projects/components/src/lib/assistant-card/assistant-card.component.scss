@@ -1,0 +1,11 @@
+article { padding: 23px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-xl); }
+header { display: flex; gap: 14px; align-items: center; }
+h2 { margin: 0; font-size: 16px; }
+header p { margin: 2px 0 0; color: var(--qbc-ink-soft); font-size: 12px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; min-height: 29px; margin: 21px 0; }
+dl { display: flex; gap: 26px; margin: 0 0 18px; }
+dl div { display: grid; }
+dt { color: var(--qbc-ink-soft); font-size: 11px; }
+dd { margin: 0; font-weight: 750; }
+footer { display: flex; align-items: center; justify-content: space-between; padding-top: 15px; border-top: 1px solid var(--qbc-line); }
+footer > div { display: flex; flex-wrap: wrap; gap: 9px; }

@@ -1,19 +1,40 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Sprint } from '@qbc/api';
-import { ConfirmDialogComponent, EmptyStateComponent, StatusPillComponent } from '@qbc/components';
+import {
+  ButtonComponent,
+  ConfirmDialogComponent,
+  DialogComponent,
+  EmptyStateComponent,
+  FormErrorComponent,
+  FormGridComponent,
+  SprintRowComponent,
+  TextareaComponent,
+  TextInputComponent
+} from '@qbc/components';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
 import { SPRINT_PLANNING_SERVICE } from './sprint-planning.service.contract';
 
 @Component({
   selector: 'app-sprint-manager',
-  imports: [ReactiveFormsModule, ConfirmDialogComponent, EmptyStateComponent, StatusPillComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    ConfirmDialogComponent,
+    DialogComponent,
+    EmptyStateComponent,
+    FormErrorComponent,
+    FormGridComponent,
+    SprintRowComponent,
+    TextareaComponent,
+    TextInputComponent
+  ],
   templateUrl: './sprint-manager.component.html',
   styleUrl: './sprint-manager.component.scss'
 })
 export class SprintManagerComponent {
-  private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
-  private readonly formDialog = viewChild.required<ElementRef<HTMLDialogElement>>('formDialog');
+  private readonly dialog = viewChild.required<DialogComponent>('dialog');
+  private readonly formDialog = viewChild.required<DialogComponent>('formDialog');
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
   readonly planning = inject(SPRINT_PLANNING_SERVICE);
@@ -23,13 +44,13 @@ export class SprintManagerComponent {
   readonly pending = signal(false);
   readonly form = this.fb.group({ name: ['', Validators.required], goal: ['', Validators.required], startDate: ['', Validators.required] });
 
-  async open(): Promise<void> { await this.planning.load(); this.dialog().nativeElement.showModal(); }
+  async open(): Promise<void> { await this.planning.load(); this.dialog().open(); }
 
   openForm(sprint?: Sprint): void {
     this.sprintId.set(sprint?.id ?? null);
     this.editingCompleted.set(sprint?.status === 'completed');
     this.form.reset({ name: sprint?.name ?? '', goal: sprint?.goal ?? '', startDate: sprint?.startDate ?? this.today() });
-    this.formDialog().nativeElement.showModal();
+    this.formDialog().open();
   }
 
   async save(): Promise<void> {
@@ -38,7 +59,7 @@ export class SprintManagerComponent {
     const value = this.form.getRawValue();
     const saved = await this.planning.save(this.sprintId(), value.name, value.goal, value.startDate);
     this.pending.set(false);
-    if (saved) this.formDialog().nativeElement.close();
+    if (saved) this.formDialog().close();
   }
 
   async start(sprint: Sprint): Promise<void> {

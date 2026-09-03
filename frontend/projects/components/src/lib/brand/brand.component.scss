@@ -1,0 +1,5 @@
+a { display: flex; gap: 12px; align-items: center; color: inherit; text-decoration: none; }
+.mark { display: grid; width: 38px; height: 38px; border-radius: var(--qbc-r-md); place-items: center; color: #fff; background: var(--qbc-accent); font-size: 18px; font-weight: 750; }
+strong, small { display: block; }
+strong { letter-spacing: .06em; }
+small { margin-top: -2px; color: var(--qbc-ink-soft); font-size: 11px; }

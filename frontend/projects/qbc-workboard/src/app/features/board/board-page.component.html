@@ -1,31 +1,44 @@
-<section class="page">
-  <qbc-page-header title="Sprint board" description="A quiet view of the team’s current commitment."><button actions class="secondary-button" type="button" (click)="manage()">Manage sprints</button></qbc-page-header>
-  @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
-  @if (service.loadingState() === 'loading') { <p class="loading">Loading sprint board…</p> }
+<qbc-page>
+  <qbc-page-header title="Sprint board" description="A quiet view of the team’s current commitment."><qbc-button actions variant="secondary" (click)="manage()">Manage sprints</qbc-button></qbc-page-header>
+  @if (service.error()) { <qbc-form-error>{{ service.error() }}</qbc-form-error> }
+  @if (service.loadingState() === 'loading') { <qbc-loading-state>Loading sprint board…</qbc-loading-state> }
   @else if (service.board(); as board) {
-    <section class="sprint-hero" aria-label="Current sprint summary">
-      <div><p class="eyebrow">Current sprint · {{ board.name }}</p><h2>{{ board.goal }}</h2><p class="goal">{{ format(board.startDate) }} – {{ format(board.endDate) }}</p></div>
-      <div class="sprint-meta"><div class="sprint-meta-line"><span>{{ board.doneCount }} of {{ board.totalCount }} stories complete</span><strong>{{ board.completionPercentage }}%</strong></div><div class="progress-track" role="progressbar" aria-label="Sprint completion" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="board.completionPercentage"><div class="progress-bar" [style.width.%]="board.completionPercentage"></div></div><button class="quiet-button complete-button" type="button" (click)="complete()">Complete sprint</button></div>
-    </section>
+    <qbc-sprint-hero
+      [eyebrow]="'Current sprint · ' + board.name"
+      [goal]="board.goal"
+      [dates]="format(board.startDate) + ' – ' + format(board.endDate)"
+      [complete]="board.doneCount"
+      [total]="board.totalCount">
+      <qbc-button actions variant="quiet" (click)="complete()">Complete sprint</qbc-button>
+    </qbc-sprint-hero>
     <div class="board">
       @for (status of statuses; track status.value) {
-        <section class="board-column" [attr.aria-labelledby]="'column-' + status.value" (dragover)="$event.preventDefault()" (drop)="drop($event, status.value)">
-          <header class="column-head"><h2 [id]="'column-' + status.value">{{ status.label }}</h2><span class="count">{{ stories(status.value).length }}</span></header>
-          <div class="card-stack">
-            @for (story of stories(status.value); track story.storyId) {
-              <article class="story-card" draggable="true" (dragstart)="drag($event, story)">
-                <div class="card-top"><span class="story-key">{{ story.key }}</span><span class="points">{{ story.points ?? '—' }}</span></div>
-                <h3>{{ story.title }}</h3><p>{{ story.epicName }} @if (story.totalTasks) { · {{ story.completedTasks }}/{{ story.totalTasks }} tasks }</p>
-                <footer><span class="owner">{{ story.assistantName ?? 'Unassigned' }}</span><div class="card-actions"><button class="quiet-button" type="button" [disabled]="status.value === 'toDo'" [attr.aria-label]="'Move ' + story.title + ' backward'" (click)="move(story, -1)">←</button><button class="quiet-button" type="button" (click)="edit(story.storyId)">Edit</button><button class="quiet-button" type="button" [disabled]="status.value === 'done'" [attr.aria-label]="'Move ' + story.title + ' forward'" (click)="move(story, 1)">→</button></div></footer>
-              </article>
-            } @empty { <div class="column-empty"><p>No stories here</p></div> }
-          </div>
-        </section>
+        <qbc-board-column
+          [label]="status.label"
+          [count]="stories(status.value).length"
+          [empty]="stories(status.value).length === 0"
+          (dragover)="$event.preventDefault()"
+          (drop)="drop($event, status.value)">
+          @for (story of stories(status.value); track story.storyId) {
+            <qbc-story-card
+              [draggableCard]="true"
+              [storyKey]="story.key"
+              [title]="story.title"
+              [context]="story.epicName + (story.totalTasks ? ' · ' + story.completedTasks + '/' + story.totalTasks + ' tasks' : '')"
+              [points]="story.points"
+              [owner]="story.assistantName ?? ''"
+              (dragstart)="drag($event, story)">
+              <qbc-button actions variant="quiet" [disabled]="status.value === 'toDo'" [ariaLabel]="'Move ' + story.title + ' backward'" (click)="move(story, -1)">←</qbc-button>
+              <qbc-button actions variant="quiet" (click)="edit(story.storyId)">Edit</qbc-button>
+              <qbc-button actions variant="quiet" [disabled]="status.value === 'done'" [ariaLabel]="'Move ' + story.title + ' forward'" (click)="move(story, 1)">→</qbc-button>
+            </qbc-story-card>
+          }
+        </qbc-board-column>
       }
     </div>
   } @else {
-    <qbc-empty-state title="No active sprint" description="Start a planned sprint to bring Ready stories onto the board."><button actions class="primary-button" type="button" (click)="manage()">Choose a sprint</button></qbc-empty-state>
+    <qbc-empty-state title="No active sprint" description="Start a planned sprint to bring Ready stories onto the board."><qbc-button actions (click)="manage()">Choose a sprint</qbc-button></qbc-empty-state>
   }
-</section>
+</qbc-page>
 <app-sprint-manager />
 <qbc-confirm-dialog />

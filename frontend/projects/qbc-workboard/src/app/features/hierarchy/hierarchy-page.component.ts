@@ -1,18 +1,50 @@
-import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { EpicHierarchy, InitiativeHierarchy } from '@qbc/api';
-import { ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent } from '@qbc/components';
+import {
+  ButtonComponent,
+  ConfirmDialogComponent,
+  DialogComponent,
+  EmptyStateComponent,
+  EpicRowComponent,
+  FormErrorComponent,
+  FormGridComponent,
+  InitiativeCardComponent,
+  LoadingStateComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SelectComponent,
+  SelectOption,
+  TextareaComponent,
+  TextInputComponent
+} from '@qbc/components';
 import { HIERARCHY_SERVICE } from './hierarchy.service.contract';
 
 @Component({
   selector: 'app-hierarchy-page',
-  imports: [ReactiveFormsModule, ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    ConfirmDialogComponent,
+    DialogComponent,
+    EmptyStateComponent,
+    EpicRowComponent,
+    FormErrorComponent,
+    FormGridComponent,
+    InitiativeCardComponent,
+    LoadingStateComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SelectComponent,
+    TextareaComponent,
+    TextInputComponent
+  ],
   templateUrl: './hierarchy-page.component.html',
   styleUrl: './hierarchy-page.component.scss'
 })
 export class HierarchyPageComponent implements OnInit {
-  private readonly initiativeDialog = viewChild.required<ElementRef<HTMLDialogElement>>('initiativeDialog');
-  private readonly epicDialog = viewChild.required<ElementRef<HTMLDialogElement>>('epicDialog');
+  private readonly initiativeDialog = viewChild.required<DialogComponent>('initiativeDialog');
+  private readonly epicDialog = viewChild.required<DialogComponent>('epicDialog');
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
   readonly service = inject(HIERARCHY_SERVICE);
@@ -27,13 +59,13 @@ export class HierarchyPageComponent implements OnInit {
   openInitiative(initiative?: InitiativeHierarchy): void {
     this.initiativeId.set(initiative?.id ?? null);
     this.initiativeForm.reset({ name: initiative?.name ?? '', description: initiative?.description ?? '' });
-    this.initiativeDialog().nativeElement.showModal();
+    this.initiativeDialog().open();
   }
 
   openEpic(initiativeId: string, epic?: EpicHierarchy): void {
     this.epicId.set(epic?.id ?? null);
     this.epicForm.reset({ initiativeId, name: epic?.name ?? '', summary: epic?.summary ?? '' });
-    this.epicDialog().nativeElement.showModal();
+    this.epicDialog().open();
   }
 
   async saveInitiative(): Promise<void> {
@@ -42,7 +74,7 @@ export class HierarchyPageComponent implements OnInit {
     const value = this.initiativeForm.getRawValue();
     const saved = await this.service.saveInitiative(this.initiativeId(), value.name, value.description);
     this.pending.set(false);
-    if (saved) this.initiativeDialog().nativeElement.close();
+    if (saved) this.initiativeDialog().close();
   }
 
   async saveEpic(): Promise<void> {
@@ -51,7 +83,7 @@ export class HierarchyPageComponent implements OnInit {
     const value = this.epicForm.getRawValue();
     const saved = await this.service.saveEpic(this.epicId(), value.initiativeId, value.name, value.summary);
     this.pending.set(false);
-    if (saved) this.epicDialog().nativeElement.close();
+    if (saved) this.epicDialog().close();
   }
 
   async deleteInitiative(initiative: InitiativeHierarchy): Promise<void> {
@@ -64,5 +96,9 @@ export class HierarchyPageComponent implements OnInit {
     if (await this.confirm().open(`Delete ${epic.name}?`, 'The epic can be deleted only when it contains no stories.', 'Delete epic')) {
       await this.service.deleteEpic(epic.id);
     }
+  }
+
+  initiativeOptions(): readonly SelectOption<string>[] {
+    return this.service.hierarchy().initiatives.map(initiative => ({ value: initiative.id, label: initiative.name }));
   }
 }

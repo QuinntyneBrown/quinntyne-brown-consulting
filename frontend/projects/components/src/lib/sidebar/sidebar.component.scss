@@ -1,0 +1,5 @@
+aside { position: fixed; inset: 0 auto 0 0; z-index: 20; display: flex; width: var(--qbc-sidebar-w); flex-direction: column; padding: 30px 22px 24px; border-right: 1px solid var(--qbc-line); background: var(--qbc-surface-raised); }
+.brand { margin: 0 8px 42px; }
+nav { display: grid; gap: 6px; }
+p { margin: auto 8px 0; color: var(--qbc-ink-soft); font-size: 11px; white-space: pre-line; }
+@media (max-width: 900px) { aside { transform: translateX(-100%); box-shadow: var(--qbc-shadow-overlay); transition: transform .2s ease; } aside.open { transform: none; } }

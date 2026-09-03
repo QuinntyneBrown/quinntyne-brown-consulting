@@ -9,11 +9,17 @@ application, typed API access, and reusable presentation components.
 |---|---|
 | `projects/qbc-workboard` | Routes, feature components, forms, orchestration, and Signal state |
 | `projects/api` | Backend models, Promise-based HTTP clients, service interfaces, and injection tokens |
-| `projects/components` | Reusable Angular presentation components without product workflow state |
+| `projects/components` | Versioned Angular UI system: tokens, controls, overlays, shell, cards, rows, and work-item views |
 
 The application depends on both libraries through their public entry points.
 Neither library imports application source, and the libraries remain independent
 of each other.
+
+The application composes all buttons, form controls, dialogs, navigation, and
+reusable work-item surfaces from `@qbc/components`. Feature pages retain forms,
+Signals, service calls, routing, and workflow decisions. The library mirrors all
+35 components in the standalone catalog and adds Angular-specific composition
+helpers; see its [package guide](projects/components/README.md).
 
 Feature components inject application service contracts through typed tokens.
 Signal-backed application services delegate transport operations through a
@@ -56,6 +62,13 @@ npm run build:app
 ```
 
 Application output is written to `frontend/dist/qbc-workboard/browser`.
+
+Validate and unit-test the reusable component boundary independently:
+
+```powershell
+npm run validate:components
+npm run test:components
+```
 
 ## End-to-end tests
 

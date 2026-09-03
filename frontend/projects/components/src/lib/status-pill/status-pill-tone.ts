@@ -1,1 +1,2 @@
-export type StatusPillTone = 'ready' | 'active' | 'done' | 'available' | 'draft' | 'todo' | 'archived' | 'completed' | 'muted' | 'unavailable' | 'progress' | 'planned' | 'limited';
+import { PillTone } from '../pill/pill-tone';
+export type StatusPillTone = PillTone;

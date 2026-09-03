@@ -1,5 +1,7 @@
-.empty-state { padding: 64px 28px; border: 1px dashed #d7deda; border-radius: var(--radius); text-align: center; }
+.empty-state { padding: 64px 28px; border: 1px dashed var(--qbc-line-dashed); border-radius: var(--qbc-r-xl); text-align: center; }
+.empty-state.bare { padding: 35px 12px; border: 0; }
+qbc-icon { display: inline-grid; width: 42px; height: 42px; margin-bottom: 14px; border-radius: 13px; place-items: center; color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
 h2 { margin: 0; font-size: 18px; }
-p { margin: 7px auto 19px; color: var(--muted); }
+p { margin: 7px auto 19px; color: var(--qbc-ink-soft); }
 .empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; }
 .empty-actions:empty { display: none; }

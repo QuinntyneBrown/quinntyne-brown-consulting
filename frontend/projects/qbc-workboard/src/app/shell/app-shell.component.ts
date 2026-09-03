@@ -1,15 +1,32 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import {
+  AppShellComponent as QbcAppShellComponent,
+  BrandComponent,
+  ButtonComponent,
+  NavItemComponent,
+  SidebarComponent,
+  ToastComponent,
+  TopbarComponent
+} from '@qbc/components';
 import { filter } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FEEDBACK_SERVICE } from '../core/feedback.service.contract';
 import { WORKSPACE_SERVICE } from '../core/workspace.service.contract';
 import { STORY_EDITOR_SERVICE } from '../features/stories/story-editor.service.contract';
-import { WorkspaceNavigationComponent } from './workspace-navigation.component';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, WorkspaceNavigationComponent],
+  imports: [
+    RouterOutlet,
+    QbcAppShellComponent,
+    BrandComponent,
+    ButtonComponent,
+    NavItemComponent,
+    SidebarComponent,
+    ToastComponent,
+    TopbarComponent
+  ],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss'
 })
@@ -29,4 +46,3 @@ export class AppShellComponent {
 
   openNewStory(): void { this.editor.openNew(); }
 }
-

@@ -16,6 +16,7 @@ test('navigate, discover work, and execute an active story', async ({ page, brow
 
   await workboard.usePrimaryNavigation('Backlog');
   const backlog = new BacklogPage(page);
+  await backlog.expectSprintAssignment('Publish a concise engagement health summary', 'Sprint 14');
   await backlog.search('risk canvas');
   await backlog.expectStory('Create an AI engagement risk canvas');
 

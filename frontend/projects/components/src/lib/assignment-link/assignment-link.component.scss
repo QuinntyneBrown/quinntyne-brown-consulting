@@ -1,0 +1,3 @@
+button { display: grid; width: 100%; padding: 13px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-control); color: inherit; background: var(--qbc-panel); text-align: left; cursor: pointer; }
+button:hover { background: var(--qbc-soft); }
+span { color: var(--qbc-ink-soft); font-size: 12px; }

@@ -1,5 +1,6 @@
-<section class="empty-state">
+<section class="empty-state" [class.bare]="bare()">
+  <qbc-icon [name]="icon()" [size]="20" />
   <h2>{{ title() }}</h2>
-  <p>{{ description() }}</p>
+  <p>{{ copy() }}</p>
   <div class="empty-actions"><ng-content select="[actions]" /></div>
 </section>

@@ -1,35 +1,29 @@
-<dialog #dialog aria-labelledby="sprint-manager-title">
-  <div class="dialog-shell">
-    <header class="dialog-head"><div><h2 id="sprint-manager-title">Manage sprints</h2><p>Plan focused, two-week delivery intervals with a clear goal.</p></div><button class="icon-button" type="button" aria-label="Close" (click)="dialog.close()">×</button></header>
-    <div class="dialog-body">
-      @if (planning.error()) { <p class="form-error" role="alert">{{ planning.error() }}</p> }
-      <div class="manager-head"><h3>Sprints</h3><button class="primary-button" type="button" (click)="openForm()">＋ New sprint</button></div>
-      <div class="sprint-list">
-        @for (sprint of planning.sprints(); track sprint.id) {
-          <article class="sprint-row">
-            <div><h3>{{ sprint.name }} <qbc-status-pill [tone]="sprint.status" [label]="sprint.status" /></h3><strong>{{ sprint.goal }}</strong><p>{{ formatDates(sprint) }} · {{ sprint.storyCount }} stories</p></div>
-            <div class="row-actions">
-              @if (sprint.status === 'planned') { <button class="secondary-button" type="button" (click)="start(sprint)">Start</button> }
-              <button class="quiet-button" type="button" (click)="openForm(sprint)">Edit</button>
-              @if (sprint.status === 'planned') { <button class="quiet-button danger-text" type="button" (click)="delete(sprint)">Delete</button> }
-            </div>
-          </article>
-        } @empty { <qbc-empty-state title="No sprints yet" description="Create a sprint and give it a delivery goal." /> }
-      </div>
+<qbc-dialog #dialog title="Manage sprints" subtitle="Plan focused, two-week delivery intervals with a clear goal.">
+  <div body>
+    @if (planning.error()) { <qbc-form-error>{{ planning.error() }}</qbc-form-error> }
+    <div class="manager-head"><h3>Sprints</h3><qbc-button (click)="openForm()">＋ New sprint</qbc-button></div>
+    <div class="sprint-list">
+      @for (sprint of planning.sprints(); track sprint.id) {
+        <qbc-sprint-row [name]="sprint.name" [status]="sprint.status" [goal]="sprint.goal" [meta]="formatDates(sprint) + ' · ' + sprint.storyCount + ' stories'">
+          @if (sprint.status === 'planned') { <qbc-button actions variant="secondary" size="sm" (click)="start(sprint)">Start</qbc-button> }
+          <qbc-button actions variant="quiet" size="sm" (click)="openForm(sprint)">Edit</qbc-button>
+          @if (sprint.status === 'planned') { <qbc-button actions variant="danger" size="sm" (click)="delete(sprint)">Delete</qbc-button> }
+        </qbc-sprint-row>
+      } @empty { <qbc-empty-state [bare]="true" title="No sprints yet" description="Create a sprint and give it a delivery goal." /> }
     </div>
-    <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="dialog.close()">Close</button></footer>
   </div>
-</dialog>
+  <qbc-button actions variant="secondary" (click)="dialog.close()">Close</qbc-button>
+</qbc-dialog>
 
-<dialog #formDialog aria-labelledby="sprint-form-title">
-  <form class="dialog-shell" [formGroup]="form" (ngSubmit)="save()">
-    <header class="dialog-head"><div><h2 id="sprint-form-title">{{ sprintId() ? 'Edit sprint' : 'New sprint' }}</h2><p>The end date is always 13 calendar days after the start date.</p></div><button class="icon-button" type="button" aria-label="Close" (click)="formDialog.close()">×</button></header>
-    <div class="dialog-body form-grid">
-      <div class="field full"><label for="sprint-name">Name <span class="required">*</span></label><input id="sprint-name" formControlName="name"></div>
-      <div class="field full"><label for="sprint-goal">Goal <span class="required">*</span></label><textarea id="sprint-goal" formControlName="goal"></textarea></div>
-      <div class="field"><label for="sprint-start">Start date <span class="required">*</span></label><input id="sprint-start" type="date" formControlName="startDate" [readonly]="editingCompleted()"></div>
-    </div>
-    <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="formDialog.close()">Cancel</button><button class="primary-button" type="submit" [disabled]="pending()">Save sprint</button></footer>
-  </form>
-</dialog>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <qbc-dialog #formDialog [title]="sprintId() ? 'Edit sprint' : 'New sprint'" subtitle="The end date is always 13 calendar days after the start date.">
+    <qbc-form-grid body>
+      <qbc-text-input label="Name" [required]="true" [full]="true" formControlName="name" />
+      <qbc-textarea label="Goal" [required]="true" [full]="true" formControlName="goal" />
+      <qbc-text-input label="Start date" type="date" [required]="true" [readonly]="editingCompleted()" formControlName="startDate" />
+    </qbc-form-grid>
+    <qbc-button actions variant="secondary" (click)="formDialog.close()">Cancel</qbc-button>
+    <qbc-button actions type="submit" [disabled]="pending()">Save sprint</qbc-button>
+  </qbc-dialog>
+</form>
 <qbc-confirm-dialog />

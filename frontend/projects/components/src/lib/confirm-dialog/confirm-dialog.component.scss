@@ -1,13 +1,2 @@
-:host { display: contents; }
-dialog { width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; border-radius: 16px; box-shadow: var(--shadow); }
-dialog::backdrop { background: rgba(18,25,22,.4); backdrop-filter: blur(2px); }
-.confirm-body { padding: 30px 28px 24px; text-align: center; }
-.confirm-body h2 { margin: 13px 0 7px; font-size: 21px; }
-.confirm-body p { margin: 0; color: var(--muted); }
-.dialog-icon { display: grid; width: 44px; height: 44px; margin: auto; border-radius: 50%; place-items: center; color: var(--danger); background: var(--danger-soft); font-weight: 800; }
-.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; padding: 18px 28px; border-top: 1px solid var(--line); background: #fbfcfb; }
-.secondary-button, .danger-button { min-height: 40px; padding: 9px 15px; border-radius: 9px; font: inherit; font-weight: 680; cursor: pointer; }
-.secondary-button { border: 1px solid var(--line); color: var(--ink); background: #fff; }
-.secondary-button:hover { background: var(--soft); }
-.danger-button { border: 1px solid var(--danger); color: #fff; background: var(--danger); }
-@media (max-width: 759px) { .dialog-actions { padding: 16px 20px; } }
+.confirm-body { text-align: center; }
+.dialog-icon { display: grid; width: 44px; height: 44px; margin: auto; border-radius: 50%; place-items: center; color: var(--qbc-danger); background: var(--qbc-danger-soft); font-weight: 800; }

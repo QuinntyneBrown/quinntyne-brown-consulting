@@ -1,34 +1,47 @@
-<section class="page">
+<qbc-page>
   <qbc-page-header title="Backlog" description="Shape ideas into ready work, then place them into a two-week sprint." />
   <div class="toolbar">
-    <label class="search-wrap"><span aria-hidden="true">⌕</span><span class="visually-hidden">Search backlog</span><input [value]="service.searchText()" placeholder="Search stories or epics" (input)="search($any($event.target).value)"></label>
-    <select aria-label="Filter backlog" [value]="service.filter()" (change)="filter($any($event.target).value)"><option value="all">All stories</option><option value="unscheduled">Unscheduled</option><option value="ready">Ready</option><option value="draft">Draft</option><option value="archived">Archived</option></select>
+    <qbc-text-input
+      class="search"
+      type="text"
+      icon="search"
+      label="Search backlog"
+      [labelHidden]="true"
+      placeholder="Search stories or epics"
+      [value]="service.searchText()"
+      (valueChange)="search($event)" />
+    <qbc-select
+      ariaLabel="Filter backlog"
+      [labelHidden]="true"
+      [value]="service.filter()"
+      [options]="filterOptions"
+      (valueChange)="filter($any($event))" />
   </div>
-  @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
-  @if (service.loadingState() === 'loading' && service.stories().length === 0) { <p class="loading">Loading backlog…</p> }
+  @if (service.error()) { <qbc-form-error>{{ service.error() }}</qbc-form-error> }
+  @if (service.loadingState() === 'loading' && service.stories().length === 0) { <qbc-loading-state>Loading backlog…</qbc-loading-state> }
   @else if (service.visibleStories().length === 0) {
     <qbc-empty-state title="No matching stories" description="Try another filter or create a new story." />
   } @else {
     <div class="data-list">
       @for (story of service.visibleStories(); track story.id) {
-        <article class="data-row">
-          <div class="row-title"><span class="story-key">{{ story.key }}</span><div><strong>{{ story.title }}</strong><small>{{ story.initiativeName }} / {{ story.epicName }}</small></div></div>
-          <div><span class="cell-label">State</span><qbc-status-pill [tone]="badge(story)" [label]="badge(story)" /></div>
-          <div><span class="cell-label">Estimate</span>{{ story.points ?? '—' }} pts</div>
-          <div><span class="cell-label">Owner</span>{{ story.assistantName ?? 'Unassigned' }}</div>
-          <div class="sprint-cell"><span class="cell-label">Sprint</span>
-            <select aria-label="Sprint assignment" [value]="story.sprintId ?? ''" [disabled]="pendingStoryId() === story.id || !story.isReady || story.lifecycle === 'archived' || story.sprintStatus === 'completed'" (change)="changeSprint(story, $any($event.target).value)">
-              <option value="">Backlog</option>
-              @for (sprint of planning.sprints(); track sprint.id) { @if (sprint.status !== 'completed') { <option [value]="sprint.id">{{ sprint.name }}</option> } }
-            </select>
-          </div>
-          <div class="row-actions">
-            @if (story.lifecycle !== 'archived' && !story.isReady) { <button class="quiet-button" type="button" [disabled]="pendingStoryId() === story.id" (click)="groom(story)">Groom</button> }
-            @if (story.isReady && !story.sprintId) { <button class="quiet-button" type="button" [disabled]="pendingStoryId() === story.id" (click)="markUnready(story)">Mark unready</button> }
-            <button class="quiet-button" type="button" (click)="edit(story.id)">Open</button>
-          </div>
-        </article>
+        <qbc-data-row [storyKey]="story.key" [title]="story.title" [context]="story.initiativeName + ' / ' + story.epicName">
+          <qbc-status-pill state [tone]="badge(story)" [label]="badge(story)" />
+          <qbc-points estimate [value]="story.points" />
+          <span owner>{{ story.assistantName ?? 'Unassigned' }}</span>
+          <qbc-select
+            sprint
+            size="sm"
+            ariaLabel="Sprint assignment"
+            [labelHidden]="true"
+            [value]="story.sprintId ?? ''"
+            [options]="sprintOptions()"
+            [disabled]="pendingStoryId() === story.id || !story.isReady || story.lifecycle === 'archived' || story.sprintStatus === 'completed'"
+            (valueChange)="changeSprint(story, $event)" />
+          @if (story.lifecycle !== 'archived' && !story.isReady) { <qbc-button actions variant="quiet" size="sm" [disabled]="pendingStoryId() === story.id" (click)="groom(story)">Groom</qbc-button> }
+          @if (story.isReady && !story.sprintId) { <qbc-button actions variant="quiet" size="sm" [disabled]="pendingStoryId() === story.id" (click)="markUnready(story)">Mark unready</qbc-button> }
+          <qbc-button actions variant="quiet" size="sm" (click)="edit(story.id)">Open</qbc-button>
+        </qbc-data-row>
       }
     </div>
   }
-</section>
+</qbc-page>

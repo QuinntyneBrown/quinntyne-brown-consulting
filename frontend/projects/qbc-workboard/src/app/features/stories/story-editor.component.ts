@@ -1,6 +1,21 @@
-import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, effect, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ConfirmDialogComponent } from '@qbc/components';
+import {
+  ActionGroupComponent,
+  ButtonComponent,
+  CheckboxComponent,
+  ConfirmDialogComponent,
+  DialogComponent,
+  FormErrorComponent,
+  FormGridComponent,
+  SectionLabelComponent,
+  SelectComponent,
+  SelectItem,
+  SelectOption,
+  TaskItemComponent,
+  TextareaComponent,
+  TextInputComponent
+} from '@qbc/components';
 import { ASSISTANT_SERVICE } from '../assistants/assistant.service.contract';
 import { BACKLOG_SERVICE } from '../backlog/backlog.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
@@ -10,12 +25,26 @@ import { STORY_SERVICE } from './story.service.contract';
 
 @Component({
   selector: 'app-story-editor',
-  imports: [ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [
+    ReactiveFormsModule,
+    ActionGroupComponent,
+    ButtonComponent,
+    CheckboxComponent,
+    ConfirmDialogComponent,
+    DialogComponent,
+    FormErrorComponent,
+    FormGridComponent,
+    SectionLabelComponent,
+    SelectComponent,
+    TaskItemComponent,
+    TextareaComponent,
+    TextInputComponent
+  ],
   templateUrl: './story-editor.component.html',
   styleUrl: './story-editor.component.scss'
 })
 export class StoryEditorComponent {
-  private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
+  private readonly dialog = viewChild.required<DialogComponent>('dialog');
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
   readonly editor = inject(STORY_EDITOR_SERVICE);
@@ -25,6 +54,10 @@ export class StoryEditorComponent {
   private readonly backlog = inject(BACKLOG_SERVICE);
   private readonly board = inject(SPRINT_EXECUTION_SERVICE);
   readonly pending = signal(false);
+  readonly pointOptions: readonly SelectOption<number | null>[] = [
+    { value: null, label: 'Not estimated' },
+    ...[1, 2, 3, 5, 8, 13].map(value => ({ value, label: String(value) }))
+  ];
   readonly form = this.fb.group({
     epicId: ['', Validators.required],
     title: ['', Validators.required],
@@ -50,6 +83,23 @@ export class StoryEditorComponent {
   }
 
   removeTask(index: number): void { this.tasks.removeAt(index); }
+
+  epicOptions(): readonly SelectItem[] {
+    return [
+      { value: '', label: 'Choose an epic' },
+      ...this.hierarchy.hierarchy().initiatives.map(initiative => ({
+        label: initiative.name,
+        options: initiative.epics.map(epic => ({ value: epic.id, label: epic.name }))
+      }))
+    ];
+  }
+
+  assistantOptions(): readonly SelectOption[] {
+    return [
+      { value: null, label: 'Unassigned' },
+      ...this.assistants.assistants().map(assistant => ({ value: assistant.id, label: assistant.fullName }))
+    ];
+  }
 
   async save(): Promise<void> {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
@@ -91,7 +141,7 @@ export class StoryEditorComponent {
   }
 
   close(): void {
-    if (this.dialog().nativeElement.open) this.dialog().nativeElement.close();
+    this.dialog().close();
     this.editor.close();
     this.stories.clear();
   }
@@ -115,7 +165,7 @@ export class StoryEditorComponent {
         this.tasks.push(this.fb.group({ id: [task.id], title: [task.title, Validators.required], isComplete: [task.isComplete], assistantId: [task.assistantId] }));
       }
     }
-    if (!this.dialog().nativeElement.open) this.dialog().nativeElement.showModal();
+    this.dialog().open();
   }
 
   private async refresh(): Promise<void> {

@@ -1,13 +1,36 @@
 import { Component, OnInit, inject, viewChild } from '@angular/core';
 import { SprintStoryCard } from '@qbc/api';
-import { ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent } from '@qbc/components';
+import {
+  BoardColumnComponent,
+  ButtonComponent,
+  ConfirmDialogComponent,
+  EmptyStateComponent,
+  FormErrorComponent,
+  LoadingStateComponent,
+  PageComponent,
+  PageHeaderComponent,
+  SprintHeroComponent,
+  StoryCardComponent
+} from '@qbc/components';
 import { SprintManagerComponent } from '../sprints/sprint-manager.component';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from './sprint-execution.service.contract';
 
 @Component({
   selector: 'app-board-page',
-  imports: [SprintManagerComponent, ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent],
+  imports: [
+    SprintManagerComponent,
+    BoardColumnComponent,
+    ButtonComponent,
+    ConfirmDialogComponent,
+    EmptyStateComponent,
+    FormErrorComponent,
+    LoadingStateComponent,
+    PageComponent,
+    PageHeaderComponent,
+    SprintHeroComponent,
+    StoryCardComponent
+  ],
   templateUrl: './board-page.component.html',
   styleUrl: './board-page.component.scss'
 })

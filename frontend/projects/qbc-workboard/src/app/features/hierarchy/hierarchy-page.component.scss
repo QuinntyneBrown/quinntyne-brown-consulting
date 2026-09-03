@@ -1,20 +1,2 @@
 .hierarchy-list { display: grid; gap: 18px; }
-.initiative-card { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); }
-.initiative-head { display: flex; gap: 22px; align-items: flex-start; justify-content: space-between; padding: 23px 25px; background: #fbfcfb; }
-.initiative-head h2 { margin: 0 0 4px; font-size: 17px; }
-.initiative-head p { margin: 0 0 7px; color: var(--muted); font-size: 13px; }
-.initiative-head small, .epic-row small { color: var(--muted); }
-.epic-list { padding: 5px 25px 18px 58px; }
-.epic-row { display: grid; grid-template-columns: minmax(180px, 1fr) 110px auto auto; gap: 16px; align-items: center; padding: 16px 0; border-top: 1px solid var(--line); }
-.epic-row strong, .epic-row small { display: block; }
-.mini-progress { overflow: hidden; height: 6px; border-radius: 10px; background: var(--line); }
-.mini-progress span { display: block; height: 100%; background: var(--accent); }
-.empty-copy { color: var(--muted); }
-.danger-text { color: var(--danger); }
-@media (max-width: 759px) {
-  .initiative-head { align-items: stretch; flex-direction: column; }
-  .epic-list { padding-left: 25px; }
-  .epic-row { grid-template-columns: 1fr auto; }
-  .mini-progress { display: none; }
-  .epic-row .row-actions { grid-column: 1 / -1; }
-}
+.empty-copy { color: var(--qbc-ink-soft); }

@@ -1,1 +1,1 @@
-<span [class]="'pill ' + tone()">@if (label(); as value) { {{ value }} } @else { <ng-content /> }</span>
+<qbc-pill [tone]="tone()" [label]="label()"><ng-content /></qbc-pill>

@@ -1,0 +1,6 @@
+section { min-width: 0; min-height: 460px; padding: 18px; border-radius: var(--qbc-r-xl); background: var(--qbc-soft); }
+header { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 16px; }
+h2 { margin: 0; font-size: 14px; }
+.stack { display: grid; gap: 11px; }
+.empty { padding: 35px 12px; color: var(--qbc-ink-soft); text-align: center; }
+@media (max-width: 1000px) { section { min-height: 220px; } }

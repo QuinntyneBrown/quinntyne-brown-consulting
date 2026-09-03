@@ -11,6 +11,11 @@ export class BacklogPage {
     await expect(this.page.getByText(title, { exact: true })).toBeVisible();
   }
 
+  async expectSprintAssignment(title: string, sprintName: string): Promise<void> {
+    const assignment = this.story(title).getByRole('combobox', { name: 'Sprint assignment' });
+    await expect(assignment.locator('option:checked')).toHaveText(sprintName);
+  }
+
   async openStory(title: string): Promise<void> {
     await this.story(title).getByRole('button', { name: 'Open' }).click();
     const editor = this.page.getByRole('dialog').filter({ has: this.page.getByRole('button', { name: 'Save story' }) });

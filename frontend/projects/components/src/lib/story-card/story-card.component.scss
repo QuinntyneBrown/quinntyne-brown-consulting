@@ -1,0 +1,10 @@
+:host { display: block; min-width: 0; }
+:host([draggable]) { cursor: grab; }
+:host.dragging { opacity: .55; }
+article { padding: 18px; border: 1px solid var(--qbc-line-card); border-radius: var(--qbc-r-lg); overflow-wrap: anywhere; background: var(--qbc-panel); box-shadow: var(--qbc-shadow-card); }
+.top, footer { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.top > span { color: var(--qbc-ink-faint); font-size: 11px; font-weight: 750; }
+h3 { margin: 14px 0 8px; font-size: 15px; }
+p, footer strong { color: var(--qbc-ink-soft); font-size: 12px; font-weight: 400; }
+footer { margin-top: 18px; }
+footer > div { display: flex; margin-left: auto; }

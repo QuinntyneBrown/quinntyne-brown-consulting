@@ -6,6 +6,11 @@ The standalone, first-class reference for QBC Workboard: design tokens, 35 nativ
 It has no runtime, validation, test, or build dependency on another folder in this repository and
 can be copied or versioned independently.
 
+The Angular application consumes the separately packaged
+[`@qbc/components`](../frontend/projects/components/README.md) implementation.
+Its manifest is checked against this catalog, while both implementations remain
+independently buildable and have no runtime dependency on each other.
+
 ## Run locally
 
 ```powershell

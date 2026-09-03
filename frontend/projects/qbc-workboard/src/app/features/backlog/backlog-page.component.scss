@@ -1,27 +1,9 @@
-.toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 22px; }
-.search-wrap { position: relative; flex: 1; max-width: 430px; }
-.search-wrap > span[aria-hidden] { position: absolute; top: 50%; left: 13px; color: #89938e; transform: translateY(-50%); }
-.search-wrap input { padding-left: 38px; }
-.toolbar > select { width: auto; min-width: 150px; }
-.data-list { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); }
-.data-row { display: grid; grid-template-columns: minmax(260px, 2fr) 100px 75px minmax(120px, 1fr) minmax(150px, 1fr) auto; gap: 16px; align-items: center; min-height: 90px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
-.data-row:last-child { border-bottom: 0; }
-.row-title { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
-.row-title strong, .row-title small { display: block; }
-.row-title small, .cell-label { color: var(--muted); font-size: 11px; }
-.story-key { color: var(--muted); font-size: 11px; font-weight: 750; }
-.cell-label { display: none; }
-.sprint-cell select { min-width: 135px; }
-.row-actions { justify-content: flex-end; }
-.row-actions button { min-height: 34px; padding: 5px 9px; font-size: 12px; }
-@media (max-width: 1050px) { .data-row { grid-template-columns: minmax(240px, 2fr) 100px 80px 1fr auto; } .data-row > :nth-child(4) { display: none; } }
-@media (max-width: 759px) {
+.toolbar { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 22px; }
+.toolbar .search { flex: 1; max-width: 430px; }
+.toolbar qbc-select { min-width: 150px; }
+.data-list { overflow: hidden; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-xl); }
+@media (max-width: 760px) {
   .toolbar { align-items: stretch; flex-direction: column; }
-  .search-wrap, .toolbar > select { width: 100%; max-width: none; }
+  .toolbar .search, .toolbar qbc-select { width: 100%; max-width: none; }
   .data-list { overflow: visible; border: 0; }
-  .data-row { grid-template-columns: 1fr 1fr; margin-bottom: 10px; padding: 17px; border: 1px solid var(--line); border-radius: 11px; }
-  .data-row > :first-child, .data-row > :last-child { grid-column: 1 / -1; }
-  .data-row > :nth-child(4) { display: block; }
-  .cell-label { display: block; }
-  .row-actions { justify-content: flex-start; }
 }

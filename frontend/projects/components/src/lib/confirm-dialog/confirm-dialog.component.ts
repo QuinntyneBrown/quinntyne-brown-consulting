@@ -1,13 +1,16 @@
-import { Component, ElementRef, viewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
+import { ButtonComponent } from '../button/button.component';
+import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: 'qbc-confirm-dialog',
+  imports: [ButtonComponent, DialogComponent],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.scss'
 })
 export class ConfirmDialogComponent {
   private static nextId = 1;
-  private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('dialog');
+  private readonly dialog = viewChild.required(DialogComponent);
   readonly titleId = `confirm-title-${ConfirmDialogComponent.nextId++}`;
   title = '';
   copy = '';
@@ -18,13 +21,14 @@ export class ConfirmDialogComponent {
     this.title = title;
     this.copy = copy;
     this.confirmLabel = confirmLabel;
-    this.dialog().nativeElement.showModal();
+    this.dialog().open();
     return new Promise<boolean>(resolve => { this.resolve = resolve; });
   }
 
   close(confirmed: boolean): void {
-    this.dialog().nativeElement.close();
-    this.resolve?.(confirmed);
+    const resolve = this.resolve;
     this.resolve = null;
+    this.dialog().close();
+    resolve?.(confirmed);
   }
 }

@@ -39,9 +39,11 @@ library imports application source, and the two libraries remain independent.
   presentation.
 - **`provideQbcServices`** — provider factory that registers `HttpClient` and
   aliases backend service tokens to their singletons with `useExisting`.
-- **`@qbc/components`** — Angular library under `projects/components`. It
-  exports `ConfirmDialogComponent`, `PageHeaderComponent`,
-  `EmptyStateComponent`, and `StatusPillComponent`.
+- **`@qbc/components`** — versioned Angular UI-system library under
+  `projects/components`. It exports design tokens and all reusable controls,
+  overlays, navigation, surfaces, and work-item views represented by the
+  standalone 35-component catalog. It remains independent of `@qbc/api` and
+  application workflow state.
 - **`provideQbcWorkboard`** — application provider factory that aliases each
   feature contract token to its Signal service singleton with `useExisting`.
 

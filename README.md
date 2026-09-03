@@ -58,7 +58,7 @@ flowchart LR
 | `backend/src/Qbc.Workboard.Cli` | Installable .NET tool for database initialization and reset |
 | `frontend/projects/qbc-workboard` | Routes, feature pages, orchestration, and Signal state |
 | `frontend/projects/api` | Typed models, service interfaces, injection tokens, and HTTP clients |
-| `frontend/projects/components` | Reusable Angular presentation components |
+| `frontend/projects/components` | Versioned Angular UI system aligned with the standalone component catalog |
 | `design-system` | Standalone native Web Component catalog and contract tests |
 | `docs` | Requirements, detailed designs, acceptance evidence, and prototypes |
 
@@ -186,6 +186,8 @@ dotnet test backend/Qbc.Workboard.slnx --configuration Release
 Set-Location frontend
 npm ci
 npm run build
+npm run validate:components
+npm run test:components
 
 # Browser acceptance tests
 npx playwright install
@@ -224,7 +226,9 @@ and terminate TLS before exposing the application.
 ## Design system
 
 The standalone catalog documents 35 native components, seven dialog families,
-and five responsive product patterns.
+and five responsive product patterns. The Angular application uses the matching
+35-component surface from `@qbc/components`; a manifest gate keeps both
+inventories aligned without coupling their runtimes.
 
 ```powershell
 Set-Location design-system

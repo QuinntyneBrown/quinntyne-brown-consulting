@@ -1,0 +1,1 @@
+export type IconName = 'board' | 'backlog' | 'initiatives' | 'assistants' | 'menu' | 'add' | 'close' | 'search' | 'arrow-left' | 'arrow-right' | 'more' | 'alert' | 'empty' | 'initiative';
