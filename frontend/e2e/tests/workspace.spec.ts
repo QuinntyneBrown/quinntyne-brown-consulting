@@ -123,3 +123,13 @@ test('responsive workflows do not overflow supported viewports', async ({ page, 
     }
   }
 });
+
+test('a dialog keeps its actions on screen on a phone', async ({ page, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Viewport matrix runs once in Chromium.');
+  const workboard = new WorkboardPage(page);
+  // A phone-sized viewport, short enough that the story editor has to scroll its body.
+  await page.setViewportSize({ width: 390, height: 664 });
+  await workboard.navigateTo('board');
+  await workboard.openNewStory();
+  await workboard.expectDialogActionsWithinViewport('New story');
+});
