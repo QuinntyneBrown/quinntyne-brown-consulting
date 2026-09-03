@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Load and mutate feature state
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "FeatureComponent" as component
+  participant "IResourceService token" as contract
+  participant "ResourceService" as service
+  participant "Feature Signal state" as signals
+  participant "ApiErrorPresenter" as error
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "ResourceController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Resource request handler" as handler
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> component : Activate feature route
+component -> contract : load()
+contract -> service : Resolve L2-033 useExisting alias
+service -> signals : Set Loading state
+service -> controller : GET /api/resources
+controller -> handler : Send resource query
+handler -> db : Read records
+db --> handler : Persisted records
+handler --> controller : ResourceDto list
+controller --> service : 200 JSON
+service -> signals : Set resources and Loaded state
+signals --> component : Recompute L2-032 template state
+component --> actor : Present feature
+actor -> component : Submit product mutation
+component -> contract : save(draft)
+contract -> service : Invoke concrete singleton
+service -> controller : Typed JSON request
+controller -> handler : Send command
+handler -> db : Validate and commit
+db --> handler : Authoritative result
+handler --> controller : ResourceDto
+alt request succeeds
+  controller --> service : 200 or 201 JSON
+  service -> signals : Apply authoritative response
+  signals --> component : Render updated state
+  component --> actor : Present success
+else request fails
+  controller --> service : RFC 9457 Problem Details
+  service -> error : Map transport failure
+  error -> signals : Set Failed state and message
+  signals --> component : Render actionable failure
+  component --> actor : Preserve unsaved state and present error
+end
+@enduml

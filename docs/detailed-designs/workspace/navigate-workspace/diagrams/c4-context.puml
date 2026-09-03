@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Navigate the workspace
+
+Person(consultant, "QBC consultant", "Plans and executes consulting work")
+System(workboard, "QBC Workboard", "Responsive work-planning and sprint-delivery system")
+
+Rel(consultant, workboard, "Navigates and manages work using", "HTTPS")
+@enduml

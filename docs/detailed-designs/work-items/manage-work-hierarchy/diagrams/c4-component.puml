@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage the work hierarchy
+
+Person(consultant, "QBC consultant", "Maintains hierarchy records")
+Container_Boundary(spa, "Angular web application") {
+  Component(page, "HierarchyPageComponent", "Angular component", "Displays hierarchy and roll-ups")
+  Component(forms, "InitiativeFormComponent / EpicFormComponent", "Angular components", "Capture validated edits")
+  Component(service, "IHierarchyService", "Injection-token contract", "Exposes hierarchy operations and Signals")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controllers, "InitiativesController / EpicsController", "ASP.NET Core controllers", "Expose hierarchy resources")
+  Component(handlers, "Hierarchy handlers", "MediatR handlers", "Save, query, move, and guard deletion")
+  Component(domain, "Initiative / Epic", "Domain entities", "Own parent relationships")
+  ComponentDb(db, "Workspace database", "SQLite", "Stores initiatives, epics, and stories")
+}
+
+Rel(consultant, page, "Views and acts through")
+Rel(page, forms, "Opens")
+Rel(page, service, "Queries through")
+Rel(forms, service, "Submit through")
+Rel(service, controllers, "Calls", "JSON/HTTPS")
+Rel(controllers, handlers, "Send commands and queries")
+Rel(handlers, domain, "Load and apply rules")
+Rel(handlers, db, "Read and write", "EF Core")
+@enduml

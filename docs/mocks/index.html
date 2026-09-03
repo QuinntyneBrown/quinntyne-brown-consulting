@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A radically simple Scrum workspace for Quinntyne Brown Consulting Inc.">
+  <title>QBC Workboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#board" aria-label="QBC Workboard home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span><strong>QBC</strong><small>Workboard</small></span>
+      </a>
+
+      <nav class="nav-list">
+        <a href="#board" data-nav="board"><span aria-hidden="true">▦</span> Board</a>
+        <a href="#backlog" data-nav="backlog"><span aria-hidden="true">≡</span> Backlog</a>
+        <a href="#hierarchy" data-nav="hierarchy"><span aria-hidden="true">⌘</span> Initiatives</a>
+        <a href="#assistants" data-nav="assistants"><span aria-hidden="true">◎</span> Assistants</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <button class="quiet-button full-width" type="button" data-action="reset-demo">Reset demo</button>
+        <p>Quinntyne Brown<br>Consulting Inc.</p>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="mobile-nav-button" type="button" data-action="toggle-nav" aria-label="Open navigation" aria-expanded="false">☰</button>
+        <div class="breadcrumb" id="breadcrumb">Workspace / Board</div>
+        <button class="primary-button" type="button" data-action="new-story"><span aria-hidden="true">＋</span> New story</button>
+      </header>
+      <main id="main-content" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div id="modal-content"></div>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <div class="dialog-icon danger" aria-hidden="true">!</div>
+      <h2 id="confirm-title">Are you sure?</h2>
+      <p id="confirm-copy"></p>
+      <div class="dialog-actions">
+        <button class="secondary-button" value="cancel">Cancel</button>
+        <button class="danger-button" id="confirm-button" value="confirm">Confirm</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="app.js"></script>
+</body>
+</html>

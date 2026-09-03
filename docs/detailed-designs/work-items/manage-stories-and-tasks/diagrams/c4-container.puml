@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage stories and tasks
+
+Person(consultant, "QBC consultant", "Creates and maintains stories")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Renders story details, forms, and actions")
+  Container(api, "Workboard API", "ASP.NET Core", "Handles story aggregate commands")
+  ContainerDb(db, "Workspace database", "SQLite", "Stores stories and child tasks")
+}
+
+Rel(consultant, spa, "Uses", "HTTPS")
+Rel(spa, api, "Sends story queries and commands", "JSON/HTTPS")
+Rel(api, db, "Reads and writes story aggregates", "EF Core")
+@enduml

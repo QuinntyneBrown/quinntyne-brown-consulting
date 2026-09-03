@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Execute the active sprint
+
+Person(consultant, "QBC consultant", "Executes and completes sprint work")
+System(workboard, "QBC Workboard", "Presents the Active sprint board and progress")
+
+Rel(consultant, workboard, "Moves and completes sprint work using", "HTTPS")
+@enduml

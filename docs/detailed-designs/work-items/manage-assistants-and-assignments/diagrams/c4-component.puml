@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage assistants and assignments
+
+Person(consultant, "QBC consultant", "Maintains assistants and delegates work")
+Container_Boundary(spa, "Angular web application") {
+  Component(page, "AssistantsPageComponent", "Angular component", "Displays profiles and workload")
+  Component(picker, "AssistantPickerComponent", "Angular component", "Selects story and task assignees")
+  Component(dialog, "AssistantAssignmentsDialogComponent", "Angular component", "Lists blocking assignments")
+  Component(service, "IAssistantService", "Injection-token contract", "Exposes assistant state and operations")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "AssistantsController", "ASP.NET Core controller", "Exposes profiles and workloads")
+  Component(handlers, "Assistant command handlers", "MediatR handlers", "Save profiles and guard deletion")
+  Component(domain, "Assistant", "Domain entity", "Owns profile and availability")
+  ComponentDb(db, "Workspace database", "SQLite", "Stores profiles and assignment references")
+}
+
+Rel(consultant, page, "Uses")
+Rel(page, dialog, "Shows blocking work in")
+Rel(picker, service, "Saves assignments through")
+Rel(page, service, "Queries and commands through")
+Rel(service, controller, "Calls", "JSON/HTTPS")
+Rel(controller, handlers, "Sends commands and queries")
+Rel(handlers, domain, "Loads and changes")
+Rel(handlers, db, "Reads and writes", "EF Core")
+@enduml

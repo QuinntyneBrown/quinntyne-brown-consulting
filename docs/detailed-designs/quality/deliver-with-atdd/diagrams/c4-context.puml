@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Deliver vertical slices with ATDD
+
+Person(implementer, "Product implementer", "Implements executable behavior through ATDD")
+System(workboard, "QBC Workboard", "Product under acceptance test")
+System(testHarness, "Acceptance test harness", "Backend integration and Playwright end-to-end tests")
+System_Ext(changeRecord, "Change record", "Stores red and green acceptance evidence")
+
+Rel(implementer, testHarness, "Selects and runs acceptance scenario in")
+Rel(testHarness, workboard, "Exercises public behavior of")
+Rel(implementer, workboard, "Adds minimal production behavior to")
+Rel(testHarness, changeRecord, "Records expected red and final green evidence in")
+@enduml

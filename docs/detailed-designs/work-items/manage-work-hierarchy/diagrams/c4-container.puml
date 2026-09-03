@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Manage the work hierarchy
+
+Person(consultant, "QBC consultant", "Manages initiatives and epics")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Renders hierarchy and forms")
+  Container(api, "Workboard API", "ASP.NET Core", "Validates and handles hierarchy operations")
+  ContainerDb(db, "Workspace database", "SQLite", "Stores hierarchy relationships")
+}
+
+Rel(consultant, spa, "Uses", "HTTPS")
+Rel(spa, api, "Sends hierarchy commands and queries", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

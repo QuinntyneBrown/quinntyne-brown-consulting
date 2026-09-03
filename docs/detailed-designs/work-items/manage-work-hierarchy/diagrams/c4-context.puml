@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage the work hierarchy
+
+Person(consultant, "QBC consultant", "Organizes outcomes and bodies of work")
+System(workboard, "QBC Workboard", "Maintains initiatives, epics, and stories")
+
+Rel(consultant, workboard, "Manages the work hierarchy using", "HTTPS")
+@enduml

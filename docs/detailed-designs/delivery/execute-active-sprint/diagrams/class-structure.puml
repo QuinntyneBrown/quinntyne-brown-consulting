@@ -1,0 +1,71 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Execute the active sprint
+
+class ActiveSprintBoard {
+  +Guid SprintId
+  +string Name
+  +string Goal
+  +DateOnly StartDate
+  +DateOnly EndDate
+  +int DoneCount
+  +int TotalCount
+  +int CompletionPercentage
+  +IReadOnlyList<SprintStoryCard> Stories
+}
+
+class SprintStoryCard {
+  +Guid StoryId
+  +string Key
+  +string Title
+  +string EpicName
+  +int Points
+  +Guid? AssistantId
+  +int CompletedTasks
+  +int TotalTasks
+  +BoardStatus BoardStatus
+}
+
+class SprintBoardStore {
+  +Signal<ActiveSprintBoard?> board
+  +Signal<IReadOnlyList<SprintStoryCard>> todo
+  +Signal<IReadOnlyList<SprintStoryCard>> inProgress
+  +Signal<IReadOnlyList<SprintStoryCard>> done
+}
+
+class MoveStoryCommandHandler {
+  +Handle(command: MoveStoryCommand): Task<ActiveSprintBoard>
+}
+
+class CompleteSprintCommandHandler {
+  +Handle(command: CompleteSprintCommand): Task<Result>
+}
+
+class Sprint {
+  +SprintStatus Status
+  +Complete(): void
+}
+
+class Story {
+  +Guid? SprintId
+  +BoardStatus BoardStatus
+  +MoveTo(status: BoardStatus): void
+  +ReturnToBacklog(): void
+}
+
+ActiveSprintBoard *-- SprintStoryCard
+SprintBoardStore --> ActiveSprintBoard
+MoveStoryCommandHandler --> Story : moves
+CompleteSprintCommandHandler --> Sprint : completes
+CompleteSprintCommandHandler --> Story : retains or releases
+Story --> BoardStatus
+@enduml

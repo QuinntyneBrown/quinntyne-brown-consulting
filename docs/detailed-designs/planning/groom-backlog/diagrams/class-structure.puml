@@ -1,0 +1,68 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Groom the backlog
+
+enum BacklogFilter {
+  All
+  Unscheduled
+  Ready
+  Draft
+  Archived
+}
+
+class BacklogStore {
+  +Signal<IReadOnlyList<BacklogStory>> stories
+  +Signal<string> searchText
+  +Signal<BacklogFilter> filter
+  +Signal<IReadOnlyList<BacklogStory>> visibleStories
+  +setSearch(text: string): void
+  +setFilter(filter: BacklogFilter): void
+}
+
+interface IBacklogService {
+  +Signal<LoadState> loadState
+  +load(): Promise<void>
+  +groom(storyId: Guid): Promise<void>
+  +markUnready(storyId: Guid): Promise<void>
+}
+
+class BacklogService {
+  +load(): Promise<void>
+  +groom(storyId: Guid): Promise<void>
+  +markUnready(storyId: Guid): Promise<void>
+}
+
+class StoryReadinessPolicy {
+  +Evaluate(story: Story): ValidationResult
+}
+
+class GroomStoryCommandHandler {
+  +Handle(command: GroomStoryCommand): Task<BacklogStory>
+}
+
+class Story {
+  +string Title
+  +Guid EpicId
+  +string Description
+  +string AcceptanceCriteria
+  +int? Points
+  +bool IsReady
+  +MarkReady(): void
+}
+
+BacklogStore --> BacklogFilter
+BacklogStore o-- BacklogStory
+IBacklogService <|.. BacklogService
+BacklogService --> BacklogStore : updates
+GroomStoryCommandHandler --> StoryReadinessPolicy : evaluates with
+GroomStoryCommandHandler --> Story : marks ready
+@enduml

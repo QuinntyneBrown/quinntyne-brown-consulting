@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Deliver vertical slices with ATDD
+
+Person(implementer, "Product implementer", "Implements one accepted behaviour")
+Container_Boundary(browserSuite, "Playwright acceptance suite") {
+  Component(spec, "AcceptanceSpec", "Playwright specification", "Expresses Given/When/Then intent")
+  Component(pageObject, "FeaturePage", "Page Object Model", "Owns locators, actions, and observations")
+  Component(responsive, "ResponsiveWorkflow", "Playwright workflow", "Runs behavior at required viewports")
+  Component(a11y, "AccessibilityScan", "Accessibility check", "Inspects rendered behavior")
+}
+Container_Boundary(apiSuite, "Backend integration suite") {
+  Component(test, "ApiAcceptanceTest", ".NET integration test", "Calls the public HTTP boundary")
+  Component(factory, "WorkboardApiFactory", "ASP.NET Core test host", "Wires the real application pipeline")
+  Component(database, "IntegrationDatabase", "Test fixture", "Creates isolated scenario data")
+}
+System(workboard, "QBC Workboard", "Product under test")
+System_Ext(evidence, "AcceptanceEvidence", "Change-record evidence")
+
+Rel(implementer, spec, "Writes and runs")
+Rel(implementer, test, "Writes and runs")
+Rel(spec, pageObject, "Invokes behavior through")
+Rel(spec, responsive, "Executes viewport workflow through")
+Rel(spec, a11y, "Runs rendered checks through")
+Rel(pageObject, workboard, "Drives", "Browser")
+Rel(test, factory, "Hosts API with")
+Rel(factory, database, "Creates isolated persistence with")
+Rel(factory, workboard, "Hosts real backend of")
+Rel(spec, evidence, "Records result in")
+Rel(test, evidence, "Records result in")
+@enduml

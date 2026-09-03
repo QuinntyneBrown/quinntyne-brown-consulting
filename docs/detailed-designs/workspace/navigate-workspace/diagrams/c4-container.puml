@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Navigate the workspace
+
+Person(consultant, "QBC consultant", "Navigates the workspace")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Renders the shell and routed work areas")
+  Container(api, "Workboard API", "ASP.NET Core", "Provides route bootstrap data")
+  ContainerDb(db, "Workspace database", "SQLite", "Stores workspace records")
+}
+
+Rel(consultant, spa, "Uses", "HTTPS")
+Rel(spa, api, "Requests route data", "JSON/HTTPS")
+Rel(api, db, "Reads workspace state", "EF Core")
+@enduml

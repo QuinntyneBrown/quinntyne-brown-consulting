@@ -1,0 +1,65 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Plan two-week sprints
+
+enum SprintStatus {
+  Planned
+  Active
+  Completed
+}
+
+class Sprint {
+  +Guid Id
+  +string Name
+  +string Goal
+  +DateOnly StartDate
+  +DateOnly EndDate
+  +SprintStatus Status
+  +Start(hasActiveSprint: bool): void
+  +Complete(): void
+}
+
+class Story {
+  +Guid Id
+  +bool IsReady
+  +StoryLifecycle Lifecycle
+  +Guid? SprintId
+  +BoardStatus BoardStatus
+  +AssignTo(sprint: Sprint): void
+  +ReturnToBacklog(): void
+}
+
+class SaveSprintCommandHandler {
+  +Handle(command: SaveSprintCommand): Task<SprintDetails>
+}
+
+class StartSprintCommandHandler {
+  +Handle(command: StartSprintCommand): Task<SprintDetails>
+}
+
+class AssignStoryToSprintCommandHandler {
+  +Handle(command: AssignStoryToSprintCommand): Task<StoryPlanningDetails>
+}
+
+class DeletePlannedSprintCommandHandler {
+  +Handle(command: DeletePlannedSprintCommand): Task<Result>
+}
+
+Sprint --> SprintStatus
+Sprint "0..1" <-- "0..*" Story : planned in
+SaveSprintCommandHandler --> Sprint : creates / updates
+StartSprintCommandHandler --> Sprint : starts
+AssignStoryToSprintCommandHandler --> Sprint : validates target
+AssignStoryToSprintCommandHandler --> Story : assigns / releases
+DeletePlannedSprintCommandHandler --> Sprint : deletes planned
+DeletePlannedSprintCommandHandler --> Story : returns assigned work
+@enduml

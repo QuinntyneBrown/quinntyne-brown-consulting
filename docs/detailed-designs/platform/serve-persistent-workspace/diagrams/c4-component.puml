@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Serve the persistent workspace
+
+Container(spa, "Web application", "Angular", "Sends typed HTTP requests")
+Container_Boundary(api, "Workboard API") {
+  Component(controllers, "Resource controllers", "ASP.NET Core controllers", "Map HTTP requests to application messages")
+  Component(mediator, "MediatR pipeline", "MediatR 12.5.0", "Dispatches requests through validation")
+  Component(handlers, "Command and query handlers", "Application layer", "Execute product use cases")
+  Component(domain, "Domain model", "Domain layer", "Enforces entity and lifecycle rules")
+  Component(contract, "IWorkboardDbContext", "Application interface", "Defines persistence operations")
+  Component(problem, "ProblemDetailsExceptionHandler", "ASP.NET Core handler", "Maps failures to RFC 9457")
+}
+Container_Boundary(infrastructure, "Workboard Infrastructure") {
+  Component(context, "WorkboardDbContext", "EF Core", "Implements the persistence contract")
+  ComponentDb(db, "Workspace database", "SQLite", "Persists records and relationships")
+}
+
+Rel(spa, controllers, "Calls", "JSON/HTTPS")
+Rel(controllers, mediator, "Sends command or query")
+Rel(mediator, handlers, "Dispatches validated request")
+Rel(handlers, domain, "Loads and applies rules")
+Rel(handlers, contract, "Reads and writes through")
+Rel(contract, context, "Implemented by")
+Rel(context, db, "Commits", "EF Core")
+Rel(controllers, problem, "Maps failures through")
+@enduml

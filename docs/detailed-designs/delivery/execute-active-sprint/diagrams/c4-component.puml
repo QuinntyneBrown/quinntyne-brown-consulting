@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Execute the active sprint
+
+Person(consultant, "QBC consultant", "Moves stories and completes the sprint")
+Container_Boundary(spa, "Angular web application") {
+  Component(page, "SprintBoardPageComponent", "Angular component", "Displays Active sprint summary")
+  Component(column, "BoardColumnComponent", "Angular component", "Groups one board state")
+  Component(card, "SprintStoryCardComponent", "Angular component", "Displays story and movement actions")
+  Component(store, "SprintBoardStore", "Angular Signal store", "Computes counts and progress")
+  Component(service, "ISprintExecutionService", "Injection-token contract", "Loads and changes board state")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controllers, "SprintsController / StoriesController", "ASP.NET Core controllers", "Expose board operations")
+  Component(handlers, "Sprint execution handlers", "MediatR handlers", "Query, move, and complete")
+  Component(aggregates, "Sprint / Story", "Domain aggregates", "Own delivery transitions")
+  ComponentDb(db, "Workspace database", "SQLite", "Stores sprint history and story status")
+}
+
+Rel(consultant, page, "Uses")
+Rel(page, column, "Composes")
+Rel(column, card, "Contains")
+Rel(page, store, "Reads")
+Rel(card, service, "Moves story through")
+Rel(page, service, "Loads and completes through")
+Rel(service, controllers, "Calls", "JSON/HTTPS")
+Rel(controllers, handlers, "Send commands and queries")
+Rel(handlers, aggregates, "Apply rules")
+Rel(handlers, db, "Read and write", "EF Core")
+@enduml

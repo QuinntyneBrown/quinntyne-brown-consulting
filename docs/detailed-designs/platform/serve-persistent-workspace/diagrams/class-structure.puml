@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Serve the persistent workspace
+
+interface IRequest<TResponse>
+interface IRequestHandler<TRequest, TResponse> {
+  +Handle(request: TRequest, cancellationToken: CancellationToken): Task<TResponse>
+}
+
+interface ISender {
+  +Send<TResponse>(request: IRequest<TResponse>, cancellationToken: CancellationToken): Task<TResponse>
+}
+
+interface IWorkboardDbContext {
+  +IQueryable<Initiative> Initiatives
+  +IQueryable<Epic> Epics
+  +IQueryable<Story> Stories
+  +IQueryable<Assistant> Assistants
+  +IQueryable<Sprint> Sprints
+  +SaveChangesAsync(cancellationToken: CancellationToken): Task<int>
+}
+
+class WorkboardDbContext {
+  +SaveChangesAsync(cancellationToken: CancellationToken): Task<int>
+}
+
+class ResourceCommand
+class ResourceResult
+
+class ResourceCommandHandler {
+  +Handle(command: ResourceCommand, cancellationToken: CancellationToken): Task<ResourceResult>
+}
+
+class ResourceController {
+  +Execute(request: ResourceRequest, cancellationToken: CancellationToken): Task<ActionResult<ResourceResult>>
+}
+
+class ValidationBehavior<TRequest, TResponse> {
+  +Handle(request: TRequest, next: RequestHandlerDelegate<TResponse>, cancellationToken: CancellationToken): Task<TResponse>
+}
+
+class ProblemDetailsExceptionHandler {
+  +TryHandleAsync(exception: Exception): ValueTask<bool>
+}
+
+IWorkboardDbContext <|.. WorkboardDbContext
+IRequest <|.. ResourceCommand
+IRequestHandler <|.. ResourceCommandHandler
+ResourceController ..> ResourceCommand : creates
+ResourceController ..> ISender : dispatches through
+ISender ..> ResourceCommandHandler : routes request to
+ResourceCommandHandler --> IWorkboardDbContext : persists through
+ValidationBehavior ..> ResourceCommand : validates
+ProblemDetailsExceptionHandler ..> ResourceController : maps failures from
+@enduml

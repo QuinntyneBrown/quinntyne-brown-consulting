@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Serve the persistent workspace
+
+Person(consultant, "QBC consultant", "Uses durable work-management capabilities")
+System(workboard, "QBC Workboard", "Persists and validates workspace state")
+
+Rel(consultant, workboard, "Manages persistent work using", "HTTPS")
+@enduml

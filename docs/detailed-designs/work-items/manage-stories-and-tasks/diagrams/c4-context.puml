@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage stories and tasks
+
+Person(consultant, "QBC consultant", "Defines deliverable work and task checklists")
+System(workboard, "QBC Workboard", "Maintains stories, tasks, and lifecycle state")
+
+Rel(consultant, workboard, "Manages stories and tasks using", "HTTPS")
+@enduml

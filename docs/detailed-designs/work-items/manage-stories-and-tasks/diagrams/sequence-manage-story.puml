@@ -1,0 +1,75 @@
+@startuml
+title UML sequence behaviour — Save and transition a story
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "StoryFormComponent" as form
+  participant "StoryActionsComponent" as actions
+  participant "IStoryService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "StoriesController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Story command handler" as handler
+  participant "Story" as story
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> form : Enter L2-005 story and L2-007 task data
+form -> service : save(draft)
+service -> controller : POST or PUT /api/stories
+controller -> handler : Send SaveStoryCommand
+handler -> db : Load epic, assistants, and existing story
+db --> handler : Referenced records
+alt fields and task titles are valid
+  handler -> story : Apply fields and child-task changes
+  story --> handler : Updated aggregate
+  handler -> db : Commit aggregate
+  db --> handler : Commit result
+  handler --> controller : StoryDetails
+  controller --> service : 200 or 201 JSON
+  service --> form : Update Story Signals
+  form --> actor : Present saved story
+else validation fails
+  handler --> controller : Validation details
+  controller --> service : 400 Problem Details
+  service --> form : Map field and task errors
+  form --> actor : Present actionable errors
+end
+actor -> actions : Select archive, restore, or delete
+actions -> service : submit lifecycle action
+service -> controller : POST or DELETE story action
+controller -> handler : Send lifecycle command
+handler -> db : Load story and completed sprint membership
+db --> handler : Current aggregate and history
+alt L2-006 / L2-008 transition is permitted
+  handler -> story : Apply lifecycle transition
+  handler -> db : Commit transition or delete
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> service : 200 or 204
+  service --> actions : Update Story Signals
+  actions --> actor : Present result
+else completed sprint retains story
+  handler --> controller : Historical conflict
+  controller --> service : 409 Problem Details
+  service --> actions : Preserve current state
+  actions --> actor : Explain history protection
+end
+@enduml

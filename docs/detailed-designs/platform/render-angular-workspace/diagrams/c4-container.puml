@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Render the Angular workspace
+
+Person(consultant, "QBC consultant", "Uses the web application")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Renders external templates from Signal state")
+  Container(api, "Workboard API", "ASP.NET Core", "Provides authoritative typed resources")
+  ContainerDb(db, "Workspace database", "SQLite", "Stores product data")
+}
+
+Rel(consultant, spa, "Uses", "HTTPS")
+Rel(spa, api, "Calls through interface-backed services", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+title UML sequence behaviour — Plan and start a sprint
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "SprintManagerDialogComponent" as manager
+  participant "SprintAssignmentComponent" as assign
+  participant "ISprintPlanningService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "SprintsController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Sprint planning handler" as handler
+  participant "Sprint / Story" as aggregates
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> manager : Save L2-013 sprint name, goal, and start date
+manager -> service : saveSprint(draft)
+service -> controller : POST /api/sprints
+controller -> handler : Send SaveSprintCommand
+handler -> aggregates : Create Planned sprint and derive end date
+aggregates --> handler : Valid sprint
+handler -> db : Commit sprint
+db --> handler : Commit result
+handler --> controller : SprintDetails
+controller --> service : 201 JSON
+service --> manager : Update sprint Signals
+manager --> actor : Present 14-day sprint
+actor -> assign : Assign L2-015 Ready story
+assign -> service : assignStory(storyId, sprintId)
+service -> controller : PUT /api/sprints/{id}/stories/{storyId}
+controller -> handler : Send AssignStoryToSprintCommand
+handler -> db : Load story, sprint, and active sprint
+db --> handler : Current planning state
+alt story and target are eligible
+  handler -> aggregates : Assign story and set To do
+  handler -> db : Commit assignment
+  db --> handler : Commit result
+  handler --> controller : StoryPlanningDetails
+  controller --> service : 200 JSON
+  service --> assign : Update planning Signals
+  assign --> actor : Present sprint assignment
+else planning invariant fails
+  handler --> controller : Validation or conflict
+  controller --> service : 400 or 409 Problem Details
+  service --> actor : Preserve state and present reason
+end
+actor -> manager : Start L2-014 sprint or delete L2-016 plan
+manager -> service : submit lifecycle action
+service -> controller : POST start or DELETE sprint
+controller -> handler : Send lifecycle command
+handler -> db : Load sprint and related stories
+db --> handler : Current state
+handler -> aggregates : Enforce single Active or Planned-only deletion
+alt action is valid
+  handler -> db : Commit lifecycle and story disposition
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> service : 200 or 204
+  service --> manager : Update Signals
+  manager --> actor : Present result
+else action conflicts
+  handler --> controller : Domain conflict
+  controller --> service : 409 Problem Details
+  service --> actor : Present unchanged plan and reason
+end
+@enduml

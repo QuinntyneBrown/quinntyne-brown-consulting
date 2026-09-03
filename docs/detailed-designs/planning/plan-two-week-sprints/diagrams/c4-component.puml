@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Plan two-week sprints
+
+Person(consultant, "QBC consultant", "Plans sprint goals and stories")
+Container_Boundary(spa, "Angular web application") {
+  Component(manager, "SprintManagerDialogComponent", "Angular component", "Lists sprints and valid actions")
+  Component(form, "SprintFormComponent", "Angular component", "Captures sprint metadata")
+  Component(assign, "SprintAssignmentComponent", "Angular component", "Plans Ready stories")
+  Component(service, "ISprintPlanningService", "Injection-token contract", "Exposes sprint planning state and commands")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "SprintsController", "ASP.NET Core controller", "Exposes sprint resources and actions")
+  Component(handlers, "Sprint planning handlers", "MediatR handlers", "Save, start, assign, and delete plans")
+  Component(aggregates, "Sprint / Story", "Domain aggregates", "Own lifecycle, readiness, and assignment")
+  ComponentDb(db, "Workspace database", "SQLite", "Stores sprint plans and stories")
+}
+
+Rel(consultant, manager, "Uses")
+Rel(manager, form, "Opens")
+Rel(consultant, assign, "Plans stories with")
+Rel(manager, service, "Sends commands through")
+Rel(assign, service, "Sends assignments through")
+Rel(service, controller, "Calls", "JSON/HTTPS")
+Rel(controller, handlers, "Sends commands and queries")
+Rel(handlers, aggregates, "Loads and applies rules")
+Rel(handlers, db, "Commits", "EF Core")
+@enduml

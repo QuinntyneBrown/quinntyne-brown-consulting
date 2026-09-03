@@ -1,0 +1,63 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Navigate the workspace
+
+enum WorkspaceRoute {
+  Board
+  Backlog
+  Initiatives
+  Assistants
+}
+
+class AppShellComponent {
+  +Signal<WorkspaceRoute> activeRoute
+  +openStoryForm(): void
+}
+
+class WorkspaceNavigationComponent {
+  +Signal<boolean> menuOpen
+  +navigate(route: WorkspaceRoute): void
+  +closeMenu(): void
+}
+
+interface IWorkspaceService {
+  +Signal<WorkspaceBootstrap> state
+  +load(route: WorkspaceRoute): Promise<void>
+}
+
+class WorkspaceService {
+  -WritableSignal<WorkspaceBootstrap> state
+  +load(route: WorkspaceRoute): Promise<void>
+}
+
+class WorkspaceBootstrap {
+  +WorkspaceRoute route
+  +boolean hasActiveSprint
+  +int backlogCount
+}
+
+class WorkspaceController {
+  +Get(route: WorkspaceRoute): Task<ActionResult<WorkspaceBootstrap>>
+}
+
+class GetWorkspaceQueryHandler {
+  +Handle(query: GetWorkspaceQuery): Task<WorkspaceBootstrap>
+}
+
+AppShellComponent *-- WorkspaceNavigationComponent
+WorkspaceNavigationComponent --> WorkspaceRoute
+AppShellComponent ..> IWorkspaceService : injects token
+IWorkspaceService <|.. WorkspaceService
+WorkspaceService --> WorkspaceBootstrap
+WorkspaceService ..> WorkspaceController : HTTPS
+WorkspaceController ..> GetWorkspaceQueryHandler : sends query
+@enduml

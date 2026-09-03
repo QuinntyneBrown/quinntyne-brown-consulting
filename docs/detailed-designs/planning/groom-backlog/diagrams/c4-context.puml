@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Groom the backlog
+
+Person(consultant, "QBC consultant", "Finds and prepares future work")
+System(workboard, "QBC Workboard", "Presents and grooms the story backlog")
+
+Rel(consultant, workboard, "Discovers and grooms stories using", "HTTPS")
+@enduml

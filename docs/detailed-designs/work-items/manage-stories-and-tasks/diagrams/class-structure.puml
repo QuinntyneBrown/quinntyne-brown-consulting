@@ -1,0 +1,78 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage stories and tasks
+
+enum StoryLifecycle {
+  Draft
+  Active
+  Archived
+}
+
+enum BoardStatus {
+  ToDo
+  InProgress
+  Done
+}
+
+class Story {
+  +Guid Id
+  +string Key
+  +Guid EpicId
+  +string Title
+  +string Description
+  +string AcceptanceCriteria
+  +int? Points
+  +Guid? AssistantId
+  +StoryLifecycle Lifecycle
+  +bool IsReady
+  +Guid? SprintId
+  +BoardStatus BoardStatus
+  +SaveTasks(tasks: IReadOnlyList<StoryTask>): void
+  +Archive(): void
+  +RestoreAsDraft(): void
+}
+
+class StoryTask {
+  +Guid Id
+  +string Title
+  +bool IsComplete
+  +Guid? AssistantId
+  +Rename(title: string): void
+  +SetCompletion(complete: bool): void
+  +Assign(assistantId: Guid?): void
+}
+
+class SaveStoryCommand {
+  +Guid? StoryId
+  +StoryDraft Draft
+}
+
+class SaveStoryCommandHandler {
+  +Handle(command: SaveStoryCommand): Task<StoryDetails>
+}
+
+class ArchiveStoryCommandHandler {
+  +Handle(command: ArchiveStoryCommand): Task<StoryDetails>
+}
+
+class DeleteStoryCommandHandler {
+  +Handle(command: DeleteStoryCommand): Task<Result>
+}
+
+Story "1" *-- "0..*" StoryTask : owns
+Story --> StoryLifecycle
+Story --> BoardStatus
+SaveStoryCommandHandler ..> SaveStoryCommand : handles
+SaveStoryCommandHandler --> Story : creates / updates
+ArchiveStoryCommandHandler --> Story : archives
+DeleteStoryCommandHandler --> Story : deletes when historical rules allow
+@enduml

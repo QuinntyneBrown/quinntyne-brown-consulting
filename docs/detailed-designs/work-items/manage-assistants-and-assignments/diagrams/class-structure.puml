@@ -1,0 +1,70 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage assistants and assignments
+
+enum Availability {
+  Available
+  Limited
+  Unavailable
+}
+
+class Assistant {
+  +Guid Id
+  +string FullName
+  +string Role
+  +IReadOnlyList<string> Specialties
+  +Availability Availability
+  +UpdateProfile(profile: AssistantProfile): void
+}
+
+class Story {
+  +Guid Id
+  +Guid? AssistantId
+  +Assign(assistantId: Guid?): void
+}
+
+class StoryTask {
+  +Guid Id
+  +Guid? AssistantId
+  +Assign(assistantId: Guid?): void
+}
+
+class AssistantWorkloadProjection {
+  +Guid AssistantId
+  +int StoryCount
+  +int IncompleteTaskCount
+  +IReadOnlyList<AssignmentLink> BlockingAssignments
+}
+
+class AssignmentLink {
+  +Guid StoryId
+  +string StoryKey
+  +Guid? TaskId
+  +string Label
+}
+
+class SaveAssistantCommandHandler {
+  +Handle(command: SaveAssistantCommand): Task<AssistantDetails>
+}
+
+class DeleteAssistantCommandHandler {
+  +Handle(command: DeleteAssistantCommand): Task<Result>
+}
+
+Assistant --> Availability
+Story "0..*" --> "0..1" Assistant : owner
+StoryTask "0..*" --> "0..1" Assistant : assignee
+AssistantWorkloadProjection o-- AssignmentLink
+SaveAssistantCommandHandler --> Assistant : creates / updates
+DeleteAssistantCommandHandler ..> Story : checks assignments
+DeleteAssistantCommandHandler ..> StoryTask : checks assignments
+@enduml

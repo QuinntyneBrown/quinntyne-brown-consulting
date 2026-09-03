@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — Navigate to a workspace route
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "WorkspaceNavigationComponent" as nav
+  participant "AppShellComponent" as shell
+  participant "IWorkspaceService" as service
+  participant "ProblemDetailsPresenter" as problem
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "WorkspaceController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "GetWorkspaceQueryHandler" as handler
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> nav : Select L2-001 workspace route
+nav -> shell : Activate route and close compact menu
+shell -> service : load(route)
+service -> controller : GET /api/workspace?route={route}
+controller -> handler : Send GetWorkspaceQuery
+handler -> db : Read route summary
+db --> handler : Workspace records
+handler --> controller : WorkspaceBootstrap
+controller --> service : 200 JSON
+service --> shell : Update route Signals
+shell --> actor : Present responsive route content
+alt API request fails
+  controller --> service : RFC 9457 Problem Details
+  service -> problem : Present recoverable failure
+  problem --> actor : Announce error without moving focus
+end
+@enduml

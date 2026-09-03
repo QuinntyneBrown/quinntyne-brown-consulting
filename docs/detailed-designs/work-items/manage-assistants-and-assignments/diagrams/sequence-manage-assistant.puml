@@ -1,0 +1,68 @@
+@startuml
+title UML sequence behaviour — Assign work or delete an assistant
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "AssistantPickerComponent" as picker
+  participant "AssistantsPageComponent" as page
+  participant "IAssistantService" as service
+  participant "AssistantAssignmentsDialogComponent" as dialog
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "AssistantsController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Assistant command handler" as handler
+  participant "Story" as story
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> picker : Select L2-010 assistant or Unassigned
+picker -> service : saveAssignment(workItemId, assistantId)
+service -> controller : PUT assignment JSON
+controller -> handler : Send assignment command
+handler -> db : Load work item and assistant
+db --> handler : Referenced records
+handler -> story : Apply assignment reference
+story --> handler : Updated aggregate
+handler -> db : Commit assignment
+db --> handler : Commit result
+handler --> controller : Work item projection
+controller --> service : 200 JSON
+service --> picker : Update assignment Signal
+picker --> actor : Present assignee
+actor -> page : Delete L2-009 assistant
+page -> service : deleteAssistant(id)
+service -> controller : DELETE /api/assistants/{id}
+controller -> handler : Send DeleteAssistantCommand
+handler -> db : Query story and task references
+db --> handler : Blocking assignments
+alt references exist
+  handler --> controller : Conflict with AssignmentLink list
+  controller --> service : 409 Problem Details
+  service -> dialog : Present blocking assignments
+  dialog --> actor : Offer story navigation links
+else no references exist
+  handler -> db : Delete assistant and commit
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> service : 204 No Content
+  service --> page : Remove assistant from Signals
+  page --> actor : Present updated directory
+end
+@enduml

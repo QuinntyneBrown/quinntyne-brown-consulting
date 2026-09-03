@@ -1,0 +1,78 @@
+@startuml
+title UML sequence behaviour — Move a vertical slice from red to green
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Product implementer" as actor
+box "Frontend — Playwright acceptance harness" #E0F2FE
+  participant "AcceptanceSpec" as spec
+  participant "FeaturePage" as pageObject
+  participant "Angular web application" as spa
+end box
+box "Backend — Integration acceptance harness" #D1FADF
+  participant "ApiAcceptanceTest" as integration
+  participant "WorkboardApiFactory" as factory
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Production behavior" as behavior
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Isolated test database" as db
+  participant "AcceptanceEvidence" as evidence
+end box
+
+actor -> actor : Select L2-035 Given/When/Then scenario
+alt user-visible acceptance boundary
+  actor -> spec : Write scenario intent
+  spec -> pageObject : Invoke page-object action
+  pageObject -> spa : Drive rendered UI
+  spa -> behavior : Invoke absent or incorrect behavior
+  behavior --> spa : Unmet result
+  spa --> pageObject : Observable failure
+  pageObject --> spec : Failed expectation
+  spec --> actor : Expected red result
+  actor -> evidence : Record command, test name, and red reason
+else backend acceptance boundary
+  actor -> integration : Write API integration scenario
+  integration -> factory : Host real application pipeline
+  factory -> db : Create isolated scenario data
+  integration -> behavior : Invoke HTTP boundary
+  behavior --> integration : Unmet result
+  integration --> actor : Expected red result
+  actor -> evidence : Record command, test name, and red reason
+end
+actor -> behavior : Add L2-036 smallest coherent implementation
+actor -> spec : Run affected Playwright acceptance tests
+spec -> pageObject : Execute scenario through page object
+pageObject -> spa : Drive implemented behavior
+spa -> behavior : Invoke behavior
+behavior -> db : Read or commit when required
+db --> behavior : Result
+behavior --> spa : Accepted result
+spa --> pageObject : Render outcome
+pageObject --> spec : Expected observation
+spec --> actor : Green result
+actor -> integration : Run affected backend acceptance tests
+integration -> behavior : Invoke API boundary
+behavior --> integration : Accepted result
+integration --> actor : Green result
+actor -> evidence : Record final green result
+opt refactor after complete suite is green
+  actor -> behavior : Remove duplication or improve names
+  actor -> spec : Re-run Playwright acceptance suite
+  spec --> actor : Green result
+  actor -> integration : Re-run backend acceptance suite
+  integration --> actor : Green result
+end
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Plan two-week sprints
+
+Person(consultant, "QBC consultant", "Defines sprint goals and commitments")
+System(workboard, "QBC Workboard", "Plans 14-calendar-day sprints and Ready stories")
+
+Rel(consultant, workboard, "Plans sprints using", "HTTPS")
+@enduml

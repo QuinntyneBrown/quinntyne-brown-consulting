@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Discover and groom a story
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "BacklogFilterComponent" as filter
+  participant "BacklogStore" as store
+  participant "BacklogPageComponent" as page
+  participant "IBacklogService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "StoriesController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "GroomStoryCommandHandler" as handler
+  participant "StoryReadinessPolicy" as policy
+  participant "Story" as story
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> filter : Enter L2-011 search and filter
+filter -> store : Update searchText and filter Signals
+store --> page : Recompute visibleStories
+page --> actor : Present matching backlog rows
+actor -> page : Mark story Ready
+page -> service : groom(storyId)
+service -> controller : POST /api/stories/{id}/groom
+controller -> handler : Send GroomStoryCommand
+handler -> db : Load story and referenced epic
+db --> handler : Story and epic
+handler -> policy : Evaluate L2-012 grooming fields
+alt complete and valid
+  policy --> handler : Valid
+  handler -> story : MarkReady()
+  story --> handler : Active Ready state
+  handler -> db : Commit readiness
+  db --> handler : Commit result
+  handler --> controller : BacklogStory
+  controller --> service : 200 JSON
+  service -> store : Replace authoritative story
+  store --> page : Recompute results
+  page --> actor : Present Ready status
+else fields missing or invalid
+  policy --> handler : Field validation failures
+  handler --> controller : Validation details
+  controller --> service : 400 Problem Details
+  service --> page : Present field errors and edit action
+  page --> actor : Story remains Not Ready
+end
+@enduml

@@ -1,0 +1,79 @@
+@startuml
+title UML sequence behaviour — Move work and complete the sprint
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "SprintBoardPageComponent" as page
+  participant "SprintBoardStore" as store
+  participant "ISprintExecutionService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "SprintsController / StoriesController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Sprint execution handler" as handler
+  participant "Sprint / Story" as aggregates
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> page : Open Active sprint board
+page -> service : loadBoard()
+service -> controller : GET /api/sprints/active/board
+controller -> handler : Send GetActiveSprintBoardQuery
+handler -> db : Read Active sprint and stories
+db --> handler : Sprint and story records
+handler --> controller : L2-017 / L2-018 ActiveSprintBoard
+controller --> service : 200 JSON
+service -> store : Set board Signal
+store --> page : Compute columns and progress
+page --> actor : Present board
+actor -> page : Move L2-019 story to another column
+page -> service : moveStory(storyId, boardStatus)
+service -> controller : POST story move action
+controller -> handler : Send MoveStoryCommand
+handler -> db : Load story and Active sprint
+db --> handler : Current records
+alt story belongs to Active sprint
+  handler -> aggregates : Apply board status
+  handler -> db : Commit movement
+  db --> handler : Commit result
+  handler --> controller : Updated board
+  controller --> service : 200 JSON
+  service -> store : Replace board Signal
+  store --> actor : Present updated columns and progress
+else story is outside Active sprint
+  handler --> controller : Domain conflict
+  controller --> service : 409 Problem Details
+  service --> actor : Preserve card and present reason
+end
+actor -> page : Confirm sprint completion
+page -> service : completeSprint(sprintId)
+service -> controller : POST /api/sprints/{id}/complete
+controller -> handler : Send CompleteSprintCommand
+handler -> db : Load sprint and stories for update
+db --> handler : Current records
+handler -> aggregates : Apply L2-020 completion disposition
+aggregates --> handler : Completed sprint and released unfinished stories
+handler -> db : Commit one transaction
+db --> handler : Commit result
+handler --> controller : Success
+controller --> service : 200 JSON
+service -> store : Clear Active board Signal
+store --> page : Show no-active-sprint state
+page --> actor : Present completion result
+@enduml

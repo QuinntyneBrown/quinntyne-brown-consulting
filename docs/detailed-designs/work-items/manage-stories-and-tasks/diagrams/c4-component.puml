@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage stories and tasks
+
+Person(consultant, "QBC consultant", "Maintains story content and lifecycle")
+Container_Boundary(spa, "Angular web application") {
+  Component(form, "StoryFormComponent", "Angular component", "Edits story fields and tasks")
+  Component(details, "StoryDetailsComponent", "Angular component", "Presents story detail")
+  Component(actions, "StoryActionsComponent", "Angular component", "Exposes lifecycle actions")
+  Component(service, "IStoryService", "Injection-token contract", "Exposes story state and operations")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "StoriesController", "ASP.NET Core controller", "Exposes story resources and actions")
+  Component(handlers, "Story command handlers", "MediatR handlers", "Save and transition stories")
+  Component(aggregate, "Story", "Domain aggregate", "Owns lifecycle, planning state, and tasks")
+  ComponentDb(db, "Workspace database", "SQLite", "Stores story aggregates")
+}
+
+Rel(consultant, details, "Views")
+Rel(details, form, "Opens for edit")
+Rel(details, actions, "Invokes")
+Rel(form, service, "Saves through")
+Rel(actions, service, "Transitions through")
+Rel(service, controller, "Calls", "JSON/HTTPS")
+Rel(controller, handlers, "Sends commands and queries")
+Rel(handlers, aggregate, "Loads and applies rules")
+Rel(handlers, db, "Reads and writes", "EF Core")
+@enduml

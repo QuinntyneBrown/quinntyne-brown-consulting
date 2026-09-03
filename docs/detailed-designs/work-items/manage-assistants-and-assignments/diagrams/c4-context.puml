@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage assistants and assignments
+
+Person(consultant, "QBC consultant", "Maintains assistants and delegates work")
+System(workboard, "QBC Workboard", "Tracks assistants and work assignments")
+
+Rel(consultant, workboard, "Manages assistants and assignments using", "HTTPS")
+@enduml

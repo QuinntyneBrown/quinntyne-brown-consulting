@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Navigate the workspace
+
+Person(consultant, "QBC consultant", "Selects a work area")
+Container_Boundary(spa, "Angular web application") {
+  Component(shell, "AppShellComponent", "Angular component", "Hosts navigation, actions, and routed content")
+  Component(nav, "WorkspaceNavigationComponent", "Angular component", "Selects routes and controls the compact menu")
+  Component(service, "IWorkspaceService", "Injection-token contract", "Exposes route initialization state")
+  Component(problem, "ProblemDetailsPresenter", "Angular service", "Presents accessible errors")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "WorkspaceController", "ASP.NET Core controller", "Exposes the bootstrap query")
+  Component(handler, "GetWorkspaceQueryHandler", "MediatR handler", "Builds the route projection")
+  ComponentDb(db, "Workspace database", "SQLite", "Stores workspace data")
+}
+
+Rel(consultant, nav, "Selects route using")
+Rel(nav, shell, "Activates route in")
+Rel(shell, service, "Reads state and requests data through")
+Rel(service, controller, "Calls", "JSON/HTTPS")
+Rel(controller, handler, "Sends query to")
+Rel(handler, db, "Reads")
+Rel(service, problem, "Reports failures through")
+@enduml

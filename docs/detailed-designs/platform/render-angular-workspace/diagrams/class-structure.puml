@@ -1,0 +1,71 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Render the Angular workspace
+
+interface IResourceService {
+  +Signal<IReadOnlyList<ResourceDto>> resources
+  +Signal<LoadingState> loadState
+  +load(): Promise<void>
+  +save(draft: ResourceDraft): Promise<void>
+}
+
+class ResourceService {
+  -HttpClient http
+  -WritableSignal<IReadOnlyList<ResourceDto>> resources
+  -WritableSignal<LoadingState> loadState
+  +load(): Promise<void>
+  +save(draft: ResourceDraft): Promise<void>
+}
+
+class FeatureComponent {
+  +Signal<IReadOnlyList<ResourceDto>> resources
+  +Signal<LoadingState> loadState
+  +save(draft: ResourceDraft): Promise<void>
+}
+
+class AppConfig {
+  +ApplicationConfig providers
+}
+
+class ResourceDto {
+  +Guid id
+  +string name
+}
+
+class ResourceDraft {
+  +string name
+}
+
+enum LoadingState {
+  Idle
+  Loading
+  Loaded
+  Failed
+}
+
+class ApiProblem {
+  +string type
+  +string title
+  +int status
+  +string detail
+  +Record<string, string[]> errors
+}
+
+IResourceService <|.. ResourceService
+FeatureComponent ..> IResourceService : injects typed token
+AppConfig ..> ResourceService : useExisting alias
+AppConfig ..> IResourceService : provides token
+ResourceService --> ResourceDto
+ResourceService ..> ResourceDraft
+ResourceService --> LoadingState
+ResourceService ..> ApiProblem
+@enduml

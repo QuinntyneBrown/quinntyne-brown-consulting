@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Deliver vertical slices with ATDD
+
+class WorkboardApiFactory {
+  +CreateClient(): HttpClient
+  +ConfigureServices(services: IServiceCollection): void
+}
+
+class IntegrationDatabase {
+  +string ConnectionString
+  +InitializeAsync(): Task
+  +DisposeAsync(): ValueTask
+}
+
+abstract class ApiAcceptanceTest {
+  #HttpClient Client
+  #IntegrationDatabase Database
+  +ReadProblem(response: HttpResponseMessage): Task<ApiProblem>
+}
+
+class AcceptanceSpec {
+  +runScenario(): Promise<void>
+}
+
+class WorkboardPage {
+  +navigateTo(route: WorkspaceRoute): Promise<void>
+  +openNewStory(): Promise<void>
+}
+
+class FeaturePage {
+  +performAction(input: ScenarioInput): Promise<void>
+  +expectOutcome(expected: ScenarioOutcome): Promise<void>
+}
+
+class AcceptanceEvidence {
+  +string L2Scenario
+  +string TestCommand
+  +string TestName
+  +string ExpectedRedReason
+  +string GreenResult
+}
+
+ApiAcceptanceTest *-- WorkboardApiFactory
+ApiAcceptanceTest *-- IntegrationDatabase
+AcceptanceSpec --> WorkboardPage
+AcceptanceSpec --> FeaturePage
+WorkboardPage <|-- FeaturePage
+ApiAcceptanceTest ..> AcceptanceEvidence : produces
+AcceptanceSpec ..> AcceptanceEvidence : produces
+@enduml

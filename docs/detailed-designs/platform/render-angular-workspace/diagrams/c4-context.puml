@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Render the Angular workspace
+
+Person(consultant, "QBC consultant", "Uses the responsive work-management UI")
+System(workboard, "QBC Workboard", "Provides an Angular frontend backed by persistent APIs")
+
+Rel(consultant, workboard, "Uses through a browser", "HTTPS")
+@enduml

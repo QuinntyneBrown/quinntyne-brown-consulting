@@ -1,0 +1,61 @@
+@startuml
+title UML sequence behaviour — Save or delete hierarchy records
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "HierarchyPageComponent" as page
+  participant "IHierarchyService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "InitiativesController / EpicsController" as controller
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "Hierarchy command handler" as handler
+  participant "Initiative / Epic" as entity
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> page : Submit hierarchy action
+page -> service : Save or delete record
+service -> controller : JSON/HTTPS request
+controller -> handler : Send command
+handler -> db : Load record and descendants
+db --> handler : Current hierarchy state
+alt create, update, or move under L2-002 / L2-003
+  handler -> entity : Apply validated values and parent
+  entity --> handler : Updated entity
+  handler -> db : Commit change
+  db --> handler : Commit result
+  handler --> controller : Hierarchy projection
+  controller --> service : 200 or 201 JSON
+  service --> page : Update hierarchy Signals
+  page --> actor : Present updated hierarchy and L2-004 roll-ups
+else delete has descendants
+  handler --> controller : Domain conflict with child count
+  controller --> service : 409 Problem Details
+  service --> page : Preserve state and expose conflict
+  page --> actor : Explain required move or deletion
+else delete has no descendants
+  handler -> db : Delete and commit
+  db --> handler : Commit result
+  handler --> controller : Success
+  controller --> service : 204 No Content
+  service --> page : Remove record from Signals
+  page --> actor : Present updated hierarchy
+end
+@enduml

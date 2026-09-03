@@ -1,0 +1,74 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage the work hierarchy
+
+class Initiative {
+  +Guid Id
+  +string Name
+  +string Description
+  +Rename(name: string): void
+  +Describe(description: string): void
+}
+
+class Epic {
+  +Guid Id
+  +Guid InitiativeId
+  +string Name
+  +string Summary
+  +MoveTo(initiativeId: Guid): void
+}
+
+class Story {
+  +Guid Id
+  +Guid EpicId
+  +BoardStatus BoardStatus
+}
+
+class HierarchyProjection {
+  +IReadOnlyList<InitiativeProjection> Initiatives
+}
+
+class InitiativeProjection {
+  +Guid Id
+  +int EpicCount
+  +int StoryCount
+}
+
+class EpicProjection {
+  +Guid Id
+  +int StoryCount
+  +decimal CompletionPercentage
+}
+
+class SaveEpicCommandHandler {
+  +Handle(command: SaveEpicCommand): Task<EpicProjection>
+}
+
+class DeleteEpicCommandHandler {
+  +Handle(command: DeleteEpicCommand): Task<Result>
+}
+
+class GetHierarchyQueryHandler {
+  +Handle(query: GetHierarchyQuery): Task<HierarchyProjection>
+}
+
+Initiative "1" o-- "*" Epic : groups
+Epic "1" o-- "*" Story : groups
+HierarchyProjection *-- InitiativeProjection
+InitiativeProjection *-- EpicProjection
+SaveEpicCommandHandler --> Epic : saves / moves
+DeleteEpicCommandHandler --> Epic : deletes when empty
+DeleteEpicCommandHandler ..> Story : checks descendants
+GetHierarchyQueryHandler ..> Initiative
+GetHierarchyQueryHandler ..> Epic
+GetHierarchyQueryHandler ..> Story
+@enduml

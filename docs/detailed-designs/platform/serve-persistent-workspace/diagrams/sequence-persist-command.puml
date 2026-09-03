@@ -1,0 +1,71 @@
+@startuml
+title UML sequence behaviour — Execute a persistent API command
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "ResourceService" as client
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "ResourceController" as controller
+  participant "ProblemDetailsExceptionHandler" as problem
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "MediatR 12.5.0 pipeline" as mediator
+  participant "ValidationBehavior" as validation
+  participant "ResourceCommandHandler" as handler
+  participant "Domain model" as domain
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  participant "WorkboardDbContext" as context
+  database "SQLite workspace database" as db
+end box
+
+actor -> client : Submit product action
+client -> controller : Send JSON/HTTPS command
+controller -> mediator : Send ResourceCommand with cancellation token
+mediator -> validation : Validate L2-023 request
+alt request is invalid
+  validation --> mediator : Validation failure
+  mediator --> controller : Validation exception
+  controller -> problem : Map failure
+  problem --> client : 400 RFC 9457 Problem Details
+else request is valid
+  validation -> handler : Invoke handler
+  handler -> context : Load referenced state
+  context -> db : Query records
+  db --> context : Current records
+  context --> handler : Domain entities
+  alt record is missing or state conflicts
+    handler --> validation : NotFoundException or DomainConflictException
+    validation --> mediator : Typed failure
+    mediator --> controller : Typed failure
+    controller -> problem : Map failure without internals
+    problem --> client : 404 or 409 Problem Details
+  else command satisfies L2-021 / L2-022
+    handler -> domain : Apply domain operation
+    domain --> handler : Valid new state
+    handler -> context : SaveChangesAsync(cancellationToken)
+    context -> db : Commit one transaction
+    db --> context : Commit result
+    context --> handler : Saved result
+    handler --> validation : ResourceResult
+    validation --> mediator : ResourceResult
+    mediator --> controller : ResourceResult
+    controller --> client : 200 or 201 JSON
+  end
+end
+client --> actor : Present accepted result or Problem Details
+@enduml
