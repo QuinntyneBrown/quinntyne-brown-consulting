@@ -66,6 +66,13 @@ class QbcDialog extends QbcElement {
       .scrim {
         position: fixed;
         inset: 0;
+        /* iOS Safari lays a fixed box out against the *large* viewport — the page as it
+           would be with the browser toolbars retracted — so a sheet centred in a scrim
+           that only says inset: 0 sits low enough for its footer to end up behind the
+           toolbar. dvh tracks the viewport that is actually visible; the vh line above
+           it is the fallback for browsers without dvh. */
+        height: 100vh;
+        height: 100dvh;
         z-index: calc(var(--qbc-z-toast) - 1);
         display: flex;
         align-items: center;
@@ -76,6 +83,7 @@ class QbcDialog extends QbcElement {
 
       :host([static]) .scrim {
         position: static;
+        height: auto;
         z-index: auto;
         display: block;
         background: none;
@@ -88,7 +96,7 @@ class QbcDialog extends QbcElement {
         display: flex;
         overflow: hidden;
         width: min(680px, calc(100vw - 32px));
-        max-height: calc(100vh - 48px);
+        max-height: calc(100% - 48px - env(safe-area-inset-bottom, 0px));
         flex-direction: column;
         border-radius: var(--qbc-r-2xl);
         background: var(--qbc-panel);
@@ -106,6 +114,7 @@ class QbcDialog extends QbcElement {
 
       .head {
         display: flex;
+        flex: none;
         gap: 16px;
         align-items: flex-start;
         justify-content: space-between;
@@ -123,13 +132,20 @@ class QbcDialog extends QbcElement {
         font-size: var(--qbc-fs-xs);
       }
 
+      /* min-height: 0 undoes the flex default of min-height: auto, which refuses to
+         shrink an item below its own content: without it the body pushes the footer
+         past the sheet's max-height and the actions land off screen. */
       .body {
         overflow-y: auto;
+        min-height: 0;
+        flex: 0 1 auto;
         padding: 25px 28px 28px;
+        overscroll-behavior: contain;
       }
 
       .actions {
         display: flex;
+        flex: none;
         gap: 9px;
         justify-content: flex-end;
         padding: 18px 28px;

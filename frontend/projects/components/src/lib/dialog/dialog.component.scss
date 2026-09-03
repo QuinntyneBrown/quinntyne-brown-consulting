@@ -1,17 +1,34 @@
 :host {
   display: contents;
 }
+
+// The dialog element is the scrim area, not the sheet. A native <dialog> is centred by
+// the UA inside its fixed containing block, and on iOS Safari that block spans the
+// *large* viewport — the page as it would be with the browser toolbars retracted — so a
+// sheet centred in it sits low enough for its footer to end up behind the toolbar, and
+// capping its height alone does not lift it back into view. Sizing the dialog itself in
+// dvh, which tracks the viewport that is actually visible, makes the sheet centre on
+// what the user can see. The vh declarations are the fallback for browsers without dvh.
 dialog {
-  width: min(680px, calc(100vw - 32px));
-  max-height: calc(100vh - 48px);
+  position: fixed;
+  inset: 0;
+  // Over-constrained against inset: 0 with no margin, so the box fills the viewport
+  // width without 100vw's scrollbar overshoot.
+  width: auto;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  overflow: hidden;
+  margin: 0;
   padding: 0;
   border: 0;
-  border-radius: var(--qbc-r-2xl);
-  background: var(--qbc-panel);
-  box-shadow: var(--qbc-shadow-overlay);
+  background: none;
 }
-dialog.sm {
-  width: min(430px, calc(100vw - 32px));
+dialog[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 dialog::backdrop {
   background: var(--qbc-scrim);
@@ -19,8 +36,18 @@ dialog::backdrop {
 }
 .shell {
   display: flex;
-  max-height: calc(100vh - 48px);
+  // A rounded box does not clip a descendant's background, so without this the footer
+  // fill spills past the corners.
+  overflow: hidden;
+  width: min(680px, calc(100% - 32px));
+  max-height: calc(100% - 48px - env(safe-area-inset-bottom, 0px));
   flex-direction: column;
+  border-radius: var(--qbc-r-2xl);
+  background: var(--qbc-panel);
+  box-shadow: var(--qbc-shadow-overlay);
+}
+dialog.sm .shell {
+  width: min(430px, calc(100% - 32px));
 }
 header {
   display: flex;
@@ -29,6 +56,7 @@ header {
   justify-content: space-between;
   padding: 25px 28px 21px;
   border-bottom: 1px solid var(--qbc-line);
+  flex: none;
 }
 h2 {
   margin: 0;
@@ -43,6 +71,7 @@ p {
 .body {
   overflow-y: auto;
   padding: 25px 28px 28px;
+  overscroll-behavior: contain;
 }
 footer {
   display: flex;
@@ -52,6 +81,7 @@ footer {
   padding: 18px 28px;
   border-top: 1px solid var(--qbc-line);
   background: var(--qbc-surface-raised);
+  flex: none;
 }
 @media (max-width: 760px) {
   header {

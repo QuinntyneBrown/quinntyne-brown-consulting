@@ -22,6 +22,21 @@ export class WorkboardPage {
     await expect(this.page.getByRole('dialog', { name: 'New story' })).toBeVisible();
   }
 
+  /**
+   * A dialog sheet is centred inside a box the viewport sizes, so its actions have to
+   * stay reachable on a phone rather than sitting under the browser chrome.
+   */
+  async expectDialogActionsWithinViewport(name: string | RegExp): Promise<void> {
+    const dialog = this.page.getByRole('dialog', { name });
+    const height = this.page.viewportSize()?.height ?? 0;
+    for (const action of ['Cancel', 'Save story']) {
+      const box = await dialog.getByRole('button', { name: action, exact: true }).boundingBox();
+      expect(box, `${action} has no layout box`).not.toBeNull();
+      expect(box!.y).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height).toBeLessThanOrEqual(height);
+    }
+  }
+
   async expectNoHorizontalOverflow(): Promise<void> {
     const overflow = await this.page
       .locator('html')

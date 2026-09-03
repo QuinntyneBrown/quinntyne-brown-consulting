@@ -57,6 +57,13 @@ class QbcConfirmDialog extends QbcElement {
       .scrim {
         position: fixed;
         inset: 0;
+        /* iOS Safari lays a fixed box out against the *large* viewport — the page as it
+           would be with the browser toolbars retracted — so a sheet centred in a scrim
+           that only says inset: 0 sits low enough for its footer to end up behind the
+           toolbar. dvh tracks the viewport that is actually visible; the vh line above
+           it is the fallback for browsers without dvh. */
+        height: 100vh;
+        height: 100dvh;
         z-index: calc(var(--qbc-z-toast) - 1);
         display: flex;
         align-items: center;
@@ -67,6 +74,7 @@ class QbcConfirmDialog extends QbcElement {
 
       :host([static]) .scrim {
         position: static;
+        height: auto;
         z-index: auto;
         display: block;
         background: none;
@@ -77,7 +85,7 @@ class QbcConfirmDialog extends QbcElement {
         display: flex;
         overflow: hidden;
         width: min(430px, calc(100vw - 32px));
-        max-height: calc(100vh - 48px);
+        max-height: calc(100% - 48px - env(safe-area-inset-bottom, 0px));
         flex-direction: column;
         border-radius: var(--qbc-r-2xl);
         background: var(--qbc-panel);
@@ -89,10 +97,16 @@ class QbcConfirmDialog extends QbcElement {
         max-width: min(430px, calc(100vw - 32px));
       }
 
+      /* min-height: 0 undoes the flex default of min-height: auto, which refuses to
+         shrink an item below its own content: without it the content pushes the action
+         bar past the sheet's max-height and the buttons land off screen. */
       .content {
         overflow-y: auto;
+        min-height: 0;
+        flex: 0 1 auto;
         padding: 30px 28px 0;
         text-align: center;
+        overscroll-behavior: contain;
       }
 
       .icon {
@@ -121,6 +135,7 @@ class QbcConfirmDialog extends QbcElement {
          because it sits inside the padded form. Here it is already a sibling. */
       .actions {
         display: flex;
+        flex: none;
         gap: 9px;
         justify-content: flex-end;
         padding: 18px 28px;
