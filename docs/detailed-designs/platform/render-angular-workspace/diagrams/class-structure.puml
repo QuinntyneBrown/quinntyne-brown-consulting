@@ -11,61 +11,65 @@ skinparam class {
 }
 title Class structure — Render the Angular workspace
 
-interface IResourceService {
-  +Signal<IReadOnlyList<ResourceDto>> resources
-  +Signal<LoadingState> loadState
+interface IBacklogService {
+  +Signal<readonly Story[]> stories
+  +Signal<readonly Story[]> visibleStories
+  +Signal<LoadingState> loadingState
   +load(): Promise<void>
-  +save(draft: ResourceDraft): Promise<void>
+  +groom(id: string): Promise<boolean>
 }
 
-class ResourceService {
+class BacklogService {
+  -IStoryService backendService
+  -WritableSignal<readonly Story[]> storiesValue
+  -WritableSignal<LoadingState> loadingValue
+  +load(): Promise<void>
+  +groom(id: string): Promise<boolean>
+}
+
+interface IStoryService {
+  +getBacklog(): Promise<readonly Story[]>
+  +groom(id: string): Promise<Story>
+}
+
+class StoryService {
   -HttpClient http
-  -WritableSignal<IReadOnlyList<ResourceDto>> resources
-  -WritableSignal<LoadingState> loadState
-  +load(): Promise<void>
-  +save(draft: ResourceDraft): Promise<void>
+  +getBacklog(): Promise<readonly Story[]>
+  +groom(id: string): Promise<Story>
 }
 
-class FeatureComponent {
-  +Signal<IReadOnlyList<ResourceDto>> resources
-  +Signal<LoadingState> loadState
-  +save(draft: ResourceDraft): Promise<void>
+class BacklogPageComponent {
+  +IBacklogService service
 }
 
-class AppConfig {
-  +ApplicationConfig providers
-}
-
-class ResourceDto {
-  +Guid id
-  +string name
-}
-
-class ResourceDraft {
-  +string name
+class Story {
+  +string id
+  +string key
+  +string title
+  +boolean isReady
 }
 
 enum LoadingState {
-  Idle
-  Loading
-  Loaded
-  Failed
+  idle
+  loading
+  loaded
+  failed
 }
 
-class ApiProblem {
-  +string type
-  +string title
-  +int status
-  +string detail
-  +Record<string, string[]> errors
+class QbcServicesProviders {
+  +provideQbcServices(): EnvironmentProviders
 }
 
-IResourceService <|.. ResourceService
-FeatureComponent ..> IResourceService : injects typed token
-AppConfig ..> ResourceService : useExisting alias
-AppConfig ..> IResourceService : provides token
-ResourceService --> ResourceDto
-ResourceService ..> ResourceDraft
-ResourceService --> LoadingState
-ResourceService ..> ApiProblem
+class QbcWorkboardProviders {
+  +provideQbcWorkboard(): EnvironmentProviders
+}
+
+IBacklogService <|.. BacklogService
+IStoryService <|.. StoryService
+BacklogPageComponent ..> IBacklogService : injects token
+BacklogService ..> IStoryService : injects token
+BacklogService --> Story : exposes
+BacklogService --> LoadingState : owns
+QbcWorkboardProviders ..> IBacklogService : aliases singleton
+QbcServicesProviders ..> IStoryService : aliases singleton
 @enduml

@@ -1,6 +1,6 @@
 import { Assistant } from '../models/assistant';
 
-export interface IAssistantApi {
+export interface IAssistantService {
   getAll(): Promise<readonly Assistant[]>;
   get(id: string): Promise<Assistant>;
   create(fullName: string, role: string, specialties: readonly string[], availability: Assistant['availability']): Promise<Assistant>;

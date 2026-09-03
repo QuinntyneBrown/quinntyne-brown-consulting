@@ -1,13 +1,13 @@
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
-import { Sprint } from '../../models/sprint';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { Sprint } from '@qbc/api';
+import { ConfirmDialogComponent, EmptyStateComponent, StatusPillComponent } from '@qbc/components';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
 import { SPRINT_PLANNING_SERVICE } from './sprint-planning.service.contract';
 
 @Component({
   selector: 'app-sprint-manager',
-  imports: [ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent, EmptyStateComponent, StatusPillComponent],
   templateUrl: './sprint-manager.component.html',
   styleUrl: './sprint-manager.component.scss'
 })
@@ -55,4 +55,3 @@ export class SprintManagerComponent {
   private format(value: string): string { return new Intl.DateTimeFormat('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(`${value}T12:00:00`)); }
   private today(): string { return new Date().toISOString().slice(0, 10); }
 }
-

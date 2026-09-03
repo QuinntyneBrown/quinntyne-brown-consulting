@@ -2,7 +2,7 @@ import { Epic } from '../models/epic';
 import { Hierarchy } from '../models/hierarchy';
 import { Initiative } from '../models/initiative';
 
-export interface IHierarchyApi {
+export interface IHierarchyService {
   get(): Promise<Hierarchy>;
   createInitiative(name: string, description: string): Promise<Initiative>;
   updateInitiative(id: string, name: string, description: string): Promise<Initiative>;

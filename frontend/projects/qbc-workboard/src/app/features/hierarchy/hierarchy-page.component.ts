@@ -1,13 +1,12 @@
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
-import { EpicHierarchy } from '../../models/epic-hierarchy';
-import { InitiativeHierarchy } from '../../models/initiative-hierarchy';
+import { EpicHierarchy, InitiativeHierarchy } from '@qbc/api';
+import { ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent } from '@qbc/components';
 import { HIERARCHY_SERVICE } from './hierarchy.service.contract';
 
 @Component({
   selector: 'app-hierarchy-page',
-  imports: [ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent],
   templateUrl: './hierarchy-page.component.html',
   styleUrl: './hierarchy-page.component.scss'
 })
@@ -67,4 +66,3 @@ export class HierarchyPageComponent implements OnInit {
     }
   }
 }
-

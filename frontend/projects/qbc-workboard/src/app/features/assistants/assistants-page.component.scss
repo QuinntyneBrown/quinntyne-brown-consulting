@@ -11,7 +11,6 @@ dl div { display: grid; }
 dt { color: var(--muted); font-size: 11px; }
 dd { margin: 0; font-weight: 750; }
 .assistant-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 15px; border-top: 1px solid var(--line); }
-.pill { text-transform: capitalize; }
 .danger-text { color: var(--danger); }
 .assignment-list { display: grid; gap: 8px; }
 .assignment-link { display: grid; width: 100%; padding: 13px; border: 1px solid var(--line); border-radius: 9px; color: inherit; background: #fff; text-align: left; }

@@ -1,7 +1,7 @@
 import { ActiveSprintBoard } from '../models/active-sprint-board';
 import { Sprint } from '../models/sprint';
 
-export interface ISprintApi {
+export interface ISprintService {
   getAll(): Promise<readonly Sprint[]>;
   get(id: string): Promise<Sprint>;
   getActiveBoard(): Promise<ActiveSprintBoard | null>;

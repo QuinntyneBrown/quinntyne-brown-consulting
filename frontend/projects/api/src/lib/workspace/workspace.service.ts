@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { WorkspaceBootstrap } from '../models/workspace-bootstrap';
-import { IWorkspaceApi } from './workspace-api.interface';
+import { IWorkspaceService } from './workspace.service.interface';
 
 @Injectable()
-export class WorkspaceApi implements IWorkspaceApi {
+export class WorkspaceService implements IWorkspaceService {
   private readonly http = inject(HttpClient);
 
   get(route: string): Promise<WorkspaceBootstrap> {

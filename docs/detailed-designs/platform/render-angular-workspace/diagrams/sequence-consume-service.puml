@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Load and mutate feature state
+title UML sequence behaviour — Load and groom backlog state
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -15,54 +15,68 @@ skinparam package {
   BackgroundColor #F9FAFB
 }
 actor "QBC consultant" as actor
-box "Frontend — Angular web application" #E0F2FE
-  participant "FeatureComponent" as component
-  participant "IResourceService token" as contract
-  participant "ResourceService" as service
-  participant "Feature Signal state" as signals
-  participant "ApiErrorPresenter" as error
+box "Frontend — qbc-workboard application" #E0F2FE
+  participant "BacklogPageComponent" as page
+  participant "IBacklogService token" as appcontract
+  participant "BacklogService" as store
 end box
-box "Backend — Workboard API application" #D1FADF
-  participant "ResourceController" as controller
+box "Frontend — @qbc/api library" #E0F2FE
+  participant "IStoryService token" as apicontract
+  participant "StoryService" as client
 end box
-box "Backend — Workboard Application and Domain" #ECFDF3
-  participant "Resource request handler" as handler
+box "Backend — QBC Workboard API" #D1FADF
+  participant "StoriesController" as controller
 end box
-box "Backend — Workboard Infrastructure" #FFF4E5
+box "Backend — QBC Workboard Application and Domain" #ECFDF3
+  participant "Story request handler" as handler
+end box
+box "Backend — QBC Workboard Infrastructure" #FFF4E5
   database "Workspace database" as db
 end box
 
-actor -> component : Activate feature route
-component -> contract : load()
-contract -> service : Resolve L2-033 useExisting alias
-service -> signals : Set Loading state
-service -> controller : GET /api/resources
-controller -> handler : Send resource query
-handler -> db : Read records
-db --> handler : Persisted records
-handler --> controller : ResourceDto list
-controller --> service : 200 JSON
-service -> signals : Set resources and Loaded state
-signals --> component : Recompute L2-032 template state
-component --> actor : Present feature
-actor -> component : Submit product mutation
-component -> contract : save(draft)
-contract -> service : Invoke concrete singleton
-service -> controller : Typed JSON request
-controller -> handler : Send command
+actor -> page : Activate backlog route
+page -> appcontract : load()
+appcontract -> store : Resolve L2-033 useExisting alias
+store -> store : Set Loading Signal
+store -> apicontract : getBacklog()
+apicontract -> client : Resolve service useExisting alias
+client -> controller : GET /api/stories/backlog
+controller -> handler : Send GetBacklogQuery
+handler -> db : Read stories
+db --> handler : Persisted stories
+handler --> controller : StoryDto list
+controller --> client : 200 JSON
+client --> store : Promise<readonly Story[]>
+store -> store : Apply L2-032 Signals
+store --> page : Read-only and computed Signals
+page --> actor : Present L2-034 backlog
+
+actor -> page : Mark complete story Ready
+page -> appcontract : groom(storyId)
+appcontract -> store : Invoke BacklogService
+store -> apicontract : groom(storyId)
+apicontract -> client : Invoke StoryService
+client -> controller : POST /api/stories/{id}/groom
+controller -> handler : Send GroomStoryCommand
 handler -> db : Validate and commit
-db --> handler : Authoritative result
-handler --> controller : ResourceDto
+db --> handler : Authoritative story
+handler --> controller : StoryDto
 alt request succeeds
-  controller --> service : 200 or 201 JSON
-  service -> signals : Apply authoritative response
-  signals --> component : Render updated state
-  component --> actor : Present success
+  controller --> client : 200 JSON
+  client --> store : Promise<Story>
+  store -> apicontract : getBacklog()
+  apicontract -> client : Invoke StoryService
+  client -> controller : GET /api/stories/backlog
+  controller --> client : 200 JSON
+  client --> store : Authoritative stories
+  store -> store : Update Signals
+  store --> page : Render Ready state
+  page --> actor : Present success
 else request fails
-  controller --> service : RFC 9457 Problem Details
-  service -> error : Map transport failure
-  error -> signals : Set Failed state and message
-  signals --> component : Render actionable failure
-  component --> actor : Preserve unsaved state and present error
+  controller --> client : RFC 9457 Problem Details
+  client --> store : Reject Promise
+  store -> store : Set Failed state and feedback
+  store --> page : Render actionable failure
+  page --> actor : Preserve form state and present error
 end
 @enduml

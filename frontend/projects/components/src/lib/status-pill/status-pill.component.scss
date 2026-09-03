@@ -1,5 +1,5 @@
 .pill { display: inline-flex; width: max-content; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: capitalize; }
 .ready, .active, .done, .available { color: var(--accent-dark); background: var(--accent-soft); }
 .draft, .todo { color: var(--blue); background: var(--blue-soft); }
-.archived, .muted, .unavailable { color: var(--muted); background: var(--soft); }
+.archived, .completed, .muted, .unavailable { color: var(--muted); background: var(--soft); }
 .progress, .planned, .limited { color: var(--amber); background: var(--amber-soft); }

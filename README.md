@@ -9,6 +9,16 @@ QBC Workboard is a responsive, single-user Scrum workspace for Quinntyne Brown C
 - xUnit integration acceptance tests through the ASP.NET Core host
 - Playwright Page Objects across Chromium, Firefox, and WebKit, with axe accessibility checks
 
+## Frontend workspace
+
+The Angular workspace separates the runnable product from its reusable libraries:
+
+- `frontend/projects/api` publishes `@qbc/api`, which contains typed backend DTOs, services, interfaces, and injection tokens.
+- `frontend/projects/components` publishes `@qbc/components`, which contains reusable presentational UI components.
+- `frontend/projects/qbc-workboard` contains the runnable application, feature logic, routing, and Signal state.
+
+The application depends on both libraries through their public entry points. The libraries remain independent of the application and each other.
+
 ## Run locally
 
 The development environment seeds the representative workspace from the HTML mocks. Production starts empty.
@@ -36,6 +46,8 @@ npm ci
 npm run build
 npm run test:e2e
 ```
+
+Individual Angular projects can also be verified with `npm run build:api`, `npm run build:components`, and `npm run build:app` from `frontend/`.
 
 The Playwright command uses an isolated SQLite database, resets it before the test host starts, and provisions deterministic test data.
 

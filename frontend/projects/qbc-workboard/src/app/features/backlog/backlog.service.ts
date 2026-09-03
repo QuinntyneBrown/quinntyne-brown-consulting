@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { STORY_API, Story, presentApiError } from '@qbc/api';
+import { STORY_SERVICE as STORY_BACKEND_SERVICE, Story, presentApiError } from '@qbc/api';
 import { FEEDBACK_SERVICE } from '../../core/feedback.service.contract';
 import { LoadingState } from '../../models/loading-state';
 import { BacklogFilter } from './backlog-filter';
@@ -7,7 +7,7 @@ import { IBacklogService } from './backlog.service.contract';
 
 @Injectable({ providedIn: 'root' })
 export class BacklogService implements IBacklogService {
-  private readonly api = inject(STORY_API);
+  private readonly backendService = inject(STORY_BACKEND_SERVICE);
   private readonly feedback = inject(FEEDBACK_SERVICE);
   private readonly storiesValue = signal<readonly Story[]>([]);
   private readonly searchValue = signal('');
@@ -37,15 +37,15 @@ export class BacklogService implements IBacklogService {
     this.loadingValue.set('loading');
     this.errorValue.set(null);
     try {
-      this.storiesValue.set(await this.api.getBacklog());
+      this.storiesValue.set(await this.backendService.getBacklog());
       this.loadingValue.set('loaded');
     } catch (error) { this.fail(error); }
   }
 
   setSearch(text: string): void { this.searchValue.set(text); }
   setFilter(filter: BacklogFilter): void { this.filterValue.set(filter); }
-  groom(id: string): Promise<boolean> { return this.action(this.api.groom(id), 'Story is Ready.'); }
-  markUnready(id: string): Promise<boolean> { return this.action(this.api.markUnready(id), 'Story marked Not Ready.'); }
+  groom(id: string): Promise<boolean> { return this.action(this.backendService.groom(id), 'Story is Ready.'); }
+  markUnready(id: string): Promise<boolean> { return this.action(this.backendService.markUnready(id), 'Story marked Not Ready.'); }
 
   private async action(request: Promise<Story>, message: string): Promise<boolean> {
     try {

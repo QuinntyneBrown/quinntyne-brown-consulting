@@ -1,12 +1,9 @@
 <section class="page">
-  <header class="page-head">
-    <div><h1>Initiatives</h1><p>Connect strategic outcomes to the epics and stories that make them real.</p></div>
-    <div class="page-actions"><button class="primary-button" type="button" (click)="openInitiative()">＋ New initiative</button></div>
-  </header>
+  <qbc-page-header title="Initiatives" description="Connect strategic outcomes to the epics and stories that make them real."><button actions class="primary-button" type="button" (click)="openInitiative()">＋ New initiative</button></qbc-page-header>
   @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
   @if (service.loadingState() === 'loading') { <p class="loading">Loading initiatives…</p> }
   @else if (service.hierarchy().initiatives.length === 0) {
-    <div class="empty-state"><h2>No initiatives yet</h2><p>Create an outcome to start organizing delivery work.</p><button class="primary-button" type="button" (click)="openInitiative()">New initiative</button></div>
+    <qbc-empty-state title="No initiatives yet" description="Create an outcome to start organizing delivery work."><button actions class="primary-button" type="button" (click)="openInitiative()">New initiative</button></qbc-empty-state>
   } @else {
     <div class="hierarchy-list">
       @for (initiative of service.hierarchy().initiatives; track initiative.id) {
@@ -54,4 +51,4 @@
     <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="epicDialog.close()">Cancel</button><button class="primary-button" type="submit" [disabled]="pending()">Save epic</button></footer>
   </form>
 </dialog>
-<app-confirm-dialog />
+<qbc-confirm-dialog />

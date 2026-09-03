@@ -1,12 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { ASSISTANT_API, Assistant, presentApiError } from '@qbc/api';
+import { ASSISTANT_SERVICE as ASSISTANT_BACKEND_SERVICE, Assistant, presentApiError } from '@qbc/api';
 import { FEEDBACK_SERVICE } from '../../core/feedback.service.contract';
 import { LoadingState } from '../../models/loading-state';
 import { IAssistantService } from './assistant.service.contract';
 
 @Injectable({ providedIn: 'root' })
 export class AssistantService implements IAssistantService {
-  private readonly api = inject(ASSISTANT_API);
+  private readonly backendService = inject(ASSISTANT_BACKEND_SERVICE);
   private readonly feedback = inject(FEEDBACK_SERVICE);
   private readonly assistantsValue = signal<readonly Assistant[]>([]);
   private readonly loadingValue = signal<LoadingState>('idle');
@@ -19,19 +19,19 @@ export class AssistantService implements IAssistantService {
     this.loadingValue.set('loading');
     this.errorValue.set(null);
     try {
-      this.assistantsValue.set(await this.api.getAll());
+      this.assistantsValue.set(await this.backendService.getAll());
       this.loadingValue.set('loaded');
     } catch (error) { this.fail(error); }
   }
 
   async save(id: string | null, fullName: string, role: string, specialties: readonly string[], availability: Assistant['availability']): Promise<boolean> {
     return this.mutate(id
-      ? this.api.update(id, fullName, role, specialties, availability)
-      : this.api.create(fullName, role, specialties, availability), 'Assistant saved.');
+      ? this.backendService.update(id, fullName, role, specialties, availability)
+      : this.backendService.create(fullName, role, specialties, availability), 'Assistant saved.');
   }
 
   async delete(id: string): Promise<boolean> {
-    return this.mutate(this.api.delete(id), 'Assistant deleted.');
+    return this.mutate(this.backendService.delete(id), 'Assistant deleted.');
   }
 
   private async mutate(request: Promise<unknown>, message: string): Promise<boolean> {

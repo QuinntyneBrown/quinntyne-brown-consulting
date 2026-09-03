@@ -1,7 +1,7 @@
 import { StoryDraft } from '../models/story-draft';
 import { Story } from '../models/story';
 
-export interface IStoryApi {
+export interface IStoryService {
   getBacklog(): Promise<readonly Story[]>;
   get(id: string): Promise<Story>;
   create(draft: StoryDraft): Promise<Story>;

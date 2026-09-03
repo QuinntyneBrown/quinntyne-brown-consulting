@@ -7,14 +7,14 @@
       <div class="sprint-list">
         @for (sprint of planning.sprints(); track sprint.id) {
           <article class="sprint-row">
-            <div><h3>{{ sprint.name }} <span class="pill" [class]="'pill ' + sprint.status">{{ sprint.status }}</span></h3><strong>{{ sprint.goal }}</strong><p>{{ formatDates(sprint) }} · {{ sprint.storyCount }} stories</p></div>
+            <div><h3>{{ sprint.name }} <qbc-status-pill [tone]="sprint.status" [label]="sprint.status" /></h3><strong>{{ sprint.goal }}</strong><p>{{ formatDates(sprint) }} · {{ sprint.storyCount }} stories</p></div>
             <div class="row-actions">
               @if (sprint.status === 'planned') { <button class="secondary-button" type="button" (click)="start(sprint)">Start</button> }
               <button class="quiet-button" type="button" (click)="openForm(sprint)">Edit</button>
               @if (sprint.status === 'planned') { <button class="quiet-button danger-text" type="button" (click)="delete(sprint)">Delete</button> }
             </div>
           </article>
-        } @empty { <div class="empty-state"><h2>No sprints yet</h2><p>Create a sprint and give it a delivery goal.</p></div> }
+        } @empty { <qbc-empty-state title="No sprints yet" description="Create a sprint and give it a delivery goal." /> }
       </div>
     </div>
     <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="dialog.close()">Close</button></footer>
@@ -32,5 +32,4 @@
     <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="formDialog.close()">Cancel</button><button class="primary-button" type="submit" [disabled]="pending()">Save sprint</button></footer>
   </form>
 </dialog>
-<app-confirm-dialog />
-
+<qbc-confirm-dialog />

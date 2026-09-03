@@ -14,7 +14,6 @@
 .sprint-cell select { min-width: 135px; }
 .row-actions { justify-content: flex-end; }
 .row-actions button { min-height: 34px; padding: 5px 9px; font-size: 12px; }
-.pill { text-transform: capitalize; }
 @media (max-width: 1050px) { .data-row { grid-template-columns: minmax(240px, 2fr) 100px 80px 1fr auto; } .data-row > :nth-child(4) { display: none; } }
 @media (max-width: 759px) {
   .toolbar { align-items: stretch; flex-direction: column; }

@@ -1,10 +1,10 @@
 import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder, Validators } from '@angular/forms';
+import { ConfirmDialogComponent } from '@qbc/components';
 import { ASSISTANT_SERVICE } from '../assistants/assistant.service.contract';
 import { BACKLOG_SERVICE } from '../backlog/backlog.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
 import { HIERARCHY_SERVICE } from '../hierarchy/hierarchy.service.contract';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { STORY_EDITOR_SERVICE } from './story-editor.service.contract';
 import { STORY_SERVICE } from './story.service.contract';
 

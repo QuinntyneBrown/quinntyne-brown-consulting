@@ -3,10 +3,10 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ActiveSprintBoard } from '../models/active-sprint-board';
 import { Sprint } from '../models/sprint';
-import { ISprintApi } from './sprint-api.interface';
+import { ISprintService } from './sprint.service.interface';
 
 @Injectable()
-export class SprintApi implements ISprintApi {
+export class SprintService implements ISprintService {
   private readonly http = inject(HttpClient);
 
   getAll(): Promise<readonly Sprint[]> {

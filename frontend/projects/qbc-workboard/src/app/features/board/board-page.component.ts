@@ -1,13 +1,13 @@
 import { Component, OnInit, inject, viewChild } from '@angular/core';
-import { SprintStoryCard } from '../../models/sprint-story-card';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { SprintStoryCard } from '@qbc/api';
+import { ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent } from '@qbc/components';
 import { SprintManagerComponent } from '../sprints/sprint-manager.component';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from './sprint-execution.service.contract';
 
 @Component({
   selector: 'app-board-page',
-  imports: [SprintManagerComponent, ConfirmDialogComponent],
+  imports: [SprintManagerComponent, ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent],
   templateUrl: './board-page.component.html',
   styleUrl: './board-page.component.scss'
 })
@@ -47,4 +47,3 @@ export class BoardPageComponent implements OnInit {
 
   format(value: string): string { return new Intl.DateTimeFormat('en-CA', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(`${value}T12:00:00`)); }
 }
-

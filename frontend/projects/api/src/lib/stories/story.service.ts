@@ -3,10 +3,10 @@ import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { StoryDraft } from '../models/story-draft';
 import { Story } from '../models/story';
-import { IStoryApi } from './story-api.interface';
+import { IStoryService } from './story.service.interface';
 
 @Injectable()
-export class StoryApi implements IStoryApi {
+export class StoryService implements IStoryService {
   private readonly http = inject(HttpClient);
 
   getBacklog(): Promise<readonly Story[]> {

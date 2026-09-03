@@ -1,5 +1,5 @@
 <section class="page">
-  <header class="page-head"><div><h1>Sprint board</h1><p>A quiet view of the team’s current commitment.</p></div><div class="page-actions"><button class="secondary-button" type="button" (click)="manage()">Manage sprints</button></div></header>
+  <qbc-page-header title="Sprint board" description="A quiet view of the team’s current commitment."><button actions class="secondary-button" type="button" (click)="manage()">Manage sprints</button></qbc-page-header>
   @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
   @if (service.loadingState() === 'loading') { <p class="loading">Loading sprint board…</p> }
   @else if (service.board(); as board) {
@@ -24,8 +24,8 @@
       }
     </div>
   } @else {
-    <div class="empty-state"><h2>No active sprint</h2><p>Start a planned sprint to bring Ready stories onto the board.</p><button class="primary-button" type="button" (click)="manage()">Choose a sprint</button></div>
+    <qbc-empty-state title="No active sprint" description="Start a planned sprint to bring Ready stories onto the board."><button actions class="primary-button" type="button" (click)="manage()">Choose a sprint</button></qbc-empty-state>
   }
 </section>
 <app-sprint-manager />
-<app-confirm-dialog />
+<qbc-confirm-dialog />

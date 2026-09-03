@@ -2,55 +2,59 @@
 
 ## Overview
 
-The frontend is a responsive Angular application that renders server-authoritative
-workspace data. Each feature consumes a behavioral service interface through a
-typed injection token. Concrete HTTP services remain composition-root details.
+The frontend is a responsive Angular workspace that renders server-authoritative
+work-management data. The workspace separates deployable application behavior,
+backend communication, and reusable presentation into three Angular projects.
 
-*Signal store* — root- or route-scoped service that owns writable Signals and
-exposes read-only and computed Signals
+*runnable application* — browser application that owns routes, feature behavior,
+and Signal state
 
-*service contract* — `I`-prefixed behavioral interface paired with a typed
-Angular `InjectionToken`
+*backend service* — typed service that converts an `HttpClient` operation to a Promise
+at the transport boundary
 
-*interface-driven consumption* — dependency rule in which consumers inject a
-contract token without importing the concrete implementation
+*component library* — collection of reusable presentational components without
+product workflow state
 
-Angular Signals hold feature data, loading, errors, selection, filters, and
-derived presentation. `HttpClient` Observables terminate inside service
-implementations and update Signals. Components do not coordinate long-lived
-subscriptions.
+The `qbc-workboard` application reads feature state through interface-backed
+services. Each feature service delegates transport operations to `@qbc/api` and
+applies authoritative responses to Signals. Pages compose reusable controls from
+`@qbc/components`.
 
 ## Description
 
-The `frontend/` workspace uses standalone Angular components with external
-templates and styles. Standalone describes Angular composition; it does not mean
-single-file components.
+The `frontend/` workspace contains three projects with one-way dependencies.
+The `qbc-workboard` application depends on `api` and `components`. Neither
+library imports application source, and the two libraries remain independent.
 
-- **`AppComponent`** — application root that hosts `AppShellComponent` and the
-  Angular router outlet.
-- **`AppConfig`** — composition root that aliases each typed token to its
-  root-provided implementation with `useExisting`.
-- **`IResourceService`** — pattern implemented by feature-specific contracts such
-  as `IStoryService`; each contract exposes read-only Signals and commands.
-- **`ResourceService`** — pattern implemented by feature-specific HTTP services;
-  each implementation owns writable state and implements one contract.
-- **`ApiProblem`** — typed DTO for RFC 9457 responses.
-- **`ApiErrorPresenter`** — service that maps transport failures to feature error
-  state and accessible user feedback.
-- **`LoadingState`** — data type representing idle, loading, loaded, and failed
-  request conditions.
-- **`provideWorkboardServices`** — provider factory that binds every service token
-  with `useExisting`.
+- **`qbc-workboard`** — runnable Angular application under
+  `projects/qbc-workboard`. It owns routing, feature pages, forms, application
+  orchestration, feedback, loading state, and writable or computed Signals.
+- **feature service contracts** — `I`-prefixed interfaces paired with typed
+  `InjectionToken` values. Components inject these tokens instead of concrete
+  feature services.
+- **feature services** — root application services such as `BacklogService`.
+  They own Signal state and delegate HTTP work to API contract tokens.
+- **`@qbc/api`** — Angular library under `projects/api`. It owns backend DTOs,
+  feature-oriented HTTP clients, API contract tokens, and Problem Details
+  presentation.
+- **`provideQbcServices`** — provider factory that registers `HttpClient` and
+  aliases backend service tokens to their singletons with `useExisting`.
+- **`@qbc/components`** — Angular library under `projects/components`. It
+  exports `ConfirmDialogComponent`, `PageHeaderComponent`,
+  `EmptyStateComponent`, and `StatusPillComponent`.
+- **`provideQbcWorkboard`** — application provider factory that aliases each
+  feature contract token to its Signal service singleton with `useExisting`.
 
-Each component occupies a `.ts` file and references sibling `.html` and `.scss`
-files. Each declared interface, class, type alias, and enum has its own matching
-TypeScript file. Feature services treat backend responses as authoritative and
-do not persist product records in browser storage.
+Each component uses sibling `.ts`, `.html`, and `.scss` files. `HttpClient`
+Observables terminate inside the API library through `firstValueFrom`. The API
+backend services return typed Promises, and application services translate results into
+Signal state. Product records remain server-authoritative and do not use browser
+storage.
 
 ## Requirements
 
 The feature realizes the following level-2 (L2) requirements. Each L2
-requirement refines one level-1 (L1) requirement.
+requirement refines a level-1 (L1) requirement, cited by identifier.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
@@ -63,35 +67,36 @@ requirement refines one level-1 (L1) requirement.
 
 ### System context
 
-The consultant operates QBC Workboard through the Angular web application. The
-frontend communicates only with the product API.
+The consultant operates QBC Workboard through a browser. QBC Workboard presents
+the Angular workspace and persists product data through its API.
 
 ![C4 system context for the Angular workspace](diagrams/c4-context.png)
 
 ### Containers
 
-The browser loads the Angular application, which calls the ASP.NET Core API over
-JSON and HTTPS. The API owns persistent data.
+The browser downloads the `qbc-workboard` application. The application calls the
+ASP.NET Core API, which owns persistence in SQLite.
 
 ![C4 container view for the Angular workspace](diagrams/c4-container.png)
 
 ### Components
 
-Components inject typed tokens. Each token aliases one concrete HTTP service that
-updates Signal state from API responses.
+The runnable application composes API and component libraries. Application
+services retain Signal state while typed backend services isolate `HttpClient`.
 
 ![C4 component view for the Angular workspace](diagrams/c4-component.png)
 
 ### Class structure
 
-The contract and implementation relationship creates a test seam while
-preserving one shared Signal graph per feature service.
+The backlog slice illustrates both contract boundaries. `BacklogService`
+implements the application contract and consumes the API library's
+`IStoryService` through its token.
 
 ![Class diagram for the Angular workspace](diagrams/class-structure.png)
 
 ### Behaviour — load and mutate feature state
 
-The sequence shows a component reading Signals, calling the contract, and
-receiving an authoritative API result through the concrete service.
+The backlog page delegates loading and grooming through application and API
+contracts. The API response updates Signals before Angular renders the result.
 
 ![Sequence diagram for the Angular workspace](diagrams/sequence-consume-service.png)

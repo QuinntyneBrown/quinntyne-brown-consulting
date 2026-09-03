@@ -1,9 +1,9 @@
 <section class="page">
-  <header class="page-head"><div><h1>Assistants</h1><p>Keep a simple view of the people and agents available to move work forward.</p></div><div class="page-actions"><button class="primary-button" type="button" (click)="openForm()">＋ New assistant</button></div></header>
+  <qbc-page-header title="Assistants" description="Keep a simple view of the people and agents available to move work forward."><button actions class="primary-button" type="button" (click)="openForm()">＋ New assistant</button></qbc-page-header>
   @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
   @if (service.loadingState() === 'loading') { <p class="loading">Loading assistants…</p> }
   @else if (service.assistants().length === 0) {
-    <div class="empty-state"><h2>No assistants yet</h2><p>Add an assistant before assigning delivery work.</p><button class="primary-button" type="button" (click)="openForm()">New assistant</button></div>
+    <qbc-empty-state title="No assistants yet" description="Add an assistant before assigning delivery work."><button actions class="primary-button" type="button" (click)="openForm()">New assistant</button></qbc-empty-state>
   } @else {
     <div class="assistant-grid">
       @for (assistant of service.assistants(); track assistant.id) {
@@ -11,7 +11,7 @@
           <div class="assistant-main"><span class="avatar" aria-hidden="true">{{ initials(assistant.fullName) }}</span><div><h2>{{ assistant.fullName }}</h2><p>{{ assistant.role }}</p></div></div>
           <div class="tag-list">@for (specialty of assistant.specialties; track specialty) { <span class="tag">{{ specialty }}</span> } @empty { <span class="tag">No specialties</span> }</div>
           <dl><div><dt>Stories</dt><dd>{{ assistant.storyCount }}</dd></div><div><dt>Open tasks</dt><dd>{{ assistant.incompleteTaskCount }}</dd></div></dl>
-          <footer class="assistant-foot"><span class="pill" [class]="'pill ' + assistant.availability">{{ assistant.availability }}</span><div class="row-actions"><button class="quiet-button" type="button" (click)="openForm(assistant)">Edit</button><button class="quiet-button danger-text" type="button" (click)="requestDelete(assistant)">Delete</button></div></footer>
+          <footer class="assistant-foot"><qbc-status-pill [tone]="assistant.availability" [label]="assistant.availability" /><div class="row-actions"><button class="quiet-button" type="button" (click)="openForm(assistant)">Edit</button><button class="quiet-button danger-text" type="button" (click)="requestDelete(assistant)">Delete</button></div></footer>
         </article>
       }
     </div>
@@ -42,5 +42,4 @@
     <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="assignmentsDialog.close()">Close</button></footer>
   </div>
 </dialog>
-<app-confirm-dialog />
-
+<qbc-confirm-dialog />

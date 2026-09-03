@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Story } from '../../models/story';
+import { Story } from '@qbc/api';
+import { EmptyStateComponent, PageHeaderComponent, StatusPillComponent, StatusPillTone } from '@qbc/components';
 import { SPRINT_PLANNING_SERVICE } from '../sprints/sprint-planning.service.contract';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { BacklogFilter } from './backlog-filter';
@@ -7,6 +8,7 @@ import { BACKLOG_SERVICE } from './backlog.service.contract';
 
 @Component({
   selector: 'app-backlog-page',
+  imports: [EmptyStateComponent, PageHeaderComponent, StatusPillComponent],
   templateUrl: './backlog-page.component.html',
   styleUrl: './backlog-page.component.scss'
 })
@@ -41,6 +43,5 @@ export class BacklogPageComponent implements OnInit {
     this.pendingStoryId.set(null);
   }
 
-  badge(story: Story): string { return story.lifecycle === 'archived' ? 'archived' : story.isReady ? 'ready' : story.lifecycle; }
+  badge(story: Story): StatusPillTone { return story.lifecycle === 'archived' ? 'archived' : story.isReady ? 'ready' : story.lifecycle; }
 }
-

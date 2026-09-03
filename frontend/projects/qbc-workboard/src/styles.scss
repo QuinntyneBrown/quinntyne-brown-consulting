@@ -16,10 +16,7 @@ a { color: inherit; }
 .skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 10px 14px; transform: translateY(-150%); border-radius: 8px; color: #fff; background: var(--ink); }
 .skip-link:focus { transform: none; }
 .page { max-width: 1440px; min-width: 0; margin: 0 auto; }
-.page-head { display: flex; gap: 28px; align-items: flex-start; justify-content: space-between; margin-bottom: 42px; }
-.page-head h1 { margin: 0; font-size: clamp(30px, 3vw, 42px); letter-spacing: -.035em; line-height: 1.12; }
-.page-head p { max-width: 650px; margin: 10px 0 0; color: var(--muted); }
-.page-actions, .row-actions, .dialog-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.row-actions, .dialog-actions { display: flex; flex-wrap: wrap; gap: 9px; }
 .primary-button, .secondary-button, .quiet-button, .danger-button, .icon-button { min-height: 40px; border-radius: 9px; font-weight: 680; }
 .primary-button { padding: 9px 16px; border: 1px solid var(--accent); color: #fff; background: var(--accent); }
 .primary-button:hover { background: var(--accent-dark); }
@@ -38,14 +35,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); outline
 .field-hint { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
 .required { color: var(--danger); }
 .form-error { margin: 0 0 18px; padding: 10px 12px; border-radius: 8px; color: var(--danger); background: var(--danger-soft); font-size: 12px; }
-.pill { display: inline-flex; width: max-content; padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-.pill.ready, .pill.active, .pill.done, .pill.available { color: var(--accent-dark); background: var(--accent-soft); }
-.pill.draft, .pill.todo { color: var(--blue); background: var(--blue-soft); }
-.pill.archived, .pill.muted, .pill.unavailable { color: var(--muted); background: var(--soft); }
-.pill.progress, .pill.planned, .pill.limited { color: var(--amber); background: var(--amber-soft); }
-.empty-state { padding: 64px 28px; border: 1px dashed #d7deda; border-radius: var(--radius); text-align: center; }
-.empty-state h2 { margin: 0; font-size: 18px; }
-.empty-state p { margin: 7px auto 19px; color: var(--muted); }
 .loading { padding: 50px; color: var(--muted); text-align: center; }
 dialog { width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; border-radius: 16px; box-shadow: var(--shadow); }
 dialog::backdrop { background: rgba(18,25,22,.4); backdrop-filter: blur(2px); }
@@ -57,8 +46,6 @@ dialog::backdrop { background: rgba(18,25,22,.4); backdrop-filter: blur(2px); }
 .dialog-actions { justify-content: flex-end; padding: 18px 28px; border-top: 1px solid var(--line); background: #fbfcfb; }
 .visually-hidden { position: absolute; overflow: hidden; width: 1px; height: 1px; padding: 0; margin: -1px; border: 0; clip: rect(0,0,0,0); white-space: nowrap; }
 @media (max-width: 759px) {
-  .page-head { display: block; margin-bottom: 30px; }
-  .page-actions { margin-top: 20px; }
   .form-grid { grid-template-columns: 1fr; }
   .field.full { grid-column: auto; }
   .dialog-body, .dialog-head { padding-left: 20px; padding-right: 20px; }

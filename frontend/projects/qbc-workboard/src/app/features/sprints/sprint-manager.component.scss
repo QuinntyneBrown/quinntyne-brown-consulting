@@ -6,7 +6,6 @@
 .sprint-row h3 { margin: 0 0 6px; font-size: 14px; }
 .sprint-row strong { display: block; font-size: 13px; }
 .sprint-row p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
-.pill { margin-left: 7px; text-transform: capitalize; }
+qbc-status-pill { margin-left: 7px; }
 .danger-text { color: var(--danger); }
 @media (max-width: 759px) { .sprint-row { grid-template-columns: 1fr; } }
-

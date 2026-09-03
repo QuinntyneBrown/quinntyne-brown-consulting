@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Assistant } from '../models/assistant';
-import { IAssistantApi } from './assistant-api.interface';
+import { IAssistantService } from './assistant.service.interface';
 
 @Injectable()
-export class AssistantApi implements IAssistantApi {
+export class AssistantService implements IAssistantService {
   private readonly http = inject(HttpClient);
 
   getAll(): Promise<readonly Assistant[]> {

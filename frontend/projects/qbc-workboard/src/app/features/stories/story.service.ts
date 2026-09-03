@@ -1,12 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { STORY_API, Story, StoryDraft, presentApiError } from '@qbc/api';
+import { STORY_SERVICE as STORY_BACKEND_SERVICE, Story, StoryDraft, presentApiError } from '@qbc/api';
 import { FEEDBACK_SERVICE } from '../../core/feedback.service.contract';
 import { LoadingState } from '../../models/loading-state';
 import { IStoryService } from './story.service.contract';
 
 @Injectable({ providedIn: 'root' })
 export class StoryService implements IStoryService {
-  private readonly api = inject(STORY_API);
+  private readonly backendService = inject(STORY_BACKEND_SERVICE);
   private readonly feedback = inject(FEEDBACK_SERVICE);
   private readonly selectedValue = signal<Story | null>(null);
   private readonly loadingValue = signal<LoadingState>('idle');
@@ -19,7 +19,7 @@ export class StoryService implements IStoryService {
     this.loadingValue.set('loading');
     this.errorValue.set(null);
     try {
-      const story = await this.api.get(id);
+      const story = await this.backendService.get(id);
       this.selectedValue.set(story);
       this.loadingValue.set('loaded');
       return story;
@@ -30,7 +30,7 @@ export class StoryService implements IStoryService {
     this.loadingValue.set('loading');
     this.errorValue.set(null);
     try {
-      const story = await (id ? this.api.update(id, draft) : this.api.create(draft));
+      const story = await (id ? this.backendService.update(id, draft) : this.backendService.create(draft));
       this.selectedValue.set(story);
       this.loadingValue.set('loaded');
       this.feedback.show(`${story.key} saved.`);
@@ -38,12 +38,12 @@ export class StoryService implements IStoryService {
     } catch (error) { this.fail(error); return null; }
   }
 
-  archive(id: string): Promise<boolean> { return this.action(this.api.archive(id), 'Story archived.'); }
-  restore(id: string): Promise<boolean> { return this.action(this.api.restore(id), 'Story restored as a draft.'); }
+  archive(id: string): Promise<boolean> { return this.action(this.backendService.archive(id), 'Story archived.'); }
+  restore(id: string): Promise<boolean> { return this.action(this.backendService.restore(id), 'Story restored as a draft.'); }
 
   async delete(id: string): Promise<boolean> {
     try {
-      await this.api.delete(id);
+      await this.backendService.delete(id);
       this.clear();
       this.feedback.show('Story permanently deleted.');
       return true;

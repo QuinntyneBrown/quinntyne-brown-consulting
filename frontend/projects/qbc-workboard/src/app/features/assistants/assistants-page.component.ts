@@ -1,13 +1,13 @@
 import { Component, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
-import { Assistant } from '../../models/assistant';
-import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
+import { Assistant } from '@qbc/api';
+import { ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent, StatusPillComponent } from '@qbc/components';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { ASSISTANT_SERVICE } from './assistant.service.contract';
 
 @Component({
   selector: 'app-assistants-page',
-  imports: [ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent, EmptyStateComponent, PageHeaderComponent, StatusPillComponent],
   templateUrl: './assistants-page.component.html',
   styleUrl: './assistants-page.component.scss'
 })
@@ -71,4 +71,3 @@ export class AssistantsPageComponent implements OnInit {
     return name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase();
   }
 }
-

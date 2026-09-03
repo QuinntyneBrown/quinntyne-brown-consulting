@@ -4,10 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import { Epic } from '../models/epic';
 import { Hierarchy } from '../models/hierarchy';
 import { Initiative } from '../models/initiative';
-import { IHierarchyApi } from './hierarchy-api.interface';
+import { IHierarchyService } from './hierarchy.service.interface';
 
 @Injectable()
-export class HierarchyApi implements IHierarchyApi {
+export class HierarchyService implements IHierarchyService {
   private readonly http = inject(HttpClient);
 
   get(): Promise<Hierarchy> {
