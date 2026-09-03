@@ -11,4 +11,6 @@ export interface ISprintExecutionService {
   completeSprint(id: string): Promise<boolean>;
 }
 
-export const SPRINT_EXECUTION_SERVICE = new InjectionToken<ISprintExecutionService>('SPRINT_EXECUTION_SERVICE');
+export const SPRINT_EXECUTION_SERVICE = new InjectionToken<ISprintExecutionService>(
+  'SPRINT_EXECUTION_SERVICE',
+);

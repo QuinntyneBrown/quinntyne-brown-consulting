@@ -18,7 +18,9 @@ export class BacklogPage {
 
   async openStory(title: string): Promise<void> {
     await this.story(title).getByRole('button', { name: 'Open' }).click();
-    const editor = this.page.getByRole('dialog').filter({ has: this.page.getByRole('button', { name: 'Save story' }) });
+    const editor = this.page
+      .getByRole('dialog')
+      .filter({ has: this.page.getByRole('button', { name: 'Save story' }) });
     await expect(editor).toBeVisible();
     await expect(editor.getByLabel('Title *')).toHaveValue(title);
   }
@@ -29,7 +31,9 @@ export class BacklogPage {
   }
 
   async assignStory(title: string, sprintName: string): Promise<void> {
-    await this.story(title).getByRole('combobox', { name: 'Sprint assignment' }).selectOption({ label: sprintName });
+    await this.story(title)
+      .getByRole('combobox', { name: 'Sprint assignment' })
+      .selectOption({ label: sprintName });
     await expect(this.page.getByText('Story assigned to sprint.')).toBeVisible();
   }
 

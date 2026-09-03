@@ -1,5 +1,22 @@
-:host { display: block; }
-:host(.qbc-full) { grid-column: 1 / -1; }
-.label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; }
-i { color: var(--qbc-danger); font-style: normal; }
-small { display: block; margin-top: 5px; color: var(--qbc-ink-soft); font-size: 11px; }
+:host {
+  display: block;
+}
+:host(.qbc-full) {
+  grid-column: 1 / -1;
+}
+.label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+i {
+  color: var(--qbc-danger);
+  font-style: normal;
+}
+small {
+  display: block;
+  margin-top: 5px;
+  color: var(--qbc-ink-soft);
+  font-size: 11px;
+}

@@ -1,5 +1,31 @@
-article { display: grid; grid-template-columns: minmax(180px, 1fr) 110px auto auto; gap: 16px; align-items: center; padding: 16px 0; border-top: 1px solid var(--qbc-line); }
-strong, small { display: block; }
-small { color: var(--qbc-ink-soft); }
-article > div:last-child { display: flex; flex-wrap: wrap; gap: 9px; }
-@media (max-width: 760px) { article { grid-template-columns: 1fr auto; } qbc-progress { display: none; } article > div:last-child { grid-column: 1 / -1; } }
+article {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 110px auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid var(--qbc-line);
+}
+strong,
+small {
+  display: block;
+}
+small {
+  color: var(--qbc-ink-soft);
+}
+article > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+@media (max-width: 760px) {
+  article {
+    grid-template-columns: 1fr auto;
+  }
+  qbc-progress {
+    display: none;
+  }
+  article > div:last-child {
+    grid-column: 1 / -1;
+  }
+}

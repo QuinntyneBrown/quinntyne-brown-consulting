@@ -1,1 +1,7 @@
-<span [class]="'pill ' + tone()">@if (label(); as value) { {{ value }} } @else { <ng-content /> }</span>
+<span [class]="'pill ' + tone()">
+  @if (label(); as value) {
+    {{ value }}
+  } @else {
+    <ng-content />
+  }
+</span>

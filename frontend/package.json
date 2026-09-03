@@ -9,6 +9,8 @@
     "build:api": "ng build api",
     "build:components": "ng build components",
     "build:app": "ng build qbc-workboard",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test:components": "ng test components --watch=false",
     "validate:components": "node scripts/validate-component-boundary.mjs",
     "typecheck:e2e": "tsc --project tsconfig.e2e.json",
@@ -33,6 +35,7 @@
     "@types/node": "22.18.0",
     "jsdom": "27.2.0",
     "ng-packagr": "21.2.7",
+    "prettier": "3.9.6",
     "typescript": "5.9.3",
     "vitest": "4.1.11"
   },

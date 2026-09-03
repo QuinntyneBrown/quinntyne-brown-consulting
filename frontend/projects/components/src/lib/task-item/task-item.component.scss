@@ -1,3 +1,17 @@
-div { display: grid; grid-template-columns: auto 1fr 155px auto; gap: 9px; align-items: center; padding: 9px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-control); }
-.done { opacity: .72; }
-@media (max-width: 760px) { div { grid-template-columns: auto 1fr auto; } }
+div {
+  display: grid;
+  grid-template-columns: auto 1fr 155px auto;
+  gap: 9px;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-control);
+}
+.done {
+  opacity: 0.72;
+}
+@media (max-width: 760px) {
+  div {
+    grid-template-columns: auto 1fr auto;
+  }
+}

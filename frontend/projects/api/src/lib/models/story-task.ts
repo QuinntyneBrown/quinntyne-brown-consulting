@@ -5,4 +5,3 @@ export interface StoryTask {
   readonly assistantId: string | null;
   readonly assistantName: string | null;
 }
-

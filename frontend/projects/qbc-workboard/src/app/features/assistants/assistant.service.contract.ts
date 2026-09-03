@@ -7,7 +7,13 @@ export interface IAssistantService {
   readonly loadingState: Signal<LoadingState>;
   readonly error: Signal<string | null>;
   load(): Promise<void>;
-  save(id: string | null, fullName: string, role: string, specialties: readonly string[], availability: Assistant['availability']): Promise<boolean>;
+  save(
+    id: string | null,
+    fullName: string,
+    role: string,
+    specialties: readonly string[],
+    availability: Assistant['availability'],
+  ): Promise<boolean>;
   delete(id: string): Promise<boolean>;
 }
 

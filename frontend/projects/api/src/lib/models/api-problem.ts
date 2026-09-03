@@ -6,4 +6,3 @@ export interface ApiProblem {
   readonly errors?: Readonly<Record<string, readonly string[]>>;
   readonly context?: unknown;
 }
-

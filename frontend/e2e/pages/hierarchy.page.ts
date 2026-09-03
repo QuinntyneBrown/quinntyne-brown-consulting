@@ -4,7 +4,10 @@ export class HierarchyPage {
   constructor(private readonly page: Page) {}
 
   async createInitiative(name: string, description: string): Promise<void> {
-    await this.page.getByRole('button', { name: /New initiative/ }).first().click();
+    await this.page
+      .getByRole('button', { name: /New initiative/ })
+      .first()
+      .click();
     const dialog = this.page.getByRole('dialog', { name: 'New initiative' });
     await dialog.getByLabel('Name *').fill(name);
     await dialog.getByLabel('Outcome description *').fill(description);
@@ -26,7 +29,10 @@ export class HierarchyPage {
     await this.createInitiative(name, 'Acceptance-test outcome.');
     const card = this.initiative(name);
     await card.getByRole('button', { name: 'Delete' }).click();
-    await this.page.getByRole('dialog', { name: `Delete ${name}?` }).getByRole('button', { name: 'Delete initiative' }).click();
+    await this.page
+      .getByRole('dialog', { name: `Delete ${name}?` })
+      .getByRole('button', { name: 'Delete initiative' })
+      .click();
     await expect(card).toHaveCount(0);
   }
 

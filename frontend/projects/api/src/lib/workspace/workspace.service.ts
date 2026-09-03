@@ -9,6 +9,8 @@ export class WorkspaceService implements IWorkspaceService {
   private readonly http = inject(HttpClient);
 
   get(route: string): Promise<WorkspaceBootstrap> {
-    return firstValueFrom(this.http.get<WorkspaceBootstrap>('/api/workspace', { params: { route } }));
+    return firstValueFrom(
+      this.http.get<WorkspaceBootstrap>('/api/workspace', { params: { route } }),
+    );
   }
 }

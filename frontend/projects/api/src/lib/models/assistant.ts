@@ -10,4 +10,3 @@ export interface Assistant {
   readonly incompleteTaskCount: number;
   readonly blockingAssignments: readonly AssignmentLink[];
 }
-

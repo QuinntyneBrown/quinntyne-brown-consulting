@@ -3,4 +3,3 @@ export interface WorkspaceBootstrap {
   readonly hasActiveSprint: boolean;
   readonly backlogCount: number;
 }
-

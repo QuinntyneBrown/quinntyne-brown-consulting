@@ -1,1 +1,9 @@
-<span class="label">{{ label() }} @if (required()) { <i aria-hidden="true">*</i> }</span><ng-content />@if (hint()) { <small>{{ hint() }}</small> }
+<span class="label"
+  >{{ label() }}
+  @if (required()) {
+    <i aria-hidden="true">*</i>
+  }</span
+><ng-content />
+@if (hint()) {
+  <small>{{ hint() }}</small>
+}

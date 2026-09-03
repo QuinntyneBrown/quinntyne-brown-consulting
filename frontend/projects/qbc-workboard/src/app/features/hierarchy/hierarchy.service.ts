@@ -1,5 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HIERARCHY_SERVICE as HIERARCHY_BACKEND_SERVICE, Hierarchy, presentApiError } from '@qbc/api';
+import {
+  HIERARCHY_SERVICE as HIERARCHY_BACKEND_SERVICE,
+  Hierarchy,
+  presentApiError,
+} from '@qbc/api';
 import { FEEDBACK_SERVICE } from '../../core/feedback.service.contract';
 import { LoadingState } from '../../models/loading-state';
 import { IHierarchyService } from './hierarchy.service.contract';
@@ -27,15 +31,30 @@ export class HierarchyService implements IHierarchyService {
   }
 
   async saveInitiative(id: string | null, name: string, description: string): Promise<boolean> {
-    return this.mutate(id ? this.backendService.updateInitiative(id, name, description) : this.backendService.createInitiative(name, description), 'Initiative saved.');
+    return this.mutate(
+      id
+        ? this.backendService.updateInitiative(id, name, description)
+        : this.backendService.createInitiative(name, description),
+      'Initiative saved.',
+    );
   }
 
   async deleteInitiative(id: string): Promise<boolean> {
     return this.mutate(this.backendService.deleteInitiative(id), 'Initiative deleted.');
   }
 
-  async saveEpic(id: string | null, initiativeId: string, name: string, summary: string): Promise<boolean> {
-    return this.mutate(id ? this.backendService.updateEpic(id, initiativeId, name, summary) : this.backendService.createEpic(initiativeId, name, summary), 'Epic saved.');
+  async saveEpic(
+    id: string | null,
+    initiativeId: string,
+    name: string,
+    summary: string,
+  ): Promise<boolean> {
+    return this.mutate(
+      id
+        ? this.backendService.updateEpic(id, initiativeId, name, summary)
+        : this.backendService.createEpic(initiativeId, name, summary),
+      'Epic saved.',
+    );
   }
 
   async deleteEpic(id: string): Promise<boolean> {

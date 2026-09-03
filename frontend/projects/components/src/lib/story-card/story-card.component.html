@@ -1,1 +1,12 @@
-<article><div class="top"><span>{{ storyKey() }}</span><qbc-points [value]="points()" /></div><h3>{{ title() }}</h3><p>{{ context() }}</p><footer><qbc-avatar [name]="owner()" /><strong>{{ owner() || 'Unassigned' }}</strong><div><ng-content select="[actions]" /></div></footer></article>
+<article>
+  <div class="top">
+    <span>{{ storyKey() }}</span
+    ><qbc-points [value]="points()" />
+  </div>
+  <h3>{{ title() }}</h3>
+  <p>{{ context() }}</p>
+  <footer>
+    <qbc-avatar [name]="owner()" /><strong>{{ owner() || 'Unassigned' }}</strong>
+    <div><ng-content select="[actions]" /></div>
+  </footer>
+</article>

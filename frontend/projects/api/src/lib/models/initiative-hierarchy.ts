@@ -8,4 +8,3 @@ export interface InitiativeHierarchy {
   readonly storyCount: number;
   readonly epics: readonly EpicHierarchy[];
 }
-

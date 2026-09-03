@@ -1,20 +1,51 @@
 <qbc-app-shell>
-  <qbc-sidebar navigation [open]="menuOpen()">
-    <qbc-brand brand (click)="menuOpen.set(false)" />
-    <qbc-nav-item href="/board" icon="board" label="Board" (activated)="menuOpen.set(false)" />
-    <qbc-nav-item href="/backlog" icon="backlog" label="Backlog" (activated)="menuOpen.set(false)" />
-    <qbc-nav-item href="/initiatives" icon="initiatives" label="Initiatives" (activated)="menuOpen.set(false)" />
-    <qbc-nav-item href="/assistants" icon="assistants" label="Assistants" (activated)="menuOpen.set(false)" />
+  <qbc-sidebar
+    navigation
+    [open]="menuOpen()"
+  >
+    <qbc-brand
+      brand
+      (click)="menuOpen.set(false)"
+    />
+    <qbc-nav-item
+      href="/board"
+      icon="board"
+      label="Board"
+      (activated)="menuOpen.set(false)"
+    />
+    <qbc-nav-item
+      href="/backlog"
+      icon="backlog"
+      label="Backlog"
+      (activated)="menuOpen.set(false)"
+    />
+    <qbc-nav-item
+      href="/initiatives"
+      icon="initiatives"
+      label="Initiatives"
+      (activated)="menuOpen.set(false)"
+    />
+    <qbc-nav-item
+      href="/assistants"
+      icon="assistants"
+      label="Assistants"
+      (activated)="menuOpen.set(false)"
+    />
   </qbc-sidebar>
   <qbc-topbar
     topbar
     [breadcrumb]="'Workspace / ' + routeName()"
     [navOpen]="menuOpen()"
-    (menuToggled)="menuOpen.set(!menuOpen())">
+    (menuToggled)="menuOpen.set(!menuOpen())"
+  >
     <qbc-button (click)="openNewStory()">＋ New story</qbc-button>
   </qbc-topbar>
   <router-outlet content />
   @if (feedback.message(); as message) {
-    <qbc-toast feedback [tone]="message.kind === 'error' ? 'error' : 'default'">{{ message.text }}</qbc-toast>
+    <qbc-toast
+      feedback
+      [tone]="message.kind === 'error' ? 'error' : 'default'"
+      >{{ message.text }}</qbc-toast
+    >
   }
 </qbc-app-shell>

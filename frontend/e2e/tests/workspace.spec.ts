@@ -12,7 +12,8 @@ test('navigate, discover work, and execute an active story', async ({ page, brow
   await workboard.navigateTo('board');
   const board = new BoardPage(page);
   await board.expectWorkspace();
-  if (browserName === 'chromium') await board.moveStoryForwardIfPresent('Capture a client decision');
+  if (browserName === 'chromium')
+    await board.moveStoryForwardIfPresent('Capture a client decision');
 
   await workboard.usePrimaryNavigation('Backlog');
   const backlog = new BacklogPage(page);
@@ -43,13 +44,21 @@ test('deliver a story from hierarchy through a completed sprint', async ({ page,
 
   await workboard.navigateTo('initiatives');
   const hierarchy = new HierarchyPage(page);
-  await hierarchy.createInitiative(initiativeName, 'An outcome created entirely through the acceptance boundary.');
+  await hierarchy.createInitiative(
+    initiativeName,
+    'An outcome created entirely through the acceptance boundary.',
+  );
   await hierarchy.createEpic(initiativeName, epicName, 'A coherent delivery capability.');
 
   await workboard.usePrimaryNavigation('Assistants');
   const assistants = new AssistantsPage(page);
   await assistants.createAssistant(assistantName);
-  await new StoryEditorPage(page).createStory(storyTitle, epicName, assistantName, `Implement ${storyTitle}`);
+  await new StoryEditorPage(page).createStory(
+    storyTitle,
+    epicName,
+    assistantName,
+    `Implement ${storyTitle}`,
+  );
 
   await workboard.usePrimaryNavigation('Backlog');
   const backlog = new BacklogPage(page);

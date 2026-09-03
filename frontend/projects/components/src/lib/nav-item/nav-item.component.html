@@ -1,1 +1,6 @@
-<a [routerLink]="href()" routerLinkActive="active" (click)="activated.emit()"><qbc-icon [name]="icon()" /><span>{{ label() }}</span></a>
+<a
+  [routerLink]="href()"
+  routerLinkActive="active"
+  (click)="activated.emit()"
+  ><qbc-icon [name]="icon()" /><span>{{ label() }}</span></a
+>

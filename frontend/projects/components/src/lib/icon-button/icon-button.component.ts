@@ -4,7 +4,12 @@ import { IconName } from '../icon/icon-name';
 
 export type IconButtonVariant = 'default' | 'bare';
 
-@Component({ selector: 'qbc-icon-button', imports: [IconComponent], templateUrl: './icon-button.component.html', styleUrl: './icon-button.component.scss' })
+@Component({
+  selector: 'qbc-icon-button',
+  imports: [IconComponent],
+  templateUrl: './icon-button.component.html',
+  styleUrl: './icon-button.component.scss',
+})
 export class IconButtonComponent {
   readonly icon = input<IconName>('close');
   readonly label = input.required<string>();

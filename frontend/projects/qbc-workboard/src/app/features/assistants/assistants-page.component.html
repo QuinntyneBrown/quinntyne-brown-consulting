@@ -1,9 +1,28 @@
 <qbc-page>
-  <qbc-page-header title="Assistants" description="Keep a simple view of the people and agents available to move work forward."><qbc-button actions (click)="openForm()">＋ New assistant</qbc-button></qbc-page-header>
-  @if (service.error()) { <qbc-form-error>{{ service.error() }}</qbc-form-error> }
-  @if (service.loadingState() === 'loading') { <qbc-loading-state>Loading assistants…</qbc-loading-state> }
-  @else if (service.assistants().length === 0) {
-    <qbc-empty-state title="No assistants yet" description="Add an assistant before assigning delivery work."><qbc-button actions (click)="openForm()">New assistant</qbc-button></qbc-empty-state>
+  <qbc-page-header
+    title="Assistants"
+    description="Keep a simple view of the people and agents available to move work forward."
+    ><qbc-button
+      actions
+      (click)="openForm()"
+      >＋ New assistant</qbc-button
+    ></qbc-page-header
+  >
+  @if (service.error()) {
+    <qbc-form-error>{{ service.error() }}</qbc-form-error>
+  }
+  @if (service.loadingState() === 'loading') {
+    <qbc-loading-state>Loading assistants…</qbc-loading-state>
+  } @else if (service.assistants().length === 0) {
+    <qbc-empty-state
+      title="No assistants yet"
+      description="Add an assistant before assigning delivery work."
+      ><qbc-button
+        actions
+        (click)="openForm()"
+        >New assistant</qbc-button
+      ></qbc-empty-state
+    >
   } @else {
     <div class="assistant-grid">
       @for (assistant of service.assistants(); track assistant.id) {
@@ -13,34 +32,105 @@
           [availability]="assistant.availability"
           [specialties]="assistant.specialties"
           [storyCount]="assistant.storyCount"
-          [openTaskCount]="assistant.incompleteTaskCount">
-          <qbc-button actions variant="quiet" size="sm" (click)="openForm(assistant)">Edit</qbc-button>
-          <qbc-button actions variant="danger" size="sm" (click)="requestDelete(assistant)">Delete</qbc-button>
+          [openTaskCount]="assistant.incompleteTaskCount"
+        >
+          <qbc-button
+            actions
+            variant="quiet"
+            size="sm"
+            (click)="openForm(assistant)"
+            >Edit</qbc-button
+          >
+          <qbc-button
+            actions
+            variant="danger"
+            size="sm"
+            (click)="requestDelete(assistant)"
+            >Delete</qbc-button
+          >
         </qbc-assistant-card>
       }
     </div>
   }
 </qbc-page>
 
-<form [formGroup]="form" (ngSubmit)="save()">
-  <qbc-dialog #formDialog [title]="assistantId() ? 'Edit assistant' : 'New assistant'" subtitle="Record the assistant’s role, specialties, and availability.">
+<form
+  [formGroup]="form"
+  (ngSubmit)="save()"
+>
+  <qbc-dialog
+    #formDialog
+    [title]="assistantId() ? 'Edit assistant' : 'New assistant'"
+    subtitle="Record the assistant’s role, specialties, and availability."
+  >
     <qbc-form-grid body>
-      <qbc-text-input label="Full name" [required]="true" [full]="true" formControlName="fullName" />
-      <qbc-text-input label="Role" [required]="true" [full]="true" formControlName="role" />
-      <qbc-text-input label="Specialties" hint="Separate specialties with commas." [full]="true" formControlName="specialties" />
-      <qbc-select label="Availability" [options]="availabilityOptions" formControlName="availability" />
+      <qbc-text-input
+        label="Full name"
+        [required]="true"
+        [full]="true"
+        formControlName="fullName"
+      />
+      <qbc-text-input
+        label="Role"
+        [required]="true"
+        [full]="true"
+        formControlName="role"
+      />
+      <qbc-text-input
+        label="Specialties"
+        hint="Separate specialties with commas."
+        [full]="true"
+        formControlName="specialties"
+      />
+      <qbc-select
+        label="Availability"
+        [options]="availabilityOptions"
+        formControlName="availability"
+      />
     </qbc-form-grid>
-    <qbc-button actions variant="secondary" (click)="formDialog.close()">Cancel</qbc-button>
-    <qbc-button actions type="submit" [disabled]="pending()">Save assistant</qbc-button>
+    <qbc-button
+      actions
+      variant="secondary"
+      (click)="formDialog.close()"
+      >Cancel</qbc-button
+    >
+    <qbc-button
+      actions
+      type="submit"
+      [disabled]="pending()"
+      >Save assistant</qbc-button
+    >
   </qbc-dialog>
 </form>
 
-<qbc-dialog #assignmentsDialog title="Reassign work first" [subtitle]="(blockingAssistant()?.fullName ?? 'This assistant') + ' is still assigned to the following work.'">
-  <div body class="assignment-list">
-    @for (assignment of blockingAssistant()?.blockingAssignments ?? []; track assignment.taskId ?? assignment.storyId) {
-      <qbc-assignment-link [storyKey]="assignment.storyKey" [label]="assignment.label" (click)="openAssignment(assignment.storyId)" />
+<qbc-dialog
+  #assignmentsDialog
+  title="Reassign work first"
+  [subtitle]="
+    (blockingAssistant()?.fullName ?? 'This assistant') +
+    ' is still assigned to the following work.'
+  "
+>
+  <div
+    body
+    class="assignment-list"
+  >
+    @for (
+      assignment of blockingAssistant()?.blockingAssignments ?? [];
+      track assignment.taskId ?? assignment.storyId
+    ) {
+      <qbc-assignment-link
+        [storyKey]="assignment.storyKey"
+        [label]="assignment.label"
+        (click)="openAssignment(assignment.storyId)"
+      />
     }
   </div>
-  <qbc-button actions variant="secondary" (click)="assignmentsDialog.close()">Close</qbc-button>
+  <qbc-button
+    actions
+    variant="secondary"
+    (click)="assignmentsDialog.close()"
+    >Close</qbc-button
+  >
 </qbc-dialog>
 <qbc-confirm-dialog />

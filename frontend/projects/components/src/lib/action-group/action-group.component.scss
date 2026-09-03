@@ -1,4 +1,15 @@
-:host { display: block; flex: 1; }
-div { display: flex; flex-wrap: wrap; gap: 9px; }
-.end { justify-content: flex-end; }
-.between { justify-content: space-between; }
+:host {
+  display: block;
+  flex: 1;
+}
+div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.end {
+  justify-content: flex-end;
+}
+.between {
+  justify-content: space-between;
+}

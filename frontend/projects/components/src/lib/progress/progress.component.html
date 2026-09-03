@@ -1,1 +1,14 @@
-<div class="track" [class.mini]="mini()" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="safeValue()" [attr.aria-label]="label()"><div class="bar" [style.width.%]="safeValue()"></div></div>
+<div
+  class="track"
+  [class.mini]="mini()"
+  role="progressbar"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  [attr.aria-valuenow]="safeValue()"
+  [attr.aria-label]="label()"
+>
+  <div
+    class="bar"
+    [style.width.%]="safeValue()"
+  ></div>
+</div>

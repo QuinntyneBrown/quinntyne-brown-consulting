@@ -14,4 +14,6 @@ export interface ISprintPlanningService {
   removeStory(sprintId: string, storyId: string): Promise<boolean>;
 }
 
-export const SPRINT_PLANNING_SERVICE = new InjectionToken<ISprintPlanningService>('SPRINT_PLANNING_SERVICE');
+export const SPRINT_PLANNING_SERVICE = new InjectionToken<ISprintPlanningService>(
+  'SPRINT_PLANNING_SERVICE',
+);

@@ -1,43 +1,139 @@
-<form [formGroup]="form" (ngSubmit)="save()">
+<form
+  [formGroup]="form"
+  (ngSubmit)="save()"
+>
   <qbc-dialog
     #dialog
     [title]="editor.storyId() ? (stories.selected()?.key ?? 'Edit story') : 'New story'"
     subtitle="Capture a small, valuable outcome and the work needed to deliver it."
     closeLabel="Close story editor"
-    (closed)="close()">
-    @if (stories.error()) { <qbc-form-error body>{{ stories.error() }}</qbc-form-error> }
+    (closed)="close()"
+  >
+    @if (stories.error()) {
+      <qbc-form-error body>{{ stories.error() }}</qbc-form-error>
+    }
     <qbc-form-grid body>
-      <qbc-text-input label="Title" [required]="true" [full]="true" autocomplete="off" formControlName="title" />
-      <qbc-select label="Epic" [required]="true" [options]="epicOptions()" formControlName="epicId" />
-      <qbc-select label="Owner" [options]="assistantOptions()" formControlName="assistantId" />
-      <qbc-textarea label="Description or user story" [full]="true" formControlName="description" />
-      <qbc-textarea label="Acceptance criteria" [full]="true" formControlName="acceptanceCriteria" />
-      <qbc-select label="Story points" [options]="pointOptions" formControlName="points" />
-      <section class="task-editor" formArrayName="tasks" aria-label="Tasks">
-        <qbc-section-label heading="Tasks"><qbc-button variant="quiet" size="sm" (click)="addTask()">＋ Add task</qbc-button></qbc-section-label>
+      <qbc-text-input
+        label="Title"
+        [required]="true"
+        [full]="true"
+        autocomplete="off"
+        formControlName="title"
+      />
+      <qbc-select
+        label="Epic"
+        [required]="true"
+        [options]="epicOptions()"
+        formControlName="epicId"
+      />
+      <qbc-select
+        label="Owner"
+        [options]="assistantOptions()"
+        formControlName="assistantId"
+      />
+      <qbc-textarea
+        label="Description or user story"
+        [full]="true"
+        formControlName="description"
+      />
+      <qbc-textarea
+        label="Acceptance criteria"
+        [full]="true"
+        formControlName="acceptanceCriteria"
+      />
+      <qbc-select
+        label="Story points"
+        [options]="pointOptions"
+        formControlName="points"
+      />
+      <section
+        class="task-editor"
+        formArrayName="tasks"
+        aria-label="Tasks"
+      >
+        <qbc-section-label heading="Tasks"
+          ><qbc-button
+            variant="quiet"
+            size="sm"
+            (click)="addTask()"
+            >＋ Add task</qbc-button
+          ></qbc-section-label
+        >
         <div class="task-list">
           @for (task of tasks.controls; track task.value.id ?? $index; let index = $index) {
-            <qbc-task-item [done]="task.value.isComplete" [formGroupName]="index">
-              <qbc-checkbox formControlName="isComplete" [ariaLabel]="'Complete task ' + (index + 1)" />
-              <qbc-text-input size="sm" [labelHidden]="true" [ariaLabel]="'Task ' + (index + 1) + ' title'" placeholder="Task title" formControlName="title" />
-              <qbc-select class="task-assignee" size="sm" [labelHidden]="true" [ariaLabel]="'Task ' + (index + 1) + ' assignee'" [options]="assistantOptions()" formControlName="assistantId" />
-              <qbc-button class="task-remove" variant="quiet" size="sm" [ariaLabel]="'Remove task ' + (index + 1)" (click)="removeTask(index)">Remove</qbc-button>
+            <qbc-task-item
+              [done]="task.value.isComplete"
+              [formGroupName]="index"
+            >
+              <qbc-checkbox
+                formControlName="isComplete"
+                [ariaLabel]="'Complete task ' + (index + 1)"
+              />
+              <qbc-text-input
+                size="sm"
+                [labelHidden]="true"
+                [ariaLabel]="'Task ' + (index + 1) + ' title'"
+                placeholder="Task title"
+                formControlName="title"
+              />
+              <qbc-select
+                class="task-assignee"
+                size="sm"
+                [labelHidden]="true"
+                [ariaLabel]="'Task ' + (index + 1) + ' assignee'"
+                [options]="assistantOptions()"
+                formControlName="assistantId"
+              />
+              <qbc-button
+                class="task-remove"
+                variant="quiet"
+                size="sm"
+                [ariaLabel]="'Remove task ' + (index + 1)"
+                (click)="removeTask(index)"
+                >Remove</qbc-button
+              >
             </qbc-task-item>
           }
         </div>
       </section>
     </qbc-form-grid>
-    <qbc-action-group actions align="between">
+    <qbc-action-group
+      actions
+      align="between"
+    >
       <div class="editor-action-set">
         @if (stories.selected(); as story) {
-          @if (story.lifecycle === 'archived') { <qbc-button variant="secondary" (click)="restore()">Restore as draft</qbc-button> }
-          @else { <qbc-button variant="secondary" (click)="archive()">Archive</qbc-button> }
-          <qbc-button variant="danger" (click)="delete()">Delete</qbc-button>
+          @if (story.lifecycle === 'archived') {
+            <qbc-button
+              variant="secondary"
+              (click)="restore()"
+              >Restore as draft</qbc-button
+            >
+          } @else {
+            <qbc-button
+              variant="secondary"
+              (click)="archive()"
+              >Archive</qbc-button
+            >
+          }
+          <qbc-button
+            variant="danger"
+            (click)="delete()"
+            >Delete</qbc-button
+          >
         }
       </div>
       <div class="editor-action-set">
-        <qbc-button variant="secondary" (click)="close()">Cancel</qbc-button>
-        <qbc-button type="submit" [disabled]="pending()">{{ pending() ? 'Saving…' : 'Save story' }}</qbc-button>
+        <qbc-button
+          variant="secondary"
+          (click)="close()"
+          >Cancel</qbc-button
+        >
+        <qbc-button
+          type="submit"
+          [disabled]="pending()"
+          >{{ pending() ? 'Saving…' : 'Save story' }}</qbc-button
+        >
       </div>
     </qbc-action-group>
   </qbc-dialog>

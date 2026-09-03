@@ -1,18 +1,65 @@
-@if (label()) { <label [class.visually-hidden]="labelHidden()" [for]="controlId">{{ label() }} @if (required()) { <span aria-hidden="true">*</span> }</label> }
-<select [id]="controlId" [class.sm]="size() === 'sm'" [ngModel]="controlValue()" [ngModelOptions]="{ standalone: true }" [required]="required()" [disabled]="isDisabled()" [attr.aria-label]="ariaLabel()" [attr.aria-describedby]="hint() ? hintId : null" (ngModelChange)="change($event)" (blur)="touched()">
+@if (label()) {
+  <label
+    [class.visually-hidden]="labelHidden()"
+    [for]="controlId"
+    >{{ label() }}
+    @if (required()) {
+      <span aria-hidden="true">*</span>
+    }
+  </label>
+}
+<select
+  [id]="controlId"
+  [class.sm]="size() === 'sm'"
+  [ngModel]="controlValue()"
+  [ngModelOptions]="{ standalone: true }"
+  [required]="required()"
+  [disabled]="isDisabled()"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-describedby]="hint() ? hintId : null"
+  (ngModelChange)="change($event)"
+  (blur)="touched()"
+>
   @for (item of options(); track $index) {
     @if (isGroup(item)) {
       <optgroup [label]="item.label">
         @for (option of item.options; track $index) {
-          @if (option.value === null) { <option [ngValue]="null" [disabled]="option.disabled">{{ option.label }}</option> }
-          @else { <option [value]="option.value" [disabled]="option.disabled">{{ option.label }}</option> }
+          @if (option.value === null) {
+            <option
+              [ngValue]="null"
+              [disabled]="option.disabled"
+            >
+              {{ option.label }}
+            </option>
+          } @else {
+            <option
+              [value]="option.value"
+              [disabled]="option.disabled"
+            >
+              {{ option.label }}
+            </option>
+          }
         }
       </optgroup>
-    }
-    @else {
-      @if (item.value === null) { <option [ngValue]="null" [disabled]="item.disabled">{{ item.label }}</option> }
-      @else { <option [value]="item.value" [disabled]="item.disabled">{{ item.label }}</option> }
+    } @else {
+      @if (item.value === null) {
+        <option
+          [ngValue]="null"
+          [disabled]="item.disabled"
+        >
+          {{ item.label }}
+        </option>
+      } @else {
+        <option
+          [value]="item.value"
+          [disabled]="item.disabled"
+        >
+          {{ item.label }}
+        </option>
+      }
     }
   }
 </select>
-@if (hint()) { <small [id]="hintId">{{ hint() }}</small> }
+@if (hint()) {
+  <small [id]="hintId">{{ hint() }}</small>
+}

@@ -11,10 +11,23 @@ export abstract class ValueAccessor<T> implements ControlValueAccessor {
     this.controlValue = signal(initialValue);
   }
 
-  writeValue(value: T | null | undefined): void { this.controlValue.set(value ?? this.initialValue); }
-  registerOnChange(fn: (value: T) => void): void { this.onChange = fn; }
-  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  setDisabledState(disabled: boolean): void { this.formDisabled.set(disabled); }
-  protected updateValue(value: T): void { this.controlValue.set(value); this.onChange(value); }
-  touched(): void { this.onTouched(); }
+  writeValue(value: T | null | undefined): void {
+    this.controlValue.set(value ?? this.initialValue);
+  }
+  registerOnChange(fn: (value: T) => void): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+  setDisabledState(disabled: boolean): void {
+    this.formDisabled.set(disabled);
+  }
+  protected updateValue(value: T): void {
+    this.controlValue.set(value);
+    this.onChange(value);
+  }
+  touched(): void {
+    this.onTouched();
+  }
 }

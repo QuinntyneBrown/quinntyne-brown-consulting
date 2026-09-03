@@ -9,7 +9,12 @@ export interface IHierarchyService {
   load(): Promise<void>;
   saveInitiative(id: string | null, name: string, description: string): Promise<boolean>;
   deleteInitiative(id: string): Promise<boolean>;
-  saveEpic(id: string | null, initiativeId: string, name: string, summary: string): Promise<boolean>;
+  saveEpic(
+    id: string | null,
+    initiativeId: string,
+    name: string,
+    summary: string,
+  ): Promise<boolean>;
   deleteEpic(id: string): Promise<boolean>;
 }
 

@@ -16,12 +16,32 @@ export class AssistantService implements IAssistantService {
     return firstValueFrom(this.http.get<Assistant>(`/api/assistants/${id}`));
   }
 
-  create(fullName: string, role: string, specialties: readonly string[], availability: Assistant['availability']): Promise<Assistant> {
-    return firstValueFrom(this.http.post<Assistant>('/api/assistants', { fullName, role, specialties, availability }));
+  create(
+    fullName: string,
+    role: string,
+    specialties: readonly string[],
+    availability: Assistant['availability'],
+  ): Promise<Assistant> {
+    return firstValueFrom(
+      this.http.post<Assistant>('/api/assistants', { fullName, role, specialties, availability }),
+    );
   }
 
-  update(id: string, fullName: string, role: string, specialties: readonly string[], availability: Assistant['availability']): Promise<Assistant> {
-    return firstValueFrom(this.http.put<Assistant>(`/api/assistants/${id}`, { fullName, role, specialties, availability }));
+  update(
+    id: string,
+    fullName: string,
+    role: string,
+    specialties: readonly string[],
+    availability: Assistant['availability'],
+  ): Promise<Assistant> {
+    return firstValueFrom(
+      this.http.put<Assistant>(`/api/assistants/${id}`, {
+        fullName,
+        role,
+        specialties,
+        availability,
+      }),
+    );
   }
 
   async delete(id: string): Promise<void> {

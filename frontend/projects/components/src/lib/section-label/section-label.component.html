@@ -1,1 +1,7 @@
-<div><h3>{{ heading() }}</h3>@if (hint()) { <small>{{ hint() }}</small> }</div><ng-content />
+<div>
+  <h3>{{ heading() }}</h3>
+  @if (hint()) {
+    <small>{{ hint() }}</small>
+  }
+</div>
+<ng-content />

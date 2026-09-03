@@ -28,6 +28,6 @@ export function provideQbcWorkboard(): EnvironmentProviders {
     { provide: STORY_EDITOR_SERVICE, useExisting: StoryEditorService },
     { provide: BACKLOG_SERVICE, useExisting: BacklogService },
     { provide: SPRINT_PLANNING_SERVICE, useExisting: SprintPlanningService },
-    { provide: SPRINT_EXECUTION_SERVICE, useExisting: SprintExecutionService }
+    { provide: SPRINT_EXECUTION_SERVICE, useExisting: SprintExecutionService },
   ]);
 }

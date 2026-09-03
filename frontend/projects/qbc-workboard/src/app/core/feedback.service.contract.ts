@@ -8,4 +8,3 @@ export interface IFeedbackService {
 }
 
 export const FEEDBACK_SERVICE = new InjectionToken<IFeedbackService>('FEEDBACK_SERVICE');
-

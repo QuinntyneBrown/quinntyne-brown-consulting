@@ -1,4 +1,16 @@
-:host { display: contents; }
-.manager-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.manager-head h3 { margin: 0; }
-.sprint-list { display: grid; gap: 10px; }
+:host {
+  display: contents;
+}
+.manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.manager-head h3 {
+  margin: 0;
+}
+.sprint-list {
+  display: grid;
+  gap: 10px;
+}

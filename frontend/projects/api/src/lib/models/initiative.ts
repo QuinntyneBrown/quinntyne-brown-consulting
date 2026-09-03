@@ -3,4 +3,3 @@ export interface Initiative {
   readonly name: string;
   readonly description: string;
 }
-

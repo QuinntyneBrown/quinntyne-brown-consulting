@@ -185,6 +185,7 @@ dotnet test backend/Qbc.Workboard.slnx --configuration Release
 # Angular libraries and application
 Set-Location frontend
 npm ci
+npm run format:check
 npm run build
 npm run validate:components
 npm run test:components

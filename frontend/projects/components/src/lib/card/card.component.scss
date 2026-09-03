@@ -1,6 +1,22 @@
-article { overflow: hidden; padding: 18px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-xl); background: var(--qbc-panel); }
-.none { padding: 0; }
-.lg { padding: 23px; }
-.interactive { cursor: pointer; }
-.interactive:hover { background: var(--qbc-surface-hover); }
-.raised { box-shadow: var(--qbc-shadow-card); }
+article {
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-xl);
+  background: var(--qbc-panel);
+}
+.none {
+  padding: 0;
+}
+.lg {
+  padding: 23px;
+}
+.interactive {
+  cursor: pointer;
+}
+.interactive:hover {
+  background: var(--qbc-surface-hover);
+}
+.raised {
+  box-shadow: var(--qbc-shadow-card);
+}

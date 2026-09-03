@@ -1,1 +1,8 @@
-<aside [class.open]="open()" aria-label="Main navigation"><div class="brand"><ng-content select="[brand]" /></div><nav><ng-content /></nav><p>{{ footer() }}</p></aside>
+<aside
+  [class.open]="open()"
+  aria-label="Main navigation"
+>
+  <div class="brand"><ng-content select="[brand]" /></div>
+  <nav><ng-content /></nav>
+  <p>{{ footer() }}</p>
+</aside>

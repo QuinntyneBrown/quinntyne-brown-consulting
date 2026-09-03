@@ -1,1 +1,9 @@
-<button [class]="variant() + ' ' + size()" [class.full]="full()" [type]="type()" [disabled]="disabled()" [attr.aria-label]="ariaLabel()"><ng-content /></button>
+<button
+  [class]="variant() + ' ' + size()"
+  [class.full]="full()"
+  [type]="type()"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+>
+  <ng-content />
+</button>

@@ -23,7 +23,7 @@ export function createWorkboardApiState(): WorkboardApiState {
         availability: 'available',
         storyCount: 0,
         incompleteTaskCount: 0,
-        blockingAssignments: []
+        blockingAssignments: [],
       },
       {
         id: noahId,
@@ -33,7 +33,7 @@ export function createWorkboardApiState(): WorkboardApiState {
         availability: 'limited',
         storyCount: 0,
         incompleteTaskCount: 0,
-        blockingAssignments: []
+        blockingAssignments: [],
       },
       {
         id: amaraId,
@@ -43,40 +43,40 @@ export function createWorkboardApiState(): WorkboardApiState {
         availability: 'available',
         storyCount: 0,
         incompleteTaskCount: 0,
-        blockingAssignments: []
-      }
+        blockingAssignments: [],
+      },
     ],
     initiatives: [
       {
         id: clientInitiativeId,
         name: 'Client delivery excellence',
-        description: 'Make every engagement transparent, predictable, and easy to steer.'
+        description: 'Make every engagement transparent, predictable, and easy to steer.',
       },
       {
         id: aiInitiativeId,
         name: 'Applied AI advantage',
-        description: 'Turn responsible AI experiments into repeatable client value.'
-      }
+        description: 'Turn responsible AI experiments into repeatable client value.',
+      },
     ],
     epics: [
       {
         id: portalEpicId,
         initiativeId: clientInitiativeId,
         name: 'Client delivery portal',
-        summary: 'Give clients a clear view of outcomes, decisions, and milestones.'
+        summary: 'Give clients a clear view of outcomes, decisions, and milestones.',
       },
       {
         id: playbookEpicId,
         initiativeId: clientInitiativeId,
         name: 'Delivery playbook',
-        summary: 'Standardize the small practices that keep consulting work moving.'
+        summary: 'Standardize the small practices that keep consulting work moving.',
       },
       {
         id: copilotEpicId,
         initiativeId: aiInitiativeId,
         name: 'Engagement copilot',
-        summary: 'Support teams with responsible, grounded AI assistance.'
-      }
+        summary: 'Support teams with responsible, grounded AI assistance.',
+      },
     ],
     sprints: [
       {
@@ -87,7 +87,7 @@ export function createWorkboardApiState(): WorkboardApiState {
         endDate: '2026-08-16',
         status: 'completed',
         storyCount: 0,
-        storyKeys: []
+        storyKeys: [],
       },
       {
         id: activeSprintId,
@@ -97,7 +97,7 @@ export function createWorkboardApiState(): WorkboardApiState {
         endDate: '2026-08-30',
         status: 'active',
         storyCount: 0,
-        storyKeys: []
+        storyKeys: [],
       },
       {
         id: plannedSprintId,
@@ -107,8 +107,8 @@ export function createWorkboardApiState(): WorkboardApiState {
         endDate: '2026-09-13',
         status: 'planned',
         storyCount: 0,
-        storyKeys: []
-      }
+        storyKeys: [],
+      },
     ],
     stories: [
       {
@@ -118,7 +118,8 @@ export function createWorkboardApiState(): WorkboardApiState {
         epicName: 'Client delivery portal',
         initiativeName: 'Client delivery excellence',
         title: 'Publish a concise engagement health summary',
-        description: 'As a client, I want a concise health summary so that I can steer the engagement quickly.',
+        description:
+          'As a client, I want a concise health summary so that I can steer the engagement quickly.',
         acceptanceCriteria: 'Status, risks, and next milestone are visible in one place.',
         points: 5,
         assistantId: mayaId,
@@ -135,16 +136,16 @@ export function createWorkboardApiState(): WorkboardApiState {
             title: 'Draft the engagement summary',
             isComplete: true,
             assistantId: mayaId,
-            assistantName: 'Maya Chen'
+            assistantName: 'Maya Chen',
           },
           {
             id: '60000000-0000-4000-8000-000000000102',
             title: 'Validate status with the delivery lead',
             isComplete: false,
             assistantId: noahId,
-            assistantName: 'Noah Williams'
-          }
-        ]
+            assistantName: 'Noah Williams',
+          },
+        ],
       },
       {
         id: '50000000-0000-4000-8000-000000000102',
@@ -153,8 +154,10 @@ export function createWorkboardApiState(): WorkboardApiState {
         epicName: 'Client delivery portal',
         initiativeName: 'Client delivery excellence',
         title: 'Capture a client decision',
-        description: 'As a consultant, I want to capture a client decision so that delivery context is not lost.',
-        acceptanceCriteria: 'The decision, owner, and follow-up are visible to the engagement team.',
+        description:
+          'As a consultant, I want to capture a client decision so that delivery context is not lost.',
+        acceptanceCriteria:
+          'The decision, owner, and follow-up are visible to the engagement team.',
         points: 3,
         assistantId: mayaId,
         assistantName: 'Maya Chen',
@@ -170,9 +173,9 @@ export function createWorkboardApiState(): WorkboardApiState {
             title: 'Confirm the decision format',
             isComplete: false,
             assistantId: mayaId,
-            assistantName: 'Maya Chen'
-          }
-        ]
+            assistantName: 'Maya Chen',
+          },
+        ],
       },
       {
         id: '50000000-0000-4000-8000-000000000103',
@@ -181,7 +184,8 @@ export function createWorkboardApiState(): WorkboardApiState {
         epicName: 'Engagement copilot',
         initiativeName: 'Applied AI advantage',
         title: 'Evaluate answers against engagement evidence',
-        description: 'As a consultant, I want AI answers grounded in evidence so that advice remains trustworthy.',
+        description:
+          'As a consultant, I want AI answers grounded in evidence so that advice remains trustworthy.',
         acceptanceCriteria: 'Every answer identifies the engagement evidence it used.',
         points: 5,
         assistantId: amaraId,
@@ -201,7 +205,8 @@ export function createWorkboardApiState(): WorkboardApiState {
         epicName: 'Delivery playbook',
         initiativeName: 'Client delivery excellence',
         title: 'Create a weekly delivery checklist',
-        description: 'As a delivery lead, I want a weekly checklist so that the engagement stays healthy.',
+        description:
+          'As a delivery lead, I want a weekly checklist so that the engagement stays healthy.',
         acceptanceCriteria: 'The checklist covers outcomes, risks, decisions, and next steps.',
         points: 2,
         assistantId: noahId,
@@ -218,9 +223,9 @@ export function createWorkboardApiState(): WorkboardApiState {
             title: 'Review the checklist with a delivery lead',
             isComplete: true,
             assistantId: noahId,
-            assistantName: 'Noah Williams'
-          }
-        ]
+            assistantName: 'Noah Williams',
+          },
+        ],
       },
       {
         id: '50000000-0000-4000-8000-000000000105',
@@ -229,7 +234,8 @@ export function createWorkboardApiState(): WorkboardApiState {
         epicName: 'Engagement copilot',
         initiativeName: 'Applied AI advantage',
         title: 'Create an AI engagement risk canvas',
-        description: 'As an AI lead, I want a risk canvas so that responsible delivery decisions are explicit.',
+        description:
+          'As an AI lead, I want a risk canvas so that responsible delivery decisions are explicit.',
         acceptanceCriteria: 'The canvas covers data, model, human, and operational risks.',
         points: 3,
         assistantId: amaraId,
@@ -240,7 +246,7 @@ export function createWorkboardApiState(): WorkboardApiState {
         sprintName: null,
         sprintStatus: null,
         boardStatus: 'toDo',
-        tasks: []
+        tasks: [],
       },
       {
         id: '50000000-0000-4000-8000-000000000106',
@@ -260,7 +266,7 @@ export function createWorkboardApiState(): WorkboardApiState {
         sprintName: null,
         sprintStatus: null,
         boardStatus: 'toDo',
-        tasks: []
+        tasks: [],
       },
       {
         id: '50000000-0000-4000-8000-000000000097',
@@ -280,10 +286,10 @@ export function createWorkboardApiState(): WorkboardApiState {
         sprintName: null,
         sprintStatus: null,
         boardStatus: 'toDo',
-        tasks: []
-      }
+        tasks: [],
+      },
     ],
     nextStoryNumber: 107,
-    nextEntityNumber: 1
+    nextEntityNumber: 1,
   };
 }

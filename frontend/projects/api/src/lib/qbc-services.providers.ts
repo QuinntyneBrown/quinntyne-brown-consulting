@@ -23,6 +23,6 @@ export function provideQbcServices(): EnvironmentProviders {
     { provide: HIERARCHY_SERVICE, useExisting: HierarchyService },
     { provide: SPRINT_SERVICE, useExisting: SprintService },
     { provide: STORY_SERVICE, useExisting: StoryService },
-    { provide: WORKSPACE_SERVICE, useExisting: WorkspaceService }
+    { provide: WORKSPACE_SERVICE, useExisting: WorkspaceService },
   ]);
 }

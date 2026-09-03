@@ -1,1 +1,14 @@
-<article><div><h3>{{ name() }} <qbc-pill [tone]="status()" [label]="status()" /></h3><strong>{{ goal() }}</strong><p>{{ meta() }}</p></div><div><ng-content select="[actions]" /></div></article>
+<article>
+  <div>
+    <h3>
+      {{ name() }}
+      <qbc-pill
+        [tone]="status()"
+        [label]="status()"
+      />
+    </h3>
+    <strong>{{ goal() }}</strong>
+    <p>{{ meta() }}</p>
+  </div>
+  <div><ng-content select="[actions]" /></div>
+</article>

@@ -1,7 +1,11 @@
 import { Component, booleanAttribute, input } from '@angular/core';
 import { ButtonSize, ButtonType, ButtonVariant } from './button.types';
 
-@Component({ selector: 'qbc-button', templateUrl: './button.component.html', styleUrl: './button.component.scss' })
+@Component({
+  selector: 'qbc-button',
+  templateUrl: './button.component.html',
+  styleUrl: './button.component.scss',
+})
 export class ButtonComponent {
   readonly variant = input<ButtonVariant>('primary');
   readonly size = input<ButtonSize>('md');

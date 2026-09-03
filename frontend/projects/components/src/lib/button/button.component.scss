@@ -1,13 +1,66 @@
-:host { display: inline-block; }
-:host:has(button.full) { display: block; }
-button { display: inline-flex; min-height: var(--qbc-button-h); align-items: center; justify-content: center; gap: 7px; padding: 9px 16px; border: 1px solid var(--qbc-accent); border-radius: var(--qbc-r-control); color: #fff; background: var(--qbc-accent); font-weight: 680; cursor: pointer; }
-button:hover { border-color: var(--qbc-accent-dark); background: var(--qbc-accent-dark); }
-button.secondary { padding-inline: 15px; border-color: var(--qbc-line); color: var(--qbc-ink); background: var(--qbc-panel); }
-button.secondary:hover, button.quiet:hover { background: var(--qbc-soft); }
-button.quiet { padding: 8px 11px; border-color: transparent; color: var(--qbc-ink-soft); background: transparent; }
-button.danger { padding-inline: 15px; border-color: var(--qbc-danger); background: var(--qbc-danger); }
-button.danger:hover { filter: brightness(.92); }
-button.sm { min-height: 34px; padding: 5px 9px; font-size: 12px; }
-button.xs { min-height: 30px; padding: 3px 8px; font-size: 12px; }
-button.full { width: 100%; }
-button:disabled { cursor: not-allowed; opacity: .52; filter: none; }
+:host {
+  display: inline-block;
+}
+:host:has(button.full) {
+  display: block;
+}
+button {
+  display: inline-flex;
+  min-height: var(--qbc-button-h);
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: 1px solid var(--qbc-accent);
+  border-radius: var(--qbc-r-control);
+  color: #fff;
+  background: var(--qbc-accent);
+  font-weight: 680;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--qbc-accent-dark);
+  background: var(--qbc-accent-dark);
+}
+button.secondary {
+  padding-inline: 15px;
+  border-color: var(--qbc-line);
+  color: var(--qbc-ink);
+  background: var(--qbc-panel);
+}
+button.secondary:hover,
+button.quiet:hover {
+  background: var(--qbc-soft);
+}
+button.quiet {
+  padding: 8px 11px;
+  border-color: transparent;
+  color: var(--qbc-ink-soft);
+  background: transparent;
+}
+button.danger {
+  padding-inline: 15px;
+  border-color: var(--qbc-danger);
+  background: var(--qbc-danger);
+}
+button.danger:hover {
+  filter: brightness(0.92);
+}
+button.sm {
+  min-height: 34px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+button.xs {
+  min-height: 30px;
+  padding: 3px 8px;
+  font-size: 12px;
+}
+button.full {
+  width: 100%;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+  filter: none;
+}

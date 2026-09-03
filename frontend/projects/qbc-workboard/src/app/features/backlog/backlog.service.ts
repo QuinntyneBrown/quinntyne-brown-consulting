@@ -22,13 +22,15 @@ export class BacklogService implements IBacklogService {
   readonly visibleStories = computed(() => {
     const search = this.searchValue().trim().toLowerCase();
     const filter = this.filterValue();
-    return this.storiesValue().filter(story => {
-      const matchesSearch = !search || `${story.key} ${story.title} ${story.epicName}`.toLowerCase().includes(search);
-      const matchesFilter = filter === 'all'
-        || (filter === 'unscheduled' && !story.sprintId && story.lifecycle !== 'archived')
-        || (filter === 'ready' && story.isReady && story.lifecycle !== 'archived')
-        || (filter === 'draft' && story.lifecycle === 'draft')
-        || (filter === 'archived' && story.lifecycle === 'archived');
+    return this.storiesValue().filter((story) => {
+      const matchesSearch =
+        !search || `${story.key} ${story.title} ${story.epicName}`.toLowerCase().includes(search);
+      const matchesFilter =
+        filter === 'all' ||
+        (filter === 'unscheduled' && !story.sprintId && story.lifecycle !== 'archived') ||
+        (filter === 'ready' && story.isReady && story.lifecycle !== 'archived') ||
+        (filter === 'draft' && story.lifecycle === 'draft') ||
+        (filter === 'archived' && story.lifecycle === 'archived');
       return matchesSearch && matchesFilter;
     });
   });
@@ -39,13 +41,23 @@ export class BacklogService implements IBacklogService {
     try {
       this.storiesValue.set(await this.backendService.getBacklog());
       this.loadingValue.set('loaded');
-    } catch (error) { this.fail(error); }
+    } catch (error) {
+      this.fail(error);
+    }
   }
 
-  setSearch(text: string): void { this.searchValue.set(text); }
-  setFilter(filter: BacklogFilter): void { this.filterValue.set(filter); }
-  groom(id: string): Promise<boolean> { return this.action(this.backendService.groom(id), 'Story is Ready.'); }
-  markUnready(id: string): Promise<boolean> { return this.action(this.backendService.markUnready(id), 'Story marked Not Ready.'); }
+  setSearch(text: string): void {
+    this.searchValue.set(text);
+  }
+  setFilter(filter: BacklogFilter): void {
+    this.filterValue.set(filter);
+  }
+  groom(id: string): Promise<boolean> {
+    return this.action(this.backendService.groom(id), 'Story is Ready.');
+  }
+  markUnready(id: string): Promise<boolean> {
+    return this.action(this.backendService.markUnready(id), 'Story marked Not Ready.');
+  }
 
   private async action(request: Promise<Story>, message: string): Promise<boolean> {
     try {
@@ -53,7 +65,10 @@ export class BacklogService implements IBacklogService {
       await this.load();
       this.feedback.show(message);
       return true;
-    } catch (error) { this.fail(error); return false; }
+    } catch (error) {
+      this.fail(error);
+      return false;
+    }
   }
 
   private fail(error: unknown): void {

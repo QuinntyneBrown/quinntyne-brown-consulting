@@ -1,5 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { ASSISTANT_SERVICE as ASSISTANT_BACKEND_SERVICE, Assistant, presentApiError } from '@qbc/api';
+import {
+  ASSISTANT_SERVICE as ASSISTANT_BACKEND_SERVICE,
+  Assistant,
+  presentApiError,
+} from '@qbc/api';
 import { FEEDBACK_SERVICE } from '../../core/feedback.service.contract';
 import { LoadingState } from '../../models/loading-state';
 import { IAssistantService } from './assistant.service.contract';
@@ -21,13 +25,24 @@ export class AssistantService implements IAssistantService {
     try {
       this.assistantsValue.set(await this.backendService.getAll());
       this.loadingValue.set('loaded');
-    } catch (error) { this.fail(error); }
+    } catch (error) {
+      this.fail(error);
+    }
   }
 
-  async save(id: string | null, fullName: string, role: string, specialties: readonly string[], availability: Assistant['availability']): Promise<boolean> {
-    return this.mutate(id
-      ? this.backendService.update(id, fullName, role, specialties, availability)
-      : this.backendService.create(fullName, role, specialties, availability), 'Assistant saved.');
+  async save(
+    id: string | null,
+    fullName: string,
+    role: string,
+    specialties: readonly string[],
+    availability: Assistant['availability'],
+  ): Promise<boolean> {
+    return this.mutate(
+      id
+        ? this.backendService.update(id, fullName, role, specialties, availability)
+        : this.backendService.create(fullName, role, specialties, availability),
+      'Assistant saved.',
+    );
   }
 
   async delete(id: string): Promise<boolean> {
@@ -41,7 +56,10 @@ export class AssistantService implements IAssistantService {
       await this.load();
       this.feedback.show(message);
       return true;
-    } catch (error) { this.fail(error); return false; }
+    } catch (error) {
+      this.fail(error);
+      return false;
+    }
   }
 
   private fail(error: unknown): void {

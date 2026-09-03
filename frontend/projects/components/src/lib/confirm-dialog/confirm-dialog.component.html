@@ -1,7 +1,31 @@
-<qbc-dialog #dialog [title]="title" [subtitle]="copy" size="sm" (closed)="close(false)">
-  <div body class="confirm-body">
-    <div class="dialog-icon" aria-hidden="true">!</div>
+<qbc-dialog
+  #dialog
+  [title]="title"
+  [subtitle]="copy"
+  size="sm"
+  (closed)="close(false)"
+>
+  <div
+    body
+    class="confirm-body"
+  >
+    <div
+      class="dialog-icon"
+      aria-hidden="true"
+    >
+      !
+    </div>
   </div>
-  <qbc-button actions variant="secondary" (click)="close(false)">Cancel</qbc-button>
-  <qbc-button actions variant="danger" (click)="close(true)">{{ confirmLabel }}</qbc-button>
+  <qbc-button
+    actions
+    variant="secondary"
+    (click)="close(false)"
+    >Cancel</qbc-button
+  >
+  <qbc-button
+    actions
+    variant="danger"
+    (click)="close(true)"
+    >{{ confirmLabel }}</qbc-button
+  >
 </qbc-dialog>

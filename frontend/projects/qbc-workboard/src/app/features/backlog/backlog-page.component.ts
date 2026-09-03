@@ -14,7 +14,7 @@ import {
   SelectValue,
   StatusPillComponent,
   StatusPillTone,
-  TextInputComponent
+  TextInputComponent,
 } from '@qbc/components';
 import { SPRINT_PLANNING_SERVICE } from '../sprints/sprint-planning.service.contract';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
@@ -34,10 +34,10 @@ import { BACKLOG_SERVICE } from './backlog.service.contract';
     PointsComponent,
     SelectComponent,
     StatusPillComponent,
-    TextInputComponent
+    TextInputComponent,
   ],
   templateUrl: './backlog-page.component.html',
-  styleUrl: './backlog-page.component.scss'
+  styleUrl: './backlog-page.component.scss',
 })
 export class BacklogPageComponent implements OnInit {
   readonly service = inject(BACKLOG_SERVICE);
@@ -49,13 +49,21 @@ export class BacklogPageComponent implements OnInit {
     { value: 'unscheduled', label: 'Unscheduled' },
     { value: 'ready', label: 'Ready' },
     { value: 'draft', label: 'Draft' },
-    { value: 'archived', label: 'Archived' }
+    { value: 'archived', label: 'Archived' },
   ];
 
-  ngOnInit(): void { void Promise.all([this.service.load(), this.planning.load()]); }
-  edit(id: string): void { this.editor.open(id); }
-  search(value: string): void { this.service.setSearch(value); }
-  filter(value: string): void { this.service.setFilter(value as BacklogFilter); }
+  ngOnInit(): void {
+    void Promise.all([this.service.load(), this.planning.load()]);
+  }
+  edit(id: string): void {
+    this.editor.open(id);
+  }
+  search(value: string): void {
+    this.service.setSearch(value);
+  }
+  filter(value: string): void {
+    this.service.setFilter(value as BacklogFilter);
+  }
 
   async groom(story: Story): Promise<void> {
     this.pendingStoryId.set(story.id);
@@ -72,9 +80,10 @@ export class BacklogPageComponent implements OnInit {
   sprintOptions(): readonly SelectOption[] {
     return [
       { value: '', label: 'Backlog' },
-      ...this.planning.sprints()
-        .filter(sprint => sprint.status !== 'completed')
-        .map(sprint => ({ value: sprint.id, label: sprint.name }))
+      ...this.planning
+        .sprints()
+        .filter((sprint) => sprint.status !== 'completed')
+        .map((sprint) => ({ value: sprint.id, label: sprint.name })),
     ];
   }
 
@@ -87,5 +96,7 @@ export class BacklogPageComponent implements OnInit {
     this.pendingStoryId.set(null);
   }
 
-  badge(story: Story): StatusPillTone { return story.lifecycle === 'archived' ? 'archived' : story.isReady ? 'ready' : story.lifecycle; }
+  badge(story: Story): StatusPillTone {
+    return story.lifecycle === 'archived' ? 'archived' : story.isReady ? 'ready' : story.lifecycle;
+  }
 }

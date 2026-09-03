@@ -20,6 +20,9 @@ jobs:
       - name: Restore frontend dependencies
         working-directory: frontend
         run: npm ci
+      - name: Check frontend formatting
+        working-directory: frontend
+        run: npm run format:check
       - name: Build frontend
         working-directory: frontend
         run: npm run build

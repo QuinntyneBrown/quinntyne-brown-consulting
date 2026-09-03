@@ -1,1 +1,17 @@
-<qbc-skip-link /><ng-content select="[navigation]" /><div class="workspace"><ng-content select="[topbar]" /><main id="main-content" tabindex="-1"><ng-content select="[content]" /></main></div><div class="feedback" aria-live="polite" aria-atomic="true"><ng-content select="[feedback]" /></div>
+<qbc-skip-link /><ng-content select="[navigation]" />
+<div class="workspace">
+  <ng-content select="[topbar]" />
+  <main
+    id="main-content"
+    tabindex="-1"
+  >
+    <ng-content select="[content]" />
+  </main>
+</div>
+<div
+  class="feedback"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  <ng-content select="[feedback]" />
+</div>

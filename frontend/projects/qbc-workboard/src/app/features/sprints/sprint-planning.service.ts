@@ -21,16 +21,37 @@ export class SprintPlanningService implements ISprintPlanningService {
       this.sprintsValue.set(await this.backendService.getAll());
       this.loadingValue.set('loaded');
       this.errorValue.set(null);
-    } catch (error) { this.fail(error); }
+    } catch (error) {
+      this.fail(error);
+    }
   }
 
   save(id: string | null, name: string, goal: string, startDate: string): Promise<boolean> {
-    return this.mutate(id ? this.backendService.update(id, name, goal, startDate) : this.backendService.create(name, goal, startDate), 'Sprint saved.');
+    return this.mutate(
+      id
+        ? this.backendService.update(id, name, goal, startDate)
+        : this.backendService.create(name, goal, startDate),
+      'Sprint saved.',
+    );
   }
-  start(id: string): Promise<boolean> { return this.mutate(this.backendService.start(id), 'Sprint started.'); }
-  delete(id: string): Promise<boolean> { return this.mutate(this.backendService.delete(id), 'Sprint deleted.'); }
-  assignStory(sprintId: string, storyId: string): Promise<boolean> { return this.mutate(this.backendService.assignStory(sprintId, storyId), 'Story assigned to sprint.'); }
-  removeStory(sprintId: string, storyId: string): Promise<boolean> { return this.mutate(this.backendService.removeStory(sprintId, storyId), 'Story returned to backlog.'); }
+  start(id: string): Promise<boolean> {
+    return this.mutate(this.backendService.start(id), 'Sprint started.');
+  }
+  delete(id: string): Promise<boolean> {
+    return this.mutate(this.backendService.delete(id), 'Sprint deleted.');
+  }
+  assignStory(sprintId: string, storyId: string): Promise<boolean> {
+    return this.mutate(
+      this.backendService.assignStory(sprintId, storyId),
+      'Story assigned to sprint.',
+    );
+  }
+  removeStory(sprintId: string, storyId: string): Promise<boolean> {
+    return this.mutate(
+      this.backendService.removeStory(sprintId, storyId),
+      'Story returned to backlog.',
+    );
+  }
 
   private async mutate(request: Promise<unknown>, message: string): Promise<boolean> {
     try {
@@ -38,7 +59,10 @@ export class SprintPlanningService implements ISprintPlanningService {
       await this.load();
       this.feedback.show(message);
       return true;
-    } catch (error) { this.fail(error); return false; }
+    } catch (error) {
+      this.fail(error);
+      return false;
+    }
   }
 
   private fail(error: unknown): void {

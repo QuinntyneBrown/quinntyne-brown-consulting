@@ -7,7 +7,7 @@ import type {
   Initiative,
   Sprint,
   Story,
-  StoryDraft
+  StoryDraft,
 } from '@qbc/api';
 import type { Page, Route } from '@playwright/test';
 import { createWorkboardApiState } from './workboard-api-state.factory';
@@ -25,7 +25,7 @@ export class WorkboardApiMock {
   private readonly state: WorkboardApiState = createWorkboardApiState();
 
   async install(page: Page): Promise<void> {
-    await page.route('**/api/**', route => this.handle(route));
+    await page.route('**/api/**', (route) => this.handle(route));
   }
 
   private async handle(route: Route): Promise<void> {
@@ -39,8 +39,8 @@ export class WorkboardApiMock {
       if (method === 'GET' && path === '/api/workspace') {
         return this.json(route, 200, {
           route: url.searchParams.get('route') ?? 'board',
-          hasActiveSprint: this.state.sprints.some(sprint => sprint.status === 'active'),
-          backlogCount: this.state.stories.filter(story => story.sprintId === null).length
+          hasActiveSprint: this.state.sprints.some((sprint) => sprint.status === 'active'),
+          backlogCount: this.state.stories.filter((story) => story.sprintId === null).length,
         });
       }
 
@@ -58,7 +58,7 @@ export class WorkboardApiMock {
       const initiativeMatch = path.match(/^\/api\/initiatives\/([^/]+)$/);
       if (initiativeMatch && method === 'PUT') {
         const id = initiativeMatch[1];
-        const existing = this.state.initiatives.find(item => item.id === id);
+        const existing = this.state.initiatives.find((item) => item.id === id);
         if (!existing) return this.notFound(route, 'Initiative');
         const initiative: Initiative = { id, ...this.body<InitiativeDraft>(route) };
         this.replace(this.state.initiatives, id, initiative);
@@ -66,9 +66,15 @@ export class WorkboardApiMock {
       }
       if (initiativeMatch && method === 'DELETE') {
         const id = initiativeMatch[1];
-        if (!this.state.initiatives.some(item => item.id === id)) return this.notFound(route, 'Initiative');
-        if (this.state.epics.some(epic => epic.initiativeId === id)) {
-          return this.problem(route, 409, 'Initiative has epics', 'Delete or move the initiative epics first.');
+        if (!this.state.initiatives.some((item) => item.id === id))
+          return this.notFound(route, 'Initiative');
+        if (this.state.epics.some((epic) => epic.initiativeId === id)) {
+          return this.problem(
+            route,
+            409,
+            'Initiative has epics',
+            'Delete or move the initiative epics first.',
+          );
         }
         this.remove(this.state.initiatives, id);
         return this.empty(route);
@@ -76,7 +82,8 @@ export class WorkboardApiMock {
 
       if (path === '/api/epics' && method === 'POST') {
         const draft = this.body<EpicDraft>(route);
-        if (!this.state.initiatives.some(item => item.id === draft.initiativeId)) return this.notFound(route, 'Initiative');
+        if (!this.state.initiatives.some((item) => item.id === draft.initiativeId))
+          return this.notFound(route, 'Initiative');
         const epic: Epic = { id: this.newId(), ...draft };
         this.state.epics.push(epic);
         return this.json(route, 201, epic);
@@ -85,23 +92,32 @@ export class WorkboardApiMock {
       const epicMatch = path.match(/^\/api\/epics\/([^/]+)$/);
       if (epicMatch && method === 'PUT') {
         const id = epicMatch[1];
-        if (!this.state.epics.some(item => item.id === id)) return this.notFound(route, 'Epic');
+        if (!this.state.epics.some((item) => item.id === id)) return this.notFound(route, 'Epic');
         const epic: Epic = { id, ...this.body<EpicDraft>(route) };
         this.replace(this.state.epics, id, epic);
         return this.json(route, 200, epic);
       }
       if (epicMatch && method === 'DELETE') {
         const id = epicMatch[1];
-        if (!this.state.epics.some(item => item.id === id)) return this.notFound(route, 'Epic');
-        if (this.state.stories.some(story => story.epicId === id)) {
-          return this.problem(route, 409, 'Epic has stories', 'Delete or move the epic stories first.');
+        if (!this.state.epics.some((item) => item.id === id)) return this.notFound(route, 'Epic');
+        if (this.state.stories.some((story) => story.epicId === id)) {
+          return this.problem(
+            route,
+            409,
+            'Epic has stories',
+            'Delete or move the epic stories first.',
+          );
         }
         this.remove(this.state.epics, id);
         return this.empty(route);
       }
 
       if (path === '/api/assistants' && method === 'GET') {
-        return this.json(route, 200, this.state.assistants.map(assistant => this.assistantView(assistant)));
+        return this.json(
+          route,
+          200,
+          this.state.assistants.map((assistant) => this.assistantView(assistant)),
+        );
       }
       if (path === '/api/assistants' && method === 'POST') {
         const assistant: Assistant = {
@@ -109,7 +125,7 @@ export class WorkboardApiMock {
           ...this.body<AssistantDraft>(route),
           storyCount: 0,
           incompleteTaskCount: 0,
-          blockingAssignments: []
+          blockingAssignments: [],
         };
         this.state.assistants.push(assistant);
         return this.json(route, 201, this.assistantView(assistant));
@@ -117,30 +133,38 @@ export class WorkboardApiMock {
 
       const assistantMatch = path.match(/^\/api\/assistants\/([^/]+)$/);
       if (assistantMatch && method === 'GET') {
-        const assistant = this.state.assistants.find(item => item.id === assistantMatch[1]);
-        return assistant ? this.json(route, 200, this.assistantView(assistant)) : this.notFound(route, 'Assistant');
+        const assistant = this.state.assistants.find((item) => item.id === assistantMatch[1]);
+        return assistant
+          ? this.json(route, 200, this.assistantView(assistant))
+          : this.notFound(route, 'Assistant');
       }
       if (assistantMatch && method === 'PUT') {
         const id = assistantMatch[1];
-        const existing = this.state.assistants.find(item => item.id === id);
+        const existing = this.state.assistants.find((item) => item.id === id);
         if (!existing) return this.notFound(route, 'Assistant');
         const assistant: Assistant = {
           id,
           ...this.body<AssistantDraft>(route),
           storyCount: existing.storyCount,
           incompleteTaskCount: existing.incompleteTaskCount,
-          blockingAssignments: existing.blockingAssignments
+          blockingAssignments: existing.blockingAssignments,
         };
         this.replace(this.state.assistants, id, assistant);
         return this.json(route, 200, this.assistantView(assistant));
       }
       if (assistantMatch && method === 'DELETE') {
         const id = assistantMatch[1];
-        const assistant = this.state.assistants.find(item => item.id === id);
+        const assistant = this.state.assistants.find((item) => item.id === id);
         if (!assistant) return this.notFound(route, 'Assistant');
         const blockingAssignments = this.blockingAssignments(id);
         if (blockingAssignments.length > 0) {
-          return this.problem(route, 409, 'Assistant has assigned work', 'Reassign work before deleting this assistant.', blockingAssignments);
+          return this.problem(
+            route,
+            409,
+            'Assistant has assigned work',
+            'Reassign work before deleting this assistant.',
+            blockingAssignments,
+          );
         }
         this.remove(this.state.assistants, id);
         return this.empty(route);
@@ -149,13 +173,14 @@ export class WorkboardApiMock {
       if (method === 'GET' && path === '/api/stories/backlog') {
         const stories = [...this.state.stories]
           .sort((left, right) => Number(right.key.slice(4)) - Number(left.key.slice(4)))
-          .map(story => this.storyView(story));
+          .map((story) => this.storyView(story));
         return this.json(route, 200, stories);
       }
 
       if (path === '/api/stories' && method === 'POST') {
         const draft = this.body<StoryDraft>(route);
-        if (!this.state.epics.some(epic => epic.id === draft.epicId)) return this.notFound(route, 'Epic');
+        if (!this.state.epics.some((epic) => epic.id === draft.epicId))
+          return this.notFound(route, 'Epic');
         const story: Story = {
           id: this.newId(),
           key: `QBC-${this.state.nextStoryNumber++}`,
@@ -174,23 +199,25 @@ export class WorkboardApiMock {
           sprintName: null,
           sprintStatus: null,
           boardStatus: 'toDo',
-          tasks: draft.tasks.map(task => ({
+          tasks: draft.tasks.map((task) => ({
             id: task.id ?? this.newId(),
             title: task.title,
             isComplete: task.isComplete,
             assistantId: task.assistantId,
-            assistantName: null
-          }))
+            assistantName: null,
+          })),
         };
         this.state.stories.push(story);
         return this.json(route, 201, this.storyView(story));
       }
 
-      const storyActionMatch = path.match(/^\/api\/stories\/([^/]+)\/(groom|mark-unready|archive|restore|move)$/);
+      const storyActionMatch = path.match(
+        /^\/api\/stories\/([^/]+)\/(groom|mark-unready|archive|restore|move)$/,
+      );
       if (storyActionMatch && method === 'POST') {
         const id = storyActionMatch[1];
         const action = storyActionMatch[2];
-        const story = this.state.stories.find(item => item.id === id);
+        const story = this.state.stories.find((item) => item.id === id);
         if (!story) return this.notFound(route, 'Story');
         let updated: Story = story;
         switch (action) {
@@ -201,13 +228,28 @@ export class WorkboardApiMock {
             updated = { ...story, isReady: false };
             break;
           case 'archive':
-            updated = { ...story, lifecycle: 'archived', isReady: false, sprintId: null, boardStatus: 'toDo' };
+            updated = {
+              ...story,
+              lifecycle: 'archived',
+              isReady: false,
+              sprintId: null,
+              boardStatus: 'toDo',
+            };
             break;
           case 'restore':
-            updated = { ...story, lifecycle: 'draft', isReady: false, sprintId: null, boardStatus: 'toDo' };
+            updated = {
+              ...story,
+              lifecycle: 'draft',
+              isReady: false,
+              sprintId: null,
+              boardStatus: 'toDo',
+            };
             break;
           case 'move':
-            updated = { ...story, boardStatus: this.body<{ readonly status: Story['boardStatus'] }>(route).status };
+            updated = {
+              ...story,
+              boardStatus: this.body<{ readonly status: Story['boardStatus'] }>(route).status,
+            };
             break;
         }
         this.replace(this.state.stories, id, updated);
@@ -216,12 +258,12 @@ export class WorkboardApiMock {
 
       const storyMatch = path.match(/^\/api\/stories\/([^/]+)$/);
       if (storyMatch && method === 'GET') {
-        const story = this.state.stories.find(item => item.id === storyMatch[1]);
+        const story = this.state.stories.find((item) => item.id === storyMatch[1]);
         return story ? this.json(route, 200, this.storyView(story)) : this.notFound(route, 'Story');
       }
       if (storyMatch && method === 'PUT') {
         const id = storyMatch[1];
-        const story = this.state.stories.find(item => item.id === id);
+        const story = this.state.stories.find((item) => item.id === id);
         if (!story) return this.notFound(route, 'Story');
         const draft = this.body<StoryDraft>(route);
         const updated: Story = {
@@ -232,20 +274,21 @@ export class WorkboardApiMock {
           acceptanceCriteria: draft.acceptanceCriteria,
           points: draft.points,
           assistantId: draft.assistantId,
-          tasks: draft.tasks.map(task => ({
+          tasks: draft.tasks.map((task) => ({
             id: task.id ?? this.newId(),
             title: task.title,
             isComplete: task.isComplete,
             assistantId: task.assistantId,
-            assistantName: null
-          }))
+            assistantName: null,
+          })),
         };
         this.replace(this.state.stories, id, updated);
         return this.json(route, 200, this.storyView(updated));
       }
       if (storyMatch && method === 'DELETE') {
         const id = storyMatch[1];
-        if (!this.state.stories.some(item => item.id === id)) return this.notFound(route, 'Story');
+        if (!this.state.stories.some((item) => item.id === id))
+          return this.notFound(route, 'Story');
         this.remove(this.state.stories, id);
         return this.empty(route);
       }
@@ -254,7 +297,11 @@ export class WorkboardApiMock {
         return this.json(route, 200, this.activeBoard());
       }
       if (path === '/api/sprints' && method === 'GET') {
-        return this.json(route, 200, this.state.sprints.map(sprint => this.sprintView(sprint)));
+        return this.json(
+          route,
+          200,
+          this.state.sprints.map((sprint) => this.sprintView(sprint)),
+        );
       }
       if (path === '/api/sprints' && method === 'POST') {
         const draft = this.body<SprintDraft>(route);
@@ -264,7 +311,7 @@ export class WorkboardApiMock {
           endDate: this.endDate(draft.startDate),
           status: 'planned',
           storyCount: 0,
-          storyKeys: []
+          storyKeys: [],
         };
         this.state.sprints.push(sprint);
         return this.json(route, 201, this.sprintView(sprint));
@@ -274,13 +321,14 @@ export class WorkboardApiMock {
       if (sprintStoryMatch && (method === 'PUT' || method === 'DELETE')) {
         const sprintId = sprintStoryMatch[1];
         const storyId = sprintStoryMatch[2];
-        if (!this.state.sprints.some(sprint => sprint.id === sprintId)) return this.notFound(route, 'Sprint');
-        const story = this.state.stories.find(item => item.id === storyId);
+        if (!this.state.sprints.some((sprint) => sprint.id === sprintId))
+          return this.notFound(route, 'Sprint');
+        const story = this.state.stories.find((item) => item.id === storyId);
         if (!story) return this.notFound(route, 'Story');
         const updated: Story = {
           ...story,
           sprintId: method === 'PUT' ? sprintId : null,
-          boardStatus: 'toDo'
+          boardStatus: 'toDo',
         };
         this.replace(this.state.stories, storyId, updated);
         return this.empty(route);
@@ -290,11 +338,16 @@ export class WorkboardApiMock {
       if (sprintActionMatch && method === 'POST') {
         const id = sprintActionMatch[1];
         const action = sprintActionMatch[2];
-        const sprint = this.state.sprints.find(item => item.id === id);
+        const sprint = this.state.sprints.find((item) => item.id === id);
         if (!sprint) return this.notFound(route, 'Sprint');
         if (action === 'start') {
-          if (this.state.sprints.some(item => item.status === 'active' && item.id !== id)) {
-            return this.problem(route, 409, 'An active sprint already exists', 'Complete the active sprint before starting another one.');
+          if (this.state.sprints.some((item) => item.status === 'active' && item.id !== id)) {
+            return this.problem(
+              route,
+              409,
+              'An active sprint already exists',
+              'Complete the active sprint before starting another one.',
+            );
           }
           const updated: Sprint = { ...sprint, status: 'active' };
           this.replace(this.state.sprints, id, updated);
@@ -303,20 +356,28 @@ export class WorkboardApiMock {
 
         const updated: Sprint = { ...sprint, status: 'completed' };
         this.replace(this.state.sprints, id, updated);
-        for (const story of this.state.stories.filter(item => item.sprintId === id && item.boardStatus !== 'done')) {
-          this.replace(this.state.stories, story.id, { ...story, sprintId: null, boardStatus: 'toDo' });
+        for (const story of this.state.stories.filter(
+          (item) => item.sprintId === id && item.boardStatus !== 'done',
+        )) {
+          this.replace(this.state.stories, story.id, {
+            ...story,
+            sprintId: null,
+            boardStatus: 'toDo',
+          });
         }
         return this.json(route, 200, this.sprintView(updated));
       }
 
       const sprintMatch = path.match(/^\/api\/sprints\/([^/]+)$/);
       if (sprintMatch && method === 'GET') {
-        const sprint = this.state.sprints.find(item => item.id === sprintMatch[1]);
-        return sprint ? this.json(route, 200, this.sprintView(sprint)) : this.notFound(route, 'Sprint');
+        const sprint = this.state.sprints.find((item) => item.id === sprintMatch[1]);
+        return sprint
+          ? this.json(route, 200, this.sprintView(sprint))
+          : this.notFound(route, 'Sprint');
       }
       if (sprintMatch && method === 'PUT') {
         const id = sprintMatch[1];
-        const sprint = this.state.sprints.find(item => item.id === id);
+        const sprint = this.state.sprints.find((item) => item.id === id);
         if (!sprint) return this.notFound(route, 'Sprint');
         const draft = this.body<SprintDraft>(route);
         const updated: Sprint = { ...sprint, ...draft, endDate: this.endDate(draft.startDate) };
@@ -325,44 +386,58 @@ export class WorkboardApiMock {
       }
       if (sprintMatch && method === 'DELETE') {
         const id = sprintMatch[1];
-        if (!this.state.sprints.some(item => item.id === id)) return this.notFound(route, 'Sprint');
-        for (const story of this.state.stories.filter(item => item.sprintId === id)) {
-          this.replace(this.state.stories, story.id, { ...story, sprintId: null, boardStatus: 'toDo' });
+        if (!this.state.sprints.some((item) => item.id === id))
+          return this.notFound(route, 'Sprint');
+        for (const story of this.state.stories.filter((item) => item.sprintId === id)) {
+          this.replace(this.state.stories, story.id, {
+            ...story,
+            sprintId: null,
+            boardStatus: 'toDo',
+          });
         }
         this.remove(this.state.sprints, id);
         return this.empty(route);
       }
 
       this.unexpectedRequests.push(`${method} ${path}`);
-      return this.problem(route, 501, 'Unhandled mock API request', `${method} ${path} has no E2E mock handler.`);
+      return this.problem(
+        route,
+        501,
+        'Unhandled mock API request',
+        `${method} ${path} has no E2E mock handler.`,
+      );
     } catch (error) {
-      const detail = error instanceof Error ? error.message : 'The mock API could not process the request.';
+      const detail =
+        error instanceof Error ? error.message : 'The mock API could not process the request.';
       return this.problem(route, 500, 'Mock API failure', detail);
     }
   }
 
   private hierarchy(): Hierarchy {
     return {
-      initiatives: this.state.initiatives.map(initiative => {
-        const epics = this.state.epics.filter(epic => epic.initiativeId === initiative.id);
-        const stories = this.state.stories.filter(story => epics.some(epic => epic.id === story.epicId));
+      initiatives: this.state.initiatives.map((initiative) => {
+        const epics = this.state.epics.filter((epic) => epic.initiativeId === initiative.id);
+        const stories = this.state.stories.filter((story) =>
+          epics.some((epic) => epic.id === story.epicId),
+        );
         return {
           ...initiative,
           epicCount: epics.length,
           storyCount: stories.length,
-          epics: epics.map(epic => {
-            const epicStories = stories.filter(story => story.epicId === epic.id);
-            const completed = epicStories.filter(story => story.boardStatus === 'done').length;
+          epics: epics.map((epic) => {
+            const epicStories = stories.filter((story) => story.epicId === epic.id);
+            const completed = epicStories.filter((story) => story.boardStatus === 'done').length;
             return {
               id: epic.id,
               name: epic.name,
               summary: epic.summary,
               storyCount: epicStories.length,
-              completionPercentage: epicStories.length === 0 ? 0 : Math.round(completed / epicStories.length * 100)
+              completionPercentage:
+                epicStories.length === 0 ? 0 : Math.round((completed / epicStories.length) * 100),
             };
-          })
+          }),
         };
-      })
+      }),
     };
   }
 
@@ -370,10 +445,11 @@ export class WorkboardApiMock {
     const blockingAssignments = this.blockingAssignments(assistant.id);
     return {
       ...assistant,
-      storyCount: this.state.stories.filter(story => story.assistantId === assistant.id).length,
-      incompleteTaskCount: this.state.stories.flatMap(story => story.tasks)
-        .filter(task => task.assistantId === assistant.id && !task.isComplete).length,
-      blockingAssignments
+      storyCount: this.state.stories.filter((story) => story.assistantId === assistant.id).length,
+      incompleteTaskCount: this.state.stories
+        .flatMap((story) => story.tasks)
+        .filter((task) => task.assistantId === assistant.id && !task.isComplete).length,
+      blockingAssignments,
     };
   }
 
@@ -381,20 +457,32 @@ export class WorkboardApiMock {
     const assignments: AssignmentLink[] = [];
     for (const story of this.state.stories) {
       if (story.assistantId === assistantId) {
-        assignments.push({ storyId: story.id, storyKey: story.key, taskId: null, label: story.title });
+        assignments.push({
+          storyId: story.id,
+          storyKey: story.key,
+          taskId: null,
+          label: story.title,
+        });
       }
-      for (const task of story.tasks.filter(item => item.assistantId === assistantId && !item.isComplete)) {
-        assignments.push({ storyId: story.id, storyKey: story.key, taskId: task.id, label: task.title });
+      for (const task of story.tasks.filter(
+        (item) => item.assistantId === assistantId && !item.isComplete,
+      )) {
+        assignments.push({
+          storyId: story.id,
+          storyKey: story.key,
+          taskId: task.id,
+          label: task.title,
+        });
       }
     }
     return assignments;
   }
 
   private storyView(story: Story): Story {
-    const epic = this.state.epics.find(item => item.id === story.epicId);
-    const initiative = this.state.initiatives.find(item => item.id === epic?.initiativeId);
-    const assistant = this.state.assistants.find(item => item.id === story.assistantId);
-    const sprint = this.state.sprints.find(item => item.id === story.sprintId);
+    const epic = this.state.epics.find((item) => item.id === story.epicId);
+    const initiative = this.state.initiatives.find((item) => item.id === epic?.initiativeId);
+    const assistant = this.state.assistants.find((item) => item.id === story.assistantId);
+    const sprint = this.state.sprints.find((item) => item.id === story.sprintId);
     return {
       ...story,
       epicName: epic?.name ?? '',
@@ -402,23 +490,26 @@ export class WorkboardApiMock {
       assistantName: assistant?.fullName ?? null,
       sprintName: sprint?.name ?? null,
       sprintStatus: sprint?.status ?? null,
-      tasks: story.tasks.map(task => ({
+      tasks: story.tasks.map((task) => ({
         ...task,
-        assistantName: this.state.assistants.find(item => item.id === task.assistantId)?.fullName ?? null
-      }))
+        assistantName:
+          this.state.assistants.find((item) => item.id === task.assistantId)?.fullName ?? null,
+      })),
     };
   }
 
   private sprintView(sprint: Sprint): Sprint {
-    const stories = this.state.stories.filter(story => story.sprintId === sprint.id);
-    return { ...sprint, storyCount: stories.length, storyKeys: stories.map(story => story.key) };
+    const stories = this.state.stories.filter((story) => story.sprintId === sprint.id);
+    return { ...sprint, storyCount: stories.length, storyKeys: stories.map((story) => story.key) };
   }
 
   private activeBoard(): ActiveSprintBoard | null {
-    const sprint = this.state.sprints.find(item => item.status === 'active');
+    const sprint = this.state.sprints.find((item) => item.status === 'active');
     if (!sprint) return null;
-    const stories = this.state.stories.filter(story => story.sprintId === sprint.id).map(story => this.storyView(story));
-    const doneCount = stories.filter(story => story.boardStatus === 'done').length;
+    const stories = this.state.stories
+      .filter((story) => story.sprintId === sprint.id)
+      .map((story) => this.storyView(story));
+    const doneCount = stories.filter((story) => story.boardStatus === 'done').length;
     return {
       sprintId: sprint.id,
       name: sprint.name,
@@ -427,8 +518,9 @@ export class WorkboardApiMock {
       endDate: sprint.endDate,
       doneCount,
       totalCount: stories.length,
-      completionPercentage: stories.length === 0 ? 0 : Math.round(doneCount / stories.length * 100),
-      stories: stories.map(story => ({
+      completionPercentage:
+        stories.length === 0 ? 0 : Math.round((doneCount / stories.length) * 100),
+      stories: stories.map((story) => ({
         storyId: story.id,
         key: story.key,
         title: story.title,
@@ -436,10 +528,10 @@ export class WorkboardApiMock {
         points: story.points,
         assistantId: story.assistantId,
         assistantName: story.assistantName,
-        completedTasks: story.tasks.filter(task => task.isComplete).length,
+        completedTasks: story.tasks.filter((task) => task.isComplete).length,
         totalTasks: story.tasks.length,
-        boardStatus: story.boardStatus
-      }))
+        boardStatus: story.boardStatus,
+      })),
     };
   }
 
@@ -459,12 +551,12 @@ export class WorkboardApiMock {
   }
 
   private replace<T extends { readonly id: string }>(items: T[], id: string, item: T): void {
-    const index = items.findIndex(candidate => candidate.id === id);
+    const index = items.findIndex((candidate) => candidate.id === id);
     if (index >= 0) items[index] = item;
   }
 
   private remove<T extends { readonly id: string }>(items: T[], id: string): void {
-    const index = items.findIndex(candidate => candidate.id === id);
+    const index = items.findIndex((candidate) => candidate.id === id);
     if (index >= 0) items.splice(index, 1);
   }
 
@@ -477,14 +569,31 @@ export class WorkboardApiMock {
   }
 
   private async notFound(route: Route, resource: string): Promise<void> {
-    await this.problem(route, 404, `${resource} not found`, `The requested ${resource.toLowerCase()} does not exist.`);
+    await this.problem(
+      route,
+      404,
+      `${resource} not found`,
+      `The requested ${resource.toLowerCase()} does not exist.`,
+    );
   }
 
-  private async problem(route: Route, status: number, title: string, detail: string, context?: unknown): Promise<void> {
+  private async problem(
+    route: Route,
+    status: number,
+    title: string,
+    detail: string,
+    context?: unknown,
+  ): Promise<void> {
     await route.fulfill({
       status,
       contentType: 'application/problem+json',
-      body: JSON.stringify({ type: 'about:blank', title, status, detail, ...(context === undefined ? {} : { context }) })
+      body: JSON.stringify({
+        type: 'about:blank',
+        title,
+        status,
+        detail,
+        ...(context === undefined ? {} : { context }),
+      }),
     });
   }
 }

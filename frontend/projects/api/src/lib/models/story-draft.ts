@@ -12,4 +12,3 @@ export interface StoryDraft {
     readonly assistantId: string | null;
   }[];
 }
-

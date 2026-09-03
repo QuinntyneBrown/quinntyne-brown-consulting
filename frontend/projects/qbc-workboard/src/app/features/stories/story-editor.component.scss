@@ -1,8 +1,25 @@
-:host { display: contents; }
-.task-editor { grid-column: 1 / -1; }
-.task-list { display: grid; gap: 7px; }
-.editor-action-set { display: flex; flex-wrap: wrap; gap: 9px; }
+:host {
+  display: contents;
+}
+.task-editor {
+  grid-column: 1 / -1;
+}
+.task-list {
+  display: grid;
+  gap: 7px;
+}
+.editor-action-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
 @media (max-width: 760px) {
-  .task-assignee { grid-column: 2 / -1; grid-row: 2; }
-  .task-remove { grid-column: 3; grid-row: 1; }
+  .task-assignee {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+  .task-remove {
+    grid-column: 3;
+    grid-row: 1;
+  }
 }

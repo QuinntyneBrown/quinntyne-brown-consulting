@@ -3,7 +3,9 @@ import { IFeedbackService } from './feedback.service.contract';
 
 @Injectable({ providedIn: 'root' })
 export class FeedbackService implements IFeedbackService {
-  private readonly value = signal<import('../models/feedback-message').FeedbackMessage | null>(null);
+  private readonly value = signal<import('../models/feedback-message').FeedbackMessage | null>(
+    null,
+  );
   readonly message = this.value.asReadonly();
   private timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -17,4 +19,3 @@ export class FeedbackService implements IFeedbackService {
     this.value.set(null);
   }
 }
-

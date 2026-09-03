@@ -8,4 +8,3 @@ export interface IStoryEditorService {
 }
 
 export const STORY_EDITOR_SERVICE = new InjectionToken<IStoryEditorService>('STORY_EDITOR_SERVICE');
-

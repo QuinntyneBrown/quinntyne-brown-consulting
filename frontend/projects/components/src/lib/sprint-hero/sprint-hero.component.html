@@ -1,1 +1,17 @@
-<section aria-label="Current sprint summary"><div><p class="eyebrow">{{ eyebrow() }}</p><h2>{{ goal() }}</h2><p class="dates">{{ dates() }}</p></div><div class="meta"><div><span>{{ complete() }} of {{ total() }} stories complete</span><strong>{{ percentage() }}%</strong></div><qbc-progress [value]="percentage()" label="Sprint completion" /><ng-content select="[actions]" /></div></section>
+<section aria-label="Current sprint summary">
+  <div>
+    <p class="eyebrow">{{ eyebrow() }}</p>
+    <h2>{{ goal() }}</h2>
+    <p class="dates">{{ dates() }}</p>
+  </div>
+  <div class="meta">
+    <div>
+      <span>{{ complete() }} of {{ total() }} stories complete</span
+      ><strong>{{ percentage() }}%</strong>
+    </div>
+    <qbc-progress
+      [value]="percentage()"
+      label="Sprint completion"
+    /><ng-content select="[actions]" />
+  </div>
+</section>

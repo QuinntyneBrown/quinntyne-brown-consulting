@@ -1,6 +1,25 @@
-<dialog #dialog [class.sm]="size() === 'sm'" [attr.aria-labelledby]="titleId" (cancel)="cancel($event)" (click)="backdrop($event)">
+<dialog
+  #dialog
+  [class.sm]="size() === 'sm'"
+  [attr.aria-labelledby]="titleId"
+  (cancel)="cancel($event)"
+  (click)="backdrop($event)"
+>
   <div class="shell">
-    <header><div><h2 [id]="titleId">{{ title() }}</h2>@if (subtitle()) { <p>{{ subtitle() }}</p> }</div><qbc-icon-button icon="close" [label]="closeLabel()" variant="bare" (click)="close('close')" /></header>
+    <header>
+      <div>
+        <h2 [id]="titleId">{{ title() }}</h2>
+        @if (subtitle()) {
+          <p>{{ subtitle() }}</p>
+        }
+      </div>
+      <qbc-icon-button
+        icon="close"
+        [label]="closeLabel()"
+        variant="bare"
+        (click)="close('close')"
+      />
+    </header>
     <div class="body"><ng-content select="[body]" /></div>
     <footer><ng-content select="[actions]" /></footer>
   </div>

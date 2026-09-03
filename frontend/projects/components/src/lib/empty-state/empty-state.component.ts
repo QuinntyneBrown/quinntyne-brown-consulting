@@ -6,7 +6,7 @@ import { IconName } from '../icon/icon-name';
   selector: 'qbc-empty-state',
   imports: [IconComponent],
   templateUrl: './empty-state.component.html',
-  styleUrl: './empty-state.component.scss'
+  styleUrl: './empty-state.component.scss',
 })
 export class EmptyStateComponent {
   readonly title = input.required<string>();

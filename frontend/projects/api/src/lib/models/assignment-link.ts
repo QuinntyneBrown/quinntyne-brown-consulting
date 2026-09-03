@@ -4,4 +4,3 @@ export interface AssignmentLink {
   readonly taskId: string | null;
   readonly label: string;
 }
-

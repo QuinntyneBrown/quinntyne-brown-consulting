@@ -19,7 +19,9 @@ export class HierarchyService implements IHierarchyService {
   }
 
   updateInitiative(id: string, name: string, description: string): Promise<Initiative> {
-    return firstValueFrom(this.http.put<Initiative>(`/api/initiatives/${id}`, { name, description }));
+    return firstValueFrom(
+      this.http.put<Initiative>(`/api/initiatives/${id}`, { name, description }),
+    );
   }
 
   async deleteInitiative(id: string): Promise<void> {

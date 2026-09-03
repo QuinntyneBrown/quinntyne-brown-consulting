@@ -15,7 +15,7 @@ import {
   PageHeaderComponent,
   SelectComponent,
   SelectOption,
-  TextInputComponent
+  TextInputComponent,
 } from '@qbc/components';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { ASSISTANT_SERVICE } from './assistant.service.contract';
@@ -36,10 +36,10 @@ import { ASSISTANT_SERVICE } from './assistant.service.contract';
     PageComponent,
     PageHeaderComponent,
     SelectComponent,
-    TextInputComponent
+    TextInputComponent,
   ],
   templateUrl: './assistants-page.component.html',
-  styleUrl: './assistants-page.component.scss'
+  styleUrl: './assistants-page.component.scss',
 })
 export class AssistantsPageComponent implements OnInit {
   private readonly formDialog = viewChild.required<DialogComponent>('formDialog');
@@ -54,16 +54,18 @@ export class AssistantsPageComponent implements OnInit {
   readonly availabilityOptions: readonly SelectOption<string>[] = [
     { value: 'available', label: 'Available' },
     { value: 'limited', label: 'Limited' },
-    { value: 'unavailable', label: 'Unavailable' }
+    { value: 'unavailable', label: 'Unavailable' },
   ];
   readonly form = this.fb.group({
     fullName: ['', Validators.required],
     role: ['', Validators.required],
     specialties: [''],
-    availability: ['available', Validators.required]
+    availability: ['available', Validators.required],
   });
 
-  ngOnInit(): void { void this.service.load(); }
+  ngOnInit(): void {
+    void this.service.load();
+  }
 
   openForm(assistant?: Assistant): void {
     this.assistantId.set(assistant?.id ?? null);
@@ -71,17 +73,29 @@ export class AssistantsPageComponent implements OnInit {
       fullName: assistant?.fullName ?? '',
       role: assistant?.role ?? '',
       specialties: assistant?.specialties.join(', ') ?? '',
-      availability: assistant?.availability ?? 'available'
+      availability: assistant?.availability ?? 'available',
     });
     this.formDialog().open();
   }
 
   async save(): Promise<void> {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.pending.set(true);
     const value = this.form.getRawValue();
-    const specialties = value.specialties.split(',').map((item: string) => item.trim()).filter(Boolean);
-    const saved = await this.service.save(this.assistantId(), value.fullName, value.role, specialties, value.availability);
+    const specialties = value.specialties
+      .split(',')
+      .map((item: string) => item.trim())
+      .filter(Boolean);
+    const saved = await this.service.save(
+      this.assistantId(),
+      value.fullName,
+      value.role,
+      specialties,
+      value.availability,
+    );
     this.pending.set(false);
     if (saved) this.formDialog().close();
   }
@@ -92,7 +106,13 @@ export class AssistantsPageComponent implements OnInit {
       this.assignmentsDialog().open();
       return;
     }
-    if (await this.confirm().open(`Delete ${assistant.fullName}?`, 'The assistant profile will be permanently removed.', 'Delete assistant')) {
+    if (
+      await this.confirm().open(
+        `Delete ${assistant.fullName}?`,
+        'The assistant profile will be permanently removed.',
+        'Delete assistant',
+      )
+    ) {
       await this.service.delete(assistant.id);
     }
   }

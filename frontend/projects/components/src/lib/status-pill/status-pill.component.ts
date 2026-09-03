@@ -6,7 +6,7 @@ import { StatusPillTone } from './status-pill-tone';
   selector: 'qbc-status-pill',
   imports: [PillComponent],
   templateUrl: './status-pill.component.html',
-  styleUrl: './status-pill.component.scss'
+  styleUrl: './status-pill.component.scss',
 })
 export class StatusPillComponent {
   readonly tone = input<StatusPillTone>('muted');

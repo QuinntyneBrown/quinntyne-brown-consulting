@@ -4,4 +4,3 @@ export interface Epic {
   readonly name: string;
   readonly summary: string;
 }
-

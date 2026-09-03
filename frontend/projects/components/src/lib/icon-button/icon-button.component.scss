@@ -1,5 +1,27 @@
-:host { display: inline-block; }
-button { display: grid; width: var(--qbc-button-h); min-height: var(--qbc-button-h); padding: 0; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-control); place-items: center; color: var(--qbc-ink); background: var(--qbc-panel); cursor: pointer; }
-button:hover { background: var(--qbc-soft); }
-button.bare { width: 34px; min-height: 34px; border: 0; }
-button:disabled { cursor: not-allowed; opacity: .52; }
+:host {
+  display: inline-block;
+}
+button {
+  display: grid;
+  width: var(--qbc-button-h);
+  min-height: var(--qbc-button-h);
+  padding: 0;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-control);
+  place-items: center;
+  color: var(--qbc-ink);
+  background: var(--qbc-panel);
+  cursor: pointer;
+}
+button:hover {
+  background: var(--qbc-soft);
+}
+button.bare {
+  width: 34px;
+  min-height: 34px;
+  border: 0;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}

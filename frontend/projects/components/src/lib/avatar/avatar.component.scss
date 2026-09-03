@@ -1,3 +1,20 @@
-span { display: inline-grid; width: 29px; height: 29px; border-radius: 50%; place-items: center; color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); font-size: 10px; font-weight: 800; }
-.lg { width: 46px; height: 46px; font-size: 13px; }
-.unassigned { color: var(--qbc-ink-faint); background: var(--qbc-soft); }
+span {
+  display: inline-grid;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  place-items: center;
+  color: var(--qbc-accent-dark);
+  background: var(--qbc-accent-soft);
+  font-size: 10px;
+  font-weight: 800;
+}
+.lg {
+  width: 46px;
+  height: 46px;
+  font-size: 13px;
+}
+.unassigned {
+  color: var(--qbc-ink-faint);
+  background: var(--qbc-soft);
+}

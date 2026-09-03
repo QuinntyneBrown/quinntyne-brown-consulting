@@ -6,7 +6,7 @@ import { DialogComponent } from '../dialog/dialog.component';
   selector: 'qbc-confirm-dialog',
   imports: [ButtonComponent, DialogComponent],
   templateUrl: './confirm-dialog.component.html',
-  styleUrl: './confirm-dialog.component.scss'
+  styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
   private static nextId = 1;
@@ -22,7 +22,9 @@ export class ConfirmDialogComponent {
     this.copy = copy;
     this.confirmLabel = confirmLabel;
     this.dialog().open();
-    return new Promise<boolean>(resolve => { this.resolve = resolve; });
+    return new Promise<boolean>((resolve) => {
+      this.resolve = resolve;
+    });
   }
 
   close(confirmed: boolean): void {

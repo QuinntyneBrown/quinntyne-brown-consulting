@@ -8,6 +8,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideQbcServices(),
     provideRouter(routes, withComponentInputBinding()),
-    provideQbcWorkboard()
-  ]
+    provideQbcWorkboard(),
+  ],
 };

@@ -10,4 +10,3 @@ export interface SprintStoryCard {
   readonly totalTasks: number;
   readonly boardStatus: 'toDo' | 'inProgress' | 'done';
 }
-

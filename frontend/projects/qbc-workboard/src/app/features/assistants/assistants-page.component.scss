@@ -1,2 +1,9 @@
-.assistant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 17px; }
-.assignment-list { display: grid; gap: 8px; }
+.assistant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+  gap: 17px;
+}
+.assignment-list {
+  display: grid;
+  gap: 8px;
+}

@@ -9,13 +9,13 @@ import { SelectComponent } from './select/select.component';
 
 @Component({
   imports: [ReactiveFormsModule, SelectComponent],
-  template: '<qbc-select label="Status" [options]="options" [formControl]="control" />'
+  template: '<qbc-select label="Status" [options]="options" [formControl]="control" />',
 })
 class SelectHostComponent {
   readonly control = new FormControl('planned', { nonNullable: true });
   readonly options: readonly SelectOption<string>[] = [
     { value: 'planned', label: 'Planned' },
-    { value: 'active', label: 'Active' }
+    { value: 'active', label: 'Active' },
   ];
 }
 
@@ -41,7 +41,7 @@ describe('QBC component contracts', () => {
 
     const select = fixture.nativeElement.querySelector('select') as HTMLSelectElement;
     expect(select.value).toBe('planned');
-    expect(Array.from(select.options).map(option => option.value)).toEqual(['planned', 'active']);
+    expect(Array.from(select.options).map((option) => option.value)).toEqual(['planned', 'active']);
 
     select.value = 'active';
     select.dispatchEvent(new Event('change'));

@@ -140,14 +140,15 @@ local `SQLEXPRESS` instance.
 
 ```powershell
 Set-Location frontend
+npm run format:check
 npm run build
 npx playwright install
 npm run test:e2e
 ```
 
-The Playwright command resets the dedicated `QbcWorkboardPlaywright` database.
-It then exercises the running API and application in Chromium, Firefox, and
-WebKit.
+The format check enforces the committed Prettier configuration. The Playwright
+suite starts only Angular and exercises the application with isolated, stateful
+API mocks in Chromium, Firefox, and WebKit.
 
 ### Design-system checks
 

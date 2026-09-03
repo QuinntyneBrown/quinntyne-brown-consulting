@@ -1,1 +1,33 @@
-<article><header><qbc-avatar [name]="name()" size="lg" /><div><h2>{{ name() }}</h2><p>{{ role() }}</p></div></header><div class="tags">@for (specialty of specialties(); track specialty) { <qbc-tag>{{ specialty }}</qbc-tag> } @empty { <qbc-tag>No specialties</qbc-tag> }</div><dl><div><dt>Stories</dt><dd>{{ storyCount() }}</dd></div><div><dt>Open tasks</dt><dd>{{ openTaskCount() }}</dd></div></dl><footer><qbc-availability [status]="availability()" /><div><ng-content select="[actions]" /></div></footer></article>
+<article>
+  <header>
+    <qbc-avatar
+      [name]="name()"
+      size="lg"
+    />
+    <div>
+      <h2>{{ name() }}</h2>
+      <p>{{ role() }}</p>
+    </div>
+  </header>
+  <div class="tags">
+    @for (specialty of specialties(); track specialty) {
+      <qbc-tag>{{ specialty }}</qbc-tag>
+    } @empty {
+      <qbc-tag>No specialties</qbc-tag>
+    }
+  </div>
+  <dl>
+    <div>
+      <dt>Stories</dt>
+      <dd>{{ storyCount() }}</dd>
+    </div>
+    <div>
+      <dt>Open tasks</dt>
+      <dd>{{ openTaskCount() }}</dd>
+    </div>
+  </dl>
+  <footer>
+    <qbc-availability [status]="availability()" />
+    <div><ng-content select="[actions]" /></div>
+  </footer>
+</article>

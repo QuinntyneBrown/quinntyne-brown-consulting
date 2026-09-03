@@ -1,15 +1,33 @@
 <qbc-page>
-  <qbc-page-header title="Sprint board" description="A quiet view of the team’s current commitment."><qbc-button actions variant="secondary" (click)="manage()">Manage sprints</qbc-button></qbc-page-header>
-  @if (service.error()) { <qbc-form-error>{{ service.error() }}</qbc-form-error> }
-  @if (service.loadingState() === 'loading') { <qbc-loading-state>Loading sprint board…</qbc-loading-state> }
-  @else if (service.board(); as board) {
+  <qbc-page-header
+    title="Sprint board"
+    description="A quiet view of the team’s current commitment."
+    ><qbc-button
+      actions
+      variant="secondary"
+      (click)="manage()"
+      >Manage sprints</qbc-button
+    ></qbc-page-header
+  >
+  @if (service.error()) {
+    <qbc-form-error>{{ service.error() }}</qbc-form-error>
+  }
+  @if (service.loadingState() === 'loading') {
+    <qbc-loading-state>Loading sprint board…</qbc-loading-state>
+  } @else if (service.board(); as board) {
     <qbc-sprint-hero
       [eyebrow]="'Current sprint · ' + board.name"
       [goal]="board.goal"
       [dates]="format(board.startDate) + ' – ' + format(board.endDate)"
       [complete]="board.doneCount"
-      [total]="board.totalCount">
-      <qbc-button actions variant="quiet" (click)="complete()">Complete sprint</qbc-button>
+      [total]="board.totalCount"
+    >
+      <qbc-button
+        actions
+        variant="quiet"
+        (click)="complete()"
+        >Complete sprint</qbc-button
+      >
     </qbc-sprint-hero>
     <div class="board">
       @for (status of statuses; track status.value) {
@@ -18,26 +36,60 @@
           [count]="stories(status.value).length"
           [empty]="stories(status.value).length === 0"
           (dragover)="$event.preventDefault()"
-          (drop)="drop($event, status.value)">
+          (drop)="drop($event, status.value)"
+        >
           @for (story of stories(status.value); track story.storyId) {
             <qbc-story-card
               [draggableCard]="true"
               [storyKey]="story.key"
               [title]="story.title"
-              [context]="story.epicName + (story.totalTasks ? ' · ' + story.completedTasks + '/' + story.totalTasks + ' tasks' : '')"
+              [context]="
+                story.epicName +
+                (story.totalTasks
+                  ? ' · ' + story.completedTasks + '/' + story.totalTasks + ' tasks'
+                  : '')
+              "
               [points]="story.points"
               [owner]="story.assistantName ?? ''"
-              (dragstart)="drag($event, story)">
-              <qbc-button actions variant="quiet" [disabled]="status.value === 'toDo'" [ariaLabel]="'Move ' + story.title + ' backward'" (click)="move(story, -1)">←</qbc-button>
-              <qbc-button actions variant="quiet" (click)="edit(story.storyId)">Edit</qbc-button>
-              <qbc-button actions variant="quiet" [disabled]="status.value === 'done'" [ariaLabel]="'Move ' + story.title + ' forward'" (click)="move(story, 1)">→</qbc-button>
+              (dragstart)="drag($event, story)"
+            >
+              <qbc-button
+                actions
+                variant="quiet"
+                [disabled]="status.value === 'toDo'"
+                [ariaLabel]="'Move ' + story.title + ' backward'"
+                (click)="move(story, -1)"
+                >←</qbc-button
+              >
+              <qbc-button
+                actions
+                variant="quiet"
+                (click)="edit(story.storyId)"
+                >Edit</qbc-button
+              >
+              <qbc-button
+                actions
+                variant="quiet"
+                [disabled]="status.value === 'done'"
+                [ariaLabel]="'Move ' + story.title + ' forward'"
+                (click)="move(story, 1)"
+                >→</qbc-button
+              >
             </qbc-story-card>
           }
         </qbc-board-column>
       }
     </div>
   } @else {
-    <qbc-empty-state title="No active sprint" description="Start a planned sprint to bring Ready stories onto the board."><qbc-button actions (click)="manage()">Choose a sprint</qbc-button></qbc-empty-state>
+    <qbc-empty-state
+      title="No active sprint"
+      description="Start a planned sprint to bring Ready stories onto the board."
+      ><qbc-button
+        actions
+        (click)="manage()"
+        >Choose a sprint</qbc-button
+      ></qbc-empty-state
+    >
   }
 </qbc-page>
 <app-sprint-manager />

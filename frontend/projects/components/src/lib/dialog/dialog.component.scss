@@ -1,11 +1,66 @@
-:host { display: contents; }
-dialog { width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 0; border-radius: var(--qbc-r-2xl); background: var(--qbc-panel); box-shadow: var(--qbc-shadow-overlay); }
-dialog.sm { width: min(430px, calc(100vw - 32px)); }
-dialog::backdrop { background: var(--qbc-scrim); backdrop-filter: blur(2px); }
-.shell { display: flex; max-height: calc(100vh - 48px); flex-direction: column; }
-header { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; padding: 25px 28px 21px; border-bottom: 1px solid var(--qbc-line); }
-h2 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
-p { margin: 4px 0 0; color: var(--qbc-ink-soft); font-size: 12px; }
-.body { overflow-y: auto; padding: 25px 28px 28px; }
-footer { display: flex; flex-wrap: wrap; gap: 9px; justify-content: flex-end; padding: 18px 28px; border-top: 1px solid var(--qbc-line); background: var(--qbc-surface-raised); }
-@media (max-width: 760px) { header { padding: 22px 20px 18px; } .body { padding: 22px 20px; } footer { padding: 16px 20px; } }
+:host {
+  display: contents;
+}
+dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--qbc-r-2xl);
+  background: var(--qbc-panel);
+  box-shadow: var(--qbc-shadow-overlay);
+}
+dialog.sm {
+  width: min(430px, calc(100vw - 32px));
+}
+dialog::backdrop {
+  background: var(--qbc-scrim);
+  backdrop-filter: blur(2px);
+}
+.shell {
+  display: flex;
+  max-height: calc(100vh - 48px);
+  flex-direction: column;
+}
+header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 25px 28px 21px;
+  border-bottom: 1px solid var(--qbc-line);
+}
+h2 {
+  margin: 0;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+p {
+  margin: 4px 0 0;
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+}
+.body {
+  overflow-y: auto;
+  padding: 25px 28px 28px;
+}
+footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: flex-end;
+  padding: 18px 28px;
+  border-top: 1px solid var(--qbc-line);
+  background: var(--qbc-surface-raised);
+}
+@media (max-width: 760px) {
+  header {
+    padding: 22px 20px 18px;
+  }
+  .body {
+    padding: 22px 20px;
+  }
+  footer {
+    padding: 16px 20px;
+  }
+}

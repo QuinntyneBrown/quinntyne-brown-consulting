@@ -20,4 +20,3 @@ export interface Story {
   readonly boardStatus: 'toDo' | 'inProgress' | 'done';
   readonly tasks: readonly StoryTask[];
 }
-

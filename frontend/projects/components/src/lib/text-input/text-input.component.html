@@ -1,6 +1,36 @@
-@if (label()) { <label [class.visually-hidden]="labelHidden()" [for]="controlId">{{ label() }} @if (required()) { <span aria-hidden="true">*</span> }</label> }
-<div class="control" [class.with-icon]="icon()">
-  @if (icon(); as iconName) { <qbc-icon [name]="iconName" /> }
-  <input [id]="controlId" [class.sm]="size() === 'sm'" [type]="type()" [value]="controlValue()" [placeholder]="placeholder()" [required]="required()" [readOnly]="readonly()" [disabled]="isDisabled()" [attr.aria-label]="ariaLabel()" [attr.aria-describedby]="hint() ? hintId : null" [attr.autocomplete]="autocomplete()" (input)="change($any($event.target).value)" (blur)="touched()">
+@if (label()) {
+  <label
+    [class.visually-hidden]="labelHidden()"
+    [for]="controlId"
+    >{{ label() }}
+    @if (required()) {
+      <span aria-hidden="true">*</span>
+    }
+  </label>
+}
+<div
+  class="control"
+  [class.with-icon]="icon()"
+>
+  @if (icon(); as iconName) {
+    <qbc-icon [name]="iconName" />
+  }
+  <input
+    [id]="controlId"
+    [class.sm]="size() === 'sm'"
+    [type]="type()"
+    [value]="controlValue()"
+    [placeholder]="placeholder()"
+    [required]="required()"
+    [readOnly]="readonly()"
+    [disabled]="isDisabled()"
+    [attr.aria-label]="ariaLabel()"
+    [attr.aria-describedby]="hint() ? hintId : null"
+    [attr.autocomplete]="autocomplete()"
+    (input)="change($any($event.target).value)"
+    (blur)="touched()"
+  />
 </div>
-@if (hint()) { <small [id]="hintId">{{ hint() }}</small> }
+@if (hint()) {
+  <small [id]="hintId">{{ hint() }}</small>
+}

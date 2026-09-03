@@ -8,4 +8,3 @@ export interface Sprint {
   readonly storyCount: number;
   readonly storyKeys: readonly string[];
 }
-

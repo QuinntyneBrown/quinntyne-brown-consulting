@@ -1,1 +1,14 @@
-<label><input [id]="controlId" type="checkbox" [checked]="controlValue()" [disabled]="isDisabled()" [attr.aria-label]="ariaLabel()" (change)="change($any($event.target).checked)" (blur)="touched()">@if (label()) { <span>{{ label() }}</span> }</label>
+<label
+  ><input
+    [id]="controlId"
+    type="checkbox"
+    [checked]="controlValue()"
+    [disabled]="isDisabled()"
+    [attr.aria-label]="ariaLabel()"
+    (change)="change($any($event.target).checked)"
+    (blur)="touched()"
+  />
+  @if (label()) {
+    <span>{{ label() }}</span>
+  }
+</label>

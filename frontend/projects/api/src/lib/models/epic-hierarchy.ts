@@ -5,4 +5,3 @@ export interface EpicHierarchy {
   readonly storyCount: number;
   readonly completionPercentage: number;
 }
-

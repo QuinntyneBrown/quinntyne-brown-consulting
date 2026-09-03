@@ -5,11 +5,11 @@ application, typed API access, and reusable presentation components.
 
 ## Projects
 
-| Project | Responsibility |
-|---|---|
-| `projects/qbc-workboard` | Routes, feature components, forms, orchestration, and Signal state |
-| `projects/api` | Backend models, Promise-based HTTP clients, service interfaces, and injection tokens |
-| `projects/components` | Versioned Angular UI system: tokens, controls, overlays, shell, cards, rows, and work-item views |
+| Project                  | Responsibility                                                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| `projects/qbc-workboard` | Routes, feature components, forms, orchestration, and Signal state                               |
+| `projects/api`           | Backend models, Promise-based HTTP clients, service interfaces, and injection tokens             |
+| `projects/components`    | Versioned Angular UI system: tokens, controls, overlays, shell, cards, rows, and work-item views |
 
 The application depends on both libraries through their public entry points.
 Neither library imports application source, and the libraries remain independent
@@ -69,6 +69,21 @@ Validate and unit-test the reusable component boundary independently:
 npm run validate:components
 npm run test:components
 ```
+
+## Formatting
+
+Prettier is the authoritative formatter for authored frontend TypeScript,
+Angular templates, SCSS, JSON, JavaScript, and Markdown. Format locally and run
+the same non-mutating check used by CI with:
+
+```powershell
+npm run format
+npm run format:check
+```
+
+Editor-independent whitespace defaults are defined in `.editorconfig`.
+Generated output, dependencies, reports, lockfiles, logs, HAR files, and binary
+icons are excluded by `.prettierignore`.
 
 ## End-to-end tests
 

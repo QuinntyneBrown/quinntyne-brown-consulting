@@ -4,7 +4,10 @@ export class AssistantsPage {
   constructor(private readonly page: Page) {}
 
   async createAssistant(name: string): Promise<void> {
-    await this.page.getByRole('button', { name: /New assistant/ }).first().click();
+    await this.page
+      .getByRole('button', { name: /New assistant/ })
+      .first()
+      .click();
     const dialog = this.page.getByRole('dialog', { name: 'New assistant' });
     await dialog.getByLabel('Full name *').fill(name);
     await dialog.getByLabel('Role *').fill('Acceptance delivery assistant');
@@ -27,23 +30,28 @@ export class AssistantsPage {
   }
 
   async expectSaveFailureFeedback(name: string): Promise<void> {
-    await this.page.route('**/api/assistants', async route => {
+    await this.page.route('**/api/assistants', async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
           status: 503,
           contentType: 'application/problem+json',
-          body: JSON.stringify({ detail: 'Assistant storage is temporarily unavailable.' })
+          body: JSON.stringify({ detail: 'Assistant storage is temporarily unavailable.' }),
         });
       } else {
         await route.fallback();
       }
     });
-    await this.page.getByRole('button', { name: /New assistant/ }).first().click();
+    await this.page
+      .getByRole('button', { name: /New assistant/ })
+      .first()
+      .click();
     const dialog = this.page.getByRole('dialog', { name: 'New assistant' });
     await dialog.getByLabel('Full name *').fill(name);
     await dialog.getByLabel('Role *').fill('Temporary role');
     await dialog.getByRole('button', { name: 'Save assistant' }).click();
-    await expect(this.page.getByRole('alert')).toContainText('Assistant storage is temporarily unavailable.');
+    await expect(this.page.getByRole('alert')).toContainText(
+      'Assistant storage is temporarily unavailable.',
+    );
     await expect(dialog).toBeVisible();
     await this.page.unroute('**/api/assistants');
     await dialog.getByRole('button', { name: 'Cancel' }).click();
