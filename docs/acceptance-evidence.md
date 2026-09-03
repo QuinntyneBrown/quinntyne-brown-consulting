@@ -1,0 +1,22 @@
+# QBC Workboard Acceptance Evidence
+
+This record captures the observable ATDD boundaries used while implementing the product. Test-only selector corrections and non-behavioral build work are not presented as product red states.
+
+| Requirement | Acceptance boundary | Demonstrated red state | Green regression evidence |
+|---|---|---|---|
+| L2-001 | `WorkspaceAcceptanceTests.Board_workspace_route_returns_bootstrap_state` | The initial controller-less host returned HTTP 404 instead of 200 for `/api/workspace?route=board`. | `dotnet test backend/Qbc.Workboard.slnx --configuration Release` |
+| L2-010, L2-023 | `AssistantAcceptanceTests.Assigned_assistant_deletion_returns_blocking_work` | HTTP 409 initially omitted the named blocking-assignment extension required to identify work that must be reassigned. | The integration suite verifies conflict status, blocking details, and the story key. |
+| L2-024, L2-040 | `responsive workflows do not overflow supported viewports` | The first viewport-matrix run detected horizontal document overflow at 1024 CSS pixels. | The Playwright suite verifies 320, 390, 768, 1024, and 1440 CSS-pixel widths. |
+| L2-025, L2-040 | `primary routes have no serious accessibility violations` and `keyboard navigation and dialog types remain accessible` | The first axe run reported serious low-contrast text; the delivery workflow then exposed duplicate dialog label IDs that left a confirmation dialog unnamed. | Axe checks every primary route in Chromium, Firefox, and WebKit. A keyboard walkthrough verifies the skip link and every dialog type, and confirmation instances now have unique accessible names. |
+| L2-002–L2-020, L2-021, L2-026, L2-038 | `deliver a story from hierarchy through a completed sprint` | The end-to-end scenario was introduced to exercise the missing integrated acceptance path and subsequently exposed the unnamed confirmation dialog behavior. | The scenario creates its own initiative, epic, assistant, story, task, and sprint; verifies reload persistence, grooming, archive/restore, guarded deletion, planning, start, movement, and completion. |
+| L2-023, L2-026, L2-034, L2-038 | `shows actionable feedback when an API save fails` | A simulated Problem Details failure establishes the negative boundary: the save must not be presented as successful. | The browser test verifies the server detail is announced and the editor remains open. |
+
+## Current release checks
+
+- `dotnet test backend/Qbc.Workboard.slnx --configuration Release`: 4 passed, 0 failed.
+- `npm run test:e2e`: 13 passed, 0 failed, with 8 intentional cross-project skips for checks that run once in Chromium.
+- `dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish`: succeeded; a production smoke test returned HTTP 200 for the Angular `/board` fallback and the workspace API.
+- Backend integration tests use a separate temporary SQLite database per test class and invoke the real ASP.NET Core controller, MediatR, validation, EF Core, and Problem Details path.
+- Browser specifications contain scenario intent only; selectors, navigation, interactions, route interception, and assertions are owned by Page Objects.
+- Browser data is recreated before the test server starts, so results do not depend on a developer database or an earlier run.
+- Package restore/build output is warning-free, production dependencies have no reported npm audit findings, and production publish produces one ASP.NET-hosted application.

@@ -1,0 +1,16 @@
+.workspace { min-height: 100vh; margin-left: 224px; min-width: 0; }
+.topbar { display: flex; height: 82px; align-items: center; justify-content: space-between; padding: 0 clamp(28px, 4.5vw, 72px); border-bottom: 1px solid var(--line); }
+.breadcrumb { color: var(--muted); font-size: 13px; font-weight: 600; }
+.mobile-nav-button { display: none; border: 0; background: none; font-size: 20px; }
+main { padding: 54px clamp(28px, 4.5vw, 72px) 80px; }
+.toast-region { position: fixed; right: 22px; bottom: 22px; z-index: 90; }
+.toast { max-width: 380px; padding: 12px 16px; border-radius: 9px; color: #fff; background: var(--ink); box-shadow: var(--shadow); font-size: 13px; }
+.toast.error { background: var(--danger); }
+@media (max-width: 759px) {
+  .workspace { width: 100%; margin-left: 0; overflow-x: hidden; }
+  .topbar { height: 70px; padding: 0 18px; }
+  .mobile-nav-button { display: block; }
+  .breadcrumb { display: none; }
+  main { padding: 35px 18px 65px; }
+}
+

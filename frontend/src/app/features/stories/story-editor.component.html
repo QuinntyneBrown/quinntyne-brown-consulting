@@ -1,0 +1,81 @@
+<dialog #dialog aria-labelledby="story-editor-title" (cancel)="$event.preventDefault(); close()">
+  <form class="dialog-shell" [formGroup]="form" (ngSubmit)="save()">
+    <header class="dialog-head">
+      <div>
+        <h2 id="story-editor-title">{{ editor.storyId() ? (stories.selected()?.key ?? 'Edit story') : 'New story' }}</h2>
+        <p>Capture a small, valuable outcome and the work needed to deliver it.</p>
+      </div>
+      <button class="icon-button" type="button" aria-label="Close story editor" (click)="close()">×</button>
+    </header>
+    <div class="dialog-body">
+      @if (stories.error()) { <p class="form-error" role="alert">{{ stories.error() }}</p> }
+      <div class="form-grid">
+        <div class="field full">
+          <label for="story-title">Title <span class="required">*</span></label>
+          <input id="story-title" formControlName="title" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="story-epic">Epic <span class="required">*</span></label>
+          <select id="story-epic" formControlName="epicId">
+            <option value="">Choose an epic</option>
+            @for (initiative of hierarchy.hierarchy().initiatives; track initiative.id) {
+              <optgroup [label]="initiative.name">
+                @for (epic of initiative.epics; track epic.id) { <option [value]="epic.id">{{ epic.name }}</option> }
+              </optgroup>
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label for="story-owner">Owner</label>
+          <select id="story-owner" formControlName="assistantId">
+            <option [ngValue]="null">Unassigned</option>
+            @for (assistant of assistants.assistants(); track assistant.id) { <option [value]="assistant.id">{{ assistant.fullName }}</option> }
+          </select>
+        </div>
+        <div class="field full">
+          <label for="story-description">Description or user story</label>
+          <textarea id="story-description" formControlName="description"></textarea>
+        </div>
+        <div class="field full">
+          <label for="story-criteria">Acceptance criteria</label>
+          <textarea id="story-criteria" formControlName="acceptanceCriteria"></textarea>
+        </div>
+        <div class="field">
+          <label for="story-points">Story points</label>
+          <select id="story-points" formControlName="points">
+            <option [ngValue]="null">Not estimated</option>
+            @for (point of [1,2,3,5,8,13]; track point) { <option [ngValue]="point">{{ point }}</option> }
+          </select>
+        </div>
+        <section class="task-editor full" formArrayName="tasks" aria-labelledby="tasks-title">
+          <div class="section-label"><h3 id="tasks-title">Tasks</h3><button class="quiet-button" type="button" (click)="addTask()">＋ Add task</button></div>
+          <div class="task-list">
+            @for (task of tasks.controls; track task.value.id ?? $index; let index = $index) {
+              <div class="task-item" [formGroupName]="index">
+                <input type="checkbox" formControlName="isComplete" [attr.aria-label]="'Complete task ' + (index + 1)">
+                <input class="task-title" formControlName="title" [attr.aria-label]="'Task ' + (index + 1) + ' title'" placeholder="Task title">
+                <select formControlName="assistantId" [attr.aria-label]="'Task ' + (index + 1) + ' assignee'">
+                  <option [ngValue]="null">Unassigned</option>
+                  @for (assistant of assistants.assistants(); track assistant.id) { <option [value]="assistant.id">{{ assistant.fullName }}</option> }
+                </select>
+                <button class="quiet-button" type="button" [attr.aria-label]="'Remove task ' + (index + 1)" (click)="removeTask(index)">Remove</button>
+              </div>
+            }
+          </div>
+        </section>
+      </div>
+    </div>
+    <footer class="dialog-actions">
+      @if (stories.selected(); as story) {
+        @if (story.lifecycle === 'archived') { <button class="secondary-button" type="button" (click)="restore()">Restore as draft</button> }
+        @else { <button class="secondary-button" type="button" (click)="archive()">Archive</button> }
+        <button class="quiet-button danger-text" type="button" (click)="delete()">Delete</button>
+      }
+      <span class="action-spacer"></span>
+      <button class="secondary-button" type="button" (click)="close()">Cancel</button>
+      <button class="primary-button" type="submit" [disabled]="pending()">{{ pending() ? 'Saving…' : 'Save story' }}</button>
+    </footer>
+  </form>
+</dialog>
+<app-confirm-dialog />
+

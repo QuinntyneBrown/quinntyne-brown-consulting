@@ -1,0 +1,57 @@
+<section class="page">
+  <header class="page-head">
+    <div><h1>Initiatives</h1><p>Connect strategic outcomes to the epics and stories that make them real.</p></div>
+    <div class="page-actions"><button class="primary-button" type="button" (click)="openInitiative()">＋ New initiative</button></div>
+  </header>
+  @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
+  @if (service.loadingState() === 'loading') { <p class="loading">Loading initiatives…</p> }
+  @else if (service.hierarchy().initiatives.length === 0) {
+    <div class="empty-state"><h2>No initiatives yet</h2><p>Create an outcome to start organizing delivery work.</p><button class="primary-button" type="button" (click)="openInitiative()">New initiative</button></div>
+  } @else {
+    <div class="hierarchy-list">
+      @for (initiative of service.hierarchy().initiatives; track initiative.id) {
+        <article class="initiative-card">
+          <header class="initiative-head">
+            <div><h2>{{ initiative.name }}</h2><p>{{ initiative.description }}</p><small>{{ initiative.epicCount }} epics · {{ initiative.storyCount }} stories</small></div>
+            <div class="row-actions">
+              <button class="quiet-button" type="button" (click)="openEpic(initiative.id)">＋ Epic</button>
+              <button class="quiet-button" type="button" (click)="openInitiative(initiative)">Edit</button>
+              <button class="quiet-button danger-text" type="button" (click)="deleteInitiative(initiative)">Delete</button>
+            </div>
+          </header>
+          <div class="epic-list">
+            @for (epic of initiative.epics; track epic.id) {
+              <div class="epic-row">
+                <div><strong>{{ epic.name }}</strong><small>{{ epic.summary }}</small></div>
+                <div class="mini-progress" role="progressbar" aria-label="Epic completion" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="epic.completionPercentage"><span [style.width.%]="epic.completionPercentage"></span></div>
+                <span>{{ epic.storyCount }} stories</span>
+                <div class="row-actions"><button class="quiet-button" type="button" (click)="openEpic(initiative.id, epic)">Edit</button><button class="quiet-button danger-text" type="button" (click)="deleteEpic(epic)">Delete</button></div>
+              </div>
+            } @empty { <p class="empty-copy">No epics yet. Add one in the context of this initiative.</p> }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+
+<dialog #initiativeDialog aria-labelledby="initiative-title">
+  <form class="dialog-shell" [formGroup]="initiativeForm" (ngSubmit)="saveInitiative()">
+    <header class="dialog-head"><div><h2 id="initiative-title">{{ initiativeId() ? 'Edit initiative' : 'New initiative' }}</h2><p>Name the outcome the organization is pursuing.</p></div><button class="icon-button" type="button" aria-label="Close" (click)="initiativeDialog.close()">×</button></header>
+    <div class="dialog-body form-grid"><div class="field full"><label for="initiative-name">Name <span class="required">*</span></label><input id="initiative-name" formControlName="name"></div><div class="field full"><label for="initiative-description">Outcome description <span class="required">*</span></label><textarea id="initiative-description" formControlName="description"></textarea></div></div>
+    <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="initiativeDialog.close()">Cancel</button><button class="primary-button" type="submit" [disabled]="pending()">Save initiative</button></footer>
+  </form>
+</dialog>
+
+<dialog #epicDialog aria-labelledby="epic-title">
+  <form class="dialog-shell" [formGroup]="epicForm" (ngSubmit)="saveEpic()">
+    <header class="dialog-head"><div><h2 id="epic-title">{{ epicId() ? 'Edit epic' : 'New epic' }}</h2><p>Describe a substantial body of related work.</p></div><button class="icon-button" type="button" aria-label="Close" (click)="epicDialog.close()">×</button></header>
+    <div class="dialog-body form-grid">
+      <div class="field full"><label for="epic-initiative">Initiative <span class="required">*</span></label><select id="epic-initiative" formControlName="initiativeId">@for (initiative of service.hierarchy().initiatives; track initiative.id) { <option [value]="initiative.id">{{ initiative.name }}</option> }</select></div>
+      <div class="field full"><label for="epic-name">Name <span class="required">*</span></label><input id="epic-name" formControlName="name"></div>
+      <div class="field full"><label for="epic-summary">Summary <span class="required">*</span></label><textarea id="epic-summary" formControlName="summary"></textarea></div>
+    </div>
+    <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="epicDialog.close()">Cancel</button><button class="primary-button" type="submit" [disabled]="pending()">Save epic</button></footer>
+  </form>
+</dialog>
+<app-confirm-dialog />

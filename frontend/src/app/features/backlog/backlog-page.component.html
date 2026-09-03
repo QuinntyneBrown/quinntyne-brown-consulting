@@ -1,0 +1,35 @@
+<section class="page">
+  <header class="page-head"><div><h1>Backlog</h1><p>Shape ideas into ready work, then place them into a two-week sprint.</p></div></header>
+  <div class="toolbar">
+    <label class="search-wrap"><span aria-hidden="true">⌕</span><span class="visually-hidden">Search backlog</span><input [value]="service.searchText()" placeholder="Search stories or epics" (input)="search($any($event.target).value)"></label>
+    <select aria-label="Filter backlog" [value]="service.filter()" (change)="filter($any($event.target).value)"><option value="all">All stories</option><option value="unscheduled">Unscheduled</option><option value="ready">Ready</option><option value="draft">Draft</option><option value="archived">Archived</option></select>
+  </div>
+  @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
+  @if (service.loadingState() === 'loading' && service.stories().length === 0) { <p class="loading">Loading backlog…</p> }
+  @else if (service.visibleStories().length === 0) {
+    <div class="empty-state"><h2>No matching stories</h2><p>Try another filter or create a new story.</p></div>
+  } @else {
+    <div class="data-list">
+      @for (story of service.visibleStories(); track story.id) {
+        <article class="data-row">
+          <div class="row-title"><span class="story-key">{{ story.key }}</span><div><strong>{{ story.title }}</strong><small>{{ story.initiativeName }} / {{ story.epicName }}</small></div></div>
+          <div><span class="cell-label">State</span><span class="pill" [class]="'pill ' + badge(story)">{{ badge(story) }}</span></div>
+          <div><span class="cell-label">Estimate</span>{{ story.points ?? '—' }} pts</div>
+          <div><span class="cell-label">Owner</span>{{ story.assistantName ?? 'Unassigned' }}</div>
+          <div class="sprint-cell"><span class="cell-label">Sprint</span>
+            <select aria-label="Sprint assignment" [value]="story.sprintId ?? ''" [disabled]="pendingStoryId() === story.id || !story.isReady || story.lifecycle === 'archived' || story.sprintStatus === 'completed'" (change)="changeSprint(story, $any($event.target).value)">
+              <option value="">Backlog</option>
+              @for (sprint of planning.sprints(); track sprint.id) { @if (sprint.status !== 'completed') { <option [value]="sprint.id">{{ sprint.name }}</option> } }
+            </select>
+          </div>
+          <div class="row-actions">
+            @if (story.lifecycle !== 'archived' && !story.isReady) { <button class="quiet-button" type="button" [disabled]="pendingStoryId() === story.id" (click)="groom(story)">Groom</button> }
+            @if (story.isReady && !story.sprintId) { <button class="quiet-button" type="button" [disabled]="pendingStoryId() === story.id" (click)="markUnready(story)">Mark unready</button> }
+            <button class="quiet-button" type="button" (click)="edit(story.id)">Open</button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
+

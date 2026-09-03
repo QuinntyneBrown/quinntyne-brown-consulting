@@ -1,0 +1,18 @@
+.assistant-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 17px; }
+.assistant-card { padding: 23px; border: 1px solid var(--line); border-radius: var(--radius); }
+.assistant-main { display: flex; gap: 14px; align-items: center; }
+.assistant-card h2 { margin: 0; font-size: 16px; }
+.assistant-card p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.avatar { display: grid; width: 46px; height: 46px; border-radius: 50%; place-items: center; color: var(--accent-dark); background: var(--accent-soft); font-size: 13px; font-weight: 800; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 29px; margin: 21px 0; }
+.tag { padding: 4px 8px; border-radius: 6px; color: var(--muted); background: var(--soft); font-size: 11px; }
+dl { display: flex; gap: 26px; margin: 0 0 18px; }
+dl div { display: grid; }
+dt { color: var(--muted); font-size: 11px; }
+dd { margin: 0; font-weight: 750; }
+.assistant-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 15px; border-top: 1px solid var(--line); }
+.pill { text-transform: capitalize; }
+.danger-text { color: var(--danger); }
+.assignment-list { display: grid; gap: 8px; }
+.assignment-link { display: grid; width: 100%; padding: 13px; border: 1px solid var(--line); border-radius: 9px; color: inherit; background: #fff; text-align: left; }
+.assignment-link span { color: var(--muted); font-size: 12px; }

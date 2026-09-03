@@ -1,0 +1,14 @@
+<aside class="sidebar" [class.open]="open()" aria-label="Main navigation">
+  <a class="brand" routerLink="/board" aria-label="QBC Workboard home" (click)="navigated.emit()">
+    <span class="brand-mark" aria-hidden="true">Q</span>
+    <span><strong>QBC</strong><small>Workboard</small></span>
+  </a>
+  <nav class="nav-list">
+    <a routerLink="/board" routerLinkActive="active" (click)="navigated.emit()"><span aria-hidden="true">▦</span> Board</a>
+    <a routerLink="/backlog" routerLinkActive="active" (click)="navigated.emit()"><span aria-hidden="true">≡</span> Backlog</a>
+    <a routerLink="/initiatives" routerLinkActive="active" (click)="navigated.emit()"><span aria-hidden="true">⌘</span> Initiatives</a>
+    <a routerLink="/assistants" routerLinkActive="active" (click)="navigated.emit()"><span aria-hidden="true">◎</span> Assistants</a>
+  </nav>
+  <p class="company">Quinntyne Brown<br>Consulting Inc.</p>
+</aside>
+

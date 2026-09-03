@@ -1,0 +1,31 @@
+<section class="page">
+  <header class="page-head"><div><h1>Sprint board</h1><p>A quiet view of the team’s current commitment.</p></div><div class="page-actions"><button class="secondary-button" type="button" (click)="manage()">Manage sprints</button></div></header>
+  @if (service.error()) { <p class="form-error" role="alert">{{ service.error() }}</p> }
+  @if (service.loadingState() === 'loading') { <p class="loading">Loading sprint board…</p> }
+  @else if (service.board(); as board) {
+    <section class="sprint-hero" aria-label="Current sprint summary">
+      <div><p class="eyebrow">Current sprint · {{ board.name }}</p><h2>{{ board.goal }}</h2><p class="goal">{{ format(board.startDate) }} – {{ format(board.endDate) }}</p></div>
+      <div class="sprint-meta"><div class="sprint-meta-line"><span>{{ board.doneCount }} of {{ board.totalCount }} stories complete</span><strong>{{ board.completionPercentage }}%</strong></div><div class="progress-track" role="progressbar" aria-label="Sprint completion" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="board.completionPercentage"><div class="progress-bar" [style.width.%]="board.completionPercentage"></div></div><button class="quiet-button complete-button" type="button" (click)="complete()">Complete sprint</button></div>
+    </section>
+    <div class="board">
+      @for (status of statuses; track status.value) {
+        <section class="board-column" [attr.aria-labelledby]="'column-' + status.value" (dragover)="$event.preventDefault()" (drop)="drop($event, status.value)">
+          <header class="column-head"><h2 [id]="'column-' + status.value">{{ status.label }}</h2><span class="count">{{ stories(status.value).length }}</span></header>
+          <div class="card-stack">
+            @for (story of stories(status.value); track story.storyId) {
+              <article class="story-card" draggable="true" (dragstart)="drag($event, story)">
+                <div class="card-top"><span class="story-key">{{ story.key }}</span><span class="points">{{ story.points ?? '—' }}</span></div>
+                <h3>{{ story.title }}</h3><p>{{ story.epicName }} @if (story.totalTasks) { · {{ story.completedTasks }}/{{ story.totalTasks }} tasks }</p>
+                <footer><span class="owner">{{ story.assistantName ?? 'Unassigned' }}</span><div class="card-actions"><button class="quiet-button" type="button" [disabled]="status.value === 'toDo'" [attr.aria-label]="'Move ' + story.title + ' backward'" (click)="move(story, -1)">←</button><button class="quiet-button" type="button" (click)="edit(story.storyId)">Edit</button><button class="quiet-button" type="button" [disabled]="status.value === 'done'" [attr.aria-label]="'Move ' + story.title + ' forward'" (click)="move(story, 1)">→</button></div></footer>
+              </article>
+            } @empty { <div class="column-empty"><p>No stories here</p></div> }
+          </div>
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="empty-state"><h2>No active sprint</h2><p>Start a planned sprint to bring Ready stories onto the board.</p><button class="primary-button" type="button" (click)="manage()">Choose a sprint</button></div>
+  }
+</section>
+<app-sprint-manager />
+<app-confirm-dialog />

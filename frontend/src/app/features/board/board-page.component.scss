@@ -1,0 +1,27 @@
+.sprint-hero { display: grid; grid-template-columns: 1fr auto; gap: 34px; align-items: end; margin-bottom: 30px; padding: 27px 30px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(110deg,#f8fbf9,#fff); }
+.eyebrow { margin: 0 0 6px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.sprint-hero h2 { margin: 0; font-size: 22px; }
+.goal { margin: 7px 0 0; color: var(--muted); }
+.sprint-meta { min-width: 250px; }
+.sprint-meta-line { display: flex; justify-content: space-between; margin-bottom: 9px; color: var(--muted); font-size: 12px; }
+.progress-track { overflow: hidden; height: 7px; border-radius: 10px; background: var(--line); }
+.progress-bar { height: 100%; background: var(--accent); }
+.complete-button { float: right; margin-top: 8px; }
+.board { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.board-column { min-width: 0; min-height: 460px; padding: 18px; border-radius: var(--radius); background: var(--soft); }
+.column-head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 16px; }
+.column-head h2 { margin: 0; font-size: 14px; }
+.count { display: grid; min-width: 26px; height: 26px; place-items: center; border-radius: 20px; color: var(--muted); background: #fff; font-size: 12px; }
+.card-stack { display: grid; gap: 11px; }
+.story-card { min-width: 0; padding: 18px; border: 1px solid #e8ece9; border-radius: 11px; overflow-wrap: anywhere; background: #fff; cursor: grab; }
+.card-top, .story-card footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.story-key { color: var(--muted); font-size: 11px; font-weight: 750; }
+.points { display: grid; min-width: 27px; height: 27px; place-items: center; border-radius: 7px; background: var(--soft); font-size: 11px; }
+.story-card h3 { margin: 14px 0 8px; font-size: 15px; }
+.story-card p, .owner { color: var(--muted); font-size: 12px; }
+.story-card footer { margin-top: 18px; }
+.card-actions { display: flex; }
+.card-actions button { min-height: 30px; padding: 3px 8px; font-size: 12px; }
+.column-empty { padding: 35px 12px; color: var(--muted); text-align: center; }
+@media (max-width: 999px) { .board { grid-template-columns: 1fr; } .board-column { min-height: 220px; } }
+@media (max-width: 759px) { .sprint-hero { grid-template-columns: 1fr; padding: 22px; } }

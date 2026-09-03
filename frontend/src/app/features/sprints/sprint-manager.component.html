@@ -1,0 +1,36 @@
+<dialog #dialog aria-labelledby="sprint-manager-title">
+  <div class="dialog-shell">
+    <header class="dialog-head"><div><h2 id="sprint-manager-title">Manage sprints</h2><p>Plan focused, two-week delivery intervals with a clear goal.</p></div><button class="icon-button" type="button" aria-label="Close" (click)="dialog.close()">×</button></header>
+    <div class="dialog-body">
+      @if (planning.error()) { <p class="form-error" role="alert">{{ planning.error() }}</p> }
+      <div class="manager-head"><h3>Sprints</h3><button class="primary-button" type="button" (click)="openForm()">＋ New sprint</button></div>
+      <div class="sprint-list">
+        @for (sprint of planning.sprints(); track sprint.id) {
+          <article class="sprint-row">
+            <div><h3>{{ sprint.name }} <span class="pill" [class]="'pill ' + sprint.status">{{ sprint.status }}</span></h3><strong>{{ sprint.goal }}</strong><p>{{ formatDates(sprint) }} · {{ sprint.storyCount }} stories</p></div>
+            <div class="row-actions">
+              @if (sprint.status === 'planned') { <button class="secondary-button" type="button" (click)="start(sprint)">Start</button> }
+              <button class="quiet-button" type="button" (click)="openForm(sprint)">Edit</button>
+              @if (sprint.status === 'planned') { <button class="quiet-button danger-text" type="button" (click)="delete(sprint)">Delete</button> }
+            </div>
+          </article>
+        } @empty { <div class="empty-state"><h2>No sprints yet</h2><p>Create a sprint and give it a delivery goal.</p></div> }
+      </div>
+    </div>
+    <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="dialog.close()">Close</button></footer>
+  </div>
+</dialog>
+
+<dialog #formDialog aria-labelledby="sprint-form-title">
+  <form class="dialog-shell" [formGroup]="form" (ngSubmit)="save()">
+    <header class="dialog-head"><div><h2 id="sprint-form-title">{{ sprintId() ? 'Edit sprint' : 'New sprint' }}</h2><p>The end date is always 13 calendar days after the start date.</p></div><button class="icon-button" type="button" aria-label="Close" (click)="formDialog.close()">×</button></header>
+    <div class="dialog-body form-grid">
+      <div class="field full"><label for="sprint-name">Name <span class="required">*</span></label><input id="sprint-name" formControlName="name"></div>
+      <div class="field full"><label for="sprint-goal">Goal <span class="required">*</span></label><textarea id="sprint-goal" formControlName="goal"></textarea></div>
+      <div class="field"><label for="sprint-start">Start date <span class="required">*</span></label><input id="sprint-start" type="date" formControlName="startDate" [readonly]="editingCompleted()"></div>
+    </div>
+    <footer class="dialog-actions"><button class="secondary-button" type="button" (click)="formDialog.close()">Cancel</button><button class="primary-button" type="submit" [disabled]="pending()">Save sprint</button></footer>
+  </form>
+</dialog>
+<app-confirm-dialog />
+

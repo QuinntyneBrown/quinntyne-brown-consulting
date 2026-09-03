@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/Qbc.Workboard.Domain/Qbc.Workboard.Domain.csproj" />
+  <Project Path="src/Qbc.Workboard.Application/Qbc.Workboard.Application.csproj" />
+  <Project Path="src/Qbc.Workboard.Infrastructure/Qbc.Workboard.Infrastructure.csproj" />
+  <Project Path="src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj" />
+  <Project Path="tests/Qbc.Workboard.Api.IntegrationTests/Qbc.Workboard.Api.IntegrationTests.csproj" />
+</Solution>
+
