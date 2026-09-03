@@ -1,17 +1,34 @@
+using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Qbc.Workboard.Application.Common.Security;
+using Qbc.Workboard.Infrastructure.Security;
 
 namespace Qbc.Workboard.Infrastructure.Persistence;
 
 public sealed class WorkboardDbInitializer
 {
+    private const int WorkspaceAccessId = 1;
+    private const int SigningKeySize = 32;
+
     private readonly WorkboardDbContext _db;
     private readonly WorkboardDatabaseOptions _options;
+    private readonly WorkspaceAccessOptions _accessOptions;
+    private readonly IPasscodeHasher _passcodeHasher;
+    private readonly TimeProvider _timeProvider;
 
-    public WorkboardDbInitializer(WorkboardDbContext db, IOptions<WorkboardDatabaseOptions> options)
+    public WorkboardDbInitializer(
+        WorkboardDbContext db,
+        IOptions<WorkboardDatabaseOptions> options,
+        IOptions<WorkspaceAccessOptions> accessOptions,
+        IPasscodeHasher passcodeHasher,
+        TimeProvider timeProvider)
     {
         _db = db;
         _options = options.Value;
+        _accessOptions = accessOptions.Value;
+        _passcodeHasher = passcodeHasher;
+        _timeProvider = timeProvider;
     }
 
     public Task InitializeAsync(CancellationToken cancellationToken = default) =>
@@ -20,12 +37,34 @@ public sealed class WorkboardDbInitializer
     public async Task InitializeAsync(bool seedDevelopmentData, CancellationToken cancellationToken = default)
     {
         await _db.Database.MigrateAsync(cancellationToken);
+        await EnsureWorkspaceAccessAsync(cancellationToken);
         if (!seedDevelopmentData || await _db.Set<Initiative>().AnyAsync(cancellationToken))
         {
             return;
         }
 
         Seed();
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Creates the single workspace access row when it is absent. This runs on every
+    /// initialize and reset, independently of the development-data seed, so the workspace
+    /// always has a passcode and a signing key.
+    /// </summary>
+    private async Task EnsureWorkspaceAccessAsync(CancellationToken cancellationToken)
+    {
+        if (await _db.Set<WorkspaceAccess>().AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        _db.Add(new WorkspaceAccess(
+            WorkspaceAccessId,
+            _passcodeHasher.Hash(_accessOptions.InitialPasscode),
+            Convert.ToBase64String(RandomNumberGenerator.GetBytes(SigningKeySize)),
+            _timeProvider.GetUtcNow()));
+
         await _db.SaveChangesAsync(cancellationToken);
     }
 

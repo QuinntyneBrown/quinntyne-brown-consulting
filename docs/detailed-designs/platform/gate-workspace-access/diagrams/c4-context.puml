@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Gate workspace access
+
+Person(consultant, "QBC consultant", "Holds the shared workspace passcode")
+Person(visitor, "Uninvited visitor", "Reaches the public address without the passcode")
+System(workboard, "QBC Workboard", "Requires a passcode before exposing workspace state")
+
+Rel(consultant, workboard, "Unlocks and uses", "HTTPS")
+Rel(visitor, workboard, "Is refused by", "HTTPS 401")
+@enduml

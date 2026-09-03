@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Gate workspace access
+
+Person(consultant, "QBC consultant", "Holds the shared workspace passcode")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Shows the passcode screen and presents the session credential")
+  Container(api, "Workboard API", "ASP.NET Core", "Issues and validates the session credential")
+  ContainerDb(db, "Workspace database", "SQL Server", "Stores the passcode hash and the signing key")
+}
+
+Rel(consultant, spa, "Enters the passcode in", "HTTPS")
+Rel(spa, api, "Exchanges the passcode for a credential", "JSON/HTTPS")
+Rel(spa, api, "Presents the credential on every request", "Authorization: Bearer")
+Rel(api, db, "Reads the passcode hash and signing key", "EF Core")
+@enduml

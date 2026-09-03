@@ -1,0 +1,40 @@
+<label
+  class="visually-hidden"
+  [for]="controlId"
+  >{{ label() }}</label
+>
+<div
+  class="field"
+  [class.is-invalid]="invalid()"
+  [class.is-accepted]="accepted()"
+  [class.is-disabled]="isDisabled()"
+>
+  <div
+    class="boxes"
+    aria-hidden="true"
+  >
+    @for (index of boxes(); track index) {
+      <div
+        class="box"
+        [class.is-filled]="isFilled(index)"
+        [class.is-active]="isActive(index)"
+      ></div>
+    }
+  </div>
+  <input
+    #field
+    [id]="controlId"
+    type="text"
+    inputmode="numeric"
+    pattern="[0-9]*"
+    autocomplete="one-time-code"
+    [attr.maxlength]="length()"
+    [value]="controlValue()"
+    [disabled]="isDisabled()"
+    [attr.aria-invalid]="invalid() ? 'true' : null"
+    [attr.aria-describedby]="describedBy()"
+    (input)="change($any($event.target).value)"
+    (focus)="setFocused(true)"
+    (blur)="setFocused(false)"
+  />
+</div>

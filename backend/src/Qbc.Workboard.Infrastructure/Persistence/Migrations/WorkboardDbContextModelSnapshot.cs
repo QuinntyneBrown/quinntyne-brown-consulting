@@ -224,6 +224,27 @@ namespace Qbc.Workboard.Infrastructure.Persistence.Migrations
                     b.ToTable("StoryTask");
                 });
 
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.WorkspaceAccess", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasscodeHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SigningKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkspaceAccess");
+                });
+
             modelBuilder.Entity("Qbc.Workboard.Domain.Entities.Epic", b =>
                 {
                     b.HasOne("Qbc.Workboard.Domain.Entities.Initiative", null)

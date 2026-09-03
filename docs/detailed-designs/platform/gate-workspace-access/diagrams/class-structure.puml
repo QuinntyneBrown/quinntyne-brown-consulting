@@ -1,0 +1,80 @@
+@startuml
+title UML class structure — Gate workspace access
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #FFFFFF
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+package "Qbc.Workboard.Domain" {
+  class WorkspaceAccess {
+    +int Id
+    +string PasscodeHash
+    +string SigningKey
+    +DateTimeOffset UpdatedAtUtc
+    +SetPasscode(hash, updatedAtUtc)
+  }
+}
+
+package "Qbc.Workboard.Application" {
+  interface IPasscodeHasher {
+    +Hash(passcode) : string
+    +Verify(passcode, hash) : bool
+  }
+  interface IAccessTokenIssuer {
+    +Issue(signingKey) : AccessToken
+  }
+  interface IWorkboardDbContext {
+    +IQueryable<WorkspaceAccess> WorkspaceAccess
+  }
+  class UnlockWorkspaceCommand <<record>> {
+    +string Passcode
+    +Validate() : IReadOnlyDictionary
+  }
+  class UnlockWorkspaceCommandHandler
+  class UnauthorizedException
+  class AccessToken <<record>>
+  class AccessTokenDto <<record>>
+}
+
+package "Qbc.Workboard.Infrastructure" {
+  class Pbkdf2PasscodeHasher
+  class JwtAccessTokenIssuer
+  class WorkboardDbInitializer
+  class WorkboardDbContext
+}
+
+package "Qbc.Workboard.Api" {
+  class AccessController
+  class ConfigureJwtBearerOptions
+  class WorkspaceGateExtensions
+  class ProblemDetailsExceptionHandler
+}
+
+AccessController --> UnlockWorkspaceCommand : sends
+UnlockWorkspaceCommandHandler ..|> IPasscodeHasher : uses
+UnlockWorkspaceCommandHandler ..> IAccessTokenIssuer : uses
+UnlockWorkspaceCommandHandler ..> IWorkboardDbContext : reads
+UnlockWorkspaceCommandHandler --> AccessTokenDto : returns
+UnlockWorkspaceCommandHandler ..> UnauthorizedException : throws
+IAccessTokenIssuer --> AccessToken : returns
+Pbkdf2PasscodeHasher ..|> IPasscodeHasher
+JwtAccessTokenIssuer ..|> IAccessTokenIssuer
+WorkboardDbContext ..|> IWorkboardDbContext
+WorkboardDbContext --> WorkspaceAccess : maps
+WorkboardDbInitializer --> WorkspaceAccess : creates
+WorkboardDbInitializer ..> IPasscodeHasher : hashes with
+ConfigureJwtBearerOptions ..> IWorkboardDbContext : reads signing key
+WorkspaceGateExtensions --> ConfigureJwtBearerOptions : registers
+ProblemDetailsExceptionHandler ..> UnauthorizedException : maps to 401
+@enduml

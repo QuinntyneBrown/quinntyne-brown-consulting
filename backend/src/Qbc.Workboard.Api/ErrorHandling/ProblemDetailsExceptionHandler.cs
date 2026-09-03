@@ -19,6 +19,7 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
         var (status, type, title, detail) = exception switch
         {
             RequestValidationException => (400, "urn:qbc-workboard:problem:validation", "Validation failed", exception.Message),
+            UnauthorizedException => (401, "urn:qbc-workboard:problem:unauthorized", "Workspace is locked", exception.Message),
             NotFoundException => (404, "urn:qbc-workboard:problem:not-found", "Resource not found", exception.Message),
             ConflictException => (409, "urn:qbc-workboard:problem:conflict", "Operation conflicts with current state", exception.Message),
             DomainRuleException => (409, "urn:qbc-workboard:problem:conflict", "Operation conflicts with current state", exception.Message),

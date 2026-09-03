@@ -15,6 +15,7 @@ export class AccessibilityPage {
 
   async expectKeyboardAndDialogAccess(): Promise<void> {
     await this.page.goto('/board');
+    await expect(this.page.getByRole('heading', { level: 1, name: 'Sprint board' })).toBeVisible();
     await this.page.keyboard.press('Tab');
     const skipLink = this.page.getByRole('link', { name: 'Skip to content' });
     await expect(skipLink).toBeFocused();

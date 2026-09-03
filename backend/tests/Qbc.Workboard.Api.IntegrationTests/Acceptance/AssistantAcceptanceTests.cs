@@ -12,7 +12,7 @@ public sealed class AssistantAcceptanceTests : IClassFixture<WorkboardApiFactory
     private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
     private readonly HttpClient _client;
 
-    public AssistantAcceptanceTests(WorkboardApiFactory factory) => _client = factory.CreateClient();
+    public AssistantAcceptanceTests(WorkboardApiFactory factory) => _client = factory.CreateUnlockedClient();
 
     [Fact]
     public async Task Assigned_assistant_deletion_returns_blocking_work()

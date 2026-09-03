@@ -10,9 +10,12 @@ stories, tasks, assistants, backlog grooming, sprint planning, and active-sprint
 execution in one persistent application.
 
 > [!IMPORTANT]
-> The deployed QBC Workboard is intentionally public and does not implement
-> authentication or authorization. Every visitor can view and change the shared
-> workspace, so do not store confidential, personal, or client data in it.
+> The deployed QBC Workboard is reachable publicly and is protected by a single
+> shared passcode, not by user accounts. Everyone who knows the passcode shares
+> one workspace with full read and write access, and no change is attributable to
+> a person. Treat the passcode as a gate that keeps a public deployment private,
+> not as authentication, and do not store confidential, personal, or client data
+> in the workspace.
 
 The project is under active development and does not yet publish tagged
 releases. Requirements and data migrations may change before the first release.
@@ -30,6 +33,8 @@ releases. Requirements and data migrations may change before the first release.
 - Publish the Angular application and ASP.NET Core API as one deployable output.
 - Explore a standalone design-system catalog with reusable components, dialogs,
   and responsive product patterns.
+- Keep the public deployment private behind a shared passcode that issues a
+  seven-day session credential.
 
 ## Architecture
 
@@ -146,10 +151,37 @@ standard .NET configuration providers.
 | `SeedDevelopmentData` | `false` | Adds representative records when the database is empty |
 | `DatabaseReset__RequireForce` | `true` | Requires `--force` before the CLI deletes a database |
 | `AllowedOrigins__0` | unset | Adds an allowed CORS origin when the frontend uses a separate host |
+| `Access__InitialPasscode` | `2846` | Passcode written when the workspace access record is first created |
+| `Access__TokenLifetimeDays` | `7` | Lifetime of the session credential issued at unlock |
 
 EF Core applies pending migrations when the API or initialization command
 starts. Production environments should provide their connection string through
 environment-specific configuration or a secret store, not a committed file.
+
+## Workspace passcode
+
+One shared passcode opens the whole workspace. Entering it returns a signed
+session credential that authorizes every API request until it expires. This is a
+gate, not authentication: it establishes no individual identity and no change is
+attributable to a person.
+
+Database initialization and reset create a single `WorkspaceAccess` row holding a
+PBKDF2 hash of the passcode and a randomly generated signing key. Neither value
+is committed to source control or supplied as a deployment setting, so no
+application setting has to be configured to deploy the gate.
+
+`Access__InitialPasscode` is read only when that row is created. Change the
+passcode afterwards by deleting the row and restarting, which regenerates both
+the passcode and the signing key and invalidates every credential already issued:
+
+```powershell
+sqlcmd -S '.\SQLEXPRESS' -d QbcWorkboard -E -Q 'DELETE FROM WorkspaceAccess'
+```
+
+Repeated attempts from one address are limited to ten in fifteen minutes and then
+answered with HTTP 429. A four-digit passcode is only ten thousand combinations,
+so that throttle, rather than the passcode itself, is what makes guessing
+impractical.
 
 ## Database maintenance CLI
 

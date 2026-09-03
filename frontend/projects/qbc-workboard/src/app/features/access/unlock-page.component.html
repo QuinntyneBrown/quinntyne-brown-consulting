@@ -1,0 +1,52 @@
+<div class="unlock">
+  <div class="card">
+    <qbc-brand
+      class="brand"
+      mark="Q"
+      name="QBC"
+      tagline="Workboard"
+      href="/unlock"
+    />
+
+    @if (accepted()) {
+      <div class="accepted">
+        <div
+          class="accepted-mark"
+          aria-hidden="true"
+        >
+          &check;
+        </div>
+        <h1 tabindex="-1">Unlocked</h1>
+        <p class="lede">Welcome back. Opening your workspace.</p>
+      </div>
+    } @else {
+      <h1>Enter your passcode</h1>
+      <p class="lede">This workspace is protected while it is publicly reachable.</p>
+
+      <qbc-passcode-input
+        label="Workspace passcode"
+        describedBy="unlock-error"
+        [length]="length"
+        [invalid]="invalid()"
+        [disabled]="session.pending()"
+        (valueChange)="entered($event)"
+        (completed)="submit()"
+      />
+
+      <p
+        class="error"
+        id="unlock-error"
+        role="alert"
+      >
+        {{ session.error() }}
+      </p>
+
+      <qbc-button
+        full
+        [disabled]="passcode().length !== length || session.pending()"
+        (click)="submit()"
+        >Unlock</qbc-button
+      >
+    }
+  </div>
+</div>

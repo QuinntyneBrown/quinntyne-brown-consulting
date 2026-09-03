@@ -5,7 +5,7 @@
 Deploy QBC Workboard as one code-only .NET 10 application on an Azure App
 Service Free (`F1`) Linux plan, backed by one Azure SQL Database created with
 the free database offer. Use the included `azurewebsites.net` hostname, allow
-anonymous application access, and use a system-assigned managed identity for
+shared-passcode application access, and use a system-assigned managed identity for
 database access.
 
 The target Azure charge is **USD $0 per month and $0 per year**, provided all
@@ -242,6 +242,14 @@ az webapp config appsettings set `
     "ConnectionStrings__Workboard=$connectionString" `
     'SeedDevelopmentData=false'
 ```
+
+The passcode gate needs no application setting of its own. The workspace access
+record — the PBKDF2 passcode hash and the credential signing key — is created by
+the database initializer on first start, so no secret is added to the App Service
+configuration, to GitHub, or to a committed file. To rotate the passcode and
+invalidate every issued credential, delete the single `WorkspaceAccess` row and
+restart the web app; the next start regenerates both. Deleting that row also
+locks everyone out until the restart completes.
 
 Keep **Allow Azure services and resources to access this server** off. Add SQL
 firewall rules only for every address returned by the web app's

@@ -10,7 +10,7 @@ public sealed class IntegrityAcceptanceTests : IClassFixture<WorkboardApiFactory
 {
     private readonly HttpClient _client;
 
-    public IntegrityAcceptanceTests(WorkboardApiFactory factory) => _client = factory.CreateClient();
+    public IntegrityAcceptanceTests(WorkboardApiFactory factory) => _client = factory.CreateUnlockedClient();
 
     [Fact]
     public async Task Validation_and_hierarchy_guards_return_problem_details()

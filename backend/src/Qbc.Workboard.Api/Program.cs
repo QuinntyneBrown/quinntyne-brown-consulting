@@ -24,6 +24,7 @@ public sealed class Program
         builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddWorkspaceGate();
 
         var origins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
         if (origins.Length > 0)
@@ -38,13 +39,17 @@ public sealed class Program
             app.UseCors();
         }
 
+        app.UseRateLimiter();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         using (var scope = app.Services.CreateScope())
         {
             scope.ServiceProvider.GetRequiredService<WorkboardDbInitializer>().InitializeAsync().GetAwaiter().GetResult();
         }
 
         app.MapOpenApi();
-        app.MapControllers();
+        app.MapControllers().RequireAuthorization();
         app.UseDefaultFiles();
         app.UseStaticFiles();
         if (app.Environment.WebRootFileProvider.GetFileInfo("index.html").Exists)

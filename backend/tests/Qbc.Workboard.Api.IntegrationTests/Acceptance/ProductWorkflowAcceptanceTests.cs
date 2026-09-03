@@ -12,7 +12,7 @@ public sealed class ProductWorkflowAcceptanceTests : IClassFixture<WorkboardApiF
     private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
     private readonly HttpClient _client;
 
-    public ProductWorkflowAcceptanceTests(WorkboardApiFactory factory) => _client = factory.CreateClient();
+    public ProductWorkflowAcceptanceTests(WorkboardApiFactory factory) => _client = factory.CreateUnlockedClient();
 
     [Fact]
     public async Task Ready_story_can_be_planned_executed_and_retained_in_completed_history()

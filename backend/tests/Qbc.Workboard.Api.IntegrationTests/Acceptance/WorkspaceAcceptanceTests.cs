@@ -9,7 +9,7 @@ public sealed class WorkspaceAcceptanceTests : IClassFixture<WorkboardApiFactory
 
     public WorkspaceAcceptanceTests(WorkboardApiFactory factory)
     {
-        _client = factory.CreateClient();
+        _client = factory.CreateUnlockedClient();
     }
 
     [Fact]

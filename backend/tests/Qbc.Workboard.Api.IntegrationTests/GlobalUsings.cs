@@ -1,5 +1,6 @@
 global using Qbc.Workboard.Api.Contracts.Requests;
 global using Qbc.Workboard.Api.IntegrationTests.Support;
+global using Qbc.Workboard.Application.Features.Access.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Dtos;
 global using Qbc.Workboard.Application.Features.Hierarchy.Dtos;
 global using Qbc.Workboard.Application.Features.Sprints.Dtos;

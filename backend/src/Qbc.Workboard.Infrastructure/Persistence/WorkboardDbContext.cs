@@ -15,6 +15,7 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
     public IQueryable<Assistant> Assistants => Set<Assistant>();
     public IQueryable<Sprint> Sprints => Set<Sprint>();
     public IQueryable<StoryKeySequence> StoryKeySequences => Set<StoryKeySequence>();
+    public IQueryable<WorkspaceAccess> WorkspaceAccess => Set<WorkspaceAccess>();
 
     public new void Add<T>(T entity) where T : class => Set<T>().Add(entity);
     public new void Remove<T>(T entity) where T : class => Set<T>().Remove(entity);
@@ -84,6 +85,14 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
         {
             entity.HasKey(item => item.Id);
             entity.Property(item => item.Id).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<WorkspaceAccess>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Id).ValueGeneratedNever();
+            entity.Property(item => item.PasscodeHash).IsRequired();
+            entity.Property(item => item.SigningKey).IsRequired();
         });
     }
 }

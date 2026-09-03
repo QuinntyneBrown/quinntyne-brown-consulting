@@ -1,6 +1,9 @@
 global using Qbc.Workboard.Api.Contracts.Requests;
 global using Qbc.Workboard.Api.ErrorHandling;
+global using Qbc.Workboard.Api.Security;
 global using Qbc.Workboard.Application.Common.Exceptions;
+global using Qbc.Workboard.Application.Features.Access.Commands;
+global using Qbc.Workboard.Application.Features.Access.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Commands;
 global using Qbc.Workboard.Application.Features.Assistants.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Queries;

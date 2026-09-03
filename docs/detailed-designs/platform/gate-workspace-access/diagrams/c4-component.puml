@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Gate workspace access
+
+Container(spa, "Web application", "Angular", "Presents the workspace")
+ContainerDb(db, "Workspace database", "SQL Server", "Stores the passcode hash and signing key")
+
+Container_Boundary(api, "Workboard API") {
+  Component(gate, "WorkspaceGateExtensions", "ASP.NET Core", "Registers bearer authentication and the unlock rate limit")
+  Component(jwtOptions, "ConfigureJwtBearerOptions", "IConfigureNamedOptions", "Supplies validation parameters from the stored signing key")
+  Component(controller, "AccessController", "MVC controller", "Accepts the passcode on api/access/unlock")
+  Component(handler, "UnlockWorkspaceCommandHandler", "MediatR handler", "Verifies the passcode and issues the credential")
+  Component(hasher, "Pbkdf2PasscodeHasher", "Infrastructure", "Hashes and verifies the passcode")
+  Component(issuer, "JwtAccessTokenIssuer", "Infrastructure", "Signs the session credential")
+  Component(initializer, "WorkboardDbInitializer", "Infrastructure", "Creates the passcode record on initialize and reset")
+}
+
+Rel(spa, controller, "Posts the passcode", "JSON/HTTPS")
+Rel(spa, gate, "Presents the credential", "Authorization: Bearer")
+Rel(controller, handler, "Sends UnlockWorkspaceCommand")
+Rel(handler, hasher, "Verifies against the stored hash")
+Rel(handler, issuer, "Requests a signed credential")
+Rel(gate, jwtOptions, "Resolves validation parameters from")
+Rel(jwtOptions, db, "Reads the signing key")
+Rel(handler, db, "Reads the passcode record")
+Rel(initializer, db, "Creates the passcode record")
+@enduml

@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaction study for the passcode gate in front of QBC Workboard.">
+  <title>Enter your passcode &middot; QBC Workboard</title>
+  <style>
+    /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
+       subset this page uses is repeated here, so the mock stays one self-contained
+       file and never touches the visual baseline in docs/mocks/styles.css. The
+       --qbc-* names are used rather than the older --ink/--accent names in
+       styles.css, so this mock matches the design system and the Angular app. */
+    :root {
+      color-scheme: light;
+
+      --qbc-ink:        #18201d;
+      --qbc-ink-soft:   #68726d;
+      --qbc-ink-faint:  #87918c;
+
+      --qbc-line:        #e4e9e6;
+      --qbc-line-strong: #d8dfdb;
+
+      --qbc-panel: #ffffff;
+      --qbc-soft:  #f5f7f5;
+
+      --qbc-accent:      #276749;
+      --qbc-accent-dark: #184c35;
+      --qbc-accent-soft: #e8f3ed;
+
+      --qbc-danger:      #a33a37;
+      --qbc-danger-soft: #faeceb;
+
+      --qbc-focus-ring-field: rgba(39, 103, 73, .1);
+
+      --qbc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      --qbc-fs-2xs:  11px;
+      --qbc-fs-xs:   12px;
+      --qbc-fs-sm:   13px;
+      --qbc-fs-base: 15px;
+      --qbc-fs-2xl:  18px;
+      --qbc-fs-4xl:  22px;
+
+      --qbc-lh-base: 1.5;
+      --qbc-lh-snug: 1.4;
+
+      --qbc-fw-medium: 600;
+      --qbc-fw-button: 680;
+      --qbc-fw-bold:   750;
+
+      --qbc-tracking-heading: -.02em;
+      --qbc-tracking-brand:   .06em;
+
+      --qbc-s-1: 4px;  --qbc-s-2: 8px;  --qbc-s-3: 12px; --qbc-s-4: 16px;
+      --qbc-s-5: 20px; --qbc-s-6: 24px; --qbc-s-7: 32px; --qbc-s-8: 40px;
+
+      --qbc-r-control: 9px;
+      --qbc-r-md:      10px;
+      --qbc-r-2xl:     16px;
+      --qbc-r-round:   50%;
+
+      --qbc-shadow-card:    0 2px 3px rgba(24, 32, 29, .025);
+      --qbc-shadow-overlay: 0 18px 50px rgba(24, 32, 29, .12);
+
+      --qbc-dur-fast: 180ms;
+      --qbc-dur-base: 200ms;
+      --qbc-ease: ease-out;
+
+      --qbc-button-h: 40px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* The class rules below set display, which would otherwise beat the user
+       agent's [hidden] rule and leave hidden buttons on screen. */
+    [hidden] { display: none !important; }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--qbc-s-6);
+      margin: 0;
+      color: var(--qbc-ink);
+      background: var(--qbc-soft);
+      font-family: var(--qbc-font-sans);
+      font-size: var(--qbc-fs-base);
+      line-height: var(--qbc-lh-base);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    /* ---- Card ------------------------------------------------------------ */
+    .pin-card {
+      width: 100%;
+      max-width: 420px;
+      padding: var(--qbc-s-8) var(--qbc-s-7) var(--qbc-s-7);
+      border: 1px solid var(--qbc-line);
+      border-radius: var(--qbc-r-2xl);
+      background: var(--qbc-panel);
+      box-shadow: var(--qbc-shadow-card), var(--qbc-shadow-overlay);
+      text-align: center;
+    }
+
+    .brand {
+      display: flex;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--qbc-s-6);
+    }
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: var(--qbc-r-md);
+      color: #fff;
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-2xl);
+      font-weight: var(--qbc-fw-bold);
+    }
+    .brand div { text-align: left; }
+    .brand strong, .brand small { display: block; }
+    .brand strong { letter-spacing: var(--qbc-tracking-brand); }
+    .brand small {
+      margin-top: -2px;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xs);
+    }
+
+    h1 {
+      margin: 0 0 var(--qbc-s-2);
+      font-size: var(--qbc-fs-4xl);
+      font-weight: var(--qbc-fw-bold);
+      letter-spacing: var(--qbc-tracking-heading);
+      line-height: var(--qbc-lh-snug);
+    }
+    .pin-lede {
+      max-width: 30ch;
+      margin: 0 auto var(--qbc-s-7);
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-sm);
+    }
+
+    /* ---- Passcode field --------------------------------------------------
+       One real input carries the value and four boxes render it. The input is
+       stretched transparently over the row, so clicking anywhere focuses it,
+       a paste fills every box at once, and mobile gets the numeric keypad. */
+    .pin-field {
+      position: relative;
+      width: max-content;
+      margin: 0 auto var(--qbc-s-5);
+    }
+    .pin-boxes {
+      display: flex;
+      gap: var(--qbc-s-3);
+    }
+    .pin-box {
+      position: relative;
+      display: grid;
+      width: 60px;
+      height: 68px;
+      place-items: center;
+      border: 1px solid var(--qbc-line-strong);
+      border-radius: var(--qbc-r-control);
+      background: var(--qbc-panel);
+      transition:
+        border-color var(--qbc-dur-fast) var(--qbc-ease),
+        background var(--qbc-dur-fast) var(--qbc-ease),
+        box-shadow var(--qbc-dur-fast) var(--qbc-ease);
+    }
+
+    /* The masked digit. */
+    .pin-box::before {
+      width: 11px;
+      height: 11px;
+      border-radius: var(--qbc-r-round);
+      background: var(--qbc-ink);
+      content: "";
+      opacity: 0;
+      transform: scale(.4);
+      transition:
+        opacity var(--qbc-dur-fast) var(--qbc-ease),
+        transform var(--qbc-dur-fast) var(--qbc-ease);
+    }
+    .pin-box.is-filled::before { opacity: 1; transform: scale(1); }
+
+    /* The caret, shown in the next empty box only while the field has focus. */
+    .pin-box.is-active {
+      border-color: var(--qbc-accent);
+      box-shadow: 0 0 0 3px var(--qbc-focus-ring-field);
+    }
+    .pin-box.is-active::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 26px;
+      margin: -13px 0 0 -1px;
+      border-radius: 1px;
+      background: var(--qbc-accent);
+      content: "";
+      animation: caret 1.06s step-end infinite;
+    }
+    @keyframes caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .pin-field input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      font-size: 16px; /* keeps iOS from zooming the page on focus */
+      opacity: 0;
+    }
+    .pin-field input:focus { outline: none; }
+    .pin-field input:disabled { cursor: not-allowed; }
+
+    /* ---- Field states ---------------------------------------------------- */
+    .pin-field.is-error .pin-box {
+      border-color: var(--qbc-danger);
+      background: var(--qbc-danger-soft);
+      box-shadow: none;
+    }
+    .pin-field.is-error .pin-box::before { background: var(--qbc-danger); }
+    .pin-field.is-error .pin-boxes { animation: shake 460ms var(--qbc-ease); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      15%, 55% { transform: translateX(-7px); }
+      35%, 75% { transform: translateX(7px); }
+      90%      { transform: translateX(-3px); }
+    }
+
+    .pin-field.is-success .pin-box {
+      border-color: var(--qbc-accent);
+      background: var(--qbc-accent-soft);
+      box-shadow: none;
+    }
+    .pin-field.is-success .pin-box::before { background: var(--qbc-accent); }
+
+    .pin-field.is-locked .pin-box {
+      border-color: var(--qbc-line);
+      background: var(--qbc-soft);
+      box-shadow: none;
+    }
+
+    /* ---- Messages -------------------------------------------------------- */
+    .pin-error {
+      min-height: 18px;
+      margin: 0 0 var(--qbc-s-5);
+      color: var(--qbc-danger);
+      font-size: var(--qbc-fs-xs);
+      font-weight: var(--qbc-fw-medium);
+    }
+    .pin-hint {
+      margin: var(--qbc-s-4) 0 0;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-xs);
+    }
+
+    /* ---- Buttons — mirrors components/button.component.scss -------------- */
+    .primary-button,
+    .quiet-button {
+      display: inline-flex;
+      min-height: var(--qbc-button-h);
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: var(--qbc-r-control);
+      font: inherit;
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+    }
+    .primary-button {
+      width: 100%;
+      padding: 9px 16px;
+      border: 1px solid var(--qbc-accent);
+      color: #fff;
+      background: var(--qbc-accent);
+    }
+    .primary-button:hover:not(:disabled) {
+      border-color: var(--qbc-accent-dark);
+      background: var(--qbc-accent-dark);
+    }
+    .quiet-button {
+      margin-top: var(--qbc-s-3);
+      padding: 8px 11px;
+      border: 1px solid transparent;
+      color: var(--qbc-ink-soft);
+      background: transparent;
+      font-size: var(--qbc-fs-xs);
+    }
+    .quiet-button:hover { background: var(--qbc-soft); }
+    .primary-button:disabled,
+    .quiet-button:disabled { cursor: not-allowed; opacity: .52; }
+    .primary-button:focus-visible,
+    .quiet-button:focus-visible {
+      outline: 3px solid var(--qbc-focus-ring-field);
+      outline-offset: 1px;
+    }
+
+    /* ---- Success panel --------------------------------------------------- */
+    .pin-success { animation: rise var(--qbc-dur-base) var(--qbc-ease); }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .success-mark {
+      display: grid;
+      width: 56px;
+      height: 56px;
+      place-items: center;
+      margin: var(--qbc-s-2) auto var(--qbc-s-5);
+      border-radius: var(--qbc-r-round);
+      color: var(--qbc-accent);
+      background: var(--qbc-accent-soft);
+      font-size: 26px;
+      font-weight: var(--qbc-fw-bold);
+    }
+    .pin-success .pin-lede { margin-bottom: var(--qbc-s-2); }
+    .pin-success h1:focus-visible {
+      outline: 3px solid var(--qbc-focus-ring-field);
+      outline-offset: 4px;
+    }
+
+    /* ---- Mock footnote — not part of the design -------------------------- */
+    .mock-note {
+      max-width: 420px;
+      margin: var(--qbc-s-5) 0 0;
+      color: var(--qbc-ink-faint);
+      font-size: var(--qbc-fs-2xs);
+      text-align: center;
+    }
+    .mock-note code {
+      padding: 1px 5px;
+      border-radius: var(--qbc-r-control);
+      background: var(--qbc-panel);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    /* ---- Responsive — the mock's own 760px breakpoint -------------------- */
+    @media (max-width: 760px) {
+      body { padding: var(--qbc-s-4); }
+      .pin-card { padding: var(--qbc-s-7) var(--qbc-s-5) var(--qbc-s-6); }
+      .pin-boxes { gap: 10px; }
+      .pin-box { width: 48px; height: 58px; }
+      .pin-box.is-active::after { height: 22px; margin-top: -11px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pin-field.is-error .pin-boxes,
+      .pin-box.is-active::after,
+      .pin-success { animation: none; }
+      .pin-box, .pin-box::before { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="pin-card">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">Q</span>
+      <div><strong>QBC</strong><small>Workboard</small></div>
+    </div>
+
+    <section id="entry">
+      <h1>Enter your passcode</h1>
+      <p class="pin-lede">This workspace is temporarily protected while it is public.</p>
+
+      <form id="pin-form" novalidate>
+        <label class="visually-hidden" for="pin">4-digit passcode</label>
+        <div class="pin-field">
+          <div class="pin-boxes" aria-hidden="true">
+            <div class="pin-box"></div>
+            <div class="pin-box"></div>
+            <div class="pin-box"></div>
+            <div class="pin-box"></div>
+          </div>
+          <input
+            id="pin"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="4"
+            autocomplete="one-time-code"
+            aria-describedby="pin-error"
+            autofocus>
+        </div>
+
+        <p class="pin-error" id="pin-error" role="alert"></p>
+
+        <button class="primary-button" id="unlock" type="submit" disabled>Unlock</button>
+        <button class="quiet-button" id="forgot" type="button">Forgot your passcode?</button>
+        <button class="quiet-button" id="start-over" type="button" hidden>Start over</button>
+      </form>
+
+      <p class="pin-hint" id="pin-hint" hidden>Ask Quinntyne for the current passcode.</p>
+    </section>
+
+    <section class="pin-success" id="success" hidden>
+      <div class="success-mark" aria-hidden="true">&check;</div>
+      <h1 tabindex="-1">Unlocked</h1>
+      <p class="pin-lede">Welcome back. Your workspace is ready.</p>
+      <button class="quiet-button" id="relock" type="button">Lock again</button>
+    </section>
+  </main>
+
+  <p class="mock-note">
+    Interaction study. Any four digits are accepted here. The working gate lives in
+    the application and verifies the passcode on the server.
+  </p>
+
+  <script>
+    // A design study only: it accepts any four digits so it can be reviewed offline
+    // without disclosing the real passcode. The application verifies on the server.
+    var PASSCODE_LENGTH = 4;
+    var MAX_ATTEMPTS = 3;
+    var REJECTED = "0000"; // one reserved value, so the error state stays reviewable
+
+    var field = document.querySelector(".pin-field");
+    var boxes = Array.prototype.slice.call(document.querySelectorAll(".pin-box"));
+    var input = document.getElementById("pin");
+    var form = document.getElementById("pin-form");
+    var errorEl = document.getElementById("pin-error");
+    var hintEl = document.getElementById("pin-hint");
+    var unlockButton = document.getElementById("unlock");
+    var startOverButton = document.getElementById("start-over");
+    var entryPanel = document.getElementById("entry");
+    var successPanel = document.getElementById("success");
+
+    var attempts = 0;
+    var locked = false;
+    var focused = false;
+    var pending = false; // guards a double submit during the auto-submit beat
+
+    function render() {
+      var filled = input.value.length;
+      boxes.forEach(function (box, index) {
+        box.classList.toggle("is-filled", index < filled);
+        box.classList.toggle("is-active", focused && !locked && index === filled);
+      });
+      unlockButton.disabled = locked || filled < PASSCODE_LENGTH;
+    }
+
+    function clearError() {
+      errorEl.textContent = "";
+      input.removeAttribute("aria-invalid");
+    }
+
+    function lock() {
+      locked = true;
+      pending = false;
+      input.value = "";
+      input.disabled = true;
+      field.classList.remove("is-error");
+      field.classList.add("is-locked");
+      errorEl.textContent = "Too many attempts. Try again later.";
+      startOverButton.hidden = false;
+      render();
+    }
+
+    function fail() {
+      attempts += 1;
+      input.setAttribute("aria-invalid", "true");
+      field.classList.add("is-error");
+
+      if (attempts >= MAX_ATTEMPTS) {
+        window.setTimeout(lock, 460);
+        return;
+      }
+
+      var left = MAX_ATTEMPTS - attempts;
+      errorEl.textContent =
+        "That passcode is not right. " + left + " attempt" + (left === 1 ? "" : "s") + " left.";
+
+      window.setTimeout(function () {
+        input.value = "";
+        field.classList.remove("is-error");
+        input.focus();
+        pending = false;
+        render();
+      }, 460);
+    }
+
+    function succeed() {
+      input.disabled = true;
+      field.classList.add("is-success");
+      clearError();
+      window.setTimeout(function () {
+        entryPanel.hidden = true;
+        successPanel.hidden = false;
+        successPanel.querySelector("h1").focus();
+      }, 460);
+    }
+
+    function submit() {
+      if (locked || input.value.length < PASSCODE_LENGTH) {
+        pending = false;
+        return;
+      }
+      if (input.value === REJECTED) {
+        fail();
+      } else {
+        succeed();
+      }
+    }
+
+    function reset() {
+      attempts = 0;
+      locked = false;
+      pending = false;
+      input.value = "";
+      input.disabled = false;
+      field.className = "pin-field";
+      clearError();
+      hintEl.hidden = true;
+      startOverButton.hidden = true;
+      successPanel.hidden = true;
+      entryPanel.hidden = false;
+      input.focus();
+      render();
+    }
+
+    input.addEventListener("input", function () {
+      input.value = input.value.replace(/\D/g, "").slice(0, PASSCODE_LENGTH);
+      if (errorEl.textContent && !locked) {
+        clearError();
+      }
+      render();
+      if (input.value.length === PASSCODE_LENGTH && !pending) {
+        pending = true;
+        window.setTimeout(submit, 190);
+      }
+    });
+
+    input.addEventListener("focus", function () {
+      focused = true;
+      render();
+    });
+
+    input.addEventListener("blur", function () {
+      focused = false;
+      render();
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (pending) {
+        return;
+      }
+      pending = true;
+      submit();
+    });
+
+    document.getElementById("forgot").addEventListener("click", function () {
+      hintEl.hidden = false;
+      input.focus();
+    });
+
+    startOverButton.addEventListener("click", reset);
+    document.getElementById("relock").addEventListener("click", reset);
+
+    input.focus();
+    render();
+  </script>
+</body>
+</html>

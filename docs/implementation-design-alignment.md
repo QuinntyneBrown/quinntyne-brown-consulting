@@ -46,8 +46,10 @@ remaining differences require design and evidence updates.
 ## Traceability and design-coverage gaps
 
 The existing detailed-design tree covers all identifiers from `L2-001` through
-`L2-040`. The current implementation also contains three surfaces that no L1 or
-L2 requirement names.
+`L2-043`; `L2-041` through `L2-043` are covered by
+[Gate workspace access](detailed-designs/platform/gate-workspace-access/). The
+current implementation also contains three surfaces that no L1 or L2 requirement
+names.
 
 | Implementation surface | Difference | Required disposition |
 |---|---|---|

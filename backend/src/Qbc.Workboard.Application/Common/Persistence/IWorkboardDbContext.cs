@@ -10,6 +10,7 @@ public interface IWorkboardDbContext
     IQueryable<Assistant> Assistants { get; }
     IQueryable<Sprint> Sprints { get; }
     IQueryable<StoryKeySequence> StoryKeySequences { get; }
+    IQueryable<WorkspaceAccess> WorkspaceAccess { get; }
     void Add<T>(T entity) where T : class;
     void Remove<T>(T entity) where T : class;
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

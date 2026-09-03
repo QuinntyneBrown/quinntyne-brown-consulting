@@ -13,12 +13,14 @@ import { filter } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FEEDBACK_SERVICE } from '../core/feedback.service.contract';
 import { WORKSPACE_SERVICE } from '../core/workspace.service.contract';
+import { StoryEditorComponent } from '../features/stories/story-editor.component';
 import { STORY_EDITOR_SERVICE } from '../features/stories/story-editor.service.contract';
 
 @Component({
   selector: 'app-shell',
   imports: [
     RouterOutlet,
+    StoryEditorComponent,
     QbcAppShellComponent,
     BrandComponent,
     ButtonComponent,

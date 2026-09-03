@@ -250,4 +250,43 @@ public sealed class DatabaseCommandIntegrationTests
             (2, 3, 7, 4, 3, 3, 1),
             (state.Initiatives, state.Epics, state.Stories, state.StoryTasks, state.Assistants, state.Sprints, state.StoryKeySequences));
     }
+
+    [Fact]
+    public async Task Initialize_without_seed_still_creates_the_workspace_passcode()
+    {
+        await using var cli = CliTestHost.Create();
+
+        var exitCode = await cli.InvokeAsync("database", "initialize");
+        var access = await cli.ReadWorkspaceAccessAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal((true, true, true), access);
+    }
+
+    [Fact]
+    public async Task Reset_with_force_recreates_the_workspace_passcode()
+    {
+        await using var cli = CliTestHost.Create();
+        await cli.AddInitiativeAsync(Guid.NewGuid(), "Remove me");
+
+        var exitCode = await cli.InvokeAsync("database", "reset", "--force");
+        var access = await cli.ReadWorkspaceAccessAsync();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal((true, true, true), access);
+    }
+
+    [Fact]
+    public async Task Azure_reset_recreates_the_workspace_passcode_in_place()
+    {
+        await using var cli = CliTestHost.Create();
+        await cli.InvokeAsync("database", "initialize", "--target", "azure");
+
+        var exitCode = await cli.InvokeAsync(
+            "database", "reset", "--force", "--target", "azure", "--confirm-database", cli.GetDatabaseName(DatabaseTarget.Azure));
+        var access = await cli.ReadWorkspaceAccessAsync(DatabaseTarget.Azure);
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal((true, true, true), access);
+    }
 }

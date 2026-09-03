@@ -14,6 +14,7 @@ export function createWorkboardApiState(): WorkboardApiState {
   const plannedSprintId = '40000000-0000-4000-8000-000000000015';
 
   return {
+    passcode: '2846',
     assistants: [
       {
         id: mayaId,

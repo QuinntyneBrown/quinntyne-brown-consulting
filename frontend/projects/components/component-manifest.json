@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "package": "@qbc/components",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "catalogSource": "../../../design-system/component-manifest.json",
   "catalogComponents": [
     "qbc-icon",
@@ -48,6 +48,7 @@
     "qbc-loading-state",
     "qbc-page",
     "qbc-page-header",
+    "qbc-passcode-input",
     "qbc-skip-link",
     "qbc-status-pill"
   ]

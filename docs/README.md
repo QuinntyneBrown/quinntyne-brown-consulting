@@ -31,6 +31,7 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 | Delivery | [Execute the active sprint](detailed-designs/delivery/execute-active-sprint/) | `L2-017`–`L2-020` |
 | Platform | [Serve the persistent workspace](detailed-designs/platform/serve-persistent-workspace/) | `L2-021`–`L2-023`, `L2-027`–`L2-030` |
 | Platform | [Render the Angular workspace](detailed-designs/platform/render-angular-workspace/) | `L2-031`–`L2-034` |
+| Platform | [Gate workspace access](detailed-designs/platform/gate-workspace-access/) | `L2-041`–`L2-043` |
 | Quality | [Deliver vertical slices with ATDD](detailed-designs/quality/deliver-with-atdd/) | `L2-035`–`L2-040` |
 
 Each detailed-design directory contains one `README.md`, five PlantUML sources,
@@ -41,6 +42,10 @@ and five rendered PNG diagrams.
 - [`mocks/index.html`](mocks/index.html), [`mocks/styles.css`](mocks/styles.css),
   and [`mocks/app.js`](mocks/app.js) form the original product interaction and
   visual baseline.
+- [`mocks/pin-auth.html`](mocks/pin-auth.html) is the self-contained interaction
+  study behind the passcode gate. It carries its own copy of the design tokens
+  and accepts any four digits; the working gate is described in
+  [Gate workspace access](detailed-designs/platform/gate-workspace-access/).
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and

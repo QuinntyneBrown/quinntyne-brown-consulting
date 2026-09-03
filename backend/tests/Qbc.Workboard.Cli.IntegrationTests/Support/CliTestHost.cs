@@ -70,6 +70,22 @@ public sealed class CliTestHost : IAsyncDisposable
             !pendingMigrations.Any());
     }
 
+    /// <summary>
+    /// Reads the single workspace access row, which the initializer must create on every
+    /// initialize and reset regardless of whether development data was seeded.
+    /// </summary>
+    public async Task<(bool Exists, bool HasPasscodeHash, bool HasSigningKey)> ReadWorkspaceAccessAsync(
+        DatabaseTarget target = DatabaseTarget.Local)
+    {
+        await using var scope = _host.Services.CreateAsyncScope();
+        SelectTarget(scope, target);
+        var db = scope.ServiceProvider.GetRequiredService<WorkboardDbContext>();
+        var access = await db.WorkspaceAccess.SingleOrDefaultAsync();
+        return access is null
+            ? (false, false, false)
+            : (true, !string.IsNullOrWhiteSpace(access.PasscodeHash), !string.IsNullOrWhiteSpace(access.SigningKey));
+    }
+
     public async Task<bool> InitiativeExistsAsync(Guid id, DatabaseTarget target = DatabaseTarget.Local)
     {
         await using var scope = _host.Services.CreateAsyncScope();

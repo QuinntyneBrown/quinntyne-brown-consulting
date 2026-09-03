@@ -1,6 +1,8 @@
 import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
 import { FEEDBACK_SERVICE } from './core/feedback.service.contract';
 import { FeedbackService } from './core/feedback.service';
+import { SESSION_SERVICE } from './core/session.service.contract';
+import { SessionService } from './core/session.service';
 import { WORKSPACE_SERVICE } from './core/workspace.service.contract';
 import { WorkspaceService } from './core/workspace.service';
 import { ASSISTANT_SERVICE } from './features/assistants/assistant.service.contract';
@@ -22,6 +24,7 @@ export function provideQbcWorkboard(): EnvironmentProviders {
   return makeEnvironmentProviders([
     { provide: FEEDBACK_SERVICE, useExisting: FeedbackService },
     { provide: WORKSPACE_SERVICE, useExisting: WorkspaceService },
+    { provide: SESSION_SERVICE, useExisting: SessionService },
     { provide: HIERARCHY_SERVICE, useExisting: HierarchyService },
     { provide: ASSISTANT_SERVICE, useExisting: AssistantService },
     { provide: STORY_SERVICE, useExisting: StoryService },

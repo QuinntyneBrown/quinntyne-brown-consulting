@@ -1,0 +1,168 @@
+:host {
+  display: block;
+}
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.field {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+}
+.boxes {
+  display: flex;
+  gap: 12px;
+}
+.box {
+  position: relative;
+  display: grid;
+  width: 60px;
+  height: 68px;
+  place-items: center;
+  border: 1px solid var(--qbc-line-strong);
+  border-radius: var(--qbc-r-control);
+  background: var(--qbc-panel);
+  transition:
+    border-color 180ms ease-out,
+    background 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+/* The masked digit. */
+.box::before {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--qbc-ink);
+  content: '';
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 180ms ease-out,
+    transform 180ms ease-out;
+}
+.box.is-filled::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* The caret sits in the next empty box while the field has focus. */
+.box.is-active {
+  border-color: var(--qbc-accent);
+  box-shadow: 0 0 0 3px var(--qbc-focus-ring-field);
+}
+.box.is-active::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 26px;
+  margin: -13px 0 0 -1px;
+  border-radius: 1px;
+  background: var(--qbc-accent);
+  content: '';
+  animation: qbc-passcode-caret 1.06s step-end infinite;
+}
+@keyframes qbc-passcode-caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 16px; /* keeps iOS from zooming the page on focus */
+  opacity: 0;
+}
+input:focus {
+  outline: none;
+}
+input:disabled {
+  cursor: not-allowed;
+}
+
+.field.is-invalid .box {
+  border-color: var(--qbc-danger);
+  background: var(--qbc-danger-soft);
+  box-shadow: none;
+}
+.field.is-invalid .box::before {
+  background: var(--qbc-danger);
+}
+.field.is-invalid .boxes {
+  animation: qbc-passcode-shake 460ms ease-out;
+}
+@keyframes qbc-passcode-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15%,
+  55% {
+    transform: translateX(-7px);
+  }
+  35%,
+  75% {
+    transform: translateX(7px);
+  }
+  90% {
+    transform: translateX(-3px);
+  }
+}
+
+.field.is-accepted .box {
+  border-color: var(--qbc-accent);
+  background: var(--qbc-accent-soft);
+  box-shadow: none;
+}
+.field.is-accepted .box::before {
+  background: var(--qbc-accent);
+}
+
+.field.is-disabled .box {
+  border-color: var(--qbc-line);
+  background: var(--qbc-soft);
+  box-shadow: none;
+}
+
+@media (max-width: 760px) {
+  .boxes {
+    gap: 10px;
+  }
+  .box {
+    width: 48px;
+    height: 58px;
+  }
+  .box.is-active::after {
+    height: 22px;
+    margin-top: -11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field.is-invalid .boxes,
+  .box.is-active::after {
+    animation: none;
+  }
+  .box,
+  .box::before {
+    transition: none;
+  }
+}

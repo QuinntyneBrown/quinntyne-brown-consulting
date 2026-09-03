@@ -23,12 +23,19 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   Workboard environment using OpenID Connect.
 - Explicit local and Azure database targets in the Workboard CLI, including an
   in-place guarded reset that preserves the Azure SQL free-offer resource.
+- A shared passcode gate in front of the whole workspace. Entering the passcode
+  returns a signed session credential that authorizes every API request for
+  seven days, repeated attempts from one address are throttled, and the passcode
+  hash and signing key are created with the database rather than configured.
+- An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
+  showing the entry, error, lockout, and unlocked states offline.
 
 ### Changed
 
-- The Azure Workboard is publicly accessible with anonymous read/write access;
-  visitor-facing Microsoft Entra authentication has been removed while
-  passwordless deployment and database identities remain in place.
+- The Azure Workboard now requires a shared passcode before any workspace record
+  can be read or changed. Deployment and database access remain passwordless and
+  identity-based; the gate replaces anonymous read/write access without
+  introducing individual user accounts.
 - The root README now documents the current SQL Server architecture, database
   CLI, combined publish, test suites, design system, and project limitations.
 - QBC Workboard now composes every button, form control, dialog, navigation

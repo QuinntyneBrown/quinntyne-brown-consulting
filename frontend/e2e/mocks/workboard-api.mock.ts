@@ -36,6 +36,17 @@ export class WorkboardApiMock {
     this.requestCount += 1;
 
     try {
+      if (method === 'POST' && path === '/api/access/unlock') {
+        const { passcode } = request.postDataJSON() as { passcode: string };
+        if (passcode !== this.state.passcode) {
+          return this.problem(route, 401, 'Workspace is locked', 'That passcode is not right.');
+        }
+        return this.json(route, 200, {
+          token: 'e2e-workspace-token',
+          expiresAtUtc: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+      }
+
       if (method === 'GET' && path === '/api/workspace') {
         return this.json(route, 200, {
           route: url.searchParams.get('route') ?? 'board',

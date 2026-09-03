@@ -1,0 +1,87 @@
+@startuml
+title UML sequence behaviour — Unlock the workspace
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "unlockedGuard" as guard
+  participant "UnlockPageComponent" as page
+  participant "SessionService" as session
+  participant "AccessTokenStore" as store
+  participant "accessTokenInterceptor" as interceptor
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "Rate limiter" as limiter
+  participant "AccessController" as controller
+  participant "JwtBearer middleware" as bearer
+  participant "ProblemDetailsExceptionHandler" as problem
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "UnlockWorkspaceCommandHandler" as handler
+  participant "Pbkdf2PasscodeHasher" as hasher
+  participant "JwtAccessTokenIssuer" as issuer
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "SQL Server workspace database" as db
+end box
+
+actor -> guard : Open a workspace route
+guard -> store : Read the held credential
+alt no valid credential
+  guard --> page : Redirect to the passcode screen per L2-043
+  actor -> page : Enter the complete passcode
+  page -> session : unlock(passcode)
+  session -> interceptor : POST api/access/unlock
+  interceptor -> limiter : Forward without a bearer header
+  alt attempts exhausted in the window
+    limiter --> page : 429 Problem Details per L2-042
+  else attempt permitted
+    limiter -> controller : Deliver the request
+    controller -> handler : Send UnlockWorkspaceCommand
+    handler -> db : Read the workspace access record
+    db --> handler : Passcode hash and signing key
+    handler -> hasher : Verify the passcode
+    alt passcode does not match
+      hasher --> handler : No match
+      handler -> problem : UnauthorizedException
+      problem --> page : 401 Problem Details per L2-041
+      page -> page : Announce the message and clear the field
+    else passcode matches
+      hasher --> handler : Match
+      handler -> issuer : Issue a credential from the signing key
+      issuer --> handler : Signed credential and expiry
+      handler --> controller : AccessTokenDto
+      controller --> session : 200 JSON
+      session -> store : Save the credential
+      page -> page : Show the confirmation
+      page --> actor : Display the board
+    end
+  end
+else credential held
+  guard --> actor : Display the requested route
+end
+
+actor -> page : Use a work-management resource
+page -> interceptor : Issue an API request
+interceptor -> bearer : Attach the bearer credential
+alt credential rejected
+  bearer -> problem : Challenge
+  problem --> interceptor : 401 Problem Details
+  interceptor -> store : Discard the credential
+  store --> guard : Return to the passcode screen
+else credential accepted
+  bearer --> page : 200 JSON
+end
+@enduml
