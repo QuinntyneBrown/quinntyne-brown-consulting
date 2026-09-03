@@ -7,7 +7,7 @@ global .NET tool.
 ## Solution structure
 
 | Project | Responsibility |
-|---|---|
+| --- | --- |
 | `src/Qbc.Workboard.Domain` | Entities, enumerations, and domain transitions |
 | `src/Qbc.Workboard.Application` | MediatR requests, handlers, validation, projections, and `IWorkboardDbContext` |
 | `src/Qbc.Workboard.Infrastructure` | EF Core SQL Server context, migrations, and initialization |
@@ -34,10 +34,13 @@ framework or persistence dependency.
 - .NET 10 SDK
 - SQL Server Express available as `.\SQLEXPRESS`
 
-Override `ConnectionStrings__Workboard` to use another accessible SQL Server
-instance. Integration-test fixtures use the local `SQLEXPRESS` instance with
-Windows authentication by default. Set `QBC_TEST_SQLSERVER_CONNECTION_STRING`
-to an instance-level connection string to run them against another SQL Server.
+Override `ConnectionStrings__Workboard` or
+`ConnectionStrings__WorkboardLocal` to use another accessible local SQL Server
+instance. `ConnectionStrings__WorkboardAzure` selects the deployed database for
+CLI commands. Integration-test fixtures use the local `SQLEXPRESS` instance
+with Windows authentication by default. Set
+`QBC_TEST_SQLSERVER_CONNECTION_STRING` to an instance-level connection string
+to run them against another SQL Server.
 
 ## Restore, build, and test
 
@@ -62,7 +65,7 @@ The API applies pending migrations at startup. Set `SeedDevelopmentData=true`
 only when representative records are wanted in an empty database.
 
 | Resource | Route |
-|---|---|
+| --- | --- |
 | Workspace bootstrap | `/api/workspace` |
 | Initiatives and hierarchy | `/api/initiatives` |
 | Epics | `/api/epics` |
@@ -80,10 +83,19 @@ or conflict status codes.
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database initialize
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database initialize --seed
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database reset --force
+
+az login --tenant c68758f6-70fb-41fe-8fb3-b3e35624a2a3
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database initialize --target azure
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database reset --target azure --force --confirm-database QbcWorkboard
 ```
 
-`database reset --force` permanently deletes the configured database. The force
-guard is enabled by default through `DatabaseReset:RequireForce`.
+The local target is the default. Local reset drops and recreates the selected
+database. Azure reset instead migrates the schema down and up so the free-offer
+database resource is preserved, and it always requires `--force` plus the exact
+database name. The Azure target uses `Active Directory Default`
+authentication, so the signed-in identity must have database access and its
+public IP must be allowed by the Azure SQL firewall. The local force guard is
+enabled by default through `DatabaseReset:RequireForce`.
 
 Create a local global-tool package with:
 

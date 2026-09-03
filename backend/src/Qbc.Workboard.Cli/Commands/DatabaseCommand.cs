@@ -6,7 +6,7 @@ public sealed class DatabaseCommand
 {
     public DatabaseCommand(InitializeDatabaseCommand initializeCommand, ResetDatabaseCommand resetCommand)
     {
-        Command = new Command("database", "Initialize or reset the local QBC Workboard database.");
+        Command = new Command("database", "Initialize or reset a QBC Workboard database.");
         Command.Subcommands.Add(initializeCommand.Command);
         Command.Subcommands.Add(resetCommand.Command);
     }

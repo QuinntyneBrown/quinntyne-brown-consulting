@@ -53,6 +53,14 @@ jobs:
         run: npm run test:e2e
       - name: Publish single-host application
         run: dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish
+      - name: Upload Workboard publish artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: workboard-publish
+          path: artifacts/publish
+          if-no-files-found: error
+          retention-days: 7
 
   design-system:
     name: Design-system contract and browser tests
@@ -73,3 +81,35 @@ jobs:
       - name: Validate contract and run browser tests
         working-directory: design-system
         run: npm test
+
+  deploy-workboard:
+    name: Deploy Workboard to Azure
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [verify, design-system]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-workboard-azure
+      cancel-in-progress: false
+    environment:
+      name: workboard-azure
+      url: https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download verified Workboard artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: workboard-publish
+          path: artifacts/publish
+      - name: Sign in to Azure with GitHub OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy Workboard
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          package: artifacts/publish

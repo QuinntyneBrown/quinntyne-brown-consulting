@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Qbc.Workboard.Infrastructure;
 
@@ -8,9 +9,11 @@ public static class InfrastructureDependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Workboard")
-            ?? throw new InvalidOperationException("Connection string 'Workboard' is required.");
-        services.AddDbContext<WorkboardDbContext>(options => options.UseSqlServer(connectionString));
+        services.TryAddScoped<IWorkboardConnectionStringProvider, ConfigurationWorkboardConnectionStringProvider>();
+        services.AddDbContext<WorkboardDbContext>((provider, options) =>
+            options.UseSqlServer(
+                provider.GetRequiredService<IWorkboardConnectionStringProvider>().GetConnectionString(),
+                sqlOptions => sqlOptions.EnableRetryOnFailure()));
         services.Configure<WorkboardDatabaseOptions>(options =>
         {
             options.SeedDevelopmentData = bool.TryParse(configuration["SeedDevelopmentData"], out var seed) && seed;

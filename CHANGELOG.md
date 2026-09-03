@@ -19,6 +19,10 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   catalog-parity manifest.
 - An automated component-boundary gate that rejects raw application controls,
   unexported components, catalog drift, and API/application coupling.
+- A gated GitHub Actions deployment from `main` to the zero-cost Azure
+  Workboard environment using OpenID Connect.
+- Explicit local and Azure database targets in the Workboard CLI, including an
+  in-place guarded reset that preserves the Azure SQL free-offer resource.
 
 ### Changed
 

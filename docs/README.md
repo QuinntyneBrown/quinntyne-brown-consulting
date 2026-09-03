@@ -1,15 +1,17 @@
 # QBC Workboard documentation
 
-This directory contains the product requirements, feature designs, acceptance
-evidence, and original interaction baseline for QBC Workboard.
+This directory contains the product requirements, feature designs, deployment
+planning, acceptance evidence, and original interaction baseline for QBC
+Workboard.
 
 ## Start here
 
 | Document | Audience | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | [L1 product requirements](specs/L1.md) | Product owners and contributors | Defines goals, scope, architecture constraints, and quality obligations |
 | [L2 detailed requirements](specs/L2.md) | Implementers and reviewers | Defines traceable requirements and Given/When/Then acceptance criteria |
 | [Detailed designs](detailed-designs/) | Implementers and maintainers | Describes each vertical feature with C4, class, and sequence diagrams |
+| [Cheapest Azure deployment plan](azure-deployment-plan.md) | Operators and maintainers | Defines the zero-cost App Service and Azure SQL deployment, safeguards, limits, and priced upgrade triggers |
 | [Acceptance evidence](acceptance-evidence.md) | Reviewers and release owners | Records selected ATDD red states and green regression evidence |
 | [Implementation alignment](implementation-design-alignment.md) | Maintainers | Tracks differences between current source and detailed designs |
 
@@ -19,7 +21,7 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 ## Detailed-design map
 
 | Subsystem | Feature design | Requirements |
-|---|---|---|
+| --- | --- | --- |
 | Workspace | [Navigate the workspace](detailed-designs/workspace/navigate-workspace/) | `L2-001`, `L2-024`–`L2-026` |
 | Work items | [Manage the work hierarchy](detailed-designs/work-items/manage-work-hierarchy/) | `L2-002`–`L2-004` |
 | Work items | [Manage stories and tasks](detailed-designs/work-items/manage-stories-and-tasks/) | `L2-005`–`L2-008` |

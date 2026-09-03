@@ -50,7 +50,7 @@ flowchart LR
 ```
 
 | Area | Responsibility |
-|---|---|
+| --- | --- |
 | `backend/src/Qbc.Workboard.Domain` | Entities, lifecycle rules, and enumerations |
 | `backend/src/Qbc.Workboard.Application` | MediatR commands, queries, handlers, validation, and persistence contracts |
 | `backend/src/Qbc.Workboard.Infrastructure` | EF Core mappings, SQL Server migrations, and database initialization |
@@ -113,7 +113,7 @@ The launcher waits for both servers, opens the application, writes logs under
 `eng/logs`, and stops its child processes on exit.
 
 | Service | URL |
-|---|---|
+| --- | --- |
 | Web application | `http://localhost:4200` |
 | API | `http://localhost:5050/api/workspace?route=board` |
 | OpenAPI document | `http://localhost:5050/openapi/v1.json` |
@@ -139,8 +139,10 @@ ASP.NET Core and the CLI read `appsettings.json`, environment variables, and the
 standard .NET configuration providers.
 
 | Setting | Default | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `ConnectionStrings__Workboard` | `Server=.\SQLEXPRESS;Database=QbcWorkboard;...` | Selects the SQL Server database |
+| `ConnectionStrings__WorkboardLocal` | Falls back to `ConnectionStrings__Workboard` | Overrides the CLI's `local` target |
+| `ConnectionStrings__WorkboardAzure` | Passwordless Workboard Azure SQL connection in the packaged CLI | Selects the CLI's `azure` target |
 | `SeedDevelopmentData` | `false` | Adds representative records when the database is empty |
 | `DatabaseReset__RequireForce` | `true` | Requires `--force` before the CLI deletes a database |
 | `AllowedOrigins__0` | unset | Adds an allowed CORS origin when the frontend uses a separate host |
@@ -151,7 +153,8 @@ environment-specific configuration or a secret store, not a committed file.
 
 ## Database maintenance CLI
 
-The CLI runs through the same infrastructure and migrations as the API.
+The CLI runs through the same infrastructure and migrations as the API. The
+`local` target is the default, so existing commands retain their behaviour.
 
 ```powershell
 # Preserve records and apply pending migrations
@@ -162,11 +165,22 @@ dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- d
 
 # Delete all records and recreate the database
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database reset --force
+
+# Use the deployed Azure database after signing in with Azure CLI
+az login --tenant c68758f6-70fb-41fe-8fb3-b3e35624a2a3
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database initialize --target azure
 ```
 
+The Azure connection is passwordless and uses the current Azure CLI, Visual
+Studio, or managed identity credential. The operator's current public IP must
+be present in the Azure SQL firewall. Override either target with
+`ConnectionStrings__WorkboardLocal` or `ConnectionStrings__WorkboardAzure`.
+
 > [!CAUTION]
-> `database reset --force` permanently deletes the configured database. Confirm
-> `ConnectionStrings__Workboard` before running it.
+> A local reset requires `--force` and recreates the local database. An Azure
+> reset preserves the Azure SQL resource but permanently removes its schema and
+> data; it requires both `--force` and the exact database confirmation:
+> `database reset --target azure --force --confirm-database QbcWorkboard`.
 
 Package and install the CLI as a global .NET tool when repeated use is needed:
 
@@ -228,6 +242,11 @@ The published API serves the Angular application and handles client-side route
 fallback. A deployment should provide a production SQL Server connection string
 and terminate TLS before exposing the application.
 
+On pushes to `main`, CI deploys the verified combined artifact to the free-tier
+Azure environment after both application and design-system jobs pass. See the
+[Azure deployment plan](docs/azure-deployment-plan.md) for resource names,
+identity configuration, cost controls, and operational limits.
+
 ## Design system
 
 The standalone catalog documents 35 native components, seven dialog families,
@@ -253,7 +272,7 @@ gate, browser tests, and GitHub Pages deployment.
 ## Documentation
 
 | Document | Purpose |
-|---|---|
+| --- | --- |
 | [Documentation index](docs/README.md) | Entry point for product and engineering documentation |
 | [L1 requirements](docs/specs/L1.md) | Product goals, architecture constraints, and scope boundaries |
 | [L2 requirements](docs/specs/L2.md) | Detailed requirements and Given/When/Then acceptance criteria |

@@ -10,7 +10,7 @@ public sealed class CliApplication
 
     public CliApplication(DatabaseCommand databaseCommand)
     {
-        _rootCommand = new RootCommand("Maintain the local QBC Workboard development environment.");
+        _rootCommand = new RootCommand("Maintain local and deployed QBC Workboard databases.");
         _rootCommand.Subcommands.Add(databaseCommand.Command);
     }
 

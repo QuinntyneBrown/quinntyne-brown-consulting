@@ -4,6 +4,7 @@ using Qbc.Workboard.Cli.Commands;
 using Qbc.Workboard.Cli.Console;
 using Qbc.Workboard.Cli.Options;
 using Qbc.Workboard.Cli.Services;
+using Qbc.Workboard.Infrastructure.Persistence;
 
 namespace Qbc.Workboard.Cli;
 
@@ -13,6 +14,9 @@ public static class CliDependencyInjection
     {
         services.AddOptions<DatabaseResetOptions>().BindConfiguration("DatabaseReset");
         services.TryAddSingleton<IConsoleWriter, SystemConsoleWriter>();
+        services.AddScoped<DatabaseTargetConnectionStringProvider>();
+        services.Replace(ServiceDescriptor.Scoped<IWorkboardConnectionStringProvider>(provider =>
+            provider.GetRequiredService<DatabaseTargetConnectionStringProvider>()));
         services.AddScoped<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         services.AddSingleton<InitializeDatabaseCommand>();
         services.AddSingleton<ResetDatabaseCommand>();
