@@ -218,7 +218,10 @@ function Wait-ForHttp {
         }
 
         try {
-            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 5 -ErrorAction Stop
+            # The API answers 401 until a passcode is entered, and a server that refuses a
+            # request has still started. Without -SkipHttpErrorCheck that 401 throws, lands in
+            # the catch below, and the wait never ends.
+            $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 5 -SkipHttpErrorCheck -ErrorAction Stop
             if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
                 Write-Host "`r    $Name is up.                    "
                 return
@@ -268,7 +271,7 @@ try {
 
     $dotnet = Resolve-Tool -Name 'dotnet' -Purpose 'build and run the API'
     $npm = Resolve-Tool -Name 'npm' -Purpose 'install frontend dependencies'
-    $npx = Resolve-Tool -Name 'npx' -Purpose 'run the Angular dev server'
+    $node = Resolve-Tool -Name 'node' -Purpose 'run the Angular dev server'
     Write-Detail "dotnet $(& $dotnet --version)"
     Write-Detail "node $(& node --version)"
 
@@ -307,8 +310,11 @@ try {
 
     Write-Step "Starting the Angular dev server on $frontendUrl"
     Write-Detail "Proxying /api and /openapi to $backendUrl"
-    $frontendEntry = Start-Tracked -Name 'frontend' -FilePath $npx -WorkingDirectory $frontendDir `
-        -Arguments @('ng', 'serve', 'qbc-workboard', '--port', $FrontendPort, '--proxy-config', $proxyConfig)
+    <#  Served through scripts/build-app.mjs rather than "ng serve" directly, because that is
+        where QBC_FRONTEND_VERSION and QBC_FRONTEND_COMMIT are defined. Without them the
+        application throws "QBC_FRONTEND_VERSION is not defined" on boot and renders nothing. #>
+    $frontendEntry = Start-Tracked -Name 'frontend' -FilePath $node -WorkingDirectory $frontendDir `
+        -Arguments @('scripts/build-app.mjs', 'serve', '--port', $FrontendPort, '--proxy-config', $proxyConfig)
     Wait-ForHttp -Url $frontendUrl -Name 'Angular dev server' -Entry $frontendEntry -TimeoutSeconds $TimeoutSeconds
 
     if (-not $NoBrowser) {

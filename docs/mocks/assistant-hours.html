@@ -527,12 +527,13 @@
         restores the samples. It shows the hours an assistant logged against a story, and how
         much of that time landed on work that is now done. Open it with
         <code>?assistantId=asst-noah</code>, <code>?assistantId=asst-maya</code>, or
-        <code>?assistantId=asst-amara&amp;empty</code> for the first-entry state. Time tracking
-        is outside the requirements baseline today (<code>docs/specs/L1.md</code>), and nothing
-        records who is acting, so the assistant is picked rather than assumed. Two facts the
-        product does not store are invented here: a time entry, and &ldquo;worked on&rdquo;
-        meaning &ldquo;has logged hours against&rdquo; &mdash; a story only ever remembers who
-        owns it now.
+        <code>?assistantId=asst-amara&amp;empty</code> for the first-entry state. The product has
+        since taken this up: <code>L1-015</code>, <code>L2-050</code>, and <code>L2-051</code>
+        specify it, and the shipped page lives at <code>/assistants/{assistantId}</code>. The
+        story-editor panel and the board card&rsquo;s quick action shown here are still only
+        proposals. Nothing records who is acting, so the assistant is picked rather than
+        assumed, and &ldquo;worked on&rdquo; means &ldquo;has logged hours against&rdquo;
+        &mdash; a story only ever remembers who owns it now.
       </p>
     </div>
   </div>

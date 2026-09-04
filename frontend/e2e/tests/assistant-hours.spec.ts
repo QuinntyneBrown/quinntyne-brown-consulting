@@ -116,6 +116,22 @@ test('L2-050 · Log hours against a story', { tag: '@smoke' }, async ({ page }) 
   });
 });
 
+test('L2-050 · Reject an invalid entry', async ({ page }) => {
+  const hours = new AssistantHoursPage(page);
+  await hours.openFromDirectory('Noah Williams');
+  // The form catches a missing amount before anything is sent.
+  await hours.expectEntryRejected('', 'Hours');
+  // A day holds 24 hours, which the browser has no way to know, so the server refuses 25.
+  await hours.expectEntryRejected('25', /quarter-hour increments/);
+  // Neither refusal wrote anything.
+  await hours.expectTotals({
+    hoursLogged: '12.5 h',
+    hoursOnCompleted: '6 h',
+    storiesWorkedOn: '2',
+    storiesCompleted: '1',
+  });
+});
+
 test('L2-050 · Delete an entry', async ({ page }) => {
   const workboard = new WorkboardPage(page);
   const hours = new AssistantHoursPage(page);

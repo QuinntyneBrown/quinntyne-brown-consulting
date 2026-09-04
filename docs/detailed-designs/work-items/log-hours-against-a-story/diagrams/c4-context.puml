@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Log hours against a story
+
+Person(consultant, "QBC consultant", "Records time spent and reviews where it went")
+System(workboard, "QBC Workboard", "Records hours against stories and reports them per assistant")
+
+Rel(consultant, workboard, "Logs and reviews hours using", "HTTPS")
+@enduml

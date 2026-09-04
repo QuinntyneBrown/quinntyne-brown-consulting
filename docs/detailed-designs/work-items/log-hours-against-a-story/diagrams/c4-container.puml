@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Log hours against a story
+
+Person(consultant, "QBC consultant", "Records how long work took")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Renders an assistant's hours and the logging dialog")
+  Container(api, "Workboard API", "ASP.NET Core", "Validates entries and projects the hours report")
+  ContainerDb(db, "Workspace database", "SQL Server Express", "Stores time entries against stories and assistants")
+}
+
+Rel(consultant, spa, "Uses", "HTTPS")
+Rel(spa, api, "Logs entries and reads an assistant's hours", "JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

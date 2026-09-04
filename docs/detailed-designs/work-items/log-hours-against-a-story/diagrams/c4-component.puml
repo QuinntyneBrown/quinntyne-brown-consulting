@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Log hours against a story
+
+Person(consultant, "QBC consultant", "Records time spent and reviews where it went")
+Container_Boundary(spa, "Angular web application") {
+  Component(page, "AssistantHoursPageComponent", "Angular component", "Shows totals, completion share, and stories worked on")
+  Component(hours, "IAssistantHoursService", "Injection-token contract", "Exposes the hours report and write operations")
+  Component(entries, "ITimeEntryService", "Injection-token contract", "Creates and removes entries")
+  Component(assistants, "IAssistantService", "Injection-token contract", "Reads one assistant's hours report")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(entryController, "TimeEntriesController", "ASP.NET Core controller", "Exposes the entry resource")
+  Component(assistantController, "AssistantsController", "ASP.NET Core controller", "Exposes the hours report")
+  Component(handlers, "Time entry handlers", "MediatR handlers", "Validate, persist, and remove entries")
+  Component(projection, "AssistantHoursProjection", "Projection", "Groups entries by story and sums them")
+  Component(domain, "TimeEntry", "Domain entity", "Holds story, assistant, date, hours, and note")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores time entries")
+}
+
+Rel(consultant, page, "Uses")
+Rel(page, hours, "Reads and writes through")
+Rel(hours, entries, "Logs and deletes through")
+Rel(hours, assistants, "Reads the report through")
+Rel(entries, entryController, "Calls", "JSON/HTTPS")
+Rel(assistants, assistantController, "Calls", "JSON/HTTPS")
+Rel(entryController, handlers, "Sends commands")
+Rel(assistantController, projection, "Queries through a handler")
+Rel(handlers, domain, "Creates and removes")
+Rel(projection, db, "Reads", "EF Core")
+Rel(handlers, db, "Reads and writes", "EF Core")
+@enduml

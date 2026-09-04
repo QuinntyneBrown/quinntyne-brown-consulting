@@ -127,6 +127,20 @@ export class AssistantHoursPage {
     await dialog.getByRole('button', { name: 'Cancel' }).click();
   }
 
+  /**
+   * A refusal names the field, whichever boundary catches it: the form when a value is missing,
+   * and the server when an amount the browser allows is more time than a day holds.
+   */
+  async expectEntryRejected(hours: string, message: string | RegExp): Promise<void> {
+    await this.page.getByRole('button', { name: 'Log hours', exact: true }).first().click();
+    const dialog = this.page.getByRole('dialog', { name: 'Log hours' });
+    await dialog.getByLabel('Hours *').fill(hours);
+    await dialog.getByRole('button', { name: 'Log hours', exact: true }).click();
+    await expect(this.page.getByRole('alert').first()).toContainText(message);
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+  }
+
   async deleteEntry(title: string, hours: string): Promise<void> {
     await this.row(title)
       .locator('.entry')
