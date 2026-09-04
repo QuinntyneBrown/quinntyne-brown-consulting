@@ -84,6 +84,25 @@ and five rendered PNG diagrams.
   [Write an epic summary](detailed-designs/work-items/edit-epic-summary/). The
   study loads Monaco from a CDN, while the working editor bundles it with the
   application; neither offers a plainer field when the editor cannot be loaded.
+- [`mocks/work-item-attachments.html`](mocks/work-item-attachments.html) is the
+  self-contained interaction study for attaching files to a work item: drag and
+  drop anywhere on the page, the file picker, pasting an image from the
+  clipboard, the upload in flight with its cancel, and the four reasons a file is
+  turned away — a blocked program, an empty file or folder, a file over 25 MB, and
+  a name already attached here. An initiative, an epic, and a story all take the
+  same list, so the page switches between them from one picker; open it with
+  `?itemId=init-planning`, `?itemId=epic-portal`, `?itemId=story-101`, or
+  `?itemId=story-102&empty` for the first-file state.
+
+  Attachments sit outside the requirements baseline: `L1.md` §5 excludes them
+  alongside comments and notifications, so every behavior in the study is a
+  proposal rather than a rendering of shipped work. It invents three things a
+  specification would have to settle — one attachment list per work item with no
+  inheritance down the hierarchy, so an epic does not show its initiative's files;
+  refusing a duplicate name rather than versioning it; and, since `L1-013`
+  establishes no individual identity, recording the uploader as the assistant
+  named at the time rather than a signed-in person.
+
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and

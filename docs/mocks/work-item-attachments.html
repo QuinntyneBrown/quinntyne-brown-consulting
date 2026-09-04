@@ -1,0 +1,1076 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaction study for attaching files to an initiative, an epic, or a story in QBC Workboard: drag and drop, the file picker, and what happens to a file that cannot be accepted.">
+  <title>Work item attachments &middot; QBC Workboard</title>
+  <style>
+    /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
+       subset this page uses is repeated here, so the mock stays one self-contained
+       file and never touches the visual baseline in docs/mocks/styles.css. The
+       --qbc-* names are used rather than the older --ink/--accent names in
+       styles.css, so this mock matches the design system and the Angular app. */
+    :root {
+      color-scheme: light;
+
+      --qbc-ink:        #18201d;
+      --qbc-ink-soft:   #68726d;
+      --qbc-ink-faint:  #87918c;
+
+      --qbc-line:        #e4e9e6;
+      --qbc-line-strong: #d8dfdb;
+      --qbc-line-card:   #e8ece9;
+
+      --qbc-panel:          #ffffff;
+      --qbc-soft:           #f5f7f5;
+      --qbc-surface-raised: #fbfcfb;
+      --qbc-surface-hover:  #fcfdfc;
+
+      --qbc-accent:      #276749;
+      --qbc-accent-dark: #184c35;
+      --qbc-accent-soft: #e8f3ed;
+
+      --qbc-blue:   #315f88;  --qbc-blue-soft:   #eaf1f8;
+      --qbc-amber:  #8a6100;  --qbc-amber-soft:  #fff4d9;
+      --qbc-danger: #a33a37;  --qbc-danger-soft: #faeceb;
+
+      --qbc-nav-ink:          #5e6863;
+      --qbc-nav-icon:         #83908a;
+      --qbc-placeholder:      #a0a9a4;
+      --qbc-focus-ring-field: rgba(39, 103, 73, .1);
+      --qbc-scrim:            rgba(18, 25, 22, .4);
+
+      --qbc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      /* The design system has no monospace token yet. A file size has to line up digit
+         under digit to be compared down the column, so this study proposes the same
+         value the assistant-hours and initiative-editor studies propose for it. */
+      --qbc-font-mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+      --qbc-fs-2xs:  11px;
+      --qbc-fs-xs:   12px;
+      --qbc-fs-sm:   13px;
+      --qbc-fs-md:   14px;
+      --qbc-fs-base: 15px;
+      --qbc-fs-lg:   16px;
+      --qbc-fs-2xl:  18px;
+      --qbc-fs-3xl:  21px;
+      --qbc-fs-4xl:  22px;
+
+      --qbc-lh-snug: 1.4;
+      --qbc-lh-base: 1.5;
+
+      --qbc-fw-medium:   600;
+      --qbc-fw-nav:      620;
+      --qbc-fw-button:   680;
+      --qbc-fw-semibold: 700;
+      --qbc-fw-bold:     750;
+      --qbc-fw-heavy:    800;
+
+      --qbc-tracking-heading: -.02em;
+      --qbc-tracking-key:     .04em;
+      --qbc-tracking-brand:   .06em;
+      --qbc-tracking-eyebrow: .1em;
+
+      --qbc-s-1: 4px;   --qbc-s-2: 8px;   --qbc-s-3: 12px;  --qbc-s-4: 16px;
+      --qbc-s-5: 20px;  --qbc-s-6: 24px;  --qbc-s-7: 32px;  --qbc-s-8: 40px;
+
+      --qbc-r-2xs:     6px;
+      --qbc-r-sm:      8px;
+      --qbc-r-control: 9px;
+      --qbc-r-md:      10px;
+      --qbc-r-lg:      11px;
+      --qbc-r-xl:      14px;
+      --qbc-r-2xl:     16px;
+      --qbc-r-pill:    20px;
+      --qbc-r-round:   50%;
+
+      --qbc-shadow-card:    0 2px 3px rgba(24, 32, 29, .025);
+      --qbc-shadow-overlay: 0 18px 50px rgba(24, 32, 29, .12);
+
+      --qbc-dur-fast: 180ms;
+      --qbc-dur-base: 200ms;
+      --qbc-ease: ease-out;
+
+      --qbc-sidebar-w: 224px;
+      --qbc-topbar-h:  82px;
+      --qbc-control-h: 42px;
+      --qbc-button-h:  40px;
+
+      --qbc-z-sidebar: 20;
+      --qbc-z-drag:    80;
+      --qbc-z-toast:   90;
+      --qbc-z-skip:    100;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :root { --qbc-dur-fast: 1ms; --qbc-dur-base: 1ms; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* The class rules below set display, which would otherwise beat the user
+       agent's [hidden] rule and leave hidden rows on screen. */
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font-family: var(--qbc-font-sans);
+      font-size: var(--qbc-fs-base);
+      line-height: var(--qbc-lh-base);
+    }
+
+    h1, h2, h3 { margin: 0; letter-spacing: var(--qbc-tracking-heading); }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .skip-link {
+      position: absolute;
+      z-index: var(--qbc-z-skip);
+      top: var(--qbc-s-2); left: var(--qbc-s-2);
+      padding: var(--qbc-s-2) var(--qbc-s-3);
+      transform: translateY(-200%);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-panel);
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-button);
+      text-decoration: none;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* ---- Buttons, copied in behaviour from docs/mocks/styles.css --------- */
+    .primary-button, .secondary-button, .quiet-button, .danger-button {
+      display: inline-flex;
+      min-height: var(--qbc-button-h);
+      align-items: center;
+      justify-content: center;
+      gap: var(--qbc-s-2);
+      padding: 0 var(--qbc-s-4);
+      border: 1px solid transparent;
+      border-radius: var(--qbc-r-control);
+      font: inherit;
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+      transition: background var(--qbc-dur-fast) var(--qbc-ease), color var(--qbc-dur-fast) var(--qbc-ease);
+    }
+    .primary-button { color: var(--qbc-panel); background: var(--qbc-accent); }
+    .primary-button:hover { background: var(--qbc-accent-dark); }
+    .secondary-button { border-color: var(--qbc-line-strong); color: var(--qbc-ink); background: var(--qbc-panel); }
+    .secondary-button:hover { background: var(--qbc-soft); }
+    .quiet-button { padding: 0 var(--qbc-s-3); color: var(--qbc-ink-soft); background: none; }
+    .quiet-button:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
+    .danger-button { border-color: var(--qbc-danger); color: var(--qbc-panel); background: var(--qbc-danger); }
+    .danger-button:hover { background: #8d2f2c; }
+    .icon-button {
+      display: inline-grid;
+      width: 34px; height: 34px;
+      border: 0;
+      border-radius: var(--qbc-r-sm);
+      background: none;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xl);
+      place-items: center;
+      cursor: pointer;
+    }
+    .icon-button:hover { background: var(--qbc-soft); }
+    .row-actions button { min-height: 32px; padding: 0 var(--qbc-s-3); font-size: var(--qbc-fs-xs); }
+    :focus-visible { outline: 2px solid var(--qbc-accent); outline-offset: 2px; }
+
+    input, select {
+      width: 100%;
+      min-height: var(--qbc-control-h);
+      padding: 0 var(--qbc-s-3);
+      border: 1px solid var(--qbc-line-strong);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font: inherit;
+      font-size: var(--qbc-fs-md);
+    }
+    input::placeholder { color: var(--qbc-placeholder); }
+    input:focus, select:focus { outline: 0; border-color: var(--qbc-accent); box-shadow: 0 0 0 3px var(--qbc-focus-ring-field); }
+
+    /* ---- Shell ----------------------------------------------------------- */
+    .app-shell { display: flex; min-height: 100dvh; }
+
+    .sidebar {
+      display: flex;
+      width: var(--qbc-sidebar-w);
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: var(--qbc-s-5) var(--qbc-s-4);
+      border-right: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+    }
+
+    .brand { display: flex; gap: var(--qbc-s-3); align-items: center; margin-bottom: var(--qbc-s-7); color: inherit; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      width: 32px; height: 32px;
+      border-radius: var(--qbc-r-md);
+      color: var(--qbc-panel);
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-bold);
+      place-items: center;
+    }
+    .brand strong { display: block; font-size: var(--qbc-fs-lg); line-height: 1.1; }
+    .brand small { display: block; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); letter-spacing: var(--qbc-tracking-brand); text-transform: uppercase; }
+
+    .nav-list { display: grid; gap: 2px; }
+    .nav-list a {
+      display: flex;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      padding: var(--qbc-s-2) var(--qbc-s-3);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-nav-ink);
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-nav);
+      text-decoration: none;
+    }
+    .nav-list a span { color: var(--qbc-nav-icon); }
+    .nav-list a:hover { background: var(--qbc-soft); }
+    .nav-list a.active { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .nav-list a.active span { color: var(--qbc-accent); }
+
+    .sidebar-foot { margin-top: auto; color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); }
+    .sidebar-foot p { margin: 0; }
+
+    .workspace { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+
+    .topbar {
+      display: flex;
+      min-height: var(--qbc-topbar-h);
+      gap: var(--qbc-s-4);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7));
+      border-bottom: 1px solid var(--qbc-line);
+    }
+    .breadcrumb { overflow: hidden; margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); text-overflow: ellipsis; white-space: nowrap; }
+    .breadcrumb b { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .breadcrumb a:hover { color: var(--qbc-accent-dark); text-decoration: underline; }
+    .topbar-actions { display: flex; gap: var(--qbc-s-2); align-items: center; }
+    .topbar-actions select { min-width: 280px; }
+
+    main { flex: 1; padding: var(--qbc-s-6) clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7)); }
+    .page { max-width: 1080px; margin-inline: auto; }
+
+    /* ---- The work item the files hang off --------------------------------- */
+    .item-head {
+      display: flex;
+      gap: var(--qbc-s-4);
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: var(--qbc-s-5);
+      border-bottom: 1px solid var(--qbc-line);
+    }
+    .item-head h1 { margin-top: var(--qbc-s-2); font-size: var(--qbc-fs-4xl); }
+    .item-context { margin: var(--qbc-s-1) 0 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+    .item-badges { display: flex; gap: var(--qbc-s-2); align-items: center; }
+    .story-key { color: var(--qbc-ink-faint); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); letter-spacing: var(--qbc-tracking-key); }
+
+    .pill { display: inline-flex; padding: 3px var(--qbc-s-2); border-radius: var(--qbc-r-pill); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-semibold); }
+    /* One tone per level of the hierarchy, so the kind of thing a file is hanging
+       off is readable without reading the word. */
+    .pill.initiative { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .pill.epic { color: var(--qbc-blue); background: var(--qbc-blue-soft); }
+    .pill.story { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
+    .pill.failed { color: var(--qbc-danger); background: var(--qbc-danger-soft); }
+
+    /* ---- Drop target ------------------------------------------------------ */
+    /* The whole page accepts a drop, so the zone is a target rather than the only
+       target: it is where the pointer is invited, not the edge of what works. */
+    .dropzone {
+      display: grid;
+      margin: var(--qbc-s-5) 0 var(--qbc-s-4);
+      padding: var(--qbc-s-7) var(--qbc-s-5);
+      border: 1px dashed var(--qbc-line-strong);
+      border-radius: var(--qbc-r-2xl);
+      background: var(--qbc-surface-raised);
+      justify-items: center;
+      text-align: center;
+      transition: border-color var(--qbc-dur-fast) var(--qbc-ease), background var(--qbc-dur-fast) var(--qbc-ease);
+    }
+    .dropzone-mark {
+      display: grid;
+      width: 44px; height: 44px;
+      margin-bottom: var(--qbc-s-3);
+      border-radius: var(--qbc-r-xl);
+      color: var(--qbc-accent);
+      background: var(--qbc-accent-soft);
+      font-size: var(--qbc-fs-3xl);
+      place-items: center;
+    }
+    .dropzone h2 { font-size: var(--qbc-fs-lg); }
+    .dropzone p { margin: var(--qbc-s-1) 0 var(--qbc-s-4); max-width: 52ch; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+    .dropzone-rules { margin: var(--qbc-s-3) 0 0; color: var(--qbc-ink-faint); font-size: var(--qbc-fs-xs); }
+    body.is-dragging .dropzone { border-color: var(--qbc-accent); border-style: solid; background: var(--qbc-accent-soft); }
+
+    /* A file dragged over the window is a page-wide gesture, so the page answers it
+       page-wide rather than only where the pointer happens to be. */
+    .drag-veil {
+      position: fixed;
+      z-index: var(--qbc-z-drag);
+      inset: 0;
+      display: grid;
+      background: rgba(232, 243, 237, .82);
+      place-items: center;
+      pointer-events: none;
+    }
+    .drag-veil strong { padding: var(--qbc-s-4) var(--qbc-s-6); border: 1px solid var(--qbc-accent); border-radius: var(--qbc-r-2xl); color: var(--qbc-accent-dark); background: var(--qbc-panel); font-size: var(--qbc-fs-2xl); box-shadow: var(--qbc-shadow-overlay); }
+
+    /* ---- Files that were not accepted ------------------------------------- */
+    .reject-panel {
+      margin-bottom: var(--qbc-s-4);
+      padding: var(--qbc-s-3) var(--qbc-s-4);
+      border: 1px solid #f0d5d3;
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-danger-soft);
+      color: var(--qbc-danger);
+      font-size: var(--qbc-fs-sm);
+    }
+    .reject-panel header { display: flex; gap: var(--qbc-s-3); align-items: center; justify-content: space-between; }
+    .reject-panel h2 { font-size: var(--qbc-fs-md); }
+    .reject-panel ul { margin: var(--qbc-s-2) 0 0; padding-left: var(--qbc-s-5); }
+    .reject-panel li + li { margin-top: 2px; }
+    .reject-panel .icon-button { color: var(--qbc-danger); }
+    .reject-panel .icon-button:hover { background: rgba(163, 58, 55, .1); }
+
+    /* ---- List of what is attached ----------------------------------------- */
+    .toolbar { display: flex; gap: var(--qbc-s-3); align-items: center; justify-content: space-between; margin-bottom: var(--qbc-s-3); }
+    .toolbar h2 { font-size: var(--qbc-fs-md); }
+    .toolbar-meta { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+    .toolbar select { width: auto; min-height: 34px; font-size: var(--qbc-fs-sm); }
+
+    .file-list { display: grid; gap: var(--qbc-s-2); margin: 0; padding: 0; list-style: none; }
+    .file-row {
+      display: grid;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      padding: var(--qbc-s-3) var(--qbc-s-4);
+      border: 1px solid var(--qbc-line-card);
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-panel);
+      box-shadow: var(--qbc-shadow-card);
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+    }
+    .file-row.is-failed { border-color: #f0d5d3; background: var(--qbc-danger-soft); }
+    .file-row:hover { background: var(--qbc-surface-hover); }
+    .file-row.is-failed:hover { background: var(--qbc-danger-soft); }
+
+    /* The badge carries the extension rather than a picture of a document: the
+       three letters are the part someone actually reads. */
+    .file-mark {
+      display: grid;
+      width: 40px; height: 40px;
+      border-radius: var(--qbc-r-md);
+      color: var(--qbc-ink-soft);
+      background: var(--qbc-soft);
+      font-family: var(--qbc-font-mono);
+      font-size: var(--qbc-fs-2xs);
+      font-weight: var(--qbc-fw-bold);
+      place-items: center;
+      text-transform: uppercase;
+    }
+    .file-mark.image { color: var(--qbc-blue); background: var(--qbc-blue-soft); }
+    .file-mark.doc { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .file-mark.sheet { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
+    .file-mark.archive { color: var(--qbc-danger); background: var(--qbc-danger-soft); }
+    .file-mark img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+
+    .file-main { min-width: 0; }
+    .file-main strong { display: block; overflow: hidden; font-size: var(--qbc-fs-md); font-weight: var(--qbc-fw-medium); text-overflow: ellipsis; white-space: nowrap; }
+    .file-meta { margin: 2px 0 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+    .file-size { font-family: var(--qbc-font-mono); font-variant-numeric: tabular-nums; }
+    .file-error { margin: var(--qbc-s-1) 0 0; color: var(--qbc-danger); font-size: var(--qbc-fs-xs); }
+    .row-actions { display: flex; gap: var(--qbc-s-1); }
+
+    .progress-track { overflow: hidden; height: 6px; margin-top: var(--qbc-s-2); border-radius: var(--qbc-r-pill); background: var(--qbc-soft); }
+    .progress-bar { width: 0; height: 100%; border-radius: var(--qbc-r-pill); background: var(--qbc-accent); transition: width var(--qbc-dur-base) linear; }
+
+    /* ---- Empty state ------------------------------------------------------ */
+    .empty-state {
+      padding: var(--qbc-s-7) var(--qbc-s-6);
+      border: 1px solid var(--qbc-line-card);
+      border-radius: var(--qbc-r-2xl);
+      background: var(--qbc-surface-raised);
+      text-align: center;
+    }
+    .empty-state h2 { margin-bottom: var(--qbc-s-2); font-size: var(--qbc-fs-lg); }
+    .empty-state p { margin: 0 auto; max-width: 48ch; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+
+    /* ---- Dialog and toast -------------------------------------------------- */
+    dialog { padding: 0; border: 0; border-radius: var(--qbc-r-2xl); box-shadow: var(--qbc-shadow-overlay); }
+    dialog::backdrop { background: var(--qbc-scrim); }
+    .dialog-shell { width: min(520px, calc(100vw - 32px)); }
+    .dialog-head { display: flex; gap: var(--qbc-s-3); align-items: flex-start; justify-content: space-between; padding: var(--qbc-s-6) var(--qbc-s-6) var(--qbc-s-4); }
+    .dialog-head h2 { font-size: var(--qbc-fs-2xl); }
+    .dialog-head p { margin: var(--qbc-s-1) 0 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); }
+    .dialog-body { padding: 0 var(--qbc-s-6); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+    .dialog-actions { display: flex; gap: var(--qbc-s-2); justify-content: flex-end; padding: var(--qbc-s-5) var(--qbc-s-6) var(--qbc-s-6); }
+
+    .preview-dialog { width: min(720px, calc(100vw - 32px)); }
+    .preview-body { padding: 0 var(--qbc-s-6); }
+    .preview-frame { display: grid; padding: var(--qbc-s-4); border-radius: var(--qbc-r-xl); background: var(--qbc-soft); place-items: center; }
+    .preview-frame img { max-width: 100%; max-height: 55dvh; border-radius: var(--qbc-r-md); }
+    .preview-frame .file-mark { width: 72px; height: 72px; font-size: var(--qbc-fs-lg); }
+
+    .toast-region { position: fixed; z-index: var(--qbc-z-toast); right: var(--qbc-s-5); bottom: var(--qbc-s-5); display: grid; gap: var(--qbc-s-2); }
+    .toast { display: flex; gap: var(--qbc-s-4); align-items: center; margin: 0; padding: var(--qbc-s-3) var(--qbc-s-4); border-radius: var(--qbc-r-md); color: var(--qbc-panel); background: var(--qbc-ink); font-size: var(--qbc-fs-sm); box-shadow: var(--qbc-shadow-overlay); }
+    .toast button { border: 0; background: none; color: #9fd8bb; font: inherit; font-weight: var(--qbc-fw-button); cursor: pointer; text-decoration: underline; }
+
+    .mock-note {
+      margin: 0;
+      padding: var(--qbc-s-4) clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7));
+      border-top: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-xs);
+    }
+    .mock-note code { padding: 1px 5px; border-radius: var(--qbc-r-2xs); background: var(--qbc-soft); font-family: var(--qbc-font-mono); }
+
+    /* ---- Responsive --------------------------------------------------------- */
+    @media (max-width: 1000px) {
+      .app-shell { display: block; }
+      .sidebar { width: auto; flex-direction: row; align-items: center; gap: var(--qbc-s-6); border-right: 0; border-bottom: 1px solid var(--qbc-line); }
+      .brand { margin-bottom: 0; }
+      .nav-list { display: flex; flex-wrap: wrap; }
+      .sidebar-foot { display: none; }
+    }
+    @media (max-width: 760px) {
+      .topbar { min-height: 0; flex-wrap: wrap; padding-block: var(--qbc-s-3); }
+      .topbar-actions, .topbar-actions select { width: 100%; min-width: 0; }
+      .item-head { display: block; }
+      .item-head .primary-button { margin-top: var(--qbc-s-3); }
+      .dropzone { padding: var(--qbc-s-5) var(--qbc-s-4); }
+      /* The row keeps the badge and the name side by side and drops the actions
+         beneath, so a long filename still gets the full width. */
+      .file-row { grid-template-columns: 40px minmax(0, 1fr); }
+      .row-actions { grid-column: 1 / -1; }
+      .toolbar { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to the attachments</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="index.html#board" aria-label="QBC Workboard home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span><strong>QBC</strong><small>Workboard</small></span>
+      </a>
+
+      <nav class="nav-list" aria-label="Workspace">
+        <a href="index.html#board"><span aria-hidden="true">&#9638;</span> Board</a>
+        <a href="index.html#backlog"><span aria-hidden="true">&#8801;</span> Backlog</a>
+        <a href="index.html#hierarchy" class="active" aria-current="page"><span aria-hidden="true">&#8984;</span> Initiatives</a>
+        <a href="index.html#assistants"><span aria-hidden="true">&#9678;</span> Assistants</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p>Quinntyne Brown<br>Consulting Inc.</p>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <p class="breadcrumb"><a href="index.html#hierarchy">Workspace</a> / <span id="breadcrumb-kind">Initiative</span> / <b id="breadcrumb-name">Zero-friction sprint planning</b></p>
+        <div class="topbar-actions">
+          <label class="visually-hidden" for="item-picker">Work item</label>
+          <select id="item-picker"></select>
+        </div>
+      </header>
+
+      <main id="main-content" tabindex="-1">
+        <section class="page">
+          <div class="item-head">
+            <div>
+              <div class="item-badges">
+                <span class="pill" id="item-kind">Initiative</span>
+                <span class="story-key" id="item-key" hidden></span>
+              </div>
+              <h1 id="item-name">Zero-friction sprint planning</h1>
+              <p class="item-context" id="item-context">4 epics &middot; 18 stories</p>
+            </div>
+            <button class="primary-button" type="button" id="attach-button">
+              <span aria-hidden="true">&#8853;</span> Attach files
+            </button>
+          </div>
+
+          <!-- The picker is a real input rather than a styled label, so the keyboard
+               and the file dialog behave exactly as the browser intends. -->
+          <input class="visually-hidden" id="file-input" type="file" multiple>
+
+          <section class="dropzone" id="dropzone" aria-labelledby="dropzone-title" aria-describedby="dropzone-rules">
+            <span class="dropzone-mark" aria-hidden="true">&#8681;</span>
+            <h2 id="dropzone-title">Drop files here</h2>
+            <p>Drag them anywhere on this page, or choose them from your computer. Everything
+              attached here belongs to this work item and travels with it.</p>
+            <button class="secondary-button" type="button" id="choose-button">Choose files</button>
+            <p class="dropzone-rules" id="dropzone-rules">Up to 25&nbsp;MB per file. Programs and folders are not accepted. Pasting an image with <kbd>Ctrl</kbd>&nbsp;+&nbsp;<kbd>V</kbd> attaches it too.</p>
+          </section>
+
+          <div id="reject-region" aria-live="assertive"></div>
+
+          <div class="toolbar">
+            <div>
+              <h2 id="list-title">Attached files</h2>
+              <p class="toolbar-meta" id="list-meta" role="status">Nothing attached yet.</p>
+            </div>
+            <div>
+              <label class="visually-hidden" for="sort-select">Order</label>
+              <select id="sort-select">
+                <option value="recent">Newest first</option>
+                <option value="name">Name</option>
+                <option value="size">Largest first</option>
+              </select>
+            </div>
+          </div>
+
+          <ul class="file-list" id="file-list" aria-labelledby="list-title"></ul>
+
+          <div class="empty-state" id="empty-state" hidden>
+            <h2>No files attached yet</h2>
+            <p id="empty-copy">Drop the brief, the diagram, or the export that explains this work,
+              and whoever picks it up next will find it here.</p>
+          </div>
+        </section>
+      </main>
+
+      <p class="mock-note">
+        Interaction study. Nothing is persisted and nothing is uploaded: files stay in this tab
+        only, the progress bar is simulated, and reloading restores the samples. It shows
+        attaching files to an initiative, an epic, or a story &mdash; drag and drop, the file
+        picker, paste, what an upload looks like while it runs, and the four reasons a file is
+        turned away. Open it with <code>?itemId=init-planning</code>,
+        <code>?itemId=epic-portal</code>, <code>?itemId=story-101</code>, or
+        <code>?itemId=story-102&amp;empty</code> for the first-file state. Attachments sit
+        outside the requirements baseline today &mdash; <code>L1.md</code> &sect;5 excludes them
+        &mdash; so every behaviour here is a proposal. The study assumes one attachment list per
+        work item, no inheritance down the hierarchy (an epic does not show its initiative&rsquo;s
+        files), and, since <code>L1-013</code> establishes no individual identity, the uploader is
+        recorded as the assistant named at the time rather than a signed-in person.
+      </p>
+    </div>
+  </div>
+
+  <dialog id="remove-dialog" aria-labelledby="remove-title">
+    <div class="dialog-shell">
+      <header class="dialog-head">
+        <div>
+          <h2 id="remove-title">Remove this file?</h2>
+          <p id="remove-subtitle">It is detached from this work item.</p>
+        </div>
+        <button class="icon-button" type="button" data-close aria-label="Close dialog">&times;</button>
+      </header>
+      <div class="dialog-body"><p id="remove-copy"></p></div>
+      <footer class="dialog-actions">
+        <button class="secondary-button" type="button" data-close>Cancel</button>
+        <button class="danger-button" type="button" id="remove-confirm">Remove</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="preview-dialog" id="preview-dialog" aria-labelledby="preview-title">
+    <div class="dialog-shell">
+      <header class="dialog-head">
+        <div>
+          <h2 id="preview-title">Preview</h2>
+          <p id="preview-subtitle"></p>
+        </div>
+        <button class="icon-button" type="button" data-close aria-label="Close preview">&times;</button>
+      </header>
+      <div class="preview-body"><div class="preview-frame" id="preview-frame"></div></div>
+      <footer class="dialog-actions">
+        <button class="secondary-button" type="button" data-close>Close</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="false"></div>
+
+  <script>
+    /* ---- Sample content ----------------------------------------------------
+       The work items below stand in for what the API returns today. The
+       attachments stand in for a record the product does not have: the study is
+       what an attachment would be, not a rendering of one that exists. */
+    const WORK_ITEMS = [
+      { id: "init-planning", kind: "initiative", name: "Zero-friction sprint planning", context: "4 epics · 18 stories" },
+      { id: "init-delivery", kind: "initiative", name: "Client Delivery Excellence", context: "3 epics · 12 stories" },
+      { id: "epic-portal", kind: "epic", name: "Client delivery portal", context: "Client Delivery Excellence · 7 stories" },
+      { id: "epic-copilot", kind: "epic", name: "Consulting copilot", context: "AI-Enabled Consulting · 5 stories" },
+      { id: "story-101", kind: "story", key: "QBC-101", name: "See a concise project health summary", context: "Client Delivery Excellence / Client delivery portal" },
+      { id: "story-102", kind: "story", key: "QBC-102", name: "Capture a client decision", context: "Client Delivery Excellence / Client delivery portal" },
+      { id: "story-103", kind: "story", key: "QBC-103", name: "Evaluate answers against source material", context: "AI-Enabled Consulting / Consulting copilot" }
+    ];
+
+    /* A failed sample is carried deliberately: an upload that did not finish is a
+       state the list has to be able to hold, not only a moment during a drop. */
+    const ATTACHMENTS = [
+      { id: "att-001", itemId: "init-planning", name: "planning-outcome-brief.pdf", size: 842_113, uploadedBy: "Quinntyne Brown", uploadedAt: "2026-09-02T14:12:00" },
+      { id: "att-002", itemId: "init-planning", name: "sprint-cadence-workshop.png", size: 1_904_552, uploadedBy: "Maya Chen", uploadedAt: "2026-09-01T09:40:00" },
+      { id: "att-003", itemId: "init-planning", name: "capacity-model.xlsx", size: 268_400, uploadedBy: "Quinntyne Brown", uploadedAt: "2026-08-28T16:05:00" },
+      { id: "att-004", itemId: "epic-portal", name: "portal-wireframes.pdf", size: 3_310_884, uploadedBy: "Maya Chen", uploadedAt: "2026-09-03T11:22:00" },
+      { id: "att-005", itemId: "epic-portal", name: "client-feedback-round-2.docx", size: 96_240, uploadedBy: "Noah Williams", uploadedAt: "2026-08-30T08:15:00" },
+      { id: "att-006", itemId: "epic-copilot", name: "evaluation-set-v3.zip", size: 12_580_312, uploadedBy: "Amara Okafor", uploadedAt: "2026-09-03T17:48:00" },
+      { id: "att-007", itemId: "story-101", name: "health-summary-card.png", size: 654_022, uploadedBy: "Noah Williams", uploadedAt: "2026-09-04T10:02:00" },
+      { id: "att-008", itemId: "story-101", name: "stale-data-states.png", size: 481_770, uploadedBy: "Noah Williams", uploadedAt: "2026-09-04T09:55:00" },
+      { id: "att-009", itemId: "story-101", name: "signal-definitions.md", size: 7_104, uploadedBy: "Maya Chen", uploadedAt: "2026-09-01T13:30:00" },
+      { id: "att-010", itemId: "story-101", name: "kickoff-call-recording.mp4", size: 18_442_010, uploadedBy: "Maya Chen", uploadedAt: "2026-08-29T15:10:00", status: "failed", error: "The upload was interrupted." },
+      { id: "att-011", itemId: "story-103", name: "citation-coverage.csv", size: 34_902, uploadedBy: "Amara Okafor", uploadedAt: "2026-09-02T18:20:00" }
+    ];
+
+    /* ---- Rules an attachment has to satisfy --------------------------------- */
+    const MAX_BYTES = 25 * 1024 * 1024;
+    /* Executables are refused by extension. A real service would decide on the
+       sniffed type as well, since an extension is only a claim. */
+    const BLOCKED = ["exe", "bat", "cmd", "com", "msi", "scr", "sh", "ps1", "dll", "jar"];
+
+    const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "svg", "avif"];
+    const MARK_CLASSES = {
+      image: IMAGE_EXTENSIONS,
+      doc: ["pdf", "doc", "docx", "md", "txt", "rtf", "pages"],
+      sheet: ["xls", "xlsx", "csv", "tsv", "numbers"],
+      archive: ["zip", "tar", "gz", "7z", "rar"]
+    };
+
+    /* ---- State -------------------------------------------------------------- */
+    const state = {
+      itemId: WORK_ITEMS[0].id,
+      attachments: ATTACHMENTS.map((item) => ({ status: "ready", ...item })),
+      uploads: [],
+      rejections: [],
+      sort: "recent",
+      pendingRemoval: null,
+      dragDepth: 0
+    };
+
+    const el = (id) => document.getElementById(id);
+    const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (character) => (
+      { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]
+    ));
+
+    const extensionOf = (name) => {
+      const dot = name.lastIndexOf(".");
+      return dot > 0 ? name.slice(dot + 1).toLowerCase() : "";
+    };
+
+    const markClassOf = (name) => {
+      const extension = extensionOf(name);
+      const match = Object.keys(MARK_CLASSES).find((key) => MARK_CLASSES[key].includes(extension));
+      return match || "";
+    };
+
+    /* Sizes are shown to the precision someone would say out loud: whole kilobytes,
+       one decimal once a file is measured in megabytes. */
+    const formatSize = (bytes) => {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    const formatWhen = (value) => new Date(value).toLocaleDateString(undefined, {
+      month: "short", day: "numeric", year: "numeric"
+    });
+
+    const currentItem = () => WORK_ITEMS.find((item) => item.id === state.itemId);
+    const attachmentsForItem = () => state.attachments.filter((item) => item.itemId === state.itemId);
+    const uploadsForItem = () => state.uploads.filter((item) => item.itemId === state.itemId);
+
+    /* ---- Accepting or refusing a drop --------------------------------------- */
+    /* A name that is already on this work item is refused rather than versioned:
+       the study does not invent revisions, and two files with one name is the worse
+       of the two answers. */
+    const nameIsTaken = (name) => attachmentsForItem().some((item) => item.name.toLowerCase() === name.toLowerCase())
+      || uploadsForItem().some((item) => item.name.toLowerCase() === name.toLowerCase());
+
+    function rejectionFor(file) {
+      if (BLOCKED.includes(extensionOf(file.name))) return "cannot be attached: programs and scripts are not accepted.";
+      if (file.size === 0) return "is empty, or is a folder. Folders have to be zipped first.";
+      if (file.size > MAX_BYTES) return `is ${formatSize(file.size)}, over the 25 MB limit.`;
+      if (nameIsTaken(file.name)) return "is already attached to this work item.";
+      return null;
+    }
+
+    function addFiles(files) {
+      const accepted = [];
+      const rejected = [];
+
+      Array.from(files).forEach((file) => {
+        const reason = rejectionFor(file);
+        if (reason) rejected.push(`${file.name} ${reason}`);
+        else accepted.push(file);
+      });
+
+      state.rejections = rejected;
+      renderRejections();
+      accepted.forEach(beginUpload);
+    }
+
+    /* ---- The upload itself --------------------------------------------------
+       Progress is invented on a timer. It is paced off the file size so a large
+       file visibly takes longer, which is the only part of a real upload a mock
+       can honestly show. */
+    function beginUpload(file) {
+      const upload = {
+        id: `upload-${Date.now()}-${Math.round(Math.random() * 1e6)}`,
+        itemId: state.itemId,
+        name: file.name,
+        size: file.size,
+        progress: 0,
+        objectUrl: IMAGE_EXTENSIONS.includes(extensionOf(file.name)) ? URL.createObjectURL(file) : null
+      };
+
+      const seconds = Math.min(4, 0.6 + file.size / (2 * 1024 * 1024));
+      const step = 100 / ((seconds * 1000) / 90);
+
+      upload.timer = window.setInterval(() => {
+        upload.progress = Math.min(100, upload.progress + step);
+        paintProgress(upload);
+        if (upload.progress >= 100) finishUpload(upload);
+      }, 90);
+
+      state.uploads.push(upload);
+      render();
+    }
+
+    function paintProgress(upload) {
+      const bar = document.querySelector(`[data-progress="${upload.id}"]`);
+      if (bar) {
+        bar.style.width = `${upload.progress}%`;
+        bar.parentElement.setAttribute("aria-valuenow", String(Math.round(upload.progress)));
+      }
+    }
+
+    function finishUpload(upload) {
+      window.clearInterval(upload.timer);
+      state.uploads = state.uploads.filter((item) => item.id !== upload.id);
+      state.attachments.unshift({
+        id: `att-${upload.id}`,
+        itemId: upload.itemId,
+        name: upload.name,
+        size: upload.size,
+        uploadedBy: "Quinntyne Brown",
+        uploadedAt: new Date().toISOString(),
+        status: "ready",
+        objectUrl: upload.objectUrl
+      });
+      render();
+      toast(`${upload.name} attached.`);
+    }
+
+    function cancelUpload(id) {
+      const upload = state.uploads.find((item) => item.id === id);
+      if (!upload) return;
+      window.clearInterval(upload.timer);
+      if (upload.objectUrl) URL.revokeObjectURL(upload.objectUrl);
+      state.uploads = state.uploads.filter((item) => item.id !== id);
+      render();
+      toast(`${upload.name} cancelled.`);
+    }
+
+    /* Removal is undoable for as long as the toast is on screen, which is the
+       reason it does not ask twice for a file the person just added. */
+    function removeAttachment(id) {
+      const index = state.attachments.findIndex((item) => item.id === id);
+      if (index < 0) return;
+      const [removed] = state.attachments.splice(index, 1);
+      render();
+      toast(`${removed.name} removed.`, () => {
+        state.attachments.splice(index, 0, removed);
+        render();
+      });
+    }
+
+    /* ---- Rendering ---------------------------------------------------------- */
+    function sortedAttachments() {
+      const rows = attachmentsForItem().slice();
+      if (state.sort === "name") return rows.sort((a, b) => a.name.localeCompare(b.name));
+      if (state.sort === "size") return rows.sort((a, b) => b.size - a.size);
+      return rows.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+    }
+
+    function uploadRow(upload) {
+      return `
+        <li class="file-row" data-upload="${upload.id}">
+          <span class="file-mark ${markClassOf(upload.name)}" aria-hidden="true">${escapeHtml(extensionOf(upload.name) || "•")}</span>
+          <div class="file-main">
+            <strong>${escapeHtml(upload.name)}</strong>
+            <p class="file-meta"><span class="file-size">${formatSize(upload.size)}</span> &middot; uploading&hellip;</p>
+            <div class="progress-track" role="progressbar" aria-label="Uploading ${escapeHtml(upload.name)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(upload.progress)}">
+              <div class="progress-bar" data-progress="${upload.id}" style="width:${upload.progress}%"></div>
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="quiet-button" type="button" data-action="cancel" data-id="${upload.id}">Cancel</button>
+          </div>
+        </li>`;
+    }
+
+    function attachmentRow(attachment) {
+      const failed = attachment.status === "failed";
+      const extension = extensionOf(attachment.name);
+      const thumbnail = attachment.objectUrl
+        ? `<img src="${attachment.objectUrl}" alt="">`
+        : escapeHtml(extension || "•");
+
+      return `
+        <li class="file-row ${failed ? "is-failed" : ""}" data-attachment="${attachment.id}">
+          <span class="file-mark ${markClassOf(attachment.name)}" aria-hidden="true">${thumbnail}</span>
+          <div class="file-main">
+            <strong>${escapeHtml(attachment.name)}</strong>
+            <p class="file-meta">
+              <span class="file-size">${formatSize(attachment.size)}</span>
+              &middot; ${escapeHtml(attachment.uploadedBy)} &middot; ${formatWhen(attachment.uploadedAt)}
+              ${failed ? '<span class="pill failed">Failed</span>' : ""}
+            </p>
+            ${failed ? `<p class="file-error">${escapeHtml(attachment.error)}</p>` : ""}
+          </div>
+          <div class="row-actions">
+            ${failed
+              ? `<button class="secondary-button" type="button" data-action="retry" data-id="${attachment.id}">Retry</button>`
+              : `<button class="quiet-button" type="button" data-action="preview" data-id="${attachment.id}">Preview</button>`}
+            <button class="quiet-button" type="button" data-action="remove" data-id="${attachment.id}">Remove</button>
+          </div>
+        </li>`;
+    }
+
+    function renderRejections() {
+      if (!state.rejections.length) {
+        el("reject-region").innerHTML = "";
+        return;
+      }
+
+      el("reject-region").innerHTML = `
+        <div class="reject-panel" role="alert">
+          <header>
+            <h2>${state.rejections.length} ${state.rejections.length === 1 ? "file was" : "files were"} not attached</h2>
+            <button class="icon-button" type="button" data-action="dismiss-rejections" aria-label="Dismiss">&times;</button>
+          </header>
+          <ul>${state.rejections.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
+        </div>`;
+    }
+
+    function render() {
+      const item = currentItem();
+      const kindLabel = item.kind.charAt(0).toUpperCase() + item.kind.slice(1);
+
+      el("breadcrumb-kind").textContent = kindLabel;
+      el("breadcrumb-name").textContent = item.name;
+      el("item-kind").textContent = kindLabel;
+      el("item-kind").className = `pill ${item.kind}`;
+      el("item-key").textContent = item.key || "";
+      el("item-key").hidden = !item.key;
+      el("item-name").textContent = item.name;
+      el("item-context").textContent = item.context;
+      el("empty-copy").textContent = item.kind === "story"
+        ? "Drop the screenshot, the export, or the note that explains this story, and whoever picks it up next will find it here."
+        : `Drop the brief, the diagram, or the export that explains this ${item.kind}, and whoever picks it up next will find it here.`;
+
+      const rows = sortedAttachments();
+      const uploading = uploadsForItem();
+      el("file-list").innerHTML = uploading.map(uploadRow).join("") + rows.map(attachmentRow).join("");
+      el("empty-state").hidden = Boolean(rows.length || uploading.length);
+
+      const total = rows.reduce((sum, row) => sum + row.size, 0);
+      el("list-meta").textContent = rows.length
+        ? `${rows.length} ${rows.length === 1 ? "file" : "files"} · ${formatSize(total)}${uploading.length ? ` · ${uploading.length} uploading` : ""}`
+        : uploading.length ? `${uploading.length} uploading…` : "Nothing attached yet.";
+    }
+
+    /* ---- Toast and announcements -------------------------------------------- */
+    function toast(message, undo) {
+      const node = document.createElement("p");
+      node.className = "toast";
+      node.innerHTML = `<span>${escapeHtml(message)}</span>`;
+
+      if (undo) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Undo";
+        button.addEventListener("click", () => {
+          undo();
+          node.remove();
+        });
+        node.append(button);
+      }
+
+      el("toast-region").append(node);
+      window.setTimeout(() => node.remove(), undo ? 7000 : 3500);
+    }
+
+    /* ---- Dialogs ------------------------------------------------------------- */
+    function askToRemove(id) {
+      const attachment = state.attachments.find((item) => item.id === id);
+      if (!attachment) return;
+      state.pendingRemoval = id;
+      el("remove-copy").textContent = `${attachment.name} (${formatSize(attachment.size)}) will no longer be attached to ${currentItem().name}.`;
+      el("remove-dialog").showModal();
+    }
+
+    function openPreview(id) {
+      const attachment = state.attachments.find((item) => item.id === id);
+      if (!attachment) return;
+
+      el("preview-title").textContent = attachment.name;
+      el("preview-subtitle").textContent = `${formatSize(attachment.size)} · ${attachment.uploadedBy} · ${formatWhen(attachment.uploadedAt)}`;
+      /* Only a file dropped in this tab has bytes to show. A sample row says so
+         rather than pretending to render something. */
+      el("preview-frame").innerHTML = attachment.objectUrl
+        ? `<img src="${attachment.objectUrl}" alt="${escapeHtml(attachment.name)}">`
+        : `<span class="file-mark ${markClassOf(attachment.name)}">${escapeHtml(extensionOf(attachment.name) || "•")}</span>`;
+      el("preview-dialog").showModal();
+    }
+
+    document.querySelectorAll("dialog [data-close]").forEach((button) => {
+      button.addEventListener("click", () => button.closest("dialog").close());
+    });
+
+    el("remove-confirm").addEventListener("click", () => {
+      removeAttachment(state.pendingRemoval);
+      state.pendingRemoval = null;
+      el("remove-dialog").close();
+    });
+
+    /* ---- Events -------------------------------------------------------------- */
+    el("attach-button").addEventListener("click", () => el("file-input").click());
+    el("choose-button").addEventListener("click", () => el("file-input").click());
+
+    el("file-input").addEventListener("change", (event) => {
+      addFiles(event.target.files);
+      /* Clearing the value lets the same file be chosen twice in a row, which is
+         otherwise silently ignored by the browser. */
+      event.target.value = "";
+    });
+
+    el("sort-select").addEventListener("change", (event) => {
+      state.sort = event.target.value;
+      render();
+    });
+
+    el("item-picker").addEventListener("change", (event) => {
+      state.itemId = event.target.value;
+      state.rejections = [];
+      renderRejections();
+      render();
+    });
+
+    document.addEventListener("click", (event) => {
+      const trigger = event.target.closest("[data-action]");
+      if (!trigger) return;
+
+      const { action, id } = trigger.dataset;
+      if (action === "cancel") cancelUpload(id);
+      if (action === "remove") askToRemove(id);
+      if (action === "preview") openPreview(id);
+      if (action === "dismiss-rejections") {
+        state.rejections = [];
+        renderRejections();
+      }
+      if (action === "retry") {
+        const attachment = state.attachments.find((item) => item.id === id);
+        if (attachment) {
+          attachment.status = "ready";
+          delete attachment.error;
+          attachment.uploadedAt = new Date().toISOString();
+          render();
+          toast(`${attachment.name} uploaded.`);
+        }
+      }
+    });
+
+    /* Dragging over the page fires enter and leave on every element crossed, so a
+       depth counter is what keeps the veil from flickering between children. */
+    const isFileDrag = (event) => Array.from(event.dataTransfer?.types || []).includes("Files");
+
+    window.addEventListener("dragenter", (event) => {
+      if (!isFileDrag(event)) return;
+      event.preventDefault();
+      state.dragDepth += 1;
+      document.body.classList.add("is-dragging");
+      el("drag-veil").hidden = false;
+    });
+
+    window.addEventListener("dragover", (event) => {
+      if (!isFileDrag(event)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    });
+
+    window.addEventListener("dragleave", (event) => {
+      if (!isFileDrag(event)) return;
+      state.dragDepth = Math.max(0, state.dragDepth - 1);
+      if (state.dragDepth === 0) endDrag();
+    });
+
+    window.addEventListener("drop", (event) => {
+      if (!isFileDrag(event)) return;
+      event.preventDefault();
+      endDrag();
+      addFiles(event.dataTransfer.files);
+    });
+
+    function endDrag() {
+      state.dragDepth = 0;
+      document.body.classList.remove("is-dragging");
+      el("drag-veil").hidden = true;
+    }
+
+    /* A screenshot on the clipboard is the commonest thing anyone wants to attach
+       to a story, and it never reaches a file picker. */
+    document.addEventListener("paste", (event) => {
+      const files = Array.from(event.clipboardData?.files || []);
+      if (!files.length) return;
+      event.preventDefault();
+      addFiles(files);
+    });
+
+    /* ---- Bootstrap ----------------------------------------------------------- */
+    /* One work item is addressed with ?itemId. An id the study does not carry opens
+       the first sample, so the link still demonstrates the flow; ?empty shows what a
+       work item looks like before anything is attached. */
+    const veil = document.createElement("div");
+    veil.className = "drag-veil";
+    veil.id = "drag-veil";
+    veil.hidden = true;
+    veil.innerHTML = "<strong>Drop to attach to this work item</strong>";
+    document.body.append(veil);
+
+    const route = new URLSearchParams(window.location.search);
+    const requested = route.get("itemId");
+    if (WORK_ITEMS.some((item) => item.id === requested)) state.itemId = requested;
+    if (route.has("empty")) state.attachments = state.attachments.filter((item) => item.itemId !== state.itemId);
+
+    const groups = [
+      { kind: "initiative", label: "Initiatives" },
+      { kind: "epic", label: "Epics" },
+      { kind: "story", label: "Stories" }
+    ];
+
+    el("item-picker").innerHTML = groups.map((group) => `
+      <optgroup label="${group.label}">
+        ${WORK_ITEMS.filter((item) => item.kind === group.kind).map((item) => `
+          <option value="${item.id}" ${item.id === state.itemId ? "selected" : ""}>
+            ${escapeHtml(item.key ? `${item.key} · ${item.name}` : item.name)}
+          </option>`).join("")}
+      </optgroup>`).join("");
+
+    render();
+  </script>
+</body>
+</html>
