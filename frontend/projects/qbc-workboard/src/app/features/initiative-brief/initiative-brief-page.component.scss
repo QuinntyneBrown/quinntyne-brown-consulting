@@ -11,8 +11,12 @@
   display: none !important;
 }
 
+/* The pill is held to its own height rather than stretched to the tallest control on the row, so
+   its label reads centred against the ground behind it. */
 .save-state {
   display: inline-flex;
+  align-items: center;
+  align-self: center;
   padding: 5px 10px;
   border-radius: var(--qbc-r-pill);
   color: var(--qbc-accent-dark);

@@ -1,6 +1,31 @@
 import { BriefEditorAdapter } from './brief-editor-adapter';
 
 const BRIEF_SOURCE_LABEL = 'Initiative brief, markdown source';
+const EDITOR_STYLESHEET = 'monaco-editor.css';
+
+let stylesheetLoad: Promise<void> | null = null;
+
+/**
+ * Fetches the editor's own stylesheet, which the bundler publishes beside the application under a
+ * fixed name rather than folding into the page styles every reader downloads. The editor's markup
+ * relies on it to place the writing surface and to keep its scaffolding — the screen reader's live
+ * region and the hidden field that carries typing — out of sight, so the editor is only created
+ * once the stylesheet has arrived. A stylesheet that never arrives fails the editor, which leaves
+ * the brief writable as plain markdown instead of on a surface that renders as scrambled text.
+ */
+function loadEditorStylesheet(): Promise<void> {
+  stylesheetLoad ??= new Promise<void>((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = EDITOR_STYLESHEET;
+    link.addEventListener('load', () => resolve());
+    link.addEventListener('error', () =>
+      reject(new Error('The markdown editor stylesheet could not be loaded.')),
+    );
+    document.head.append(link);
+  });
+  return stylesheetLoad;
+}
 
 /**
  * The code editor the brief is written in. It is imported only when the brief route is opened, so
@@ -22,7 +47,7 @@ export async function createMonacoEditor(
       }),
   };
 
-  const monaco = await import('monaco-editor');
+  const [monaco] = await Promise.all([import('monaco-editor'), loadEditorStylesheet()]);
 
   monaco.editor.defineTheme('qbc-light', {
     base: 'vs',

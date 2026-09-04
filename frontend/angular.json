@@ -77,7 +77,12 @@
             ],
             "styles": [
               "projects/components/src/styles.scss",
-              "projects/qbc-workboard/src/styles.scss"
+              "projects/qbc-workboard/src/styles.scss",
+              {
+                "input": "node_modules/monaco-editor/min/vs/editor/editor.main.css",
+                "bundleName": "monaco-editor",
+                "inject": false
+              }
             ],
             "outputPath": "dist/qbc-workboard",
             "loader": {
