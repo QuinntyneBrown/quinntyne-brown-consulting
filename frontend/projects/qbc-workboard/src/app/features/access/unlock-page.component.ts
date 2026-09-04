@@ -2,6 +2,7 @@ import { Component, effect, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { BrandComponent, ButtonComponent, PasscodeInputComponent } from '@qbc/components';
 import { SESSION_SERVICE } from '../../core/session.service.contract';
+import { VERSION_SERVICE } from '../../core/version.service.contract';
 
 const PASSCODE_LENGTH = 4;
 const SUCCESS_HOLD_MS = 700;
@@ -16,6 +17,7 @@ export class UnlockPageComponent {
   private readonly field = viewChild.required(PasscodeInputComponent);
   private readonly router = inject(Router);
   readonly session = inject(SESSION_SERVICE);
+  readonly version = inject(VERSION_SERVICE);
   readonly passcode = signal('');
   readonly invalid = signal(false);
   readonly accepted = signal(false);

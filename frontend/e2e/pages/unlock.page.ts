@@ -29,6 +29,11 @@ export class UnlockPage {
     await this.expectPrompt();
   }
 
+  async expectBuildVersions(...labels: string[]): Promise<void> {
+    const builds = this.page.getByLabel('Build versions');
+    for (const label of labels) await expect(builds).toContainText(label);
+  }
+
   async expectUnlockedWorkspace(): Promise<void> {
     await expect(this.page.getByRole('heading', { level: 1, name: 'Sprint board' })).toBeVisible();
   }

@@ -72,10 +72,19 @@ only when representative records are wanted in an empty database.
 | Stories and backlog | `/api/stories` |
 | Assistants | `/api/assistants` |
 | Sprints and active board | `/api/sprints` |
+| Deployed build | `/api/version` |
 | OpenAPI | `/openapi/v1.json` |
 
 Known failures are returned as RFC Problem Details with validation, not-found,
 or conflict status codes.
+
+`/api/version` reports the backend version and source revision stamped as
+separate metadata values in the running assembly, and is the one work-adjacent
+resource outside the passcode gate: it holds no workspace data, and confirming a
+deployment must not require the shared passcode. The version comes from
+`Directory.Build.props`; the commit comes from the build's `SourceRevisionId`.
+A build without a revision reports `commit` as `null`. The separately versioned
+Angular artifact embeds its own identity during the publish build.
 
 ## Maintain a database
 

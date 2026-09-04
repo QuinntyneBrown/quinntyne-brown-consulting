@@ -62,6 +62,8 @@ npm run build:app
 ```
 
 Application output is written to `frontend/dist/qbc-workboard/browser`.
+The application build embeds the version from `package.json` and the source
+revision from `QBC_SOURCE_REVISION_ID`, falling back to the checkout's `HEAD`.
 
 Validate and unit-test the reusable component boundary independently:
 
@@ -96,13 +98,16 @@ npm run test:e2e
 ```
 
 The command starts the Angular server and runs the Page Object Model suite in
-Chromium, Firefox, and WebKit. A Playwright fixture intercepts every `/api`
+Chromium, Firefox, and WebKit. A Playwright fixture intercepts every backend API
 request with a fresh, stateful mock for each test, so reload and CRUD scenarios
-remain deterministic without starting .NET or creating a test database.
+remain deterministic without starting .NET or creating a test database. The
+mocked backend version is test-only; the frontend identity still comes from the
+metadata compiled into the Angular development build.
 
-Every frontend service route has an explicit handler. An unhandled API request
-fails the test, making contract growth visible instead of silently reaching a
-developer backend.
+Every backend route has an explicit mock handler. An unhandled API request fails
+the test, making contract growth visible instead of silently reaching a developer
+backend. Mock and fixture files are excluded from the application TypeScript
+configuration and are never included in a production bundle.
 
 ## Conventions
 

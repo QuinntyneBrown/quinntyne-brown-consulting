@@ -48,5 +48,17 @@
         >Unlock</qbc-button
       >
     }
+
+    <!-- Both artifact identities are readable before the passcode is, so a deployment can be
+         confirmed without opening the workspace. -->
+    <div
+      class="build"
+      aria-label="Build versions"
+    >
+      @if (version.backendLabel(); as backend) {
+        <span>{{ backend }}</span>
+      }
+      <span>{{ version.frontendLabel }}</span>
+    </div>
   </div>
 </div>

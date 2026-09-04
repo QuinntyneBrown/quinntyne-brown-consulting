@@ -4,11 +4,11 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "ng serve qbc-workboard --proxy-config proxy.conf.json",
+    "start": "node scripts/build-app.mjs serve --proxy-config proxy.conf.json",
     "build": "npm run build:api && npm run build:components && npm run build:app",
     "build:api": "ng build api",
     "build:components": "ng build components",
-    "build:app": "ng build qbc-workboard",
+    "build:app": "node scripts/build-app.mjs build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:components": "ng test components --watch=false",

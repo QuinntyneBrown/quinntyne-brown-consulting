@@ -1,9 +1,11 @@
 global using Qbc.Workboard.Application.Common.Behaviors;
+global using Qbc.Workboard.Application.Common.Deployment;
 global using Qbc.Workboard.Application.Common.Exceptions;
 global using Qbc.Workboard.Application.Common.Persistence;
 global using Qbc.Workboard.Application.Features.Access.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Projections;
+global using Qbc.Workboard.Application.Features.Deployment.Dtos;
 global using Qbc.Workboard.Application.Features.Hierarchy.Dtos;
 global using Qbc.Workboard.Application.Features.Sprints.Dtos;
 global using Qbc.Workboard.Application.Features.Sprints.Projections;

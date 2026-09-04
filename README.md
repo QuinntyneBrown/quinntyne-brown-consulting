@@ -35,6 +35,8 @@ releases. Requirements and data migrations may change before the first release.
   and responsive product patterns.
 - Keep the public deployment private behind a shared passcode that issues a
   seven-day session credential.
+- Report the deployed build in the workspace, so the version and commit being
+  served are readable from the sidebar and from the passcode screen.
 
 ## Architecture
 
@@ -122,6 +124,7 @@ The launcher waits for both servers, opens the application, writes logs under
 | Web application | `http://localhost:4200` |
 | API | `http://localhost:5050/api/workspace?route=board` |
 | OpenAPI document | `http://localhost:5050/openapi/v1.json` |
+| Deployed build | `http://localhost:5050/api/version` |
 
 ### Run the servers manually
 
@@ -278,6 +281,28 @@ On pushes to `main`, CI deploys the verified combined artifact to the free-tier
 Azure environment after both application and design-system jobs pass. See the
 [Azure deployment plan](docs/azure-deployment-plan.md) for resource names,
 identity configuration, cost controls, and operational limits.
+
+### Deployed build identification
+
+The two artifacts own their versions independently. `backend/Directory.Build.props`
+carries the backend version, while `frontend/package.json` carries the frontend
+version. The backend stamps its values as assembly metadata and the Angular
+build embeds its values as compile-time constants. CI supplies the same source
+revision to both builds so each artifact names the exact commit that produced it;
+an ordinary local build uses the checkout's `HEAD` when one is available.
+
+`GET /api/version` reports the backend identity as `{ "version", "commit" }`
+and needs no passcode. The workspace shows separate `Backend` and `Frontend`
+lines in the sidebar footer and on the passcode screen, so both deployed artifacts
+can be confirmed from a browser and the backend can be queried from a shell:
+
+```powershell
+curl https://<workboard-host>/api/version
+```
+
+A build made where no revision is available reports no commit, and its line shows
+only the version. If the API cannot be reached, the frontend identity remains
+visible and the backend line is omitted without blocking the workspace.
 
 ## Design system
 

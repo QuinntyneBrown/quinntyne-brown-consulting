@@ -12,9 +12,12 @@ import {
 import { filter } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FEEDBACK_SERVICE } from '../core/feedback.service.contract';
+import { VERSION_SERVICE } from '../core/version.service.contract';
 import { WORKSPACE_SERVICE } from '../core/workspace.service.contract';
 import { StoryEditorComponent } from '../features/stories/story-editor.component';
 import { STORY_EDITOR_SERVICE } from '../features/stories/story-editor.service.contract';
+
+const COMPANY = 'Quinntyne Brown Consulting Inc.';
 
 @Component({
   selector: 'app-shell',
@@ -36,6 +39,7 @@ export class AppShellComponent {
   private readonly router = inject(Router);
   private readonly workspace = inject(WORKSPACE_SERVICE);
   private readonly editor = inject(STORY_EDITOR_SERVICE);
+  private readonly version = inject(VERSION_SERVICE);
   readonly feedback = inject(FEEDBACK_SERVICE);
   readonly menuOpen = signal(false);
   private readonly navigation = toSignal(
@@ -45,6 +49,14 @@ export class AppShellComponent {
   private readonly routeSegment = computed(() => {
     this.navigation();
     return this.router.url.split('?')[0].split('/')[1] || 'board';
+  });
+  /**
+   * The rail's standing footer carries both deployed artifact identities, so each version is
+   * legible from every page without occupying navigation space.
+   */
+  readonly sidebarFooter = computed(() => {
+    const builds = [this.version.backendLabel(), this.version.frontendLabel].filter(Boolean);
+    return `${COMPANY}\n${builds.join('\n')}`;
   });
   readonly routeName = computed(() => {
     const segment = this.routeSegment();
