@@ -27,6 +27,8 @@
     [attr.aria-label]="ariaLabel()"
     [attr.aria-describedby]="hint() ? hintId : null"
     [attr.autocomplete]="autocomplete()"
+    [attr.min]="min()"
+    [attr.step]="step()"
     (input)="change($any($event.target).value)"
     (blur)="touched()"
   />

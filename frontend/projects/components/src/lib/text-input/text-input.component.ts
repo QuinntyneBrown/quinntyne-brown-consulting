@@ -40,6 +40,9 @@ export class TextInputComponent extends ValueAccessor<string> {
   readonly icon = input<IconName | null>(null);
   readonly ariaLabel = input<string | null>(null);
   readonly autocomplete = input<string | null>(null);
+  /** Only meaningful for `type="number"`, where the browser default step of 1 refuses 2.5. */
+  readonly min = input<number | null>(null);
+  readonly step = input<number | null>(null);
   readonly valueChange = output<string>();
   readonly controlId = `qbc-text-input-${TextInputComponent.nextId++}`;
   readonly hintId = `${this.controlId}-hint`;

@@ -9,6 +9,15 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Recorded hours. A time entry names a story, an assistant, a date, an amount of
+  hours in quarter-hour increments, and an optional note.
+  `/assistants/{assistantId}` reports one assistant's totals, the share of their
+  logged time that sits on stories which are now done, and every story they
+  worked on, filtered to completed or in-flight work and expandable to the
+  individual entries. An assistant has worked on a story when they have hours
+  logged against it, so the record survives the story being reassigned. Deleting
+  an assistant is refused while any of their hours remain, listing the stories
+  holding them.
 - Project-level contribution, security, support, governance, and conduct
   policies.
 - GitHub issue and pull-request templates.
@@ -103,6 +112,17 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- A number field now carries its range and increment. `qbc-text-input` supported
+  `type="number"` but emitted no `min` or `step`, so the browser kept its default
+  step of 1 and silently refused two and a half hours.
+- A back control is a link again. The initiative and epic editors each carried a
+  raw anchor, which the component-boundary gate forbids; `qbc-back-link` wraps it
+  the way the skip link already wraps its own.
+- `eng/Start-Workboard.ps1` starts the workspace again. It waited on
+  `/api/workspace`, which the passcode gate answers `401`, and PowerShell threw
+  on that status instead of reporting it, so the wait never ended. It also ran
+  `ng serve` directly rather than through `scripts/build-app.mjs`, leaving
+  `QBC_FRONTEND_VERSION` undefined and the application throwing on boot.
 - Backlog sprint selectors now show the story's assigned sprint when sprint
   options finish loading after story data.
 - A form that refuses to save now names every field that stopped it. Saving a

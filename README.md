@@ -27,6 +27,8 @@ releases. Requirements and data migrations may change before the first release.
 - Manage initiatives, epics, stories, checklist tasks, and assistant assignments.
 - Write every initiative and every epic as a name and a markdown document, on one
   page, with a formatting toolbar and a live preview.
+- Record the hours an assistant spent on a story, and read back what they
+  worked on and how much of that time is on work that is now done.
 - Groom and estimate stories before assigning them to a 14-day sprint.
 - Move active work through To do, In progress, and Done with pointer, keyboard,
   and touch-friendly controls.
@@ -197,7 +199,9 @@ and no plain-text field anywhere. **New initiative** opens that page at
 `/initiatives/new` and **Edit** opens it at `/initiatives/{initiativeId}`;
 **＋ Epic** on an initiative opens `/epics/new` with that initiative already
 chosen, and **Edit** on an epic opens `/epics/{epicId}`. All are ordinary deep
-links and can be shared or reloaded.
+links and can be shared or reloaded. **Hours** on an assistant's card opens
+`/assistants/{assistantId}`, where the hours logged against each story they
+worked on are reported and new time is recorded.
 
 | Route | Purpose |
 | --- | --- |
@@ -209,6 +213,7 @@ links and can be shared or reloaded.
 | `/epics/new` | A new epic: its initiative, name, and summary |
 | `/epics/{epicId}` | An existing epic's initiative, name, and summary |
 | `/assistants` | The assistant directory |
+| `/assistants/{assistantId}` | One assistant's logged hours and the stories they worked on |
 | `/unlock` | The shared passcode screen |
 
 Both documents support headings, emphasis, links, inline and fenced code,

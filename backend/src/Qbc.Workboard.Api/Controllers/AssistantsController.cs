@@ -19,6 +19,10 @@ public sealed class AssistantsController : ControllerBase
     public async Task<ActionResult<AssistantDto>> Get(Guid id, CancellationToken cancellationToken) =>
         Ok(await _sender.Send(new GetAssistantQuery(id), cancellationToken));
 
+    [HttpGet("{id:guid}/hours")]
+    public async Task<ActionResult<AssistantHoursDto>> GetHours(Guid id, CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(new GetAssistantHoursQuery(id), cancellationToken));
+
     [HttpPost]
     public async Task<ActionResult<AssistantDto>> Create(AssistantRequest request, CancellationToken cancellationToken)
     {

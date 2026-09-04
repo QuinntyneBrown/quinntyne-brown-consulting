@@ -8,6 +8,7 @@ public interface IWorkboardDbContext
     IQueryable<Story> Stories { get; }
     IQueryable<StoryTask> StoryTasks { get; }
     IQueryable<Assistant> Assistants { get; }
+    IQueryable<TimeEntry> TimeEntries { get; }
     IQueryable<Sprint> Sprints { get; }
     IQueryable<StoryKeySequence> StoryKeySequences { get; }
     IQueryable<WorkspaceAccess> WorkspaceAccess { get; }

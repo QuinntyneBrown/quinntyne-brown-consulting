@@ -18,6 +18,8 @@ global using Qbc.Workboard.Application.Features.Sprints.Queries;
 global using Qbc.Workboard.Application.Features.Stories.Commands;
 global using Qbc.Workboard.Application.Features.Stories.Dtos;
 global using Qbc.Workboard.Application.Features.Stories.Queries;
+global using Qbc.Workboard.Application.Features.TimeEntries.Commands;
+global using Qbc.Workboard.Application.Features.TimeEntries.Dtos;
 global using Qbc.Workboard.Application.Features.Workspace.Dtos;
 global using Qbc.Workboard.Application.Features.Workspace.Queries;
 global using Qbc.Workboard.Domain.Enums;

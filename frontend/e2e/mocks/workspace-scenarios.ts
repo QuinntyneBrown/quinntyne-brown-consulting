@@ -190,6 +190,37 @@ export const unassignedAssistant: WorkspaceScenario = {
   },
 };
 
+/**
+ * An assistant who owns no story and holds no task, and whose only claim on the workspace is the
+ * hours they logged against somebody else's story.
+ */
+export const assistantWithOnlyLoggedHours: WorkspaceScenario = {
+  name: 'an assistant whose only work is the hours they logged',
+  apply: (state) => {
+    const priyaId = '10000000-0000-4000-8000-000000000009';
+    state.assistants.push({
+      id: priyaId,
+      fullName: 'Priya Raman',
+      role: 'Research assistant',
+      specialties: ['Discovery'],
+      availability: 'limited',
+      storyCount: 0,
+      incompleteTaskCount: 0,
+      blockingAssignments: [],
+    });
+    state.timeEntries.push({
+      id: '70000000-0000-4000-8000-000000000009',
+      storyId: '50000000-0000-4000-8000-000000000103',
+      storyKey: 'QBC-103',
+      assistantId: priyaId,
+      assistantName: 'Priya Raman',
+      workedOn: '2026-08-27',
+      hours: 1.5,
+      note: 'Compared grounding approaches',
+    });
+  },
+};
+
 /** A Ready story sitting outside any sprint, so its readiness can be withdrawn. */
 export const readyUnscheduledStory: WorkspaceScenario = {
   name: 'a Ready story outside any sprint',

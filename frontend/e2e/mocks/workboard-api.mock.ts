@@ -1,6 +1,8 @@
 import type {
   ActiveSprintBoard,
   Assistant,
+  AssistantHours,
+  AssistantHoursStory,
   AssignmentLink,
   Epic,
   Hierarchy,
@@ -8,6 +10,8 @@ import type {
   Sprint,
   Story,
   StoryDraft,
+  TimeEntry,
+  TimeEntryDraft,
 } from '@qbc/api';
 import type { Page, Route } from '@playwright/test';
 import { createWorkboardApiState } from './workboard-api-state.factory';
@@ -18,6 +22,10 @@ type EpicDraft = Pick<Epic, 'initiativeId' | 'name' | 'summary'>;
 type InitiativeDraft = Pick<Initiative, 'name' | 'description'>;
 type SprintDraft = Pick<Sprint, 'name' | 'goal' | 'startDate'>;
 type FieldErrors = Record<string, string[]>;
+
+/** Time is recorded in quarter hours, and no single entry covers more than a day. */
+const HOURS_INCREMENT = 0.25;
+const MAXIMUM_HOURS = 24;
 
 /** The only estimates the product accepts, in the order the story editor offers them. */
 export const ACCEPTED_ESTIMATES: readonly number[] = [1, 2, 3, 5, 8, 13];
@@ -262,6 +270,45 @@ export class WorkboardApiMock {
           );
         }
         this.remove(this.state.assistants, id);
+        return this.empty(route);
+      }
+
+      const hoursMatch = path.match(/^\/api\/assistants\/([^/]+)\/hours$/);
+      if (hoursMatch && method === 'GET') {
+        const assistant = this.state.assistants.find((item) => item.id === hoursMatch[1]);
+        return assistant
+          ? this.json(route, 200, this.assistantHours(assistant))
+          : this.notFound(route, 'Assistant');
+      }
+
+      if (path === '/api/time-entries' && method === 'POST') {
+        const draft = this.body<TimeEntryDraft>(route);
+        const story = this.state.stories.find((item) => item.id === draft.storyId);
+        if (!story) return this.notFound(route, 'Story');
+        const assistant = this.state.assistants.find((item) => item.id === draft.assistantId);
+        if (!assistant) return this.notFound(route, 'Assistant');
+        const errors = this.timeEntryErrors(draft);
+        if (errors) return this.invalid(route, errors);
+        const entry: TimeEntry = {
+          id: this.newId(),
+          storyId: story.id,
+          storyKey: story.key,
+          assistantId: assistant.id,
+          assistantName: assistant.fullName,
+          workedOn: draft.workedOn,
+          hours: draft.hours,
+          note: draft.note.trim(),
+        };
+        this.state.timeEntries.push(entry);
+        return this.json(route, 201, entry);
+      }
+
+      const timeEntryMatch = path.match(/^\/api\/time-entries\/([^/]+)$/);
+      if (timeEntryMatch && method === 'DELETE') {
+        const id = timeEntryMatch[1];
+        if (!this.state.timeEntries.some((item) => item.id === id))
+          return this.notFound(route, 'Time entry');
+        this.remove(this.state.timeEntries, id);
         return this.empty(route);
       }
 
@@ -716,8 +763,77 @@ export class WorkboardApiMock {
     };
   }
 
+  /**
+   * One assistant's logged hours. A story counts as worked on when they have hours against it,
+   * and it counts as completed when it is on the board's Done column now.
+   */
+  private assistantHours(assistant: Assistant): AssistantHours {
+    const own = this.state.timeEntries.filter((entry) => entry.assistantId === assistant.id);
+    const storyIds = [...new Set(own.map((entry) => entry.storyId))];
+    const stories: AssistantHoursStory[] = storyIds
+      .map((storyId) => {
+        const story = this.state.stories.find((item) => item.id === storyId)!;
+        const entries = own
+          .filter((entry) => entry.storyId === storyId)
+          .sort((left, right) => left.workedOn.localeCompare(right.workedOn));
+        return {
+          storyId: story.id,
+          storyKey: story.key,
+          title: story.title,
+          epicName: this.state.epics.find((item) => item.id === story.epicId)?.name ?? '',
+          boardStatus: story.boardStatus,
+          isComplete: story.boardStatus === 'done',
+          points: story.points,
+          hours: this.sum(entries),
+          storyHours: this.sum(
+            this.state.timeEntries.filter((entry) => entry.storyId === storyId),
+          ),
+          entries,
+        };
+      })
+      .sort(
+        (left, right) =>
+          right.entries[right.entries.length - 1].workedOn.localeCompare(
+            left.entries[left.entries.length - 1].workedOn,
+          ) || left.storyKey.localeCompare(right.storyKey),
+      );
+    const completed = stories.filter((story) => story.isComplete);
+    return {
+      assistantId: assistant.id,
+      fullName: assistant.fullName,
+      role: assistant.role,
+      specialties: assistant.specialties,
+      availability: assistant.availability,
+      hoursLogged: this.sum(own),
+      hoursOnCompletedStories: completed.reduce((total, story) => total + story.hours, 0),
+      storiesWorkedOn: stories.length,
+      completedStoriesWorkedOn: completed.length,
+      stories,
+    };
+  }
+
+  private sum(entries: readonly TimeEntry[]): number {
+    return entries.reduce((total, entry) => total + entry.hours, 0);
+  }
+
   private blockingAssignments(assistantId: string): AssignmentLink[] {
     const assignments: AssignmentLink[] = [];
+    // Hours the assistant logged block a delete too, and a story they no longer own can still be
+    // holding their time.
+    for (const storyId of new Set(
+      this.state.timeEntries
+        .filter((entry) => entry.assistantId === assistantId)
+        .map((entry) => entry.storyId),
+    )) {
+      const story = this.state.stories.find((item) => item.id === storyId);
+      if (story && story.assistantId !== assistantId)
+        assignments.push({
+          storyId: story.id,
+          storyKey: story.key,
+          taskId: null,
+          label: story.title,
+        });
+    }
     for (const story of this.state.stories) {
       if (story.assistantId === assistantId) {
         assignments.push({
@@ -809,6 +925,16 @@ export class WorkboardApiMock {
     );
     if (entries.length === 0) return null;
     return Object.fromEntries(entries.map(([field, message]) => [field, [message]]));
+  }
+
+  private timeEntryErrors(draft: TimeEntryDraft): FieldErrors | null {
+    return this.errors({
+      workedOn: this.validDate(draft.workedOn) ? null : 'A date worked is required.',
+      hours:
+        draft.hours > 0 && draft.hours <= MAXIMUM_HOURS && draft.hours % HOURS_INCREMENT === 0
+          ? null
+          : 'Hours must be greater than zero, no more than 24, and in quarter-hour increments.',
+    });
   }
 
   private blank(value: string | null | undefined): boolean {

@@ -103,12 +103,12 @@ public sealed class WorkboardDbInitializer
         _db.Add(sprint14);
         _db.Add(new Sprint(sprint15Id, "Sprint 15", "Make responsible AI engagement planning repeatable.", new DateOnly(2026, 9, 14)));
 
-        AddStory(101, portalId, "See a concise project health summary", "As a client, I want a quick project health summary so that I know where attention is needed.", "Shows delivery status, risks, next milestone, and last updated time.", 5, noahId, sprint14Id, BoardStatus.InProgress,
+        var health = AddStory(101, portalId, "See a concise project health summary", "As a client, I want a quick project health summary so that I know where attention is needed.", "Shows delivery status, risks, next milestone, and last updated time.", 5, noahId, sprint14Id, BoardStatus.InProgress,
             [("Build summary card", true, noahId), ("Review health language", false, mayaId)]);
-        AddStory(102, portalId, "Capture a client decision", "As a consultant, I want to record a client decision with context so that the team can act consistently.", "A decision includes owner, date, context, and outcome.", 3, mayaId, sprint14Id, BoardStatus.ToDo,
+        var decision = AddStory(102, portalId, "Capture a client decision", "As a consultant, I want to record a client decision with context so that the team can act consistently.", "A decision includes owner, date, context, and outcome.", 3, mayaId, sprint14Id, BoardStatus.ToDo,
             [("Draft decision form", false, mayaId)]);
         AddStory(103, copilotId, "Evaluate answers against source material", "As an AI delivery lead, I want grounded-answer evaluation so that client recommendations remain trustworthy.", "Evaluation reports citation coverage and unsupported claims for a test set.", 8, amaraId, sprint14Id, BoardStatus.ToDo, []);
-        AddStory(104, playbookId, "Start a project from a lightweight checklist", "As a delivery lead, I want a repeatable kickoff checklist so that setup work is not missed.", "Checklist covers access, stakeholders, goals, risks, and communication cadence.", 3, null, sprint14Id, BoardStatus.Done,
+        var checklist = AddStory(104, playbookId, "Start a project from a lightweight checklist", "As a delivery lead, I want a repeatable kickoff checklist so that setup work is not missed.", "Checklist covers access, stakeholders, goals, risks, and communication cadence.", 3, null, sprint14Id, BoardStatus.Done,
             [("Validate with recent projects", true, mayaId)]);
         AddStory(105, copilotId, "Create an AI engagement risk canvas", "As a consultant, I want to identify AI delivery risks early so that mitigations are part of the plan.", "Canvas covers privacy, quality, adoption, security, and human oversight.", 5, amaraId, null, BoardStatus.ToDo, []);
 
@@ -119,10 +119,20 @@ public sealed class WorkboardDbInitializer
         archived.Update(playbookId, archived.Title, "An older exploration retained for reference.", "Research is summarized.", 2, null);
         archived.Archive();
         _db.Add(archived);
+        LogTime(health, noahId, 30, 4m, "Built the summary card");
+        LogTime(health, noahId, 31, 2.5m, "Wired the health signals");
+        LogTime(health, mayaId, 31, 1.5m, "Reviewed the health language");
+        LogTime(decision, mayaId, 28, 3m, "Drafted the decision form");
+        LogTime(checklist, mayaId, 24, 6m, "Validated the checklist with recent projects");
+        LogTime(checklist, noahId, 25, 2m, "Wrote up the access steps");
         _db.Add(new StoryKeySequence(1, 107));
     }
 
-    private void AddStory(
+    /// <summary>Hours logged against a seeded story, so an assistant page opens with a record to read.</summary>
+    private void LogTime(Story story, Guid assistantId, int augustDay, decimal hours, string note) =>
+        _db.Add(new TimeEntry(Guid.NewGuid(), story.Id, assistantId, new DateOnly(2026, 8, augustDay), hours, note));
+
+    private Story AddStory(
         long number,
         Guid epicId,
         string title,
@@ -145,5 +155,6 @@ public sealed class WorkboardDbInitializer
 
         story.ReplaceTasks(tasks.Select(task => new StoryTask(Guid.NewGuid(), story.Id, task.Title, task.Complete, task.AssistantId)));
         _db.Add(story);
+        return story;
     }
 }

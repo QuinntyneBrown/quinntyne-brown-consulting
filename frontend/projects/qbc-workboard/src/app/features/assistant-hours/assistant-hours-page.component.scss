@@ -1,0 +1,191 @@
+:host {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px clamp(16px, 2vw, 32px) 0;
+}
+
+qbc-back-link {
+  padding-inline: 4px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.profile-detail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.totals {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.stat-label {
+  margin: 0;
+  color: var(--qbc-ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.stat-value {
+  margin: 6px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.share-caption {
+  margin: 0;
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+}
+
+.story-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.result-count {
+  margin: 0;
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+}
+
+.story-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hours-row {
+  padding: 12px 14px;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-md);
+  background: var(--qbc-surface);
+}
+
+/* Six columns beside the navigation rail do not fit at 1024, so the row stacks a breakpoint
+   earlier than the shell does. The identity column is allowed to shrink; without `minmax(0, …)`
+   a long story title would push the row past the viewport instead of wrapping. */
+.row-main {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  grid-template-columns: minmax(0, 2fr) auto auto auto auto;
+}
+.identity {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 10px;
+}
+.identity > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.identity strong,
+.identity small {
+  overflow-wrap: anywhere;
+}
+.identity small {
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+}
+.story-key {
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hours-cell {
+  white-space: nowrap;
+}
+.of-total {
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+}
+.actions {
+  gap: 4px;
+}
+
+/* Revealed only when the row stacks, which is the idiom qbc-data-row already uses. */
+.cell-label {
+  display: none;
+  color: var(--qbc-ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.entries {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--qbc-line);
+}
+.entry {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+}
+.entry-date {
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.entry-note {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+@media (max-width: 1180px) {
+  .row-main {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .identity {
+    grid-column: 1 / -1;
+  }
+  .cell-label {
+    display: inline;
+  }
+}
+
+@media (max-width: 760px) {
+  .row-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cell,
+  .entry {
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: flex-start;
+  }
+  .entry {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}

@@ -13,6 +13,7 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
     public IQueryable<Story> Stories => Set<Story>();
     public IQueryable<StoryTask> StoryTasks => Set<StoryTask>();
     public IQueryable<Assistant> Assistants => Set<Assistant>();
+    public IQueryable<TimeEntry> TimeEntries => Set<TimeEntry>();
     public IQueryable<Sprint> Sprints => Set<Sprint>();
     public IQueryable<StoryKeySequence> StoryKeySequences => Set<StoryKeySequence>();
     public IQueryable<WorkspaceAccess> WorkspaceAccess => Set<WorkspaceAccess>();
@@ -84,6 +85,18 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
         {
             entity.HasKey(item => item.Id);
             entity.Property(item => item.Title).IsRequired();
+            entity.HasOne<Assistant>().WithMany().HasForeignKey(item => item.AssistantId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<TimeEntry>(entity =>
+        {
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.Note).IsRequired();
+            // Quarter hours in a working day need two decimal places; the default would be inherited.
+            entity.Property(item => item.Hours).HasPrecision(5, 2);
+            // Deleting a story takes its entries with it. Deleting an assistant does not: the hours
+            // they logged are the record of who did the work, so the delete is refused instead.
+            entity.HasOne<Story>().WithMany().HasForeignKey(item => item.StoryId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne<Assistant>().WithMany().HasForeignKey(item => item.AssistantId).OnDelete(DeleteBehavior.Restrict);
         });
 

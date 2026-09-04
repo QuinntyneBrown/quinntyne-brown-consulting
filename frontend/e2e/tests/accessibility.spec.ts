@@ -1,5 +1,6 @@
 import { test } from '../fixtures/workboard.fixture';
 import { AccessibilityPage } from '../pages/accessibility.page';
+import { AssistantHoursPage } from '../pages/assistant-hours.page';
 import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
@@ -107,6 +108,26 @@ test('L2-040 · Verify accessibility on every dialog type', async ({ page }) => 
   await workboard.navigateTo('assistants');
   await accessibility.scanDialogOpenedBy(/New assistant/, 'New assistant');
   await accessibility.scanDialogOpenedBy('Delete', 'Reassign work first');
+});
+
+test('L2-040 · Verify accessibility on assistant hours', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  const accessibility = new AccessibilityPage(page);
+  const hours = new AssistantHoursPage(page);
+
+  await workboard.navigateTo('assistants');
+  await hours.openFromDirectory('Noah Williams');
+  await accessibility.expectNoSeriousViolations();
+
+  // The disclosed entries and the logging dialog are both part of the page's surface.
+  await hours.expandStory('Publish a concise engagement health summary');
+  await accessibility.expectNoSeriousViolations();
+  await accessibility.scanDialogOpenedBy(/Log hours/, 'Log hours');
+
+  // The empty state is its own layout, and nobody should meet a meter with nothing to measure.
+  await workboard.navigateTo('assistants');
+  await hours.openFromDirectory('Amara Okafor');
+  await accessibility.expectNoSeriousViolations();
 });
 
 test('L2-040 · Verify accessibility on the epic summary', async ({ page }) => {

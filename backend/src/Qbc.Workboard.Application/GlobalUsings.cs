@@ -12,6 +12,8 @@ global using Qbc.Workboard.Application.Features.Sprints.Projections;
 global using Qbc.Workboard.Application.Features.Stories.Dtos;
 global using Qbc.Workboard.Application.Features.Stories.Policies;
 global using Qbc.Workboard.Application.Features.Stories.Projections;
+global using Qbc.Workboard.Application.Features.TimeEntries.Dtos;
+global using Qbc.Workboard.Application.Features.TimeEntries.Projections;
 global using Qbc.Workboard.Application.Features.Workspace.Dtos;
 global using Qbc.Workboard.Domain.Entities;
 global using Qbc.Workboard.Domain.Enums;

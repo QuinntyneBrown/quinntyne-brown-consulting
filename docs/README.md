@@ -28,6 +28,7 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 | Work items | [Manage assistants and assignments](detailed-designs/work-items/manage-assistants-and-assignments/) | `L2-009`–`L2-010` |
 | Work items | [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/) | `L2-046`–`L2-048` |
 | Work items | [Write an epic summary](detailed-designs/work-items/edit-epic-summary/) | `L2-003`, `L2-049` |
+| Work items | [Log hours against a story](detailed-designs/work-items/log-hours-against-a-story/) | `L2-050`–`L2-051` |
 | Planning | [Groom the backlog](detailed-designs/planning/groom-backlog/) | `L2-011`–`L2-012` |
 | Planning | [Plan two-week sprints](detailed-designs/planning/plan-two-week-sprints/) | `L2-013`–`L2-016` |
 | Delivery | [Execute the active sprint](detailed-designs/delivery/execute-active-sprint/) | `L2-017`–`L2-020` |
@@ -52,12 +53,16 @@ and five rendered PNG diagrams.
   **Time logged** panel in the story editor, a quick **Log hours** action on a board card,
   and an hours total on each assistant card.
 
-  **This study proposes behavior the requirements baseline excludes.** `L1.md` §4 places
-  time tracking outside the baseline, and `L1-013` records that the workspace establishes
-  no individual identity, so the study picks the assistant rather than assuming one. Two
-  records the product does not keep are invented here: a time entry, and "worked on"
-  meaning "has logged hours against", since a story only remembers who owns it now. Nothing
-  in `specs/` or `detailed-designs/` describes any of it yet.
+  The study proposed behavior the baseline then excluded, and the product has since taken
+  it up: `L1-015` brings recorded hours inside the scope `L1.md` §4 defines, `L2-050` and
+  `L2-051` specify them, and
+  [Log hours against a story](detailed-designs/work-items/log-hours-against-a-story/)
+  describes the implementation. Two of the study's inventions survived into the product —
+  the time entry itself, and "worked on" meaning "has logged hours against", since a story
+  only remembers who owns it now. The story-editor panel and the board card's quick action
+  did not: the shipped page and its dialog are the whole of it so far. `L1-013` still
+  establishes no individual identity, so the assistant is picked on the form rather than
+  assumed, exactly as the study has it.
 
 - [`mocks/pin-auth.html`](mocks/pin-auth.html) is the self-contained interaction
   study behind the passcode gate. It carries its own copy of the design tokens

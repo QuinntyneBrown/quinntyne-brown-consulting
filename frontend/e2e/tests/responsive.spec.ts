@@ -1,4 +1,5 @@
 import { test } from '../fixtures/workboard.fixture';
+import { AssistantHoursPage } from '../pages/assistant-hours.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
 import { StoryEditorPage } from '../pages/story-editor.page';
@@ -70,6 +71,14 @@ for (const width of [320, 390, 768, 1024, 1440]) {
         await workboard.expectNoHorizontalOverflow();
         await workboard.expectContentWithinViewport();
       }
+
+      // The hours row carries six columns beside the rail, and an expanded story adds a fourth
+      // column inside it, so it is checked in the state that has the most to fit.
+      const hours = new AssistantHoursPage(page);
+      await hours.openFromDirectory('Noah Williams');
+      await hours.expandStory('Publish a concise engagement health summary');
+      await workboard.expectNoHorizontalOverflow();
+      await workboard.expectContentWithinViewport();
     });
   });
 }

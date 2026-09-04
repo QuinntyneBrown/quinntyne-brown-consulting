@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — Log hours, read the report, and correct a mistake
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "AssistantHoursPageComponent" as page
+  participant "IAssistantHoursService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "TimeEntriesController" as entries
+  participant "AssistantsController" as assistants
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "LogTimeCommandHandler" as handler
+  participant "TimeEntry" as entry
+  participant "AssistantHoursProjection" as projection
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> page : Log L2-050 hours against a story
+page -> service : log(draft)
+service -> entries : POST /api/time-entries
+entries -> handler : Send LogTimeCommand
+alt hours outside quarter-hour increments, or no date
+  handler --> entries : Validation failure by field
+  entries --> service : 400 Problem Details
+  service --> page : Present the invalid fields
+else story or assistant does not exist
+  handler --> entries : Not found
+  entries --> service : 404 Problem Details
+  service --> page : Present the missing record
+else entry is acceptable
+  handler -> entry : Create with trimmed note
+  entry --> handler : Entry
+  handler -> db : Commit entry
+  db --> handler : Commit result
+  handler --> entries : TimeEntryDto
+  entries --> service : 201 JSON
+end
+service -> assistants : GET L2-051 /api/assistants/{id}/hours
+assistants -> projection : Send GetAssistantHoursQuery
+projection -> db : Load entries, stories, and epics
+db --> projection : Records
+projection --> assistants : Totals, completion share, stories worked on
+assistants --> service : 200 JSON
+service --> page : Update the hours Signal
+page --> actor : Present totals and every story worked on
+
+actor -> page : Delete an L2-050 entry after confirmation
+page -> service : delete(entryId, assistantId)
+service -> entries : DELETE /api/time-entries/{id}
+entries -> db : Remove entry and commit
+db --> entries : Commit result
+entries --> service : 204 No Content
+service -> assistants : GET /api/assistants/{id}/hours
+assistants --> service : Totals without the removed hours
+service --> page : Update the hours Signal
+page --> actor : Present the reduced totals
+@enduml

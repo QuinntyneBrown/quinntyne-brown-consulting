@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Assistant } from '@qbc/api';
 import {
@@ -48,6 +49,7 @@ export class AssistantsPageComponent implements OnInit {
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
   private readonly editor = inject(STORY_EDITOR_SERVICE);
+  private readonly router = inject(Router);
   readonly service = inject(ASSISTANT_SERVICE);
   readonly assistantId = signal<string | null>(null);
   readonly blockingAssistant = signal<Assistant | null>(null);
@@ -67,6 +69,11 @@ export class AssistantsPageComponent implements OnInit {
 
   ngOnInit(): void {
     void this.service.load();
+  }
+
+  /** The hours an assistant logged are their own page, addressed by the assistant. */
+  openHours(assistant: Assistant): void {
+    void this.router.navigate(['/assistants', assistant.id]);
   }
 
   openForm(assistant?: Assistant): void {

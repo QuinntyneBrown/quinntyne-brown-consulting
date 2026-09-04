@@ -174,6 +174,29 @@ The following details differ:
 The design should adopt the story-aggregate assignment path and document the
 frontend pre-check plus backend guard.
 
+### Work items — log hours against a story
+
+The [logged-hours design](detailed-designs/work-items/log-hours-against-a-story/README.md)
+was written alongside the implementation, so its prose, class structure, and
+sequence name the types that exist. The two are aligned today.
+
+Two decisions in it are worth restating, because a later reader could reasonably
+expect the opposite:
+
+- Completion is read at projection time, not stamped on the entry. No story
+  carries a completed-at moment, so "hours on completed stories" means hours
+  against stories whose board status is Done when the report is read. Moving a
+  story off Done moves its hours out of the completed total with it.
+- `AssistantHoursProjection` sums hours in memory over loaded records. The
+  acceptance suite runs on SQLite, which stores a `decimal` as text and would
+  sum it as text, so a database-side aggregate would be correct in production
+  and wrong under test.
+
+`AssistantProjection` gained a fourth parameter for the entries, because
+deleting an assistant must be refused while any of their hours remain. Without
+it the delete meets the foreign key and answers `500` where `L2-050` requires
+`409`.
+
 ### Planning — groom the backlog
 
 The [backlog design](detailed-designs/planning/groom-backlog/README.md) matches
@@ -368,7 +391,7 @@ already copied from [`docs/specs`](specs/).
 ### Phase 3 — regenerate and verify design artifacts
 
 1. Render every changed `.puml` source to its sibling `.png`.
-2. Verify that all 60 PlantUML sources have rendered PNG siblings.
+2. Verify that all 70 PlantUML sources have rendered PNG siblings.
 3. Verify that every README image link resolves.
 4. Verify that C4 sources retain C4 macros and contain no raw replacement
    shapes or arrows.

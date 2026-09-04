@@ -1,0 +1,87 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Log hours against a story
+
+class TimeEntry {
+  +Guid Id
+  +Guid StoryId
+  +Guid AssistantId
+  +DateOnly WorkedOn
+  +decimal Hours
+  +string Note
+  +Update(assistantId: Guid, workedOn: DateOnly, hours: decimal, note: string): void
+}
+
+class Story {
+  +Guid Id
+  +string Key
+  +BoardStatus BoardStatus
+  +int? Points
+}
+
+class Assistant {
+  +Guid Id
+  +string FullName
+  +string Role
+}
+
+class LogTimeCommand {
+  +Guid StoryId
+  +Guid AssistantId
+  +DateOnly? WorkedOn
+  +decimal Hours
+  +string Note
+  +Validate(): IReadOnlyDictionary<string, string[]>
+}
+
+class LogTimeCommandHandler {
+  +Handle(command: LogTimeCommand): Task<TimeEntryDto>
+}
+
+class DeleteTimeEntryCommandHandler {
+  +Handle(command: DeleteTimeEntryCommand): Task
+}
+
+class AssistantHoursProjection {
+  +Create(assistant, entries, stories, epics, assistants): AssistantHoursDto
+}
+
+class AssistantHoursDto {
+  +decimal HoursLogged
+  +decimal HoursOnCompletedStories
+  +int StoriesWorkedOn
+  +int CompletedStoriesWorkedOn
+  +IReadOnlyList<AssistantHoursStoryDto> Stories
+}
+
+class AssistantHoursStoryDto {
+  +string StoryKey
+  +bool IsComplete
+  +decimal Hours
+  +decimal StoryHours
+  +IReadOnlyList<TimeEntryDto> Entries
+}
+
+class DeleteAssistantCommandHandler {
+  +Handle(command: DeleteAssistantCommand): Task
+}
+
+TimeEntry "0..*" --> "1" Story : spent on (cascade)
+TimeEntry "0..*" --> "1" Assistant : attributed to (restrict)
+LogTimeCommandHandler ..> LogTimeCommand : validates
+LogTimeCommandHandler --> TimeEntry : creates
+DeleteTimeEntryCommandHandler ..> TimeEntry : removes
+AssistantHoursProjection ..> TimeEntry : groups by story
+AssistantHoursProjection --> AssistantHoursDto : builds
+AssistantHoursDto o-- AssistantHoursStoryDto
+DeleteAssistantCommandHandler ..> TimeEntry : refuses while any remain
+@enduml

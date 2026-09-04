@@ -12,8 +12,9 @@ public sealed class GetAssistantsQueryHandler : IRequestHandler<GetAssistantsQue
     {
         var stories = _db.Stories.ToList();
         var tasks = _db.StoryTasks.ToList();
+        var timeEntries = _db.TimeEntries.ToList();
         IReadOnlyList<AssistantDto> result = _db.Assistants.OrderBy(item => item.FullName).ToList()
-            .Select(assistant => AssistantProjection.Create(assistant, stories, tasks)).ToList();
+            .Select(assistant => AssistantProjection.Create(assistant, stories, tasks, timeEntries)).ToList();
         return Task.FromResult(result);
     }
 }
