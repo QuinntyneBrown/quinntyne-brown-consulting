@@ -16,7 +16,10 @@ main {
   .workspace {
     width: 100%;
     margin-left: 0;
-    overflow-x: hidden;
+    // clip, not hidden: hidden turns the workspace into a scroll container that never
+    // scrolls, which would anchor the sticky topbar to a scrollport that never moves and
+    // leave the bar sitting at the top of the document instead of the viewport.
+    overflow-x: clip;
   }
   main {
     padding: 35px var(--qbc-gutter) 65px;

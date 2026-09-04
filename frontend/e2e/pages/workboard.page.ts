@@ -37,6 +37,24 @@ export class WorkboardPage {
     }
   }
 
+  /**
+   * The bar carries the breadcrumb and New story, and on a tablet it is also the only way
+   * back to the navigation, so it stays at the top of the viewport as the page scrolls
+   * under it rather than leaving with the content.
+   */
+  async expectTopbarPinnedWhileScrolling(): Promise<void> {
+    const topbar = this.page.locator('qbc-topbar');
+    await expect(topbar).toBeVisible();
+    const scrolled = await this.page.evaluate(() => {
+      window.scrollTo(0, 400);
+      return window.scrollY;
+    });
+    expect(scrolled, 'the page is too short to prove the bar is pinned').toBeGreaterThan(0);
+    await expect.poll(async () => (await topbar.boundingBox())?.y).toBe(0);
+    await expect(this.page.getByRole('button', { name: /New story/ })).toBeInViewport();
+    await this.page.evaluate(() => window.scrollTo(0, 0));
+  }
+
   async expectNoHorizontalOverflow(): Promise<void> {
     const overflow = await this.page
       .locator('html')

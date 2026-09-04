@@ -95,6 +95,22 @@ export class BoardPage {
     await this.expectStoryInDone(title);
   }
 
+  /**
+   * Three columns still fit on a tablet in landscape, so the cards are at their narrowest
+   * there. A card breaks text anywhere to contain a long unspaced title, and an action
+   * caught by that rule runs down the card one letter per line, so the labels have to
+   * measure wider than they are tall.
+   */
+  async expectStoryActionsOnOneLine(): Promise<void> {
+    const cards = this.page.locator('.story-card');
+    await expect(cards.first()).toBeVisible();
+    for (const card of await cards.all()) {
+      const box = await card.getByRole('button', { name: 'Edit', exact: true }).boundingBox();
+      expect(box, 'the Edit action has no layout box').not.toBeNull();
+      expect(box!.width).toBeGreaterThan(box!.height);
+    }
+  }
+
   private escape(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }

@@ -40,8 +40,25 @@ footer strong {
 }
 footer {
   margin-top: 18px;
+  flex-wrap: wrap;
+}
+// The card breaks anywhere so a long unspaced title cannot widen it, but that rule also
+// reaches the byline and the actions, and in a three-up board on a tablet those are the
+// parts with no room left: without this they break mid-word and run down the card one
+// letter per line. The actions keep their words intact and wrap to their own row instead,
+// and the name gives way to an ellipsis rather than pushing them off.
+footer qbc-avatar {
+  flex-shrink: 0;
+}
+footer strong {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 footer > div {
   display: flex;
+  flex-shrink: 0;
   margin-left: auto;
+  white-space: nowrap;
 }
