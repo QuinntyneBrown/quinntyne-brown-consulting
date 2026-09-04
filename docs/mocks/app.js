@@ -9,8 +9,8 @@ const seedWorkspace = () => ({
     { id: "asst-amara", name: "Amara Okafor", role: "AI Delivery Assistant", specialties: ["AI workflows", "Evaluation", "Data"], availability: "Limited" }
   ],
   initiatives: [
-    { id: "init-client", title: "Client Delivery Excellence", description: "Make every consulting engagement clear, predictable, and valuable." },
-    { id: "init-ai", title: "AI-Enabled Consulting", description: "Build practical AI capabilities that improve how clients work." }
+    { id: "init-client", title: "Client Delivery Excellence", description: "# Client Delivery Excellence\n\nMake every consulting engagement clear, predictable, and valuable.\n\n## Outcome\n\nA client can see where their engagement stands without asking for a status call." },
+    { id: "init-ai", title: "AI-Enabled Consulting", description: "# AI-Enabled Consulting\n\nBuild practical AI capabilities that improve how clients work.\n\n## Outcome\n\nA consultant reaches a defensible recommendation in days rather than weeks." }
   ],
   epics: [
     { id: "epic-portal", initiativeId: "init-client", title: "Client project portal", summary: "A calm, shared view of delivery progress and decisions." },
@@ -283,12 +283,27 @@ function renderHierarchy() {
   </section>`;
 }
 
+/**
+ * An initiative's description is a markdown outcome brief, and the card has one line for it, so it
+ * carries the brief's first line of prose. Headings, quotes, and table rows are skipped: a brief
+ * that opens with its title would otherwise be summarised by its own scaffolding.
+ */
+function summariseBrief(markdown = "") {
+  const prose = markdown.split("\n").find(line => line.trim() && !/^[#>|]/.test(line.trim()));
+  return prose === undefined ? "No brief written yet." : prose.replace(/[*_`]/g, "");
+}
+
+/** The name and the brief are saved together, so both are written on the initiative's own page. */
+function openInitiativeEditor(id) {
+  window.location.href = id ? `initiative-editor.html?id=${encodeURIComponent(id)}` : "initiative-editor.html?new";
+}
+
 function renderInitiative(initiative) {
   const epics = workspace.epics.filter(epic => epic.initiativeId === initiative.id);
   const storyCount = epics.reduce((count, epic) => count + workspace.stories.filter(story => story.epicId === epic.id && story.state !== "archived").length, 0);
   return `<article class="initiative-card">
     <header class="initiative-head">
-      <div class="initiative-title"><span class="brand-mark" aria-hidden="true">↗</span><div><h2>${escapeHTML(initiative.title)}</h2><p>${escapeHTML(initiative.description)}</p></div></div>
+      <div class="initiative-title"><span class="brand-mark" aria-hidden="true">↗</span><div><h2>${escapeHTML(initiative.title)}</h2><p>${escapeHTML(summariseBrief(initiative.description))}</p></div></div>
       <div class="hierarchy-actions"><span class="pill muted">${epics.length} epics · ${storyCount} stories</span><button class="quiet-button" data-action="edit-initiative" data-id="${initiative.id}">Edit</button><button class="quiet-button" data-action="delete-initiative" data-id="${initiative.id}">Delete</button></div>
     </header>
     <div class="epic-list">
@@ -356,11 +371,6 @@ function showEntityForm(kind, id = "", preset = {}) {
       ${field("state", "Lifecycle", item ? (item.state === "draft" ? "draft" : "active") : "draft", { type: "select", choices: [["draft", "Draft"], ["active", "Active"]], hint: "New stories begin as drafts. Use story actions to archive work." })}
       <div class="task-editor"><div class="section-label"><h3>Tasks <span class="pill muted">Optional</span></h3><small class="field-hint">A lightweight checklist inside this story.</small></div><div class="task-list" id="modal-task-list"></div><div class="task-add"><input id="new-task-title" placeholder="Add a task" aria-label="New task title"><select id="new-task-assistant" aria-label="New task assignee">${assistantChoices.map(([value, label]) => `<option value="${escapeHTML(value)}">${escapeHTML(label)}</option>`).join("")}</select><button class="secondary-button" type="button" data-action="modal-add-task">Add</button></div></div>
     </div>`;
-  } else if (kind === "initiative") {
-    const item = workspace.initiatives.find(initiative => initiative.id === id);
-    title = item ? "Edit initiative" : "Create an initiative";
-    subtitle = "A meaningful business outcome that guides multiple epics.";
-    body = `<div class="form-grid">${field("title", "Initiative name", item?.title, { required: true, full: true })}${field("description", "Outcome / description", item?.description, { type: "textarea", required: true, full: true })}</div>`;
   } else if (kind === "epic") {
     const item = workspace.epics.find(epic => epic.id === id);
     title = item ? "Edit epic" : "Create an epic";
@@ -417,10 +427,6 @@ function submitEntityForm(form) {
       tasks: structuredClone(modalTasks)
     };
     if (existing) Object.assign(existing, story); else workspace.stories.push(story);
-  } else if (kind === "initiative") {
-    const existing = workspace.initiatives.find(item => item.id === id);
-    const next = { id: existing?.id || uid("init"), title: values.title.trim(), description: values.description.trim() };
-    if (existing) Object.assign(existing, next); else workspace.initiatives.push(next);
   } else if (kind === "epic") {
     const existing = workspace.epics.find(item => item.id === id);
     const next = { id: existing?.id || uid("epic"), title: values.title.trim(), initiativeId: values.initiativeId, summary: values.summary.trim() };
@@ -665,8 +671,8 @@ document.addEventListener("click", async event => {
   else if (action === "restore-story") restoreStory(id);
   else if (action === "delete-story") deleteStory(id);
   else if (action === "move-story") moveStory(id, direction);
-  else if (action === "new-initiative") showEntityForm("initiative");
-  else if (action === "edit-initiative") showEntityForm("initiative", id);
+  else if (action === "new-initiative") openInitiativeEditor();
+  else if (action === "edit-initiative") openInitiativeEditor(id);
   else if (action === "delete-initiative") deleteInitiative(id);
   else if (action === "new-epic") showEntityForm("epic", "", { initiativeId });
   else if (action === "edit-epic") showEntityForm("epic", id);

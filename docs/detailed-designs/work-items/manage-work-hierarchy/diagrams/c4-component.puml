@@ -6,7 +6,7 @@ title Components — Manage the work hierarchy
 Person(consultant, "QBC consultant", "Maintains hierarchy records")
 Container_Boundary(spa, "Angular web application") {
   Component(page, "HierarchyPageComponent", "Angular component", "Displays hierarchy and roll-ups")
-  Component(forms, "InitiativeFormComponent / EpicFormComponent", "Angular components", "Capture validated edits")
+  Component(forms, "EpicFormComponent", "Angular component", "Captures validated epic edits; an initiative is written on its own editor route")
   Component(service, "IHierarchyService", "Injection-token contract", "Exposes hierarchy operations and Signals")
 }
 Container_Boundary(api, "Workboard API") {

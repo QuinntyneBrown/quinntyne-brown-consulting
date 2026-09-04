@@ -41,7 +41,10 @@ test.describe(emptyWorkspace.name, () => {
     const sprints = new SprintManagerPage(page);
 
     await workboard.navigateTo('initiatives');
-    await new HierarchyPage(page).expectEmptyState();
+    const hierarchy = new HierarchyPage(page);
+    await hierarchy.expectEmptyState();
+    await hierarchy.expectNewInitiativeOpensTheEditor();
+    await workboard.navigateTo('initiatives');
 
     await workboard.usePrimaryNavigation('Assistants');
     await new AssistantsPage(page).expectEmptyState();

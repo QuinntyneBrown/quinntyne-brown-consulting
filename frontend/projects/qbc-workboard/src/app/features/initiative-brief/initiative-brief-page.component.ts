@@ -1,35 +1,45 @@
-import { Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  Component,
+  HostListener,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import {
   ButtonComponent,
   DialogComponent,
   FormErrorComponent,
   LoadingStateComponent,
   PageHeaderComponent,
-  SectionLabelComponent,
   SegmentedComponent,
   SegmentedOption,
-  SelectComponent,
-  SelectOption,
-  SelectValue,
   TextInputComponent,
 } from '@qbc/components';
-import { HIERARCHY_SERVICE } from '../hierarchy/hierarchy.service.contract';
 import { BriefEditorComponent } from './editor/brief-editor.component';
-import { BriefEditorAdapter } from './editor/brief-editor-adapter';
-import { BRIEF_SNIPPETS, BRIEF_TEMPLATE } from './markdown/brief-snippets';
+import { BriefEditorHandle } from './editor/brief-editor-handle';
+import { BRIEF_TEMPLATE } from './markdown/brief-snippets';
 import { INITIATIVE_BRIEF_SERVICE } from './initiative-brief.service.contract';
-import { MARKDOWN_COMMANDS, insertBlock } from './markdown/markdown-commands';
-import { readOutline } from './markdown/read-outline';
+import { MARKDOWN_COMMANDS } from './markdown/markdown-commands';
 import { renderMarkdown } from './markdown/render-markdown';
 import { BriefView } from './brief-view';
 import { FormattingTool } from './formatting-tool';
+import { InitiativeDraft } from './initiative-draft';
 
 const VIEWS: readonly SegmentedOption[] = [
   { value: 'write', label: 'Write', title: 'Write only (Alt+1)' },
   { value: 'split', label: 'Split', title: 'Split (Alt+2)' },
   { value: 'preview', label: 'Preview', title: 'Preview only (Alt+3)' },
 ];
+
+const VIEW_KEYS: Readonly<Record<string, BriefView>> = {
+  '1': 'write',
+  '2': 'split',
+  '3': 'preview',
+};
 
 const TOOLS: readonly FormattingTool[] = [
   { command: 'heading', label: 'H2', name: 'Heading' },
@@ -47,10 +57,14 @@ const TOOLS: readonly FormattingTool[] = [
   { command: 'rule', label: '—', name: 'Divider' },
 ];
 
+/** What a brief that has never been written starts from, so a new initiative opens structured. */
+const NEW_INITIATIVE: InitiativeDraft = { name: '', description: BRIEF_TEMPLATE };
+
 /**
- * The outcome brief for one initiative, written as markdown. The page owns the draft; nothing is
- * persisted until the writer saves, and nothing is written to browser storage, so an unsaved brief
- * lives only for as long as the page does.
+ * The one surface an initiative is written on. It carries the name and the outcome brief together,
+ * whether the initiative is being created or edited, because they are saved as one record. The page
+ * owns the draft; nothing is persisted until the writer saves, and nothing is written to browser
+ * storage, so an unsaved brief lives only for as long as the page does.
  */
 @Component({
   selector: 'app-initiative-brief-page',
@@ -61,9 +75,8 @@ const TOOLS: readonly FormattingTool[] = [
     FormErrorComponent,
     LoadingStateComponent,
     PageHeaderComponent,
-    SectionLabelComponent,
+    RouterLink,
     SegmentedComponent,
-    SelectComponent,
     TextInputComponent,
   ],
   templateUrl: './initiative-brief-page.component.html',
@@ -71,41 +84,41 @@ const TOOLS: readonly FormattingTool[] = [
 })
 export class InitiativeBriefPageComponent {
   private readonly guardDialog = viewChild.required<DialogComponent>('guardDialog');
-  private readonly editor = viewChild(BriefEditorComponent);
   private readonly router = inject(Router);
   private readonly service = inject(INITIATIVE_BRIEF_SERVICE);
-  readonly hierarchyService = inject(HIERARCHY_SERVICE);
 
-  readonly initiativeId = input.required<string>();
+  /** Absent on the create route, where there is no initiative to read yet. */
+  readonly initiativeId = input<string>();
   readonly views = VIEWS;
   readonly tools = TOOLS;
-  readonly buildingBlocks: readonly SelectOption[] = [
-    { value: null, label: 'Insert…' },
-    ...BRIEF_SNIPPETS.map((snippet) => ({ value: snippet.key, label: snippet.label })),
-  ];
 
   readonly view = signal<BriefView>('write');
-  readonly draftName = signal('');
-  readonly draftBrief = signal('');
-  readonly cursorLine = signal(1);
+  readonly draftName = signal(NEW_INITIATIVE.name);
+  readonly draftBrief = signal(NEW_INITIATIVE.description);
   readonly pending = signal(false);
   readonly formError = signal('');
-  private adapter: BriefEditorAdapter | null = null;
+  /**
+   * The initiative as it was last saved, which unsaved changes are measured against. A new
+   * initiative starts from the template, so opening the create route and leaving again asks nothing.
+   */
+  private readonly baseline = signal<InitiativeDraft>(NEW_INITIATIVE);
+  private editor: BriefEditorHandle | null = null;
   private resolveGuard: ((leave: boolean) => void) | null = null;
 
   readonly loadingState = this.service.loadingState;
   readonly error = this.service.error;
-  readonly initiative = this.service.initiative;
 
-  readonly dirty = computed(() => {
-    const saved = this.initiative();
-    if (saved === null) return false;
-    return this.draftName() !== saved.name || this.draftBrief() !== saved.description;
-  });
+  readonly isNew = computed(() => this.initiativeId() === undefined);
+  readonly title = computed(() => (this.isNew() ? 'New initiative' : 'Edit initiative'));
+
+  readonly dirty = computed(
+    () =>
+      this.draftName() !== this.baseline().name ||
+      this.draftBrief() !== this.baseline().description,
+  );
 
   readonly isEmpty = computed(() => this.draftBrief().trim().length === 0);
   readonly rendered = computed(() => renderMarkdown(this.draftBrief()));
-  readonly outline = computed(() => readOutline(this.draftBrief()));
   readonly wordCount = computed(() => {
     const brief = this.draftBrief().trim();
     return brief.length === 0 ? 0 : brief.split(/\s+/).length;
@@ -115,71 +128,56 @@ export class InitiativeBriefPageComponent {
     const words = this.wordCount();
     return words < 60 ? 'under a minute to read' : `about ${Math.ceil(words / 200)} min to read`;
   });
-  readonly currentHeadingId = computed(() => {
-    const line = this.cursorLine();
-    let current = '';
-    for (const heading of this.outline()) if (heading.line <= line) current = heading.id;
-    return current;
-  });
-  readonly engineNote = computed(() => {
-    const engine = this.editor()?.engine() ?? 'loading';
-    if (engine === 'monaco') return 'Code editor';
-    return engine === 'textarea' ? 'Plain field' : 'Loading…';
-  });
 
   constructor() {
-    effect(() => void this.service.load(this.initiativeId()));
-    effect(() => void this.hierarchyService.load());
     effect(() => {
-      const saved = this.initiative();
+      const id = this.initiativeId();
+      if (id !== undefined) void this.service.load(id);
+    });
+    effect(() => {
+      const saved = this.service.initiative();
       if (saved === null || saved.id !== this.initiativeId()) return;
-      this.draftName.set(saved.name);
-      this.draftBrief.set(saved.description);
-      this.adapter?.setValue(saved.description);
+      this.reset({ name: saved.name, description: saved.description });
     });
   }
 
-  onEditorReady(adapter: BriefEditorAdapter): void {
-    this.adapter = adapter;
-    adapter.onChange(() => this.draftBrief.set(adapter.getValue()));
-    adapter.onCursor((offset) => this.cursorLine.set(adapter.positionAt(offset).line));
-    const saved = this.initiative();
-    if (saved !== null) adapter.setValue(saved.description);
+  /** The view switch advertises these on its own controls, so the page has to honour them. */
+  @HostListener('document:keydown', ['$event'])
+  onShortcut(event: KeyboardEvent): void {
+    if (!event.altKey || event.ctrlKey || event.metaKey) return;
+    const view = VIEW_KEYS[event.key];
+    if (view === undefined) return;
+    event.preventDefault();
+    this.showView(view);
+  }
+
+  onEditorReady(editor: BriefEditorHandle): void {
+    this.editor = editor;
+    editor.onChange(() => this.draftBrief.set(editor.getValue()));
+    editor.setValue(this.draftBrief());
   }
 
   runCommand(command: string): void {
     const transform = MARKDOWN_COMMANDS[command];
-    if (transform === undefined || this.adapter === null) return;
-    this.adapter.apply(transform(this.adapter.getState()));
-  }
-
-  insertBuildingBlock(key: SelectValue): void {
-    const snippet = BRIEF_SNIPPETS.find((item) => item.key === key);
-    if (snippet === undefined || this.adapter === null) return;
-    const state = this.adapter.getState();
-    this.adapter.apply(insertBlock(state.text, state.start, state.end, snippet.body));
+    if (transform === undefined || this.editor === null) return;
+    this.editor.apply(transform(this.editor.getState()));
   }
 
   insertTemplate(): void {
-    if (this.adapter === null) return;
-    this.adapter.setValue(BRIEF_TEMPLATE);
-    this.draftBrief.set(BRIEF_TEMPLATE);
-  }
-
-  goToHeading(id: string, line: number): void {
-    if (this.view() === 'preview') {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
-    }
-    this.adapter?.revealLine(line);
+    this.setBrief(BRIEF_TEMPLATE);
   }
 
   showView(view: string): void {
     this.view.set(view as BriefView);
-    if (view !== 'preview') setTimeout(() => this.adapter?.layout(), 0);
+    if (view !== 'preview') setTimeout(() => this.editor?.layout(), 0);
   }
 
-  async save(): Promise<boolean> {
+  /**
+   * Saving a new initiative normally moves the page onto the address it was given. A save made on
+   * the way out must not: starting a navigation of its own would cancel the one the writer asked
+   * for and strand them here.
+   */
+  async save({ address = true } = {}): Promise<boolean> {
     const missing: string[] = [];
     if (!this.draftName().trim()) missing.push('Initiative name');
     if (!this.draftBrief().trim()) missing.push('Outcome brief');
@@ -190,21 +188,27 @@ export class InitiativeBriefPageComponent {
 
     this.formError.set('');
     this.pending.set(true);
-    const saved = await this.service.save(
-      this.initiativeId(),
-      this.draftName().trim(),
-      this.draftBrief(),
-    );
+    const name = this.draftName().trim();
+    const brief = this.draftBrief();
+    const id = this.initiativeId();
+    const saved =
+      id === undefined
+        ? await this.service.create(name, brief)
+        : await this.service.save(id, name, brief);
     this.pending.set(false);
-    return saved;
+    if (saved === null) return false;
+
+    // The baseline moves before the navigation, so the page's own success cannot trip the guard.
+    this.baseline.set({ name: saved.name, description: saved.description });
+    this.draftName.set(saved.name);
+    if (id === undefined && address) {
+      await this.router.navigate(['/initiatives', saved.id], { replaceUrl: true });
+    }
+    return true;
   }
 
   discard(): void {
-    const saved = this.initiative();
-    if (saved === null) return;
-    this.draftName.set(saved.name);
-    this.draftBrief.set(saved.description);
-    this.adapter?.setValue(saved.description);
+    this.reset(this.baseline());
     this.formError.set('');
   }
 
@@ -227,22 +231,7 @@ export class InitiativeBriefPageComponent {
   }
 
   async saveAndLeave(): Promise<void> {
-    const saved = await this.save();
-    if (saved) this.settleGuard(true);
-  }
-
-  /** Switching briefs stays on the same route, so the dirty check is made here rather than by the guard. */
-  async openBrief(id: string): Promise<void> {
-    if (id === this.initiativeId()) return;
-    if (!(await this.confirmLeaving())) return;
-    await this.router.navigate(['/initiatives', id, 'brief']);
-  }
-
-  summarise(description: string): string {
-    const prose = description
-      .split('\n')
-      .find((line) => line.trim() && !/^[#>|]/.test(line.trim()));
-    return prose === undefined ? 'No brief written yet.' : prose.replace(/[*_`]/g, '');
+    if (await this.save({ address: false })) this.settleGuard(true);
   }
 
   /** Escape or the close control means the writer is staying with the brief. */
@@ -250,6 +239,21 @@ export class InitiativeBriefPageComponent {
     const resolve = this.resolveGuard;
     this.resolveGuard = null;
     resolve?.(false);
+  }
+
+  private reset(draft: InitiativeDraft): void {
+    this.baseline.set(draft);
+    this.draftName.set(draft.name);
+    this.setBrief(draft.description);
+  }
+
+  /**
+   * Pushing a value the editor already holds would move the caret back to the top of the document,
+   * which is what a save that changed nothing about the source would otherwise do to the writer.
+   */
+  private setBrief(markdown: string): void {
+    this.draftBrief.set(markdown);
+    if (this.editor !== null && this.editor.getValue() !== markdown) this.editor.setValue(markdown);
   }
 
   private settleGuard(leave: boolean): void {

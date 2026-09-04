@@ -7,7 +7,6 @@ export interface IHierarchyService {
   readonly loadingState: Signal<LoadingState>;
   readonly error: Signal<string | null>;
   load(): Promise<void>;
-  saveInitiative(id: string | null, name: string, description: string): Promise<boolean>;
   deleteInitiative(id: string): Promise<boolean>;
   saveEpic(
     id: string | null,

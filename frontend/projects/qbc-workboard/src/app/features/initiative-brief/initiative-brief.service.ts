@@ -5,8 +5,9 @@ import { LoadingState } from '../../models/loading-state';
 import { IInitiativeBriefService } from './initiative-brief.service.contract';
 
 /**
- * Reads and writes one initiative's outcome brief. The brief is the initiative's description, so a
- * save is an ordinary initiative update and every projection that names the initiative sees it.
+ * Reads and writes one initiative and its outcome brief. The brief is the initiative's description,
+ * so a save is an ordinary initiative create or update and every projection that names the
+ * initiative sees it.
  */
 @Injectable({ providedIn: 'root' })
 export class InitiativeBriefService implements IInitiativeBriefService {
@@ -30,15 +31,31 @@ export class InitiativeBriefService implements IInitiativeBriefService {
     }
   }
 
-  async save(id: string, name: string, description: string): Promise<boolean> {
+  async create(name: string, description: string): Promise<Initiative | null> {
+    return this.store(
+      this.backendService.createInitiative(name, description),
+      'Initiative created.',
+    );
+  }
+
+  async save(id: string, name: string, description: string): Promise<Initiative | null> {
+    return this.store(
+      this.backendService.updateInitiative(id, name, description),
+      'Initiative saved.',
+    );
+  }
+
+  private async store(request: Promise<Initiative>, message: string): Promise<Initiative | null> {
     this.errorValue.set(null);
     try {
-      this.initiativeValue.set(await this.backendService.updateInitiative(id, name, description));
-      this.feedback.show('Initiative brief saved.');
-      return true;
+      const stored = await request;
+      this.initiativeValue.set(stored);
+      this.loadingValue.set('loaded');
+      this.feedback.show(message);
+      return stored;
     } catch (error) {
       this.fail(error);
-      return false;
+      return null;
     }
   }
 

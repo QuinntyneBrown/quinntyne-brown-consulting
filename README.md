@@ -25,8 +25,8 @@ releases. Requirements and data migrations may change before the first release.
 - Navigate among the sprint board, backlog, initiative hierarchy, and assistant
   directory without a full-page reload.
 - Manage initiatives, epics, stories, checklist tasks, and assistant assignments.
-- Write each initiative's outcome brief as markdown, with a formatting toolbar,
-  insertable building blocks, a live preview, and a heading outline.
+- Write every initiative as a name and an outcome brief in markdown, on one page,
+  with a formatting toolbar and a live preview.
 - Groom and estimate stories before assigning them to a 14-day sprint.
 - Move active work through To do, In progress, and Done with pointer, keyboard,
   and touch-friendly controls.
@@ -188,36 +188,43 @@ answered with HTTP 429. A four-digit passcode is only ten thousand combinations,
 so that throttle, rather than the passcode itself, is what makes guessing
 impractical.
 
-## Initiative outcome briefs
+## Initiatives and their outcome briefs
 
-Every initiative carries an outcome brief: its description, written and read as
-markdown. **Edit brief** on an initiative opens it at
-`/initiatives/{initiativeId}/brief`, which is an ordinary deep link and can be
-shared or reloaded.
+An initiative is a name and an outcome brief: its description, written and read
+as markdown. Both are saved together on one page, so there is one way to write an
+initiative and no plain-text description field anywhere. **New initiative** opens
+that page at `/initiatives/new`, and **Edit** on an initiative opens it at
+`/initiatives/{initiativeId}`. Both are ordinary deep links and can be shared or
+reloaded.
 
 | Route | Purpose |
 | --- | --- |
 | `/board` | The active sprint board |
 | `/backlog` | The searchable, filterable backlog |
 | `/initiatives` | The initiative and epic hierarchy |
-| `/initiatives/{initiativeId}/brief` | The initiative's markdown outcome brief |
+| `/initiatives/new` | A new initiative: its name and outcome brief |
+| `/initiatives/{initiativeId}` | An existing initiative's name and outcome brief |
 | `/assistants` | The assistant directory |
 | `/unlock` | The shared passcode screen |
 
 The brief supports headings, emphasis, links, inline and fenced code, bulleted,
 numbered and task lists with nesting, blockquotes, tables, and dividers. Write,
 split, and preview views show the markdown source, both panes, or the rendered
-brief alone. The outline lists the brief's headings and moves the editor to any
-of them, and the status bar reports the word and character count.
+brief alone, and `Alt+1`, `Alt+2`, and `Alt+3` reach the same three. The status
+bar reports the word and character count. A new initiative opens from the outcome
+brief template, which an emptied brief offers back.
 
-A brief is required and is limited to 100,000 characters. Saving updates the
-initiative, so a renamed initiative is renamed everywhere it appears. Leaving the
-page with unsaved markdown asks whether to keep editing, discard the changes, or
-save and continue; nothing about the brief is written to browser storage.
+A name and a brief are both required, and a brief is limited to 100,000
+characters. Saving stores them on the initiative, so a renamed initiative is
+renamed everywhere it appears, and the hierarchy shows the brief's first line of
+prose rather than its markdown source. Leaving the page with unsaved markdown asks
+whether to keep editing, discard the changes, or save and continue; nothing about
+the brief is written to browser storage.
 
 The markdown source is carried by a bundled code editor that is loaded only when
-the brief route is opened. If it cannot be loaded, the brief falls back to a plain
-markdown field with the same toolbar, preview, and outline.
+the route is opened. A brief is markdown whichever control carries it, so there is
+no plainer field to fall back to: an editor that cannot be loaded is reported as
+unavailable.
 
 ## Database maintenance CLI
 

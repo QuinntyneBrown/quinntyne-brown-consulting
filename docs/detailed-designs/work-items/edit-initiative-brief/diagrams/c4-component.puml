@@ -1,35 +1,35 @@
 @startuml
 !include <C4/C4_Component>
 LAYOUT_WITH_LEGEND()
-title Components — Edit the initiative brief
+title Components — Write an initiative
 
-Person(consultant, "QBC consultant", "Writes the outcome an initiative is pursuing")
+Person(consultant, "QBC consultant", "Names an initiative and writes the outcome it is pursuing")
 ContainerDb(db, "Workspace database", "SQL Server", "Stores the brief as the initiative description")
 
 Container_Boundary(spa, "Web application") {
-  Component(page, "InitiativeBriefPageComponent", "Angular component", "Holds the draft, the chosen view, and the unsaved-changes question")
+  Component(page, "InitiativeBriefPageComponent", "Angular component", "Holds the draft name and brief, the chosen view, and the unsaved-changes question")
   Component(guard, "unsavedBriefGuard", "CanDeactivateFn", "Asks the page before a navigation discards the draft")
-  Component(editor, "BriefEditorComponent", "Angular component", "Carries the markdown source through one adapter")
+  Component(editor, "BriefEditorComponent", "Angular component", "Carries the markdown source in the code editor")
   Component(commands, "MARKDOWN_COMMANDS", "Pure transforms", "Rewrites the source and selection for each toolbar command")
   Component(renderer, "renderMarkdown", "Pure function", "Renders the brief for the preview, escaping every value")
-  Component(outline, "readOutline", "Pure function", "Lists the brief's headings in document order")
-  Component(service, "InitiativeBriefService", "Signal service", "Reads one initiative and saves its name and brief")
+  Component(summary, "summariseBrief", "Pure function", "Reduces a brief to its first line of prose for the hierarchy")
+  Component(service, "InitiativeBriefService", "Signal service", "Reads one initiative and creates or saves its name and brief")
 }
 
 Container_Boundary(api, "Workboard API") {
   Component(controller, "InitiativesController", "MVC controller", "Exposes the initiative resource")
-  Component(command, "SaveInitiativeCommand", "MediatR request", "Requires a brief and bounds its length")
-  Component(handler, "SaveInitiativeCommandHandler", "MediatR handler", "Updates the initiative")
+  Component(command, "SaveInitiativeCommand", "MediatR request", "Requires a name and a brief and bounds the brief's length")
+  Component(handler, "SaveInitiativeCommandHandler", "MediatR handler", "Creates or updates the initiative")
 }
 
-Rel(consultant, page, "Writes the brief in", "HTTPS")
+Rel(consultant, page, "Writes the initiative in", "HTTPS")
 Rel(page, editor, "Reads and rewrites the source through")
 Rel(page, commands, "Applies a formatting command with")
 Rel(page, renderer, "Renders the preview with")
-Rel(page, outline, "Builds the outline with")
+Rel(page, summary, "Summarises a saved brief with")
 Rel(guard, page, "Asks whether the navigation may proceed")
-Rel(page, service, "Loads and saves the brief through")
-Rel(service, controller, "Reads and saves the initiative", "JSON/HTTPS")
+Rel(page, service, "Loads, creates, and saves the initiative through")
+Rel(service, controller, "Reads, creates, and saves the initiative", "JSON/HTTPS")
 Rel(controller, command, "Sends", "MediatR")
 Rel(command, handler, "Is handled by")
 Rel(handler, db, "Writes the initiative", "EF Core")
