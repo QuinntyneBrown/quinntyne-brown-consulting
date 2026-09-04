@@ -18,6 +18,19 @@ export class AccessibilityPage {
     ).toEqual([]);
   }
 
+  /**
+   * Scans the page but leaves one region out, for a third-party control that carries its own
+   * accessibility mode and cannot be corrected from here.
+   */
+  async expectNoSeriousViolationsOutside(selector: string): Promise<void> {
+    const result = await new AxeBuilder({ page: this.page }).exclude(selector).analyze();
+    expect(
+      result.violations.filter((violation) =>
+        ['critical', 'serious'].includes(violation.impact ?? ''),
+      ),
+    ).toEqual([]);
+  }
+
   /** The first stop on the page skips the navigation and lands on the content. */
   async expectSkipLinkReachesContent(): Promise<void> {
     await this.page.keyboard.press('Tab');

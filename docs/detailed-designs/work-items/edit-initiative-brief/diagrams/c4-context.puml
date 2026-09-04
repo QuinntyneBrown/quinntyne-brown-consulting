@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Edit the initiative brief
+
+Person(consultant, "QBC consultant", "Writes the outcome an initiative is pursuing")
+System(workboard, "QBC Workboard", "Keeps each initiative's outcome brief with the initiative it belongs to")
+
+Rel(consultant, workboard, "Writes and reads the outcome brief in", "HTTPS")
+@enduml

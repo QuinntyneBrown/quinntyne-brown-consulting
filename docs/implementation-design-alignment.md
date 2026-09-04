@@ -368,7 +368,7 @@ already copied from [`docs/specs`](specs/).
 ### Phase 3 — regenerate and verify design artifacts
 
 1. Render every changed `.puml` source to its sibling `.png`.
-2. Verify that all 50 PlantUML sources have rendered PNG siblings.
+2. Verify that all 60 PlantUML sources have rendered PNG siblings.
 3. Verify that every README image link resolves.
 4. Verify that C4 sources retain C4 macros and contain no raw replacement
    shapes or arrows.

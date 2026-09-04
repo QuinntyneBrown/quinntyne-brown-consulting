@@ -14,6 +14,10 @@ export class HierarchyService implements IHierarchyService {
     return firstValueFrom(this.http.get<Hierarchy>('/api/initiatives/hierarchy'));
   }
 
+  getInitiative(id: string): Promise<Initiative> {
+    return firstValueFrom(this.http.get<Initiative>(`/api/initiatives/${id}`));
+  }
+
   createInitiative(name: string, description: string): Promise<Initiative> {
     return firstValueFrom(this.http.post<Initiative>('/api/initiatives', { name, description }));
   }

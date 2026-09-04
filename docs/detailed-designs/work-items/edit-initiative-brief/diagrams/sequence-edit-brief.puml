@@ -1,0 +1,91 @@
+@startuml
+title UML sequence behaviour — Edit an initiative brief
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "HierarchyPageComponent" as hierarchy
+  participant "InitiativeBriefPageComponent" as page
+  participant "BriefEditorComponent" as editor
+  participant "MARKDOWN_COMMANDS" as commands
+  participant "renderMarkdown" as renderer
+  participant "InitiativeBriefService" as service
+  participant "unsavedBriefGuard" as guard
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "InitiativesController" as controller
+  participant "ProblemDetailsExceptionHandler" as problem
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "SaveInitiativeCommand" as command
+  participant "SaveInitiativeCommandHandler" as handler
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "SQL Server workspace database" as db
+end box
+
+actor -> hierarchy : Choose Edit brief
+hierarchy -> page : Navigate to the brief route per L2-046
+page -> service : Load the initiative
+service -> controller : GET /api/initiatives/{id}
+controller -> db : Read the initiative
+db --> controller : Initiative
+controller --> service : Name and markdown description
+service --> page : Saved initiative
+page -> editor : Show the markdown source
+editor --> page : Editor adapter
+
+actor -> page : Apply a formatting command per L2-047
+page -> commands : Rewrite the source and selection
+commands --> page : Rewritten source
+page -> editor : Apply the rewritten source
+page -> renderer : Render the brief
+renderer --> page : Preview markup and outline
+
+actor -> page : Save the brief
+alt The name or the brief is blank
+  page --> actor : Name every field that still needs a value per L2-046
+else The brief is complete
+  page -> service : Save the name and brief together
+  service -> controller : PUT /api/initiatives/{id}
+  controller -> command : Send through the mediator
+  command -> command : Require a brief and bound its length per L2-046
+  alt The brief is too long
+    command --> problem : Raise a validation failure
+    problem --> service : 400 Problem Details naming the description
+    service --> actor : Announce the refusal and keep the brief open
+  else The brief is within the bound
+    command -> handler : Handle
+    handler -> db : Write the initiative
+    db --> handler : Committed
+    handler --> service : Saved initiative
+    service --> page : Report the brief as saved per L2-048
+  end
+end
+
+actor -> guard : Navigate away with unsaved changes
+guard -> page : Ask whether the navigation may proceed per L2-048
+page --> actor : Offer keep editing, discard, or save and continue
+alt Keep editing
+  page --> guard : Refuse the navigation
+else Discard changes
+  page -> editor : Restore the saved brief
+  page --> guard : Allow the navigation
+else Save and continue
+  page -> service : Save the brief
+  service --> page : Saved initiative
+  page --> guard : Allow the navigation
+end
+@enduml

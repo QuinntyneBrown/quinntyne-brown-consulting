@@ -1,0 +1,20 @@
+:host {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.editor-host {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+}
+.editor-host.is-hidden {
+  display: none;
+}
+.editor-fallback {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}

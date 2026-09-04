@@ -26,6 +26,7 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 | Work items | [Manage the work hierarchy](detailed-designs/work-items/manage-work-hierarchy/) | `L2-002`–`L2-004` |
 | Work items | [Manage stories and tasks](detailed-designs/work-items/manage-stories-and-tasks/) | `L2-005`–`L2-008` |
 | Work items | [Manage assistants and assignments](detailed-designs/work-items/manage-assistants-and-assignments/) | `L2-009`–`L2-010` |
+| Work items | [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/) | `L2-046`–`L2-048` |
 | Planning | [Groom the backlog](detailed-designs/planning/groom-backlog/) | `L2-011`–`L2-012` |
 | Planning | [Plan two-week sprints](detailed-designs/planning/plan-two-week-sprints/) | `L2-013`–`L2-016` |
 | Delivery | [Execute the active sprint](detailed-designs/delivery/execute-active-sprint/) | `L2-017`–`L2-020` |
@@ -50,11 +51,13 @@ and five rendered PNG diagrams.
   self-contained interaction study for editing an initiative outcome brief as
   markdown in a Monaco editor. It covers the write, split, and preview views, a
   markdown toolbar, snippet completions, an outline, save and discard with an
-  unsaved-changes guard, and the empty brief. It proposes treating the
-  initiative description in `L2-002` as markdown rather than the single line of
-  text the current form saves, so it is a study rather than a committed change.
-  Monaco loads from a CDN; offline the page falls back to a plain markdown text
-  area with the same toolbar, shortcuts, and preview.
+  unsaved-changes guard, and the empty brief. The study proposed treating the
+  initiative description as markdown rather than the single line of text the
+  initiative form saves; that behavior is now specified by `L2-046` through
+  `L2-048` and described in
+  [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/).
+  The study loads Monaco from a CDN, while the working editor bundles it with
+  the application and falls back to a plain markdown field offline.
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and

@@ -1,0 +1,17 @@
+@if (engine() === 'loading') {
+  <qbc-loading-state>Loading the markdown editor…</qbc-loading-state>
+}
+<div
+  class="editor-host"
+  [class.is-hidden]="engine() === 'textarea'"
+  #host
+></div>
+@if (engine() === 'textarea') {
+  <qbc-textarea
+    #fallback
+    class="editor-fallback"
+    ariaLabel="Initiative brief, markdown source"
+    [value]="initialValue()"
+    [full]="true"
+  />
+}

@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Edit the initiative brief
+
+Person(consultant, "QBC consultant", "Writes the outcome an initiative is pursuing")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Carries the markdown source, its preview, and the unsaved-changes question")
+  Container(api, "Workboard API", "ASP.NET Core", "Reads one initiative and validates the brief on save")
+  ContainerDb(db, "Workspace database", "SQL Server", "Stores the brief as the initiative description")
+}
+
+Rel(consultant, spa, "Writes the brief in", "HTTPS")
+Rel(spa, api, "Reads one initiative", "GET /api/initiatives/{id}")
+Rel(spa, api, "Saves the name and brief together", "PUT /api/initiatives/{id}")
+Rel(api, db, "Reads and writes the initiative", "EF Core")
+@enduml

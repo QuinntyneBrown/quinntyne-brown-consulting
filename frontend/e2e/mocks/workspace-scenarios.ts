@@ -12,6 +12,51 @@ export interface WorkspaceScenario {
   readonly apply: (state: WorkboardApiState) => void;
 }
 
+/**
+ * The markdown outcome brief the editor is built for. It carries a heading of every level the
+ * outline shows, emphasis, a nested list, a task list, a table, and a fenced code block, so one
+ * scenario can exercise rendering, the outline, and the size report.
+ */
+export const MARKDOWN_BRIEF = [
+  '# Zero-friction sprint planning',
+  '',
+  'Planning a two-week sprint should take one focused conversation, not an',
+  'afternoon of **spreadsheet archaeology**.',
+  '',
+  '## Outcome',
+  '',
+  'A delivery lead commits a two-week sprint in under ten minutes.',
+  '',
+  '## Success signals',
+  '',
+  '| Signal | Baseline | Target |',
+  '| --- | --- | --- |',
+  '| Time to commit a sprint | 46 min | under 10 min |',
+  '',
+  '## Guardrails',
+  '',
+  '- Keep the workspace usable on a phone',
+  '  - Committing a sprint stays a desktop action',
+  '- No new third-party services',
+  '',
+  '## Epics',
+  '',
+  '- [x] Groom the backlog into a ready queue',
+  '- [ ] Roll sprint scope up to the initiative',
+  '',
+  '```sql',
+  'SELECT i.Id, COUNT(s.Id) AS StoryCount FROM Initiatives i GROUP BY i.Id;',
+  '```',
+].join('\n');
+
+/** The first initiative carries a full markdown outcome brief. */
+export const initiativeWithMarkdownBrief: WorkspaceScenario = {
+  name: 'an initiative whose brief is written in markdown',
+  apply: (state) => {
+    state.initiatives[0] = { ...state.initiatives[0], description: MARKDOWN_BRIEF };
+  },
+};
+
 /** The seeded workspace, unchanged. */
 export const seededWorkspace: WorkspaceScenario = {
   name: 'the seeded workspace',

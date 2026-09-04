@@ -69,18 +69,34 @@
           "options": {
             "browser": "projects/qbc-workboard/src/main.ts",
             "tsConfig": "projects/qbc-workboard/tsconfig.app.json",
-            "assets": [{ "glob": "**/*", "input": "projects/qbc-workboard/public" }],
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/qbc-workboard/public"
+              }
+            ],
             "styles": [
               "projects/components/src/styles.scss",
               "projects/qbc-workboard/src/styles.scss"
             ],
-            "outputPath": "dist/qbc-workboard"
+            "outputPath": "dist/qbc-workboard",
+            "loader": {
+              ".ttf": "file"
+            }
           },
           "configurations": {
             "production": {
               "budgets": [
-                { "type": "initial", "maximumWarning": "750kB", "maximumError": "1MB" },
-                { "type": "anyComponentStyle", "maximumWarning": "12kB", "maximumError": "20kB" }
+                {
+                  "type": "initial",
+                  "maximumWarning": "750kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "12kB",
+                  "maximumError": "20kB"
+                }
               ],
               "outputHashing": "all"
             },
@@ -94,8 +110,12 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
-            "production": { "buildTarget": "qbc-workboard:build:production" },
-            "development": { "buildTarget": "qbc-workboard:build:development" }
+            "production": {
+              "buildTarget": "qbc-workboard:build:production"
+            },
+            "development": {
+              "buildTarget": "qbc-workboard:build:development"
+            }
           },
           "defaultConfiguration": "development"
         }
