@@ -122,9 +122,9 @@ export class WorkboardPage {
   }
 
   /**
-   * The bar carries the breadcrumb and New story, and on a tablet it is also the only way
-   * back to the navigation, so it stays at the top of the viewport as the page scrolls
-   * under it rather than leaving with the content.
+   * The bar carries the breadcrumb and New story, and below the navigation breakpoint it is
+   * also the only way back to the rail, so it stays at the top of the viewport as the page
+   * scrolls under it rather than leaving with the content.
    */
   async expectTopbarPinnedWhileScrolling(): Promise<void> {
     const topbar = this.page.locator('qbc-topbar');

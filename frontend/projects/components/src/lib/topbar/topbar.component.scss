@@ -1,5 +1,13 @@
+// The bar carries the breadcrumb and the one global action, and below 900px it is also the
+// only route back to the navigation, so it rides the scroll rather than leaving with the
+// page. It sits under the sidebar (z-index 20) so the mobile drawer still covers it, and
+// carries an opaque fill because page content scrolls beneath it.
 :host {
+  position: sticky;
+  top: 0;
+  z-index: 15;
   display: block;
+  background: var(--qbc-panel);
 }
 header {
   display: flex;
@@ -20,19 +28,6 @@ div {
 section {
   display: flex;
   gap: 9px;
-}
-// Tablets and phones have the least vertical room and, below 900px, reach the navigation
-// only through the bar's menu button, so the bar rides the scroll rather than leaving
-// with the page. It sits under the sidebar (z-index 20) so the mobile drawer still covers
-// it, and carries an opaque fill because page content scrolls beneath it. The ceiling
-// covers tablet landscape up to a 12.9" iPad; wider viewports keep the static bar.
-@media (max-width: 1366px) {
-  :host {
-    position: sticky;
-    top: 0;
-    z-index: 15;
-    background: var(--qbc-panel);
-  }
 }
 @media (max-width: 900px) {
   .menu {

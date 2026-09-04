@@ -103,6 +103,11 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- The workspace header bar now stays at the top of the viewport at every width.
+  It carried the breadcrumb and **New story** out of reach on a desktop window
+  whenever the page ran longer than the screen; it was already pinned on tablets
+  and phones, where the bar is also the only route back to the navigation. The
+  standalone design-system catalog and the reference mock pin their bar to match.
 - The Azure Workboard now requires a shared passcode before any workspace record
   can be read or changed. Deployment and database access remain passwordless and
   identity-based; the gate replaces anonymous read/write access without

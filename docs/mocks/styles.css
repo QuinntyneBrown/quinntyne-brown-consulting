@@ -112,12 +112,16 @@ a { color: inherit; }
 .workspace { min-height: 100vh; margin-left: 224px; }
 .workspace, .page, .row-title, .row-title > div { min-width: 0; }
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 15;
   display: flex;
   height: 82px;
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(28px, 4.5vw, 72px);
   border-bottom: 1px solid var(--line);
+  background: var(--panel);
 }
 .breadcrumb { color: var(--muted); font-size: 13px; font-weight: 600; }
 .mobile-nav-button { display: none; border: 0; background: none; font-size: 20px; }
@@ -376,7 +380,9 @@ dialog::backdrop { background: rgba(18, 25, 22, .4); backdrop-filter: blur(2px);
 @media (max-width: 760px) {
   .sidebar { transform: translateX(-100%); box-shadow: var(--shadow); transition: transform .2s ease; }
   .sidebar.open { transform: none; }
-  .workspace { width: 100%; margin-left: 0; overflow-x: hidden; }
+  /* clip, not hidden: hidden makes the workspace a scroll container that never scrolls,
+     stranding the sticky top bar at the top of the document instead of the viewport. */
+  .workspace { width: 100%; margin-left: 0; overflow-x: clip; }
   .topbar { height: 70px; padding: 0 18px; }
   .mobile-nav-button { display: block; }
   .breadcrumb { display: none; }

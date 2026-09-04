@@ -94,6 +94,18 @@ for (const width of [320, 390, 768, 1024, 1440]) {
   });
 }
 
+test.describe('a desktop viewport with more page than screen', () => {
+  // Past the widest tablet, and short enough that the board scrolls beneath the bar. Vertical
+  // room, not width, is what the pinned bar answers to, and a desktop window runs out of it too.
+  test.use({ viewport: { width: 1600, height: 800 } });
+
+  test('L2-024 · Keep the bar in reach on a desktop', async ({ page }) => {
+    const workboard = new WorkboardPage(page);
+    await workboard.navigateTo('board');
+    await workboard.expectTopbarPinnedWhileScrolling();
+  });
+});
+
 test.describe('a tablet in landscape', () => {
   // Wide enough to keep the three board columns, short enough that the board scrolls away
   // from the top bar.

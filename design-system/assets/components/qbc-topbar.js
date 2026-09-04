@@ -12,7 +12,17 @@ class QbcTopbar extends QbcElement {
 
   styles() {
     return `
-      :host { display: block; }
+      /* The bar carries the breadcrumb and the one global action, and below 760px it is
+         also the only route back to the navigation, so it rides the scroll rather than
+         leaving with the page. It sits under the drawer scrim so an open drawer still
+         covers it, and carries an opaque fill because content scrolls beneath it. */
+      :host {
+        position: sticky;
+        top: 0;
+        z-index: var(--qbc-z-topbar);
+        display: block;
+        background: var(--qbc-panel);
+      }
 
       header {
         display: flex;

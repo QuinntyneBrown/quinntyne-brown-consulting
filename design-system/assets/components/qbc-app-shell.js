@@ -70,7 +70,10 @@ class QbcAppShell extends QbcElement {
         .workspace {
           width: 100%;
           margin-left: 0;
-          overflow-x: hidden;
+          /* clip, not hidden: hidden turns the workspace into a scroll container that
+             never scrolls, which would anchor the sticky topbar to a scrollport that
+             never moves and leave the bar at the top of the document, not the viewport. */
+          overflow-x: clip;
         }
         main { padding: 35px 18px 65px; }
       }

@@ -122,7 +122,8 @@
   --qbc-bp-wide:   1000px;
   --qbc-bp-mobile: 760px;
 
-  /* ---- Z-index — three layers, as in the mock ------------------------- */
+  /* ---- Z-index — four layers, as in the mock -------------------------- */
+  --qbc-z-topbar:  15;
   --qbc-z-sidebar: 20;
   --qbc-z-toast:   90;
   --qbc-z-skip:    100;
