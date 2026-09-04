@@ -15,7 +15,9 @@ public sealed class GetHierarchyQueryHandler : IRequestHandler<GetHierarchyQuery
     {
         var initiatives = _db.Initiatives.OrderBy(item => item.Name).ToList();
         var epics = _db.Epics.OrderBy(item => item.Name).ToList();
-        var stories = _db.Stories.ToList();
+        // Roll-ups describe the work in front of the team, so archived stories are left out of the
+        // counts and out of the completion each epic reports.
+        var stories = _db.Stories.Where(story => story.Lifecycle != StoryLifecycle.Archived).ToList();
         var result = initiatives.Select(initiative =>
         {
             var initiativeEpics = epics.Where(epic => epic.InitiativeId == initiative.Id).Select(epic =>

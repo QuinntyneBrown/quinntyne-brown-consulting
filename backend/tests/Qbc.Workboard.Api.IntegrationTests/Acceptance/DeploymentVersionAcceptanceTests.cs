@@ -5,17 +5,12 @@ using Xunit;
 
 namespace Qbc.Workboard.Api.IntegrationTests.Acceptance;
 
-public sealed class DeploymentVersionAcceptanceTests : IClassFixture<WorkboardApiFactory>
+public sealed class DeploymentVersionAcceptanceTests : IDisposable
 {
-    private readonly WorkboardApiFactory _factory;
-
-    public DeploymentVersionAcceptanceTests(WorkboardApiFactory factory)
-    {
-        _factory = factory;
-    }
+    private readonly WorkboardApiFactory _factory = new();
 
     [Fact]
-    public async Task Version_resource_reports_the_running_build_without_a_session()
+    public async Task L2_044_Read_the_running_build_without_a_credential()
     {
         var client = _factory.CreateClient();
 
@@ -32,7 +27,7 @@ public sealed class DeploymentVersionAcceptanceTests : IClassFixture<WorkboardAp
     /// instead would report the test runner here, and some other launcher in production.
     /// </summary>
     [Fact]
-    public async Task Version_resource_reports_the_build_of_the_hosting_application()
+    public async Task L2_044_Report_the_build_that_is_actually_deployed()
     {
         var client = _factory.CreateClient();
 
@@ -44,5 +39,11 @@ public sealed class DeploymentVersionAcceptanceTests : IClassFixture<WorkboardAp
             .ToDictionary(attribute => attribute.Key, attribute => attribute.Value);
         Assert.Equal(hostMetadata["QbcBuildVersion"], version.Version);
         Assert.Equal(hostMetadata.GetValueOrDefault("QbcSourceRevision"), version.Commit);
+    }
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

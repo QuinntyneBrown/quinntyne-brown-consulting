@@ -50,7 +50,13 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
         modelBuilder.Entity<Sprint>(entity =>
         {
             entity.HasKey(item => item.Id);
-            entity.Property(item => item.Name).IsRequired().UseCollation("SQL_Latin1_General_CP1_CI_AS");
+            entity.Property(item => item.Name).IsRequired();
+            if (Database.IsSqlServer())
+            {
+                // A database-level backstop behind the handler's own case-insensitive check.
+                entity.Property(item => item.Name).UseCollation("SQL_Latin1_General_CP1_CI_AS");
+            }
+
             entity.Property(item => item.Goal).IsRequired();
             entity.Property(item => item.Status).HasConversion<string>();
             entity.HasIndex(item => item.Name).IsUnique();

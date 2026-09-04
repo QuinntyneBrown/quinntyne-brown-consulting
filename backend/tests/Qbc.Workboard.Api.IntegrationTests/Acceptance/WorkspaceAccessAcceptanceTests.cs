@@ -6,16 +6,14 @@ using Xunit;
 
 namespace Qbc.Workboard.Api.IntegrationTests.Acceptance;
 
-public sealed class WorkspaceAccessAcceptanceTests : IClassFixture<WorkboardApiFactory>
+public sealed class WorkspaceAccessAcceptanceTests : IDisposable
 {
-    private readonly WorkboardApiFactory _factory;
-
-    public WorkspaceAccessAcceptanceTests(WorkboardApiFactory factory) => _factory = factory;
+    private readonly WorkboardApiFactory _factory = new();
 
     [Fact]
-    public async Task Seeded_passcode_issues_a_token_that_opens_the_workspace()
+    public async Task L2_041_Open_the_workspace_with_the_passcode()
     {
-        var client = _factory.CreateClient();
+        using var client = _factory.CreateClient();
 
         var unlock = await client.PostAsJsonAsync(
             "/api/access/unlock",
@@ -25,52 +23,71 @@ public sealed class WorkspaceAccessAcceptanceTests : IClassFixture<WorkboardApiF
         var token = await unlock.Content.ReadFromJsonAsync<AccessTokenDto>();
         Assert.NotNull(token);
         Assert.False(string.IsNullOrWhiteSpace(token.Token));
+        // The credential says when it stops working.
         Assert.True(token.ExpiresAtUtc > DateTimeOffset.UtcNow);
 
+        // And it authorizes the work-management resources it was issued for.
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
-        var workspace = await client.GetAsync("/api/workspace?route=board");
-
-        Assert.Equal(HttpStatusCode.OK, workspace.StatusCode);
-    }
-
-    [Fact]
-    public async Task Workspace_resources_reject_a_request_without_a_token()
-    {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/workspace?route=board");
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/workspace?route=board")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/stories/backlog")).StatusCode);
         Assert.Equal(
-            "urn:qbc-workboard:problem:unauthorized",
-            problem.GetProperty("type").GetString());
+            HttpStatusCode.Created,
+            (await client.PostAsJsonAsync("/api/initiatives", new InitiativeRequest("An outcome", "A description."))).StatusCode);
     }
 
     [Fact]
-    public async Task Wrong_passcode_is_refused_with_problem_details()
+    public async Task L2_041_Refuse_an_incorrect_passcode()
     {
-        var client = _factory.CreateClient();
+        using var client = _factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/api/access/unlock", new UnlockRequest("1111"));
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.Equal(
-            "urn:qbc-workboard:problem:unauthorized",
-            problem.GetProperty("type").GetString());
-        Assert.False(string.IsNullOrWhiteSpace(problem.GetProperty("detail").GetString()));
+        Assert.Equal("urn:qbc-workboard:problem:unauthorized", problem.GetProperty("type").GetString());
+        var detail = problem.GetProperty("detail").GetString();
+        Assert.False(string.IsNullOrWhiteSpace(detail));
+        // The refusal gives nothing away about the passcode it was checked against.
+        Assert.DoesNotContain(WorkboardApiFactory.SeededPasscode, problem.GetRawText(), StringComparison.Ordinal);
+        Assert.DoesNotContain("hash", problem.GetRawText(), StringComparison.OrdinalIgnoreCase);
+
+        // A passcode of the wrong shape is a validation failure, and says nothing more either.
+        var malformed = await client.PostAsJsonAsync("/api/access/unlock", new UnlockRequest("abc"));
+        Assert.Equal(HttpStatusCode.BadRequest, malformed.StatusCode);
+        var invalid = await malformed.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.True(invalid.GetProperty("errors").TryGetProperty("passcode", out _));
+        Assert.DoesNotContain(WorkboardApiFactory.SeededPasscode, invalid.GetRawText(), StringComparison.Ordinal);
     }
 
     [Fact]
-    public async Task Passcode_that_is_not_four_digits_is_rejected_as_invalid()
+    public async Task L2_041_Refuse_an_unaccompanied_request()
     {
-        var client = _factory.CreateClient();
+        using var unlocked = _factory.CreateUnlockedClient();
+        var initiative = await new Workspace(unlocked).AddInitiativeAsync();
+        using var client = _factory.CreateClient();
 
-        var response = await client.PostAsJsonAsync("/api/access/unlock", new UnlockRequest("abc"));
+        foreach (var route in new[] { "/api/workspace?route=board", "/api/stories/backlog", "/api/initiatives", "/api/sprints", "/api/assistants" })
+        {
+            var response = await client.GetAsync(route);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.True(problem.GetProperty("errors").TryGetProperty("passcode", out _));
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            var problem = await response.Content.ReadFromJsonAsync<JsonElement>();
+            Assert.Equal("urn:qbc-workboard:problem:unauthorized", problem.GetProperty("type").GetString());
+        }
+
+        // An expired or otherwise unusable credential is no better than none.
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "not-a-workspace-token");
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/stories/backlog")).StatusCode);
+
+        // Nothing was read or changed on the way through: the workspace is as the unlocked client left it.
+        var deletion = await client.DeleteAsync($"/api/initiatives/{initiative.Id}");
+        Assert.Equal(HttpStatusCode.Unauthorized, deletion.StatusCode);
+        Assert.Single((await new Workspace(unlocked).ReadHierarchyAsync()).Initiatives);
+    }
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

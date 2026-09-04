@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Qbc.Workboard.Application.Common.Deployment;
 using Qbc.Workboard.Application.Common.Security;
 using Qbc.Workboard.Infrastructure.Deployment;
+using Qbc.Workboard.Infrastructure.Persistence;
 using Qbc.Workboard.Infrastructure.Security;
 
 namespace Qbc.Workboard.Infrastructure;
@@ -40,6 +41,7 @@ public static class InfrastructureDependencyInjection
         services.AddSingleton<IPasscodeHasher, Pbkdf2PasscodeHasher>();
         services.AddSingleton<IAccessTokenIssuer, JwtAccessTokenIssuer>();
         services.AddScoped<IWorkboardDbContext>(provider => provider.GetRequiredService<WorkboardDbContext>());
+        services.TryAddScoped<IWorkboardSchemaInitializer, MigrationWorkboardSchemaInitializer>();
         services.AddScoped<WorkboardDbInitializer>();
         return services;
     }

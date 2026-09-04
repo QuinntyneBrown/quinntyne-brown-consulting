@@ -6,4 +6,5 @@ global using Qbc.Workboard.Application.Features.Deployment.Dtos;
 global using Qbc.Workboard.Application.Features.Hierarchy.Dtos;
 global using Qbc.Workboard.Application.Features.Sprints.Dtos;
 global using Qbc.Workboard.Application.Features.Stories.Dtos;
+global using Qbc.Workboard.Application.Features.Workspace.Dtos;
 global using Qbc.Workboard.Domain.Enums;

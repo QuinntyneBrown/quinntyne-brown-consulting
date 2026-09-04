@@ -9,14 +9,12 @@ namespace Qbc.Workboard.Api.IntegrationTests.Acceptance;
 /// therefore its own rate-limit partition, instead of starving the other suites. The whole
 /// behaviour is one test because a shared window makes separate tests order-dependent.
 /// </summary>
-public sealed class WorkspaceAccessRateLimitAcceptanceTests : IClassFixture<WorkboardApiFactory>
+public sealed class WorkspaceAccessRateLimitAcceptanceTests : IDisposable
 {
-    private readonly WorkboardApiFactory _factory;
-
-    public WorkspaceAccessRateLimitAcceptanceTests(WorkboardApiFactory factory) => _factory = factory;
+    private readonly WorkboardApiFactory _factory = new();
 
     [Fact]
-    public async Task Repeated_wrong_passcodes_are_throttled_with_problem_details()
+    public async Task L2_042_Throttle_repeated_attempts()
     {
         var client = _factory.CreateClient();
         var first = await client.PostAsJsonAsync("/api/access/unlock", new UnlockRequest("1111"));
@@ -35,5 +33,24 @@ public sealed class WorkspaceAccessRateLimitAcceptanceTests : IClassFixture<Work
         Assert.NotNull(throttled);
         var body = await throttled.Content.ReadAsStringAsync();
         Assert.Contains("too-many-attempts", body, StringComparison.Ordinal);
+
+        // The refusal says attempts may resume, without counting down how many are left.
+        Assert.Contains("later", body, StringComparison.OrdinalIgnoreCase);
+        foreach (var count in Enumerable.Range(0, 11))
+        {
+            Assert.DoesNotContain($"{count} attempt", body, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // Further attempts are turned away without the passcode being evaluated at all.
+        var correct = await client.PostAsJsonAsync(
+            "/api/access/unlock",
+            new UnlockRequest(WorkboardApiFactory.SeededPasscode));
+        Assert.Equal(HttpStatusCode.TooManyRequests, correct.StatusCode);
+    }
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

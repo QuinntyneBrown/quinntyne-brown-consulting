@@ -12,6 +12,7 @@ public sealed class WorkboardDbInitializer
     private const int SigningKeySize = 32;
 
     private readonly WorkboardDbContext _db;
+    private readonly IWorkboardSchemaInitializer _schema;
     private readonly WorkboardDatabaseOptions _options;
     private readonly WorkspaceAccessOptions _accessOptions;
     private readonly IPasscodeHasher _passcodeHasher;
@@ -19,12 +20,14 @@ public sealed class WorkboardDbInitializer
 
     public WorkboardDbInitializer(
         WorkboardDbContext db,
+        IWorkboardSchemaInitializer schema,
         IOptions<WorkboardDatabaseOptions> options,
         IOptions<WorkspaceAccessOptions> accessOptions,
         IPasscodeHasher passcodeHasher,
         TimeProvider timeProvider)
     {
         _db = db;
+        _schema = schema;
         _options = options.Value;
         _accessOptions = accessOptions.Value;
         _passcodeHasher = passcodeHasher;
@@ -36,7 +39,7 @@ public sealed class WorkboardDbInitializer
 
     public async Task InitializeAsync(bool seedDevelopmentData, CancellationToken cancellationToken = default)
     {
-        await _db.Database.MigrateAsync(cancellationToken);
+        await _schema.EnsureSchemaAsync(cancellationToken);
         await EnsureWorkspaceAccessAsync(cancellationToken);
         if (!seedDevelopmentData || await _db.Set<Initiative>().AnyAsync(cancellationToken))
         {

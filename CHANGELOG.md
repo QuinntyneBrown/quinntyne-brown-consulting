@@ -53,6 +53,11 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   Playwright test, named for the requirement and scenario it proves. The suite
   runs in parallel from per-scenario workspace state: Chromium carries all 98
   scenarios and Firefox and WebKit run the critical-workflow subset.
+- Every applicable acceptance criterion also has its own backend integration
+  test, named for the requirement it proves. The API acceptance suite now runs
+  the real application over an isolated in-process database, so it needs no SQL
+  Server and no configuration; the CLI suite still uses a real database, because
+  creating and resetting one is what it verifies.
 - QBC Workboard now composes every button, form control, dialog, navigation
   element, card, and reusable row from `@qbc/components`; feature pages retain
   only application state and workflow orchestration.
@@ -71,5 +76,8 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   that could still be planned into.
 - Hierarchy roll-ups and assistant workload counts now exclude archived stories,
   matching what those numbers claim to describe.
+- Deleting an assistant whose only story is archived is now refused with the same
+  explanation as any other assigned assistant. It previously passed the guard and
+  then failed against the database, reporting an unexpected server error.
 
 No tagged release has been published.

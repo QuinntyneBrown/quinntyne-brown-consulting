@@ -8,7 +8,7 @@ namespace Qbc.Workboard.Api.IntegrationTests.Deployment;
 public sealed class AssemblyDeploymentInformationTests
 {
     [Fact]
-    public void Build_without_a_source_revision_reports_no_commit()
+    public void L2_044_Name_the_commit_a_released_build_came_from()
     {
         var assembly = AssemblyBuilder.DefineDynamicAssembly(
             new AssemblyName($"VersionTest-{Guid.NewGuid():N}"),
