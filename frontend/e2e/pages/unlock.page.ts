@@ -29,11 +29,6 @@ export class UnlockPage {
     await this.expectPrompt();
   }
 
-  /** The build is named on the passcode screen, before any credential is held. */
-  async expectDeployedVersion(label: string): Promise<void> {
-    await expect(this.page.getByText(label)).toBeVisible();
-  }
-
   async expectUnlockedWorkspace(): Promise<void> {
     await expect(this.page.getByRole('heading', { level: 1, name: 'Sprint board' })).toBeVisible();
   }

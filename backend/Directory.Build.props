@@ -8,5 +8,14 @@
     <!-- The product version the workspace reports as its deployed build. Bump it here. -->
     <Version>1.0.0</Version>
   </PropertyGroup>
+
+  <!-- Keep version and revision as separate assembly metadata values. InformationalVersion
+       is unsuitable as a data contract because semantic versions may contain '+' metadata. -->
+  <Target Name="AddQbcBuildMetadata" BeforeTargets="GetAssemblyAttributes">
+    <ItemGroup>
+      <AssemblyMetadata Include="QbcBuildVersion" Value="$(Version)" />
+      <AssemblyMetadata Include="QbcSourceRevision" Value="$(SourceRevisionId)" Condition="'$(SourceRevisionId)' != ''" />
+    </ItemGroup>
+  </Target>
 </Project>
 

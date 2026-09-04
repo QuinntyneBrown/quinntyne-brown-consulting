@@ -25,7 +25,9 @@ export class WorkboardApiMock {
   private readonly state: WorkboardApiState = createWorkboardApiState();
 
   async install(page: Page): Promise<void> {
-    await page.route('**/api/**', (route) => this.handle(route));
+    // Version reporting has its own published-application acceptance test. Deliberately leave
+    // /api/version outside this mock boundary so these fixtures can never invent build data.
+    await page.route(/\/api\/(?!version(?:[/?#]|$)).*/, (route) => this.handle(route));
   }
 
   private async handle(route: Route): Promise<void> {
@@ -45,10 +47,6 @@ export class WorkboardApiMock {
           token: 'e2e-workspace-token',
           expiresAtUtc: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         });
-      }
-
-      if (method === 'GET' && path === '/api/version') {
-        return this.json(route, 200, this.state.deployment);
       }
 
       if (method === 'GET' && path === '/api/workspace') {

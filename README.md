@@ -284,23 +284,25 @@ identity configuration, cost controls, and operational limits.
 
 ### Deployed build identification
 
-`backend/Directory.Build.props` carries the product version. The .NET SDK
-records the source revision in the assembly's informational version, taking it
-from the checkout's `HEAD`, and CI publishes with
-`-p:SourceRevisionId=<commit>` so the artifact names the exact commit that run
-built. The publish builds the Angular bundle into the same output, so one
-version identifies both halves of the deployment.
+The two artifacts own their versions independently. `backend/Directory.Build.props`
+carries the backend version, while `frontend/package.json` carries the frontend
+version. The backend stamps its values as assembly metadata and the Angular
+build embeds its values as compile-time constants. CI supplies the same source
+revision to both builds so each artifact names the exact commit that produced it;
+an ordinary local build uses the checkout's `HEAD` when one is available.
 
-`GET /api/version` reports that identity as `{ "version", "commit" }` and needs
-no passcode. The workspace shows it in the sidebar footer and on the passcode
-screen, so a deployment can be confirmed from a browser or from a shell:
+`GET /api/version` reports the backend identity as `{ "version", "commit" }`
+and needs no passcode. The workspace shows separate `Backend` and `Frontend`
+lines in the sidebar footer and on the passcode screen, so both deployed artifacts
+can be confirmed from a browser and the backend can be queried from a shell:
 
 ```powershell
 curl https://<workboard-host>/api/version
 ```
 
-A build made where no revision is available reports `commit` as `null`, and then
-only the version is shown.
+A build made where no revision is available reports no commit, and its line shows
+only the version. If the API cannot be reached, the frontend identity remains
+visible and the backend line is omitted without blocking the workspace.
 
 ## Design system
 

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Reflection;
 using Xunit;
 
 namespace Qbc.Workboard.Api.IntegrationTests.Acceptance;
@@ -38,8 +39,10 @@ public sealed class DeploymentVersionAcceptanceTests : IClassFixture<WorkboardAp
         var version = await client.GetFromJsonAsync<DeploymentVersionDto>("/api/version");
 
         Assert.NotNull(version);
-        var host = typeof(Api.Program).Assembly.GetName().Version?.ToString(3);
-        Assert.NotNull(host);
-        Assert.StartsWith(host, version.Version);
+        var hostMetadata = typeof(Api.Program).Assembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .ToDictionary(attribute => attribute.Key, attribute => attribute.Value);
+        Assert.Equal(hostMetadata["QbcBuildVersion"], version.Version);
+        Assert.Equal(hostMetadata.GetValueOrDefault("QbcSourceRevision"), version.Commit);
     }
 }

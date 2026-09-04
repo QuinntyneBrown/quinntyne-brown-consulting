@@ -51,12 +51,12 @@ export class AppShellComponent {
     return this.router.url.split('?')[0].split('/')[1] || 'board';
   });
   /**
-   * The rail's standing footer also carries the build the workspace is served from, so the
-   * deployed version is legible from every page without occupying navigation space.
+   * The rail's standing footer carries both deployed artifact identities, so each version is
+   * legible from every page without occupying navigation space.
    */
   readonly sidebarFooter = computed(() => {
-    const build = this.version.label();
-    return build ? `${COMPANY}\n${build}` : COMPANY;
+    const builds = [this.version.backendLabel(), this.version.frontendLabel].filter(Boolean);
+    return `${COMPANY}\n${builds.join('\n')}`;
   });
   readonly routeName = computed(() => {
     const segment = this.routeSegment();

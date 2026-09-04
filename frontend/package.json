@@ -4,17 +4,18 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "ng serve qbc-workboard --proxy-config proxy.conf.json",
+    "start": "node scripts/build-app.mjs serve --proxy-config proxy.conf.json",
     "build": "npm run build:api && npm run build:components && npm run build:app",
     "build:api": "ng build api",
     "build:components": "ng build components",
-    "build:app": "ng build qbc-workboard",
+    "build:app": "node scripts/build-app.mjs build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:components": "ng test components --watch=false",
     "validate:components": "node scripts/validate-component-boundary.mjs",
     "typecheck:e2e": "tsc --project tsconfig.e2e.json",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:version": "playwright test --config playwright.version.config.ts"
   },
   "dependencies": {
     "@angular/common": "21.2.22",
