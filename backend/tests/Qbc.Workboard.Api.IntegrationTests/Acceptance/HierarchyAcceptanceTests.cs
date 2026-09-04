@@ -189,4 +189,118 @@ public sealed class HierarchyAcceptanceTests : AcceptanceTest
             item => item.Id == portal.Id);
         Assert.Single(hierarchy.Initiatives.SelectMany(item => item.Epics), item => item.Id == portal.Id);
     }
+
+    /// <summary>
+    /// The brief a delivery lead actually writes: headings, prose, a nested list, a table, a task
+    /// list, and a fenced code block. It exists to prove the description survives storage as a
+    /// document rather than as the single line of text the initiative form used to save.
+    /// </summary>
+    private static readonly string MarkdownBrief = string.Join(
+        "\n",
+        "# Zero-friction sprint planning",
+        "",
+        "Planning a two-week sprint should take one focused conversation, not an",
+        "afternoon of spreadsheet archaeology.",
+        "",
+        "## Success signals",
+        "",
+        "| Signal | Baseline | Target |",
+        "| --- | --- | --- |",
+        "| Time to commit a sprint | 46 min | under 10 min |",
+        "",
+        "## Guardrails",
+        "",
+        "- Keep the workspace usable on a phone",
+        "  - Committing a sprint stays a desktop action",
+        "- No new third-party services",
+        "",
+        "## Epics",
+        "",
+        "- [x] Groom the backlog into a ready queue",
+        "- [ ] Roll sprint scope up to the initiative",
+        "",
+        "```sql",
+        "SELECT i.Id, COUNT(s.Id) AS StoryCount",
+        "FROM Initiatives i",
+        "GROUP BY i.Id;",
+        "```");
+
+    [Fact]
+    public async Task L2_046_Open_the_brief_for_an_initiative()
+    {
+        var created = await Given.AddInitiativeAsync("Zero-friction sprint planning", MarkdownBrief);
+
+        var initiative = await Given.ReadInitiativeAsync(created.Id);
+
+        Assert.Equal(created.Id, initiative.Id);
+        Assert.Equal("Zero-friction sprint planning", initiative.Name);
+        Assert.Equal(MarkdownBrief, initiative.Description);
+    }
+
+    [Fact]
+    public async Task L2_046_Save_an_edited_brief()
+    {
+        var initiative = await Given.AddInitiativeAsync();
+        var epic = await Given.AddEpicAsync(initiative.Id);
+        await Given.AddDraftStoryAsync(epic.Id);
+
+        var response = await Client.PutAsJsonAsync(
+            $"/api/initiatives/{initiative.Id}",
+            new InitiativeRequest("Zero-friction sprint planning", MarkdownBrief));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var saved = await Given.ReadInitiativeAsync(initiative.Id);
+        Assert.Equal("Zero-friction sprint planning", saved.Name);
+        Assert.Equal(MarkdownBrief, saved.Description);
+
+        // The renamed initiative reaches every projection that names it.
+        var story = Assert.Single(await Given.ReadBacklogAsync());
+        Assert.Equal("Zero-friction sprint planning", story.InitiativeName);
+    }
+
+    [Fact]
+    public async Task L2_046_Preserve_markdown_structure()
+    {
+        var initiative = await Given.AddInitiativeAsync("Zero-friction sprint planning", MarkdownBrief);
+
+        // A second application over the same store, as a redeployment would be.
+        using var restarted = Factory.Restart();
+        using var client = restarted.CreateUnlockedClient();
+
+        var reread = await new Workspace(client).ReadInitiativeAsync(initiative.Id);
+
+        // Every structural line survives: no collapsing, escaping, or re-wrapping.
+        Assert.Equal(MarkdownBrief.Split('\n'), reread.Description.Split('\n'));
+        Assert.Equal(MarkdownBrief, reread.Description);
+    }
+
+    [Fact]
+    public async Task L2_046_Reject_a_blank_brief()
+    {
+        var initiative = await Given.AddInitiativeAsync();
+
+        var response = await Client.PutAsJsonAsync(
+            $"/api/initiatives/{initiative.Id}",
+            new InitiativeRequest("  ", "  \n  \n "));
+
+        await ExpectInvalidFieldsAsync(response, "name", "description");
+        Assert.Equal(
+            "Make every engagement transparent and predictable.",
+            (await Given.ReadInitiativeAsync(initiative.Id)).Description);
+    }
+
+    [Fact]
+    public async Task L2_046_Reject_an_oversized_brief()
+    {
+        var initiative = await Given.AddInitiativeAsync();
+
+        var response = await Client.PutAsJsonAsync(
+            $"/api/initiatives/{initiative.Id}",
+            new InitiativeRequest("Zero-friction sprint planning", new string('a', 100_001)));
+
+        await ExpectInvalidFieldsAsync(response, "description");
+        Assert.Equal(
+            "Make every engagement transparent and predictable.",
+            (await Given.ReadInitiativeAsync(initiative.Id)).Description);
+    }
 }

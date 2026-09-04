@@ -36,6 +36,8 @@ export * from './lib/progress/progress.component';
 export * from './lib/section-label/section-label.component';
 export * from './lib/select/select-option';
 export * from './lib/select/select.component';
+export * from './lib/segmented/segmented-option';
+export * from './lib/segmented/segmented.component';
 export * from './lib/sidebar/sidebar.component';
 export * from './lib/skip-link/skip-link.component';
 export * from './lib/sprint-hero/sprint-hero.component';

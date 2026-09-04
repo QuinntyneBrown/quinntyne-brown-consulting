@@ -27,6 +27,16 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   returns a signed session credential that authorizes every API request for
   seven days, repeated attempts from one address are throttled, and the passcode
   hash and signing key are created with the database rather than configured.
+- An outcome brief for every initiative, written as markdown on its own page at
+  **Edit brief**. The brief carries headings, lists, task lists, tables, quotes,
+  and fenced code; a formatting toolbar and insertable building blocks compose
+  it; and write, split, and preview views show the source, both, or the rendered
+  brief. An outline lists the brief's headings and moves the editor to any of
+  them, and the page reports the word and character count as the brief grows.
+  Saving stores the brief on the initiative it belongs to, so a renamed
+  initiative is renamed everywhere. Leaving the page with unsaved markdown asks
+  whether to keep editing, discard the changes, or save and continue; nothing is
+  kept in the browser.
 - An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
   showing the entry, error, lockout, and unlocked states offline.
 - An interaction study for editing an initiative outcome brief as markdown at

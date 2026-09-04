@@ -1,0 +1,208 @@
+<qbc-page-header
+  title="Edit initiative brief"
+  description="The outcome this initiative is pursuing, written as markdown."
+>
+  <qbc-segmented
+    actions
+    ariaLabel="Editor view"
+    [options]="views"
+    [selected]="view()"
+    (selectedChange)="showView($event)"
+  />
+  <span
+    actions
+    class="save-state"
+    role="status"
+    aria-label="Brief save state"
+    [class.is-dirty]="dirty()"
+    >{{ dirty() ? 'Unsaved changes' : 'Saved' }}</span
+  >
+  <qbc-button
+    actions
+    variant="secondary"
+    [disabled]="!dirty()"
+    (click)="discard()"
+    >Discard</qbc-button
+  >
+  <qbc-button
+    actions
+    [disabled]="pending()"
+    (click)="save()"
+    >Save brief</qbc-button
+  >
+</qbc-page-header>
+
+@if (formError()) {
+  <qbc-form-error>{{ formError() }}</qbc-form-error>
+}
+@if (error()) {
+  <qbc-form-error>{{ error() }}</qbc-form-error>
+}
+
+@if (loadingState() === 'loading' && initiative() === null) {
+  <qbc-loading-state>Loading the initiative brief…</qbc-loading-state>
+}
+
+<div class="brief-layout">
+  <aside class="rail initiatives">
+    <qbc-section-label heading="Initiatives" />
+    <ul class="initiative-list">
+      @for (item of hierarchyService.hierarchy().initiatives; track item.id) {
+        <li>
+          <qbc-button
+            variant="quiet"
+            size="sm"
+            [full]="true"
+            [class.is-current]="item.id === initiativeId()"
+            (click)="openBrief(item.id)"
+            >{{ item.name }}</qbc-button
+          >
+          <small>{{ summarise(item.description) }}</small>
+        </li>
+      }
+    </ul>
+  </aside>
+
+  <section class="editor-column">
+    <div class="brief-head">
+      <qbc-text-input
+        label="Initiative name"
+        [required]="true"
+        [full]="true"
+        [value]="draftName()"
+        (valueChange)="draftName.set($event)"
+      />
+    </div>
+
+    <div class="toolbar">
+      <div
+        class="tool-group"
+        role="group"
+        aria-label="Markdown formatting"
+      >
+        @for (tool of tools; track tool.command) {
+          <qbc-button
+            class="tool"
+            variant="quiet"
+            size="xs"
+            [ariaLabel]="tool.name"
+            (click)="runCommand(tool.command)"
+            >{{ tool.label }}</qbc-button
+          >
+        }
+      </div>
+      <qbc-select
+        class="insert"
+        label="Insert a building block"
+        size="sm"
+        [labelHidden]="true"
+        [options]="buildingBlocks"
+        [value]="null"
+        (valueChange)="insertBuildingBlock($event)"
+      />
+    </div>
+
+    <div
+      class="panes"
+      [class.is-split]="view() === 'split'"
+    >
+      <div
+        class="pane write-pane"
+        [class.is-hidden]="view() === 'preview'"
+      >
+        <p class="pane-label">
+          <span>Markdown</span><span>{{ engineNote() }}</span>
+        </p>
+        <app-brief-editor
+          [initialValue]="draftBrief()"
+          (ready)="onEditorReady($event)"
+        />
+        @if (isEmpty()) {
+          <div class="empty-hint">
+            <h2>This brief is empty</h2>
+            <p>Start from the outcome template, or write the outcome in your own words.</p>
+            <qbc-button (click)="insertTemplate()">Insert the outcome brief template</qbc-button>
+          </div>
+        }
+      </div>
+
+      <div
+        class="pane preview-pane"
+        [class.is-hidden]="view() === 'write'"
+      >
+        <p class="pane-label"><span>Preview</span><span>Updates as you type</span></p>
+        <div class="preview-scroll">
+          @if (isEmpty()) {
+            <p class="preview-empty">Nothing to preview yet. The brief is empty.</p>
+          } @else {
+            <article
+              class="brief-preview"
+              [innerHTML]="rendered()"
+            ></article>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span
+        role="status"
+        aria-label="Brief size"
+        >{{ wordCount().toLocaleString() }} words ·
+        {{ characterCount().toLocaleString() }} characters · {{ readingTime() }}</span
+      >
+      <span>Ln {{ cursorLine() }}</span>
+    </div>
+  </section>
+
+  <aside class="rail outline">
+    <qbc-section-label heading="Outline" />
+    <nav aria-label="Brief outline">
+      <ul class="outline-list">
+        @for (heading of outline(); track heading.id) {
+          <li
+            [class]="'level-' + heading.level"
+            [class.is-current]="heading.id === currentHeadingId()"
+          >
+            <qbc-button
+              variant="quiet"
+              size="sm"
+              [full]="true"
+              (click)="goToHeading(heading.id, heading.line)"
+              >{{ heading.text }}</qbc-button
+            >
+          </li>
+        } @empty {
+          <li class="rail-empty">Headings appear here as you write them.</li>
+        }
+      </ul>
+    </nav>
+  </aside>
+</div>
+
+<qbc-dialog
+  #guardDialog
+  title="Keep your unsaved changes?"
+  subtitle="This brief has changes that have not been saved."
+  size="sm"
+  (closed)="onGuardDismissed()"
+>
+  <p body>Choose what should happen to the changes before leaving this brief.</p>
+  <qbc-button
+    actions
+    variant="quiet"
+    (click)="keepEditing()"
+    >Keep editing</qbc-button
+  >
+  <qbc-button
+    actions
+    variant="secondary"
+    (click)="discardAndLeave()"
+    >Discard changes</qbc-button
+  >
+  <qbc-button
+    actions
+    (click)="saveAndLeave()"
+    >Save and continue</qbc-button
+  >
+</qbc-dialog>

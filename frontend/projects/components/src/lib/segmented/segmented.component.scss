@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+.segmented {
+  display: flex;
+  padding: 3px;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-control);
+  background: var(--qbc-soft);
+}
+button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--qbc-ink-soft);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 680;
+  cursor: pointer;
+}
+button:hover {
+  color: var(--qbc-ink);
+}
+button[aria-pressed='true'] {
+  color: var(--qbc-accent-dark);
+  background: var(--qbc-panel);
+  box-shadow: var(--qbc-shadow-card);
+}

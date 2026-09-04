@@ -113,6 +113,7 @@ the suite. Specifications are grouped by requirement:
 | -------------------------- | ----------------------------------- |
 | `navigation.spec.ts`       | `L2-001`                            |
 | `hierarchy.spec.ts`        | `L2-002`, `L2-003`, `L2-004`        |
+| `initiative-brief.spec.ts` | `L2-046` – `L2-048`                 |
 | `stories.spec.ts`          | `L2-005` – `L2-008`                 |
 | `assistants.spec.ts`       | `L2-009`, `L2-010`                  |
 | `backlog.spec.ts`          | `L2-011`, `L2-012`                  |

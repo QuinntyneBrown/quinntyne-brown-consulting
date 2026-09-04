@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { unlockedGuard } from './core/unlocked.guard';
+import { unsavedBriefGuard } from './features/initiative-brief/unsaved-brief.guard';
 import { AppShellComponent } from './shell/app-shell.component';
 
 export const routes: Routes = [
@@ -35,6 +36,15 @@ export const routes: Routes = [
             (value) => value.HierarchyPageComponent,
           ),
         title: 'Initiatives · QBC Workboard',
+      },
+      {
+        path: 'initiatives/:initiativeId/brief',
+        loadComponent: () =>
+          import('./features/initiative-brief/initiative-brief-page.component').then(
+            (value) => value.InitiativeBriefPageComponent,
+          ),
+        title: 'Edit initiative brief · QBC Workboard',
+        canDeactivate: [unsavedBriefGuard],
       },
       {
         path: 'assistants',

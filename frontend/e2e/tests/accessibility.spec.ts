@@ -3,6 +3,7 @@ import { AccessibilityPage } from '../pages/accessibility.page';
 import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
+import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { SprintManagerPage } from '../pages/sprint-manager.page';
 import { WorkboardPage, type WorkspaceRoute } from '../pages/workboard.page';
 
@@ -107,4 +108,23 @@ test('L2-040 · Verify accessibility on every dialog type', async ({ page }) => 
   await workboard.navigateTo('assistants');
   await accessibility.scanDialogOpenedBy(/New assistant/, 'New assistant');
   await accessibility.scanDialogOpenedBy('Delete', 'Reassign work first');
+});
+
+test('L2-040 · Verify accessibility on the initiative brief', async ({ page }) => {
+  test.slow();
+  const workboard = new WorkboardPage(page);
+  const accessibility = new AccessibilityPage(page);
+  const brief = new InitiativeBriefPage(page);
+
+  await workboard.navigateTo('initiatives');
+  await brief.openFrom('Client delivery excellence');
+  // The markdown editor is a third-party control with an accessibility mode of its own, so the
+  // scan covers the page around it rather than its internals.
+  await accessibility.expectNoSeriousViolationsOutside('app-brief-editor');
+
+  // The unsaved-changes question is the one dialog this route raises.
+  await brief.writeBrief('# Outcome');
+  await brief.leaveForBacklog();
+  await accessibility.expectNoSeriousViolationsOutside('app-brief-editor');
+  await brief.chooseFromGuard('Discard changes');
 });

@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EpicHierarchy, InitiativeHierarchy } from '@qbc/api';
 import {
   ButtonComponent,
@@ -48,6 +49,7 @@ export class HierarchyPageComponent implements OnInit {
   private readonly epicDialog = viewChild.required<DialogComponent>('epicDialog');
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
+  private readonly router = inject(Router);
   readonly service = inject(HIERARCHY_SERVICE);
   readonly pending = signal(false);
   readonly initiativeId = signal<string | null>(null);
@@ -155,6 +157,11 @@ export class HierarchyPageComponent implements OnInit {
     ) {
       await this.service.deleteEpic(epic.id);
     }
+  }
+
+  /** The outcome brief is a route of its own, so it can be linked to and deep-linked into. */
+  openBrief(initiative: InitiativeHierarchy): void {
+    void this.router.navigate(['/initiatives', initiative.id, 'brief']);
   }
 
   initiativeOptions(): readonly SelectOption<string>[] {

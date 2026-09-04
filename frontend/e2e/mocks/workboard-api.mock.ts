@@ -126,6 +126,11 @@ export class WorkboardApiMock {
       }
 
       const initiativeMatch = path.match(/^\/api\/initiatives\/([^/]+)$/);
+      if (initiativeMatch && method === 'GET') {
+        const initiative = this.state.initiatives.find((item) => item.id === initiativeMatch[1]);
+        if (!initiative) return this.notFound(route, 'Initiative');
+        return this.json(route, 200, initiative);
+      }
       if (initiativeMatch && method === 'PUT') {
         const id = initiativeMatch[1];
         if (!this.state.initiatives.some((item) => item.id === id))
@@ -566,8 +571,14 @@ export class WorkboardApiMock {
   private initiativeErrors(draft: InitiativeDraft): FieldErrors | null {
     return this.errors({
       name: this.blank(draft.name) ? 'Enter a name.' : null,
-      description: this.blank(draft.description) ? 'Enter an outcome description.' : null,
+      description: this.describeBrief(draft.description),
     });
+  }
+
+  /** The outcome brief is markdown, required, and bounded exactly as the API bounds it. */
+  private describeBrief(description: string): string | null {
+    if (this.blank(description)) return 'Enter an outcome description.';
+    return description.length > 100_000 ? 'Description must be 100,000 characters or fewer.' : null;
   }
 
   private epicErrors(draft: EpicDraft): FieldErrors | null {

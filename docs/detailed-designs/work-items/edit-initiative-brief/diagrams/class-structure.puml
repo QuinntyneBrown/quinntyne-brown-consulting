@@ -1,0 +1,110 @@
+@startuml
+title UML class structure — Edit the initiative brief
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #FFFFFF
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+package "qbc-workboard — initiative brief" {
+  class InitiativeBriefPageComponent {
+    +Signal<string> initiativeId
+    +Signal<string> draftName
+    +Signal<string> draftBrief
+    +Signal<boolean> dirty
+    +Signal<string> rendered
+    +Signal<BriefHeading[]> outline
+    +runCommand(command)
+    +insertBuildingBlock(key)
+    +goToHeading(id, line)
+    +save() : Promise<boolean>
+    +discard()
+    +confirmLeaving() : Promise<boolean>
+  }
+
+  interface IInitiativeBriefService {
+    +Signal<Initiative> initiative
+    +load(id) : Promise<void>
+    +save(id, name, description) : Promise<boolean>
+  }
+
+  class InitiativeBriefService
+
+  class BriefEditorComponent {
+    +Signal<BriefEditorEngine> engine
+    +output ready : BriefEditorAdapter
+  }
+
+  interface BriefEditorAdapter {
+    +getState() : EditorSelection
+    +apply(next)
+    +getValue() : string
+    +setValue(text)
+    +revealLine(line)
+    +positionAt(offset) : CursorPosition
+  }
+
+  class createMonacoEditor <<factory>>
+  class createTextareaEditor <<factory>>
+
+  class MARKDOWN_COMMANDS <<pure>> {
+    +bold(state) : EditorSelection
+    +heading(state) : EditorSelection
+    +task(state) : EditorSelection
+    +table(state) : EditorSelection
+  }
+
+  class renderMarkdown <<pure>>
+  class readOutline <<pure>>
+
+  class EditorSelection <<record>> {
+    +string text
+    +number start
+    +number end
+  }
+}
+
+package "@qbc/api" {
+  interface IHierarchyService {
+    +getInitiative(id) : Promise<Initiative>
+    +updateInitiative(id, name, description) : Promise<Initiative>
+  }
+  class Initiative <<record>> {
+    +string id
+    +string name
+    +string description
+  }
+}
+
+package "Qbc.Workboard.Application" {
+  class SaveInitiativeCommand <<record>> {
+    -int MaxDescriptionLength
+    +Validate() : IReadOnlyDictionary
+  }
+}
+
+InitiativeBriefPageComponent --> IInitiativeBriefService : loads and saves through
+InitiativeBriefService ..|> IInitiativeBriefService
+InitiativeBriefService --> IHierarchyService : reads and writes the initiative
+IHierarchyService --> Initiative : returns
+InitiativeBriefPageComponent --> BriefEditorComponent : hosts
+BriefEditorComponent --> BriefEditorAdapter : reports one
+createMonacoEditor ..> BriefEditorAdapter : creates
+createTextareaEditor ..> BriefEditorAdapter : creates
+InitiativeBriefPageComponent ..> MARKDOWN_COMMANDS : applies
+InitiativeBriefPageComponent ..> renderMarkdown : previews with
+InitiativeBriefPageComponent ..> readOutline : outlines with
+MARKDOWN_COMMANDS --> EditorSelection : rewrites
+BriefEditorAdapter --> EditorSelection : reads and applies
+IHierarchyService ..> SaveInitiativeCommand : is validated by
+@enduml
