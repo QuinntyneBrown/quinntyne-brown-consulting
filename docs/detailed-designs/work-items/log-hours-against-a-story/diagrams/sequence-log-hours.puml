@@ -24,7 +24,7 @@ box "Backend — Workboard API application" #D1FADF
   participant "AssistantsController" as assistants
 end box
 box "Backend — Workboard Application and Domain" #ECFDF3
-  participant "LogTimeCommandHandler" as handler
+  participant "SaveTimeEntryCommandHandler" as handler
   participant "TimeEntry" as entry
   participant "AssistantHoursProjection" as projection
 end box
@@ -35,7 +35,7 @@ end box
 actor -> page : Log L2-050 hours against a story
 page -> service : log(draft)
 service -> entries : POST /api/time-entries
-entries -> handler : Send LogTimeCommand
+entries -> handler : Send SaveTimeEntryCommand without an ID
 alt hours outside quarter-hour increments, or no date
   handler --> entries : Validation failure by field
   entries --> service : 400 Problem Details
@@ -60,6 +60,27 @@ projection --> assistants : Totals, completion share, stories worked on
 assistants --> service : 200 JSON
 service --> page : Update the hours Signal
 page --> actor : Present totals and every story worked on
+
+actor -> page : Amend an L2-050 entry through the same form
+page -> service : update(entryId, draft)
+service -> entries : PUT /api/time-entries/{id}
+entries -> handler : Send SaveTimeEntryCommand carrying the ID
+alt entry, story, or assistant does not exist
+  handler --> entries : Not found
+  entries --> service : 404 Problem Details
+  service --> page : Present the missing record, entry unchanged
+else amendment is acceptable
+  handler -> entry : Restate story, date, hours, and note
+  entry --> handler : Entry, identity kept
+  handler -> db : Commit amendment
+  db --> handler : Commit result
+  handler --> entries : TimeEntryDto
+  entries --> service : 200 JSON
+end
+service -> assistants : GET /api/assistants/{id}/hours
+assistants --> service : Totals carrying the corrected hours
+service --> page : Update the hours Signal
+page --> actor : Present the corrected totals
 
 actor -> page : Delete an L2-050 entry after confirmation
 page -> service : delete(entryId, assistantId)

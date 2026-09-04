@@ -13,6 +13,10 @@ export class TimeEntryService implements ITimeEntryService {
     return firstValueFrom(this.http.post<TimeEntry>('/api/time-entries', draft));
   }
 
+  update(id: string, draft: TimeEntryDraft): Promise<TimeEntry> {
+    return firstValueFrom(this.http.put<TimeEntry>(`/api/time-entries/${id}`, draft));
+  }
+
   async delete(id: string): Promise<void> {
     await firstValueFrom(this.http.delete<void>(`/api/time-entries/${id}`));
   }

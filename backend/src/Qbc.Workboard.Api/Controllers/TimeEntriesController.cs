@@ -15,11 +15,17 @@ public sealed class TimeEntriesController : ControllerBase
     public async Task<ActionResult<TimeEntryDto>> Log(TimeEntryRequest request, CancellationToken cancellationToken)
     {
         var result = await _sender.Send(
-            new LogTimeCommand(request.StoryId, request.AssistantId, request.WorkedOn, request.Hours, request.Note),
+            new SaveTimeEntryCommand(null, request.StoryId, request.AssistantId, request.WorkedOn, request.Hours, request.Note),
             cancellationToken);
         // An entry is read through its assistant, which is the address the new record shows up at.
         return Created($"/api/assistants/{result.AssistantId}/hours", result);
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<TimeEntryDto>> Amend(Guid id, TimeEntryRequest request, CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(
+            new SaveTimeEntryCommand(id, request.StoryId, request.AssistantId, request.WorkedOn, request.Hours, request.Note),
+            cancellationToken));
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)

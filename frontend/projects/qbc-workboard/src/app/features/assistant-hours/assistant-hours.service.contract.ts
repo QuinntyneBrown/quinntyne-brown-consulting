@@ -11,6 +11,7 @@ export interface IAssistantHoursService {
   readonly error: Signal<string | null>;
   load(assistantId: string): Promise<void>;
   log(draft: TimeEntryDraft): Promise<boolean>;
+  update(entryId: string, draft: TimeEntryDraft): Promise<boolean>;
   delete(entryId: string, assistantId: string): Promise<boolean>;
 }
 

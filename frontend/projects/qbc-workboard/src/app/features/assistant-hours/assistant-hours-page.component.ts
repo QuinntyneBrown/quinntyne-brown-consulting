@@ -77,6 +77,8 @@ export class AssistantHoursPageComponent {
   readonly service = inject(ASSISTANT_HOURS_SERVICE);
 
   readonly assistantId = input.required<string>();
+  /** The entry the dialog is correcting, or null when it is recording a new one. */
+  readonly entryId = signal<string | null>(null);
   readonly filter = signal<HoursFilter>('all');
   readonly expanded = signal<readonly string[]>([]);
   readonly pending = signal(false);
@@ -149,6 +151,7 @@ export class AssistantHoursPageComponent {
   }
 
   openLog(storyId?: string): void {
+    this.entryId.set(null);
     this.formError.set('');
     this.form.reset({
       storyId: storyId ?? this.storyOptions()[0]?.value ?? '',
@@ -159,7 +162,20 @@ export class AssistantHoursPageComponent {
     this.logDialog().open();
   }
 
-  async log(): Promise<void> {
+  /** The same form corrects an entry, because an amendment restates what was recorded. */
+  openEdit(entry: TimeEntry): void {
+    this.entryId.set(entry.id);
+    this.formError.set('');
+    this.form.reset({
+      storyId: entry.storyId,
+      workedOn: entry.workedOn,
+      hours: String(entry.hours),
+      note: entry.note,
+    });
+    this.logDialog().open();
+  }
+
+  async save(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.formError.set(
@@ -174,15 +190,19 @@ export class AssistantHoursPageComponent {
     this.formError.set('');
     this.pending.set(true);
     const value = this.form.getRawValue();
-    const logged = await this.service.log({
+    const draft = {
       storyId: value.storyId,
       assistantId: this.assistantId(),
       workedOn: value.workedOn,
       hours: Number(value.hours),
       note: value.note,
-    });
+    };
+    const entryId = this.entryId();
+    const saved = entryId
+      ? await this.service.update(entryId, draft)
+      : await this.service.log(draft);
     this.pending.set(false);
-    if (logged) this.logDialog().close();
+    if (saved) this.logDialog().close();
   }
 
   async deleteEntry(entry: TimeEntry): Promise<void> {

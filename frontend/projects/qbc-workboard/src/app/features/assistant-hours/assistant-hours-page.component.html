@@ -139,12 +139,20 @@
                     <span class="entry-date">{{ entry.workedOn }}</span>
                     <qbc-count [value]="formatHours(entry.hours)" />
                     <span class="entry-note">{{ entry.note || 'No note' }}</span>
-                    <qbc-button
-                      variant="quiet"
-                      size="sm"
-                      (click)="deleteEntry(entry)"
-                      >Delete</qbc-button
-                    >
+                    <div class="entry-actions">
+                      <qbc-button
+                        variant="quiet"
+                        size="sm"
+                        (click)="openEdit(entry)"
+                        >Edit</qbc-button
+                      >
+                      <qbc-button
+                        variant="quiet"
+                        size="sm"
+                        (click)="deleteEntry(entry)"
+                        >Delete</qbc-button
+                      >
+                    </div>
                   </div>
                 }
               </div>
@@ -158,12 +166,16 @@
 
 <form
   [formGroup]="form"
-  (ngSubmit)="log()"
+  (ngSubmit)="save()"
 >
   <qbc-dialog
     #logDialog
-    title="Log hours"
-    subtitle="Record the time spent on a story. Hours are recorded in quarter-hour increments."
+    [title]="entryId() ? 'Edit hours' : 'Log hours'"
+    [subtitle]="
+      (entryId()
+        ? 'Correct the time recorded against a story.'
+        : 'Record the time spent on a story.') + ' Hours are recorded in quarter-hour increments.'
+    "
   >
     @if (formError()) {
       <qbc-form-error body>{{ formError() }}</qbc-form-error>
@@ -208,7 +220,7 @@
       actions
       type="submit"
       [disabled]="pending()"
-      >Log hours</qbc-button
+      >{{ entryId() ? 'Save changes' : 'Log hours' }}</qbc-button
     >
   </qbc-dialog>
 </form>

@@ -71,8 +71,9 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
         Assert.Equal(HttpStatusCode.OK, (await Client.DeleteAsync($"/api/sprints/{sprint.Id}/stories/{story.Id}")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await Client.PostAsJsonAsync($"/api/sprints/{sprint.Id}/complete", new { })).StatusCode);
 
-        // Time entries are created and removed through their own resource.
+        // Time entries are created, amended, and removed through their own resource.
         var entry = await Given.LogTimeAsync(story.Id, assistant.Id, hours: 2m);
+        Assert.Equal(3m, (await Given.AmendTimeAsync(entry.Id, story.Id, assistant.Id, hours: 3m)).Hours);
         Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/time-entries/{entry.Id}")).StatusCode);
 
         // The permitted deletes, in the order the guards allow them.

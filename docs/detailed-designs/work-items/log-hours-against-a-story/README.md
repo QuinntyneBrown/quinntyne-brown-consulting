@@ -17,9 +17,10 @@ independent of who owns the story now
 on stories whose board status is Done at the moment the page is read
 
 This feature owns the entry record, the rules that accept or refuse one, the
-removal that corrects a mistake, and the per-assistant report that reads them
-back. It does not introduce identity: the assistant an entry is attributed to is
-chosen on the form, because `L1-013` establishes no individual identity to infer.
+amendment and the removal that correct a mistake, and the per-assistant report
+that reads them back. It does not introduce identity: the assistant an entry is
+attributed to is chosen on the form, because `L1-013` establishes no individual
+identity to infer.
 
 ## Description
 
@@ -27,23 +28,29 @@ The feature crosses an assistant's hours page, a logging dialog, an API
 controller, handlers, a domain entity, and persistence.
 
 - **`AssistantHoursPageComponent`** — Angular page for one assistant's totals,
-  completion share, story list, filter, disclosure, and logging dialog.
+  completion share, story list, filter, disclosure, and logging dialog. The same
+  dialog records a new entry and corrects an existing one, opened on what was
+  recorded.
 - **`IAssistantHoursService`** — token-backed contract exposing the hours report
-  and the log and delete operations as Signals.
+  and the log, update, and delete operations as Signals.
 - **`AssistantHoursService`** — implementation that reads the report after every
   write, so the page never keeps its own opinion of the totals.
 - **`ITimeEntryService`** — token-backed contract for the entry resource.
-- **`TimeEntriesController`** — ASP.NET Core controller for creating and removing
-  an entry.
+- **`TimeEntriesController`** — ASP.NET Core controller for creating, amending,
+  and removing an entry.
 - **`AssistantsController.GetHours`** — the report, hung off the assistant the
   hours belong to.
-- **`LogTimeCommandHandler`** — MediatR handler that checks the story and the
-  assistant exist and persists a valid entry.
+- **`SaveTimeEntryCommandHandler`** — MediatR handler that checks the story and
+  the assistant exist and then persists a valid entry, creating one when the
+  command carries no ID and restating the named one when it does.
 - **`DeleteTimeEntryCommandHandler`** — unguarded removal; an entry corrects the
   record and nothing depends on it.
 - **`DeleteAssistantCommandHandler`** — refuses an assistant whose hours are
   logged, alongside the assignments that already blocked deletion.
-- **`TimeEntry`** — entity holding story, assistant, date, hours, and note.
+- **`TimeEntry`** — entity holding story, assistant, date, hours, and note, all
+  of which an amendment restates: the entry was only ever a statement about which
+  work the time went into, so correcting the story is as ordinary as correcting
+  the amount.
 - **`AssistantHoursProjection`** — groups entries by story, sums them in memory,
   and reports the assistant's own share apart from every hour on the story.
 
@@ -96,8 +103,8 @@ while any of theirs remain.
 
 ### Behaviour — log and correct hours
 
-The sequence covers logging an entry, reading the report it changes, and removing
-one. Alternate branches carry the refusal of an invalid amount and the refusal to
-delete an assistant whose hours are logged.
+The sequence covers logging an entry, reading the report it changes, amending one
+in place, and removing one. Alternate branches carry the refusal of an invalid
+amount and the refusal to delete an assistant whose hours are logged.
 
 ![Sequence diagram for logging hours against a story](diagrams/sequence-log-hours.png)

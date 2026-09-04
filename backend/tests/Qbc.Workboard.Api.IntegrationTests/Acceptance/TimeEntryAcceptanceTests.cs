@@ -92,6 +92,80 @@ public sealed class TimeEntryAcceptanceTests : AcceptanceTest
     }
 
     [Fact]
+    public async Task L2_050_Amend_an_entry()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var assistant = await Given.AddAssistantAsync();
+        var story = await Given.AddGroomableStoryAsync(epic.Id, "Publish an engagement health summary");
+        var moved = await Given.AddGroomableStoryAsync(epic.Id, "Capture a client decision");
+        var entry = await Given.LogTimeAsync(story.Id, assistant.Id, Worked, 2m, "Guessed");
+
+        var amended = await Given.AmendTimeAsync(
+            entry.Id,
+            moved.Id,
+            assistant.Id,
+            new DateOnly(2026, 9, 1),
+            3.75m,
+            "  Counted it properly  ");
+
+        // The correction keeps the entry's identity and restates everything the reader can change.
+        Assert.Equal(entry.Id, amended.Id);
+        Assert.Equal(moved.Id, amended.StoryId);
+        Assert.Equal(moved.Key, amended.StoryKey);
+        Assert.Equal(new DateOnly(2026, 9, 1), amended.WorkedOn);
+        Assert.Equal(3.75m, amended.Hours);
+        Assert.Equal("Counted it properly", amended.Note);
+
+        // The totals follow the correction rather than carrying both readings of the same time.
+        var hours = await Given.ReadAssistantHoursAsync(assistant.Id);
+        Assert.Equal(3.75m, hours.HoursLogged);
+        var listed = Assert.Single(hours.Stories);
+        Assert.Equal(moved.Id, listed.StoryId);
+        Assert.Equal(entry.Id, Assert.Single(listed.Entries).Id);
+    }
+
+    [Fact]
+    public async Task L2_050_Reject_an_invalid_amendment()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var assistant = await Given.AddAssistantAsync();
+        var story = await Given.AddGroomableStoryAsync(epic.Id);
+        var entry = await Given.LogTimeAsync(story.Id, assistant.Id, Worked, 2m, "Counted");
+        var missing = Guid.NewGuid();
+
+        await ExpectInvalidFieldsAsync(
+            await Client.PutAsJsonAsync(
+                $"/api/time-entries/{entry.Id}",
+                new TimeEntryRequest(story.Id, assistant.Id, Worked, 1.1m, string.Empty)),
+            "hours");
+        await ExpectInvalidFieldsAsync(
+            await Client.PutAsJsonAsync(
+                $"/api/time-entries/{entry.Id}",
+                new TimeEntryRequest(story.Id, assistant.Id, null, 1m, string.Empty)),
+            "workedOn");
+        await ExpectProblemAsync(
+            await Client.PutAsJsonAsync(
+                $"/api/time-entries/{entry.Id}",
+                new TimeEntryRequest(missing, assistant.Id, Worked, 1m, string.Empty)),
+            HttpStatusCode.NotFound,
+            "not-found");
+
+        // An entry that no longer exists is reported as missing rather than recreated by an amendment.
+        await ExpectProblemAsync(
+            await Client.PutAsJsonAsync(
+                $"/api/time-entries/{missing}",
+                new TimeEntryRequest(story.Id, assistant.Id, Worked, 1m, string.Empty)),
+            HttpStatusCode.NotFound,
+            "not-found");
+
+        // Every refusal left the original reading intact.
+        var kept = Assert.Single(Assert.Single((await Given.ReadAssistantHoursAsync(assistant.Id)).Stories).Entries);
+        Assert.Equal(entry.Id, kept.Id);
+        Assert.Equal(2m, kept.Hours);
+        Assert.Equal("Counted", kept.Note);
+    }
+
+    [Fact]
     public async Task L2_050_Delete_an_entry()
     {
         var epic = await Given.AddEpicWithInitiativeAsync();

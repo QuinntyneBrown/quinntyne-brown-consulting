@@ -132,6 +132,58 @@ test('L2-050 · Reject an invalid entry', async ({ page }) => {
   });
 });
 
+test('L2-050 · Amend an entry', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  const hours = new AssistantHoursPage(page);
+  await hours.openFromDirectory('Noah Williams');
+  await hours.expandStory(HEALTH_SUMMARY);
+  // A correction starts from what was recorded rather than from a blank form.
+  await hours.expectEditFormShows(HEALTH_SUMMARY, '4 h', {
+    story: `QBC-101 · ${HEALTH_SUMMARY}`,
+    workedOn: '2026-08-24',
+    hours: '4',
+    note: 'Built the summary card',
+  });
+
+  await hours.editEntry(HEALTH_SUMMARY, '4 h', {
+    hours: '5.5',
+    note: 'Built the summary card and its totals',
+  });
+
+  // The correction replaces the reading rather than adding a second one beside it.
+  await hours.expectTotals({
+    hoursLogged: '14 h',
+    hoursOnCompleted: '6 h',
+    storiesWorkedOn: '2',
+    storiesCompleted: '1',
+  });
+  await hours.expectStoryHours(HEALTH_SUMMARY, '8 h', '9.5 h');
+
+  await workboard.reload();
+  await hours.expandStory(HEALTH_SUMMARY);
+  await hours.expectEntries(
+    HEALTH_SUMMARY,
+    { date: '2026-08-24', hours: '5.5 h', note: 'Built the summary card and its totals' },
+    { date: '2026-08-25', hours: '2.5 h', note: 'Wired the health signals' },
+  );
+});
+
+test('L2-050 · Reject an invalid amendment', async ({ page }) => {
+  const hours = new AssistantHoursPage(page);
+  await hours.openFromDirectory('Noah Williams');
+  await hours.expandStory(HEALTH_SUMMARY);
+  // The form catches a cleared amount; the server catches one a day cannot hold.
+  await hours.expectAmendmentRejected(HEALTH_SUMMARY, '4 h', '', 'Hours');
+  await hours.expectAmendmentRejected(HEALTH_SUMMARY, '4 h', '25', /quarter-hour increments/);
+  // Neither refusal moved the entry it was correcting.
+  await hours.expectTotals({
+    hoursLogged: '12.5 h',
+    hoursOnCompleted: '6 h',
+    storiesWorkedOn: '2',
+    storiesCompleted: '1',
+  });
+});
+
 test('L2-050 · Delete an entry', async ({ page }) => {
   const workboard = new WorkboardPage(page);
   const hours = new AssistantHoursPage(page);

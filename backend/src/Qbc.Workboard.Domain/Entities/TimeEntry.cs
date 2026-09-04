@@ -9,8 +9,7 @@ public sealed class TimeEntry
     public TimeEntry(Guid id, Guid storyId, Guid assistantId, DateOnly workedOn, decimal hours, string note)
     {
         Id = id;
-        StoryId = storyId;
-        Update(assistantId, workedOn, hours, note);
+        Update(storyId, assistantId, workedOn, hours, note);
     }
 
     public Guid Id { get; private set; }
@@ -20,8 +19,13 @@ public sealed class TimeEntry
     public decimal Hours { get; private set; }
     public string Note { get; private set; } = string.Empty;
 
-    public void Update(Guid assistantId, DateOnly workedOn, decimal hours, string note)
+    /// <summary>
+    /// Restates the whole entry, the story it names included: an amendment corrects what the time
+    /// was spent on as readily as how much of it there was.
+    /// </summary>
+    public void Update(Guid storyId, Guid assistantId, DateOnly workedOn, decimal hours, string note)
     {
+        StoryId = storyId;
         AssistantId = assistantId;
         WorkedOn = workedOn;
         Hours = hours;

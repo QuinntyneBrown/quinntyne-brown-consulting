@@ -173,6 +173,20 @@ public sealed class Workspace
         return await ReadAsync<TimeEntryDto>(response);
     }
 
+    public async Task<TimeEntryDto> AmendTimeAsync(
+        Guid entryId,
+        Guid storyId,
+        Guid assistantId,
+        DateOnly? workedOn = null,
+        decimal hours = 1.5m,
+        string note = "")
+    {
+        var response = await _client.PutAsJsonAsync(
+            $"/api/time-entries/{entryId}",
+            new TimeEntryRequest(storyId, assistantId, workedOn ?? new DateOnly(2026, 8, 31), hours, note));
+        return await ReadAsync<TimeEntryDto>(response);
+    }
+
     /// <summary>A Done story kept in a completed sprint: the workspace's immutable history.</summary>
     public async Task<(SprintDto Sprint, StoryDto Story)> AddCompletedSprintHistoryAsync(
         Guid epicId,
