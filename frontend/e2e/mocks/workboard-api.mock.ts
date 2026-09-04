@@ -785,9 +785,7 @@ export class WorkboardApiMock {
           isComplete: story.boardStatus === 'done',
           points: story.points,
           hours: this.sum(entries),
-          storyHours: this.sum(
-            this.state.timeEntries.filter((entry) => entry.storyId === storyId),
-          ),
+          storyHours: this.sum(this.state.timeEntries.filter((entry) => entry.storyId === storyId)),
           entries,
         };
       })
