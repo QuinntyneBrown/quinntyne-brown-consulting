@@ -1,5 +1,7 @@
 const STORAGE_KEY = "qbc-workboard-v1";
-const APP_VERSION = 1;
+/* Bumped when the seed grows a collection, so a workspace saved by an earlier version of this
+   mock is reseeded rather than read back without it. */
+const APP_VERSION = 2;
 
 const seedWorkspace = () => ({
   version: APP_VERSION,
@@ -65,6 +67,26 @@ const seedWorkspace = () => ({
       state: "archived", ready: false, assistantId: null, sprintId: null, boardStatus: "todo", tasks: []
     }
   ],
+  /* Time entries are the study's own invention: nothing in the product records how long work
+     took. An entry ties one assistant to one story on one day, which is also what makes
+     "every story an assistant worked on" answerable — the story's own assistantId only ever
+     names who owns it now. */
+  timeEntries: [
+    { id: "time-001", storyId: "story-101", assistantId: "asst-noah", date: "2026-08-31", hours: 3, note: "Sketched the summary card" },
+    { id: "time-002", storyId: "story-101", assistantId: "asst-noah", date: "2026-09-01", hours: 4.5, note: "Built the card and its states" },
+    { id: "time-003", storyId: "story-101", assistantId: "asst-maya", date: "2026-09-02", hours: 1.5, note: "Reviewed the health language" },
+    { id: "time-004", storyId: "story-101", assistantId: "asst-noah", date: "2026-09-03", hours: 2, note: "Handled the empty and stale cases" },
+    { id: "time-005", storyId: "story-102", assistantId: "asst-maya", date: "2026-09-01", hours: 2.5, note: "Drafted the decision form" },
+    { id: "time-006", storyId: "story-102", assistantId: "asst-maya", date: "2026-09-03", hours: 3, note: "Walked it through with delivery" },
+    { id: "time-007", storyId: "story-103", assistantId: "asst-amara", date: "2026-09-01", hours: 5, note: "Built the citation-coverage check" },
+    { id: "time-008", storyId: "story-103", assistantId: "asst-amara", date: "2026-09-02", hours: 3, note: "Assembled the test set" },
+    { id: "time-009", storyId: "story-103", assistantId: "asst-noah", date: "2026-09-04", hours: 1.5, note: "Paired on the evaluation harness" },
+    { id: "time-010", storyId: "story-104", assistantId: "asst-maya", date: "2026-08-31", hours: 4, note: "Validated against three recent projects" },
+    { id: "time-011", storyId: "story-104", assistantId: "asst-noah", date: "2026-09-01", hours: 2, note: "Turned the notes into a checklist" },
+    { id: "time-012", storyId: "story-105", assistantId: "asst-amara", date: "2026-09-03", hours: 2.5, note: "First pass at the risk canvas" },
+    { id: "time-013", storyId: "story-097", assistantId: "asst-maya", date: "2026-08-31", hours: 1, note: "Closed out the old comparison" },
+    { id: "time-014", storyId: "story-102", assistantId: "asst-noah", date: "2026-09-04", hours: 1, note: "Wired the form to the store" }
+  ],
   sprints: [
     { id: "sprint-14", name: "Sprint 14", goal: "Give clients a clearer view of delivery and decisions.", startDate: "2026-08-31", status: "active" },
     { id: "sprint-15", name: "Sprint 15", goal: "Make responsible AI engagement planning repeatable.", startDate: "2026-09-14", status: "planned" },
@@ -75,6 +97,7 @@ const seedWorkspace = () => ({
 let workspace = loadWorkspace();
 let viewState = { search: "", backlogFilter: "all" };
 let modalTasks = [];
+let modalTimeEntries = [];
 
 const main = document.querySelector("#main-content");
 const modal = document.querySelector("#modal");
@@ -163,6 +186,36 @@ function render() {
   document.querySelector("[data-action='toggle-nav']").setAttribute("aria-expanded", "false");
 }
 
+/* ---- Logged hours ---------------------------------------------------- */
+
+function entriesForStory(storyId) {
+  return workspace.timeEntries.filter(entry => entry.storyId === storyId);
+}
+
+function entriesForAssistant(assistantId) {
+  return workspace.timeEntries.filter(entry => entry.assistantId === assistantId);
+}
+
+function sumHours(entries) {
+  return entries.reduce((total, entry) => total + Number(entry.hours || 0), 0);
+}
+
+/**
+ * Hours are logged in quarters, so two decimals are kept and trailing zeros dropped: 3 reads as
+ * "3", 4.5 as "4.5", and 10.25 as "10.25" rather than rounding to a total that does not add up.
+ */
+function formatHours(hours) {
+  return `${Math.round(hours * 100) / 100}`;
+}
+
+function storyHours(storyId) {
+  return sumHours(entriesForStory(storyId));
+}
+
+function assistantHours(assistantId) {
+  return sumHours(entriesForAssistant(assistantId));
+}
+
 function pageHead(title, copy, actions = "") {
   return `<header class="page-head"><div><h1>${title}</h1><p>${copy}</p></div>${actions ? `<div class="page-actions">${actions}</div>` : ""}</header>`;
 }
@@ -209,12 +262,14 @@ function renderStoryCard(story) {
   const statuses = ["todo", "progress", "done"];
   const position = statuses.indexOf(story.boardStatus);
   const completedTasks = story.tasks.filter(task => task.done).length;
+  const logged = storyHours(story.id);
   return `<article class="story-card" draggable="true" data-story-card="${story.id}">
-    <div class="card-top"><span class="story-key">${escapeHTML(story.key)}</span><span class="points" title="${story.points} story points">${story.points}</span></div>
+    <div class="card-top"><span class="story-key">${escapeHTML(story.key)}</span><span class="card-top-meta">${logged ? `<span class="hours" title="${formatHours(logged)} hours logged">${formatHours(logged)} h</span>` : ""}<span class="points" title="${story.points} story points">${story.points}</span></span></div>
     <h3>${escapeHTML(story.title)}</h3>
     <p class="card-context">${escapeHTML(epic?.title || "No epic")}${story.tasks.length ? ` · ${completedTasks}/${story.tasks.length} tasks` : ""}</p>
     <footer class="card-foot">${assistantAvatar(story.assistantId)}<div class="card-actions">
       <button class="quiet-button" data-action="move-story" data-id="${story.id}" data-direction="-1" ${position === 0 ? "disabled" : ""} aria-label="Move ${escapeHTML(story.title)} backward">←</button>
+      <button class="quiet-button" data-action="log-hours" data-id="${story.id}" aria-label="Log hours against ${escapeHTML(story.title)}">&#9201;</button>
       <button class="quiet-button" data-action="edit-story" data-id="${story.id}">Edit</button>
       <button class="quiet-button" data-action="move-story" data-id="${story.id}" data-direction="1" ${position === 2 ? "disabled" : ""} aria-label="Move ${escapeHTML(story.title)} forward">→</button>
     </div></footer>
@@ -293,6 +348,11 @@ function summariseBrief(markdown = "") {
   return prose === undefined ? "No brief written yet." : prose.replace(/[*_`]/g, "");
 }
 
+/** An assistant's hours live on their own page, which the directory links out to. */
+function openAssistantHours(id) {
+  window.location.href = `assistant-hours.html?assistantId=${encodeURIComponent(id)}`;
+}
+
 /** The name and the brief are saved together, so both are written on the initiative's own page. */
 function openInitiativeEditor(id) {
   window.location.href = id ? `initiative-editor.html?id=${encodeURIComponent(id)}` : "initiative-editor.html?new";
@@ -341,13 +401,15 @@ function renderAssistant(assistant) {
   return `<article class="assistant-card">
     <div class="assistant-main">${assistantAvatar(assistant.id, true)}<div><h2>${escapeHTML(assistant.name)}</h2><p>${escapeHTML(assistant.role)}</p></div></div>
     <div class="tag-list">${assistant.specialties.map(item => `<span class="tag">${escapeHTML(item)}</span>`).join("") || `<span class="tag">No specialties added</span>`}</div>
-    <footer class="assistant-foot"><div><span class="availability">${escapeHTML(assistant.availability)}</span><small>${storyWork} stories · ${taskWork} open tasks</small></div><div class="row-actions"><button class="quiet-button" data-action="edit-assistant" data-id="${assistant.id}">Edit</button><button class="quiet-button" data-action="delete-assistant" data-id="${assistant.id}">Delete</button></div></footer>
+    <footer class="assistant-foot"><div><span class="availability">${escapeHTML(assistant.availability)}</span><small>${storyWork} stories · ${taskWork} open tasks · ${formatHours(assistantHours(assistant.id))} h logged</small></div><div class="row-actions"><button class="quiet-button" data-action="assistant-hours" data-id="${assistant.id}">Hours</button><button class="quiet-button" data-action="edit-assistant" data-id="${assistant.id}">Edit</button><button class="quiet-button" data-action="delete-assistant" data-id="${assistant.id}">Delete</button></div></footer>
   </article>`;
 }
 
 function field(name, label, value = "", options = {}) {
   const required = options.required ? `<span class="required" aria-hidden="true">*</span>` : "";
-  const attrs = `${options.required ? "required" : ""} ${options.placeholder ? `placeholder="${escapeHTML(options.placeholder)}"` : ""}`;
+  /* A number field needs its step, or the browser rejects a half hour against the default step of 1. */
+  const numeric = options.type === "number" ? `min="${options.min ?? 0.25}" step="${options.step ?? 0.25}"` : "";
+  const attrs = `${options.required ? "required" : ""} ${options.placeholder ? `placeholder="${escapeHTML(options.placeholder)}"` : ""} ${numeric}`;
   const control = options.type === "textarea"
     ? `<textarea id="field-${name}" name="${name}" ${attrs}>${escapeHTML(value)}</textarea>`
     : options.type === "select"
@@ -367,6 +429,7 @@ function showEntityForm(kind, id = "", preset = {}) {
     title = item ? `Edit ${item.key}` : "Create a story";
     subtitle = "A small, valuable piece of work connected to an epic.";
     modalTasks = item ? structuredClone(item.tasks) : [];
+    modalTimeEntries = item ? structuredClone(entriesForStory(item.id)) : [];
     const epicChoices = [["", "Choose an epic"], ...workspace.epics.map(epic => [epic.id, `${getInitiative(epic.initiativeId)?.title || "Initiative"} / ${epic.title}`])];
     const assistantChoices = [["", "Unassigned"], ...workspace.assistants.map(assistant => [assistant.id, assistant.name])];
     body = `<div class="form-grid">
@@ -378,6 +441,7 @@ function showEntityForm(kind, id = "", preset = {}) {
       ${field("points", "Story points", item?.points || "", { type: "select", required: true, choices: [["", "Choose points"], ...[1, 2, 3, 5, 8, 13].map(point => [point, String(point)])] })}
       ${field("state", "Lifecycle", item ? (item.state === "draft" ? "draft" : "active") : "draft", { type: "select", choices: [["draft", "Draft"], ["active", "Active"]], hint: "New stories begin as drafts. Use story actions to archive work." })}
       <div class="task-editor"><div class="section-label"><h3>Tasks <span class="pill muted">Optional</span></h3><small class="field-hint">A lightweight checklist inside this story.</small></div><div class="task-list" id="modal-task-list"></div><div class="task-add"><input id="new-task-title" placeholder="Add a task" aria-label="New task title"><select id="new-task-assistant" aria-label="New task assignee">${assistantChoices.map(([value, label]) => `<option value="${escapeHTML(value)}">${escapeHTML(label)}</option>`).join("")}</select><button class="secondary-button" type="button" data-action="modal-add-task">Add</button></div></div>
+      ${item ? renderTimePanel(assistantChoices) : `<div class="task-editor"><div class="section-label"><h3>Time logged</h3><small class="field-hint">Hours can be logged once the story exists.</small></div></div>`}
     </div>`;
   } else if (kind === "assistant") {
     const item = workspace.assistants.find(assistant => assistant.id === id);
@@ -396,9 +460,39 @@ function showEntityForm(kind, id = "", preset = {}) {
     <div class="dialog-body"><div id="form-error"></div>${body}</div>
     <footer class="dialog-actions"><button class="secondary-button" type="button" data-action="close-modal">Cancel</button><button class="primary-button" type="submit">${id ? "Save changes" : "Create"}</button></footer>
   </form>`;
-  if (kind === "story") renderModalTasks();
+  if (kind === "story") { renderModalTasks(); renderModalTimeEntries(); }
   modal.showModal();
   requestAnimationFrame(() => modal.querySelector("input, select, textarea")?.focus());
+}
+
+/**
+ * Hours an assistant spent on this story. It mirrors the task checklist above it: a list held
+ * in a module-level array while the dialog is open, merged into the store on submit.
+ */
+function renderTimePanel(assistantChoices) {
+  const options = assistantChoices.filter(([value]) => value);
+  return `<div class="task-editor time-editor">
+    <div class="section-label"><h3>Time logged <span class="hours" id="modal-time-total">0 h</span></h3><small class="field-hint">Who spent how long on this story, and on what.</small></div>
+    <div class="time-list" id="modal-time-list"></div>
+    <div class="time-add">
+      <input id="new-time-date" type="date" value="${new Date().toISOString().slice(0, 10)}" aria-label="Date worked">
+      <input id="new-time-hours" type="number" min="0.25" step="0.25" placeholder="Hours" aria-label="Hours worked">
+      <select id="new-time-assistant" aria-label="Who logged these hours">${options.map(([value, label]) => `<option value="${escapeHTML(value)}">${escapeHTML(label)}</option>`).join("")}</select>
+      <input id="new-time-note" placeholder="What was done" aria-label="What was done">
+      <button class="secondary-button" type="button" data-action="modal-add-time">Add</button>
+    </div>
+  </div>`;
+}
+
+function renderModalTimeEntries() {
+  const container = document.querySelector("#modal-time-list");
+  if (!container) return;
+  const ordered = [...modalTimeEntries].sort((a, b) => a.date.localeCompare(b.date));
+  container.innerHTML = ordered.length
+    ? ordered.map(entry => `<div class="time-row" data-time-id="${entry.id}"><span class="time-date">${formatDate(entry.date)}</span><span class="time-who">${escapeHTML(getAssistant(entry.assistantId)?.name || "Unassigned")}</span><span class="hours">${formatHours(entry.hours)} h</span><span class="time-note">${escapeHTML(entry.note) || "<em>No note</em>"}</span><button class="quiet-button" type="button" data-action="modal-delete-time" data-id="${entry.id}" aria-label="Delete the ${formatHours(entry.hours)} hour entry">×</button></div>`).join("")
+    : `<small class="field-hint">No hours logged yet.</small>`;
+  const total = document.querySelector("#modal-time-total");
+  if (total) total.textContent = `${formatHours(sumHours(modalTimeEntries))} h`;
 }
 
 function renderModalTasks() {
@@ -430,6 +524,11 @@ function submitEntityForm(form) {
       tasks: structuredClone(modalTasks)
     };
     if (existing) Object.assign(existing, story); else workspace.stories.push(story);
+    if (existing) {
+      workspace.timeEntries = workspace.timeEntries
+        .filter(entry => entry.storyId !== story.id)
+        .concat(modalTimeEntries.map(entry => ({ ...entry, storyId: story.id })));
+    }
   } else if (kind === "assistant") {
     const existing = workspace.assistants.find(item => item.id === id);
     const specialties = values.specialties.split(",").map(item => item.trim()).filter(Boolean);
@@ -442,6 +541,46 @@ function submitEntityForm(form) {
   }
   modal.close();
   commit(`${kind[0].toUpperCase() + kind.slice(1)} ${id ? "updated" : "created"}.`);
+}
+
+/**
+ * The quick path onto a story's hours, from the board. It asks for the same four things the
+ * story editor's panel does, without opening the whole story.
+ */
+function showLogHours(storyId) {
+  const story = workspace.stories.find(item => item.id === storyId);
+  if (!story) return;
+  const options = workspace.assistants.map(assistant => [assistant.id, assistant.name]);
+  const suggested = story.assistantId || options[0]?.[0] || "";
+  modalContent.innerHTML = `<form class="dialog-shell" id="log-hours-form" data-id="${story.id}" novalidate>
+    <header class="dialog-head"><div><h2 id="modal-title">Log hours</h2><p>${escapeHTML(story.key)} · ${escapeHTML(story.title)}</p></div><button class="icon-button" type="button" data-action="close-modal" aria-label="Close dialog">×</button></header>
+    <div class="dialog-body"><div id="form-error"></div><div class="form-grid">
+      ${field("assistantId", "Who", suggested, { type: "select", required: true, choices: options })}
+      ${field("date", "Date worked", new Date().toISOString().slice(0, 10), { type: "date", required: true })}
+      ${field("hours", "Hours", "", { type: "number", required: true, placeholder: "1.5" })}
+      ${field("note", "What was done", "", { full: true, placeholder: "A short note for whoever reads this later" })}
+    </div></div>
+    <footer class="dialog-actions"><button class="secondary-button" type="button" data-action="close-modal">Cancel</button><button class="primary-button" type="submit">Log hours</button></footer>
+  </form>`;
+  modal.showModal();
+  requestAnimationFrame(() => modal.querySelector("select, input")?.focus());
+}
+
+function submitLogHours(form) {
+  const errorTarget = form.querySelector("#form-error");
+  const values = Object.fromEntries(new FormData(form));
+  const hours = Number(values.hours);
+  if (!form.checkValidity() || !(hours > 0)) {
+    errorTarget.innerHTML = `<p class="form-error">Enter who worked, the date, and a number of hours above zero.</p>`;
+    form.reportValidity();
+    return;
+  }
+  workspace.timeEntries.push({
+    id: uid("time"), storyId: form.dataset.id, assistantId: values.assistantId,
+    date: values.date, hours, note: values.note.trim()
+  });
+  modal.close();
+  commit(`${formatHours(hours)} h logged.`);
 }
 
 function showSprintManager() {
@@ -630,6 +769,7 @@ async function deleteStory(id) {
   const story = workspace.stories.find(item => item.id === id);
   if (!await askToConfirm(`Delete ${story.key} permanently?`, "The story and all of its checklist tasks will be removed. This cannot be undone.", "Delete story")) return;
   workspace.stories = workspace.stories.filter(item => item.id !== id);
+  workspace.timeEntries = workspace.timeEntries.filter(entry => entry.storyId !== id);
   modal.close();
   commit(`${story.key} deleted.`);
 }
@@ -676,6 +816,8 @@ document.addEventListener("click", async event => {
   else if (action === "new-epic") openEpicEditor("", initiativeId);
   else if (action === "edit-epic") openEpicEditor(id);
   else if (action === "delete-epic") deleteEpic(id);
+  else if (action === "log-hours") { if (modal.open) modal.close(); showLogHours(id); }
+  else if (action === "assistant-hours") openAssistantHours(id);
   else if (action === "new-assistant") showEntityForm("assistant");
   else if (action === "edit-assistant") showEntityForm("assistant", id);
   else if (action === "delete-assistant") deleteAssistant(id);
@@ -685,6 +827,23 @@ document.addEventListener("click", async event => {
   else if (action === "start-sprint") startSprint(id);
   else if (action === "complete-sprint") completeSprint(id);
   else if (action === "delete-sprint") deleteSprint(id);
+  else if (action === "modal-add-time") {
+    const date = document.querySelector("#new-time-date");
+    const hoursField = document.querySelector("#new-time-hours");
+    const who = document.querySelector("#new-time-assistant");
+    const note = document.querySelector("#new-time-note");
+    const hours = Number(hoursField.value);
+    if (!(hours > 0)) { hoursField.focus(); return; }
+    modalTimeEntries.push({ id: uid("time"), assistantId: who.value, date: date.value, hours, note: note.value.trim() });
+    hoursField.value = "";
+    note.value = "";
+    renderModalTimeEntries();
+    hoursField.focus();
+  }
+  else if (action === "modal-delete-time") {
+    modalTimeEntries = modalTimeEntries.filter(entry => entry.id !== id);
+    renderModalTimeEntries();
+  }
   else if (action === "modal-add-task") {
     const titleInput = document.querySelector("#new-task-title");
     if (!titleInput.value.trim()) return toast("Enter a task title first.", "error");
@@ -706,6 +865,11 @@ document.addEventListener("click", async event => {
 });
 
 document.addEventListener("submit", event => {
+  if (event.target.id === "log-hours-form") {
+    event.preventDefault();
+    submitLogHours(event.target);
+    return;
+  }
   if (event.target.matches("#entity-form")) {
     event.preventDefault();
     submitEntityForm(event.target);

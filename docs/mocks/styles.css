@@ -350,6 +350,22 @@ dialog::backdrop { background: rgba(18, 25, 22, .4); backdrop-filter: blur(2px);
 .toast.error { background: var(--danger); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
 
+/* ---- Logged hours ------------------------------------------------------ */
+/* Hours read as a quantity rather than an estimate, so they take the capsule shape and the
+   blue tone rather than the squircle and green the story-point chip uses. */
+.hours { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: var(--blue-soft); color: var(--blue); font-size: 12px; font-weight: 680; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.card-top-meta { display: inline-flex; gap: 6px; align-items: center; }
+
+.time-list { display: grid; gap: 2px; margin-bottom: 10px; }
+.time-row { display: grid; gap: 10px; align-items: center; padding: 7px 8px; border-radius: 9px; grid-template-columns: 104px 132px 62px 1fr auto; }
+.time-row:nth-child(odd) { background: var(--soft); }
+.time-date { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.time-who { font-size: 13px; font-weight: 620; }
+.time-note { overflow: hidden; color: var(--muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.time-note em { color: var(--muted); opacity: .7; }
+.time-add { display: grid; gap: 8px; grid-template-columns: 150px 96px 160px 1fr auto; }
+.time-editor .section-label h3 { display: flex; gap: 8px; align-items: center; }
+
 @media (max-width: 1000px) {
   .board { grid-template-columns: 1fr; }
   .board-column { min-height: 220px; }
@@ -386,6 +402,11 @@ dialog::backdrop { background: rgba(18, 25, 22, .4); backdrop-filter: blur(2px);
   .task-item select { grid-column: 2 / -1; }
   .task-add { grid-template-columns: 1fr; }
   .sprint-row { grid-template-columns: 1fr; }
+  .time-row { grid-template-columns: 1fr auto; }
+  .time-row .time-date, .time-row .time-who { font-size: 12px; }
+  .time-note { grid-column: 1 / -1; white-space: normal; }
+  .time-add { grid-template-columns: 1fr 1fr; }
+  .time-add input:last-of-type, .time-add button { grid-column: 1 / -1; }
   .dialog-body { padding: 22px 20px; }
   .dialog-head { padding: 22px 20px 18px; }
   .dialog-actions { padding: 16px 20px; }
