@@ -32,6 +32,10 @@ export class HierarchyService implements IHierarchyService {
     await firstValueFrom(this.http.delete<void>(`/api/initiatives/${id}`));
   }
 
+  getEpic(id: string): Promise<Epic> {
+    return firstValueFrom(this.http.get<Epic>(`/api/epics/${id}`));
+  }
+
   createEpic(initiativeId: string, name: string, summary: string): Promise<Epic> {
     return firstValueFrom(this.http.post<Epic>('/api/epics', { initiativeId, name, summary }));
   }

@@ -27,6 +27,7 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 | Work items | [Manage stories and tasks](detailed-designs/work-items/manage-stories-and-tasks/) | `L2-005`–`L2-008` |
 | Work items | [Manage assistants and assignments](detailed-designs/work-items/manage-assistants-and-assignments/) | `L2-009`–`L2-010` |
 | Work items | [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/) | `L2-046`–`L2-048` |
+| Work items | [Write an epic summary](detailed-designs/work-items/edit-epic-summary/) | `L2-003`, `L2-049` |
 | Planning | [Groom the backlog](detailed-designs/planning/groom-backlog/) | `L2-011`–`L2-012` |
 | Planning | [Plan two-week sprints](detailed-designs/planning/plan-two-week-sprints/) | `L2-013`–`L2-016` |
 | Delivery | [Execute the active sprint](detailed-designs/delivery/execute-active-sprint/) | `L2-017`–`L2-020` |
@@ -57,7 +58,11 @@ and five rendered PNG diagrams.
   as the single line of text an earlier form saved; that behavior is specified by
   `L2-002` and `L2-046` through `L2-048` and described in
   [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/).
-  The study loads Monaco from a CDN, while the working editor bundles it with the
+  The same page writes an epic — `?kind=epic`, and `?kind=epic&new` — because an
+  epic's summary is the same kind of document, specified by `L2-003` and `L2-049`
+  and described in
+  [Write an epic summary](detailed-designs/work-items/edit-epic-summary/). The
+  study loads Monaco from a CDN, while the working editor bundles it with the
   application; neither offers a plainer field when the editor cannot be loaded.
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.

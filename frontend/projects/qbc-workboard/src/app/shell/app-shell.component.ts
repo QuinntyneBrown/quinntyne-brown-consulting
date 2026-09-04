@@ -51,6 +51,14 @@ export class AppShellComponent {
     return this.router.url.split('?')[0].split('/')[1] || 'board';
   });
   /**
+   * The workspace area a route belongs to. An epic is written on its own route but lives in the
+   * initiative hierarchy, so it bootstraps and reads as that area rather than falling back to the
+   * board, which is what an area the server does not recognise would do.
+   */
+  private readonly workspaceArea = computed(() =>
+    this.routeSegment() === 'epics' ? 'initiatives' : this.routeSegment(),
+  );
+  /**
    * The rail's standing footer carries both deployed artifact identities, so each version is
    * legible from every page without occupying navigation space.
    */
@@ -59,14 +67,14 @@ export class AppShellComponent {
     return `${COMPANY}\n${builds.join('\n')}`;
   });
   readonly routeName = computed(() => {
-    const segment = this.routeSegment();
+    const segment = this.workspaceArea();
     return segment === 'initiatives'
       ? 'Initiatives'
       : segment.charAt(0).toUpperCase() + segment.slice(1);
   });
 
   constructor() {
-    effect(() => void this.workspace.load(this.routeSegment()));
+    effect(() => void this.workspace.load(this.workspaceArea()));
   }
 
   openNewStory(): void {

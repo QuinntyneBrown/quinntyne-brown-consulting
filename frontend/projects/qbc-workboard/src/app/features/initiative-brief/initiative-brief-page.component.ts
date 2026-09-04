@@ -1,61 +1,18 @@
-import {
-  Component,
-  HostListener,
-  computed,
-  effect,
-  inject,
-  input,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import {
   ButtonComponent,
-  DialogComponent,
   FormErrorComponent,
   LoadingStateComponent,
   PageHeaderComponent,
-  SegmentedComponent,
-  SegmentedOption,
   TextInputComponent,
 } from '@qbc/components';
-import { BriefEditorComponent } from './editor/brief-editor.component';
-import { BriefEditorHandle } from './editor/brief-editor-handle';
-import { BRIEF_TEMPLATE } from './markdown/brief-snippets';
+import { DocumentEditorComponent } from '../markdown-document/document-editor.component';
+import { EditsADocument } from '../markdown-document/unsaved-document.guard';
+import { UnsavedChangesDialogComponent } from '../markdown-document/unsaved-changes-dialog.component';
+import { BRIEF_TEMPLATE } from './brief-template';
 import { INITIATIVE_BRIEF_SERVICE } from './initiative-brief.service.contract';
-import { MARKDOWN_COMMANDS } from './markdown/markdown-commands';
-import { renderMarkdown } from './markdown/render-markdown';
-import { BriefView } from './brief-view';
-import { FormattingTool } from './formatting-tool';
 import { InitiativeDraft } from './initiative-draft';
-
-const VIEWS: readonly SegmentedOption[] = [
-  { value: 'write', label: 'Write', title: 'Write only (Alt+1)' },
-  { value: 'split', label: 'Split', title: 'Split (Alt+2)' },
-  { value: 'preview', label: 'Preview', title: 'Preview only (Alt+3)' },
-];
-
-const VIEW_KEYS: Readonly<Record<string, BriefView>> = {
-  '1': 'write',
-  '2': 'split',
-  '3': 'preview',
-};
-
-const TOOLS: readonly FormattingTool[] = [
-  { command: 'heading', label: 'H2', name: 'Heading' },
-  { command: 'bold', label: 'B', name: 'Bold' },
-  { command: 'italic', label: 'I', name: 'Italic' },
-  { command: 'strike', label: 'S', name: 'Strikethrough' },
-  { command: 'code', label: '</>', name: 'Inline code' },
-  { command: 'link', label: '↗', name: 'Link' },
-  { command: 'bullet', label: '•—', name: 'Bulleted list' },
-  { command: 'ordered', label: '1.', name: 'Numbered list' },
-  { command: 'task', label: '☑', name: 'Task list' },
-  { command: 'quote', label: '❞', name: 'Quote' },
-  { command: 'fence', label: '▤', name: 'Code block' },
-  { command: 'table', label: '▦', name: 'Table' },
-  { command: 'rule', label: '—', name: 'Divider' },
-];
 
 /** What a brief that has never been written starts from, so a new initiative opens structured. */
 const NEW_INITIATIVE: InitiativeDraft = { name: '', description: BRIEF_TEMPLATE };
@@ -69,30 +26,28 @@ const NEW_INITIATIVE: InitiativeDraft = { name: '', description: BRIEF_TEMPLATE 
 @Component({
   selector: 'app-initiative-brief-page',
   imports: [
-    BriefEditorComponent,
     ButtonComponent,
-    DialogComponent,
+    DocumentEditorComponent,
     FormErrorComponent,
     LoadingStateComponent,
     PageHeaderComponent,
     RouterLink,
-    SegmentedComponent,
     TextInputComponent,
+    UnsavedChangesDialogComponent,
   ],
   templateUrl: './initiative-brief-page.component.html',
   styleUrl: './initiative-brief-page.component.scss',
 })
-export class InitiativeBriefPageComponent {
-  private readonly guardDialog = viewChild.required<DialogComponent>('guardDialog');
+export class InitiativeBriefPageComponent implements EditsADocument {
+  private readonly guardDialog = viewChild.required(UnsavedChangesDialogComponent);
+  private readonly editor = viewChild.required(DocumentEditorComponent);
   private readonly router = inject(Router);
   private readonly service = inject(INITIATIVE_BRIEF_SERVICE);
 
   /** Absent on the create route, where there is no initiative to read yet. */
   readonly initiativeId = input<string>();
-  readonly views = VIEWS;
-  readonly tools = TOOLS;
+  readonly briefTemplate = BRIEF_TEMPLATE;
 
-  readonly view = signal<BriefView>('write');
   readonly draftName = signal(NEW_INITIATIVE.name);
   readonly draftBrief = signal(NEW_INITIATIVE.description);
   readonly pending = signal(false);
@@ -102,7 +57,6 @@ export class InitiativeBriefPageComponent {
    * initiative starts from the template, so opening the create route and leaving again asks nothing.
    */
   private readonly baseline = signal<InitiativeDraft>(NEW_INITIATIVE);
-  private editor: BriefEditorHandle | null = null;
   private resolveGuard: ((leave: boolean) => void) | null = null;
 
   readonly loadingState = this.service.loadingState;
@@ -117,18 +71,6 @@ export class InitiativeBriefPageComponent {
       this.draftBrief() !== this.baseline().description,
   );
 
-  readonly isEmpty = computed(() => this.draftBrief().trim().length === 0);
-  readonly rendered = computed(() => renderMarkdown(this.draftBrief()));
-  readonly wordCount = computed(() => {
-    const brief = this.draftBrief().trim();
-    return brief.length === 0 ? 0 : brief.split(/\s+/).length;
-  });
-  readonly characterCount = computed(() => this.draftBrief().length);
-  readonly readingTime = computed(() => {
-    const words = this.wordCount();
-    return words < 60 ? 'under a minute to read' : `about ${Math.ceil(words / 200)} min to read`;
-  });
-
   constructor() {
     effect(() => {
       const id = this.initiativeId();
@@ -139,37 +81,6 @@ export class InitiativeBriefPageComponent {
       if (saved === null || saved.id !== this.initiativeId()) return;
       this.reset({ name: saved.name, description: saved.description });
     });
-  }
-
-  /** The view switch advertises these on its own controls, so the page has to honour them. */
-  @HostListener('document:keydown', ['$event'])
-  onShortcut(event: KeyboardEvent): void {
-    if (!event.altKey || event.ctrlKey || event.metaKey) return;
-    const view = VIEW_KEYS[event.key];
-    if (view === undefined) return;
-    event.preventDefault();
-    this.showView(view);
-  }
-
-  onEditorReady(editor: BriefEditorHandle): void {
-    this.editor = editor;
-    editor.onChange(() => this.draftBrief.set(editor.getValue()));
-    editor.setValue(this.draftBrief());
-  }
-
-  runCommand(command: string): void {
-    const transform = MARKDOWN_COMMANDS[command];
-    if (transform === undefined || this.editor === null) return;
-    this.editor.apply(transform(this.editor.getState()));
-  }
-
-  insertTemplate(): void {
-    this.setBrief(BRIEF_TEMPLATE);
-  }
-
-  showView(view: string): void {
-    this.view.set(view as BriefView);
-    if (view !== 'preview') setTimeout(() => this.editor?.layout(), 0);
   }
 
   /**
@@ -244,16 +155,7 @@ export class InitiativeBriefPageComponent {
   private reset(draft: InitiativeDraft): void {
     this.baseline.set(draft);
     this.draftName.set(draft.name);
-    this.setBrief(draft.description);
-  }
-
-  /**
-   * Pushing a value the editor already holds would move the caret back to the top of the document,
-   * which is what a save that changed nothing about the source would otherwise do to the writer.
-   */
-  private setBrief(markdown: string): void {
-    this.draftBrief.set(markdown);
-    if (this.editor !== null && this.editor.getValue() !== markdown) this.editor.setValue(markdown);
+    this.editor().write(draft.description);
   }
 
   private settleGuard(leave: boolean): void {

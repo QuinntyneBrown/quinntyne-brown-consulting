@@ -138,6 +138,29 @@ export const initiativeWithoutEpics: WorkspaceScenario = {
 };
 
 /** An epic that owns no stories, so it may be deleted. */
+/** An epic summary carrying the blocks a writer actually uses, for the epic editor's round trip. */
+export const MARKDOWN_SUMMARY = [
+  '# Client delivery portal',
+  '',
+  'Give clients a **calm, shared view** of where their engagement stands.',
+  '',
+  '## Scope',
+  '',
+  '- Outcomes, decisions, and milestones on one page',
+  '  - Decisions carry the date they were taken',
+  '',
+  '## Out of scope',
+  '',
+  '- [ ] Invoicing',
+].join('\n');
+
+export const epicWithMarkdownSummary: WorkspaceScenario = {
+  name: 'an epic whose summary is markdown',
+  apply: (state) => {
+    state.epics[0] = { ...state.epics[0], summary: MARKDOWN_SUMMARY };
+  },
+};
+
 export const epicWithoutStories: WorkspaceScenario = {
   name: 'an epic with nothing beneath it',
   apply: (state) => {

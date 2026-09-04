@@ -1,0 +1,288 @@
+:host {
+  display: contents;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* The editor has no intrinsic height, so the writing surface is given a definite one rather than
+   left to collapse whenever the preview is not on screen to stretch the row. The column is held to
+   a comfortable measure for prose, and widened only when the preview sits beside the source. */
+.document-layout {
+  display: flex;
+  width: 100%;
+  max-width: 880px;
+  height: calc(100dvh - 240px);
+  min-height: 480px;
+  flex-direction: column;
+  margin-inline: auto;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-xl);
+  background: var(--qbc-panel);
+  overflow: hidden;
+}
+.document-layout.is-split {
+  max-width: 1180px;
+}
+
+/* However many fields identify the record, they share one row until the column is too narrow to
+   hold them: one field spans it, two sit side by side. */
+.document-head {
+  display: grid;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--qbc-line);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 20px;
+  border-bottom: 1px solid var(--qbc-line);
+  background: var(--qbc-surface-raised);
+}
+
+.tool-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+}
+
+.panes {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+}
+.panes.is-split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.pane {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+}
+.pane.preview-pane {
+  background: var(--qbc-surface-hover);
+}
+.panes.is-split .pane.preview-pane {
+  border-left: 1px solid var(--qbc-line);
+}
+
+.pane-label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 7px 20px;
+  border-bottom: 1px solid var(--qbc-line);
+  color: var(--qbc-ink-faint);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.empty-hint {
+  position: absolute;
+  pointer-events: none;
+  z-index: 4;
+  top: 74px;
+  right: 20px;
+  left: 20px;
+  padding: 20px;
+  border: 1px dashed var(--qbc-line-dashed);
+  border-radius: var(--qbc-r-xl);
+  background: var(--qbc-panel);
+  text-align: center;
+}
+.empty-hint h2 {
+  margin: 0 0 5px;
+  font-size: 16px;
+}
+.empty-hint p {
+  margin: 0 0 16px;
+  color: var(--qbc-ink-soft);
+  font-size: 13px;
+}
+.empty-hint qbc-button {
+  pointer-events: auto;
+}
+
+.preview-scroll {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+}
+.preview-empty {
+  padding: 40px 24px;
+  color: var(--qbc-ink-soft);
+  text-align: center;
+}
+
+.status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  padding: 8px 20px;
+  border-top: 1px solid var(--qbc-line);
+  background: var(--qbc-surface-raised);
+  color: var(--qbc-ink-soft);
+  font-size: 11px;
+}
+
+/* ---- Rendered markdown ------------------------------------------------- */
+.document-preview {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: 32px 24px 40px;
+}
+.document-preview > :first-child {
+  margin-top: 0;
+}
+.document-preview h1,
+.document-preview h2,
+.document-preview h3,
+.document-preview h4 {
+  margin: 24px 0 12px;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  scroll-margin-top: 24px;
+}
+.document-preview h1 {
+  font-size: 22px;
+}
+.document-preview h2 {
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--qbc-line);
+  font-size: 18px;
+}
+.document-preview h3 {
+  font-size: 16px;
+}
+.document-preview h4 {
+  color: var(--qbc-ink-soft);
+  font-size: 14px;
+}
+.document-preview p,
+.document-preview ul,
+.document-preview ol,
+.document-preview table,
+.document-preview pre,
+.document-preview blockquote {
+  margin: 0 0 16px;
+}
+.document-preview ul,
+.document-preview ol {
+  padding-left: 24px;
+}
+.document-preview li {
+  margin-bottom: 6px;
+}
+.document-preview li > ul,
+.document-preview li > ol {
+  margin: 6px 0 0;
+}
+.document-preview a {
+  color: var(--qbc-accent-dark);
+  text-underline-offset: 2px;
+}
+.document-preview strong {
+  font-weight: 700;
+}
+.document-preview hr {
+  height: 1px;
+  margin: 24px 0;
+  border: 0;
+  background: var(--qbc-line);
+}
+.document-preview blockquote {
+  padding: 4px 16px;
+  border-left: 3px solid var(--qbc-accent-soft);
+  color: var(--qbc-ink-soft);
+}
+.document-preview code {
+  padding: 2px 5px;
+  border-radius: 6px;
+  background: var(--qbc-soft);
+  font-family: var(--qbc-font-mono);
+  font-size: 0.88em;
+}
+.document-preview pre {
+  overflow-x: auto;
+  padding: 16px;
+  border: 1px solid var(--qbc-line);
+  border-radius: var(--qbc-r-lg);
+  background: var(--qbc-soft);
+}
+.document-preview pre code {
+  padding: 0;
+  background: none;
+  font-size: 12px;
+}
+.document-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.document-preview th,
+.document-preview td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--qbc-line);
+  text-align: left;
+}
+.document-preview th {
+  color: var(--qbc-ink-soft);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.document-preview .task-list {
+  padding-left: 4px;
+  list-style: none;
+}
+.document-preview .task-list li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.document-preview .task-box {
+  color: var(--qbc-ink-faint);
+  font-family: var(--qbc-font-mono);
+}
+.document-preview .task-box.is-done {
+  color: var(--qbc-accent);
+}
+.document-preview .is-done-text {
+  color: var(--qbc-ink-soft);
+  text-decoration: line-through;
+}
+
+@media (max-width: 900px) {
+  :host {
+    padding: 16px;
+  }
+  .document-layout {
+    height: auto;
+  }
+  app-markdown-editor {
+    min-height: 380px;
+  }
+  .preview-scroll {
+    min-height: 300px;
+  }
+  .panes.is-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -23,14 +23,17 @@ disappearing while children still reference it.
 The feature forms one vertical slice from the hierarchy page to durable data.
 
 - **`HierarchyPageComponent`** — Angular route component that renders initiative
-  cards, epic rows, counts, progress, and contextual creation actions. An
-  initiative's own create and update actions open its editor route rather than a
-  form here, because a name and a markdown brief are saved as one record; see
-  [Edit the initiative brief](../edit-initiative-brief/).
-- **`summariseBrief`** — reduces an initiative's markdown brief to its first line
-  of prose, which is what a card has room to carry.
-- **`EpicFormComponent`** — external-template form for epic create, update, and
-  parent movement.
+  cards, epic rows, counts, progress, and contextual creation actions. Creating
+  and updating a record opens its own editor route rather than a form here,
+  because a name and a markdown document are saved together; see
+  [Edit the initiative brief](../edit-initiative-brief/). The page holds no form
+  at all now, only the confirmations that guard a deletion.
+- **`summariseMarkdown`** — reduces a markdown document to its first line of
+  prose, which is what a card or a row has room to carry. The hierarchy uses it
+  for both an initiative's brief and an epic's summary.
+- An epic's create, update, and parent movement open its editor route for the
+  same reason an initiative's do; see
+  [Write an epic summary](../edit-epic-summary/).
 - **`IHierarchyService`** — token-backed frontend contract for hierarchy queries
   and commands.
 - **`HierarchyService`** — HTTP implementation that updates Signal state from
@@ -58,7 +61,7 @@ requirement refines one level-1 (L1) requirement.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-002` | `L1-002` | An initiative shall contain an ID, name, and outcome-oriented description. The description shall be markdown, and the application shall offer no other way to write it. The user shall be able to create, view, update, and delete initiatives. |
-| `L2-003` | `L1-002` | An epic shall contain an ID, name, summary, and one initiative reference. The user shall be able to create, view, update, move, and delete epics. |
+| `L2-003` | `L1-002` | An epic shall contain an ID, name, summary, and one initiative reference. The summary shall be markdown, and the application shall offer no other way to write it. The user shall be able to create, view, update, move, and delete epics. |
 | `L2-004` | `L1-002` | The hierarchy view shall present initiatives with their epics and enough roll-up information to understand the work beneath them. |
 
 ## Diagrams

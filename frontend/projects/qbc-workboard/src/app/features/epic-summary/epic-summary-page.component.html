@@ -1,0 +1,74 @@
+<a
+  class="back-link"
+  routerLink="/initiatives"
+  >← All initiatives</a
+>
+
+<qbc-page-header
+  [title]="title()"
+  description="An epic is a slice of an initiative, summarised as markdown."
+>
+  <span
+    actions
+    class="save-state"
+    role="status"
+    aria-label="Summary save state"
+    [class.is-dirty]="dirty()"
+    >{{ dirty() ? 'Unsaved changes' : 'Saved' }}</span
+  >
+  <qbc-button
+    actions
+    variant="secondary"
+    [disabled]="!dirty()"
+    (click)="discard()"
+    >Discard</qbc-button
+  >
+  <qbc-button
+    actions
+    [disabled]="pending()"
+    (click)="save()"
+    >Save epic</qbc-button
+  >
+</qbc-page-header>
+
+@if (formError()) {
+  <qbc-form-error>{{ formError() }}</qbc-form-error>
+}
+@if (error()) {
+  <qbc-form-error>{{ error() }}</qbc-form-error>
+}
+
+@if (loadingState() === 'loading' && !isNew()) {
+  <qbc-loading-state>Loading the epic…</qbc-loading-state>
+}
+
+<app-document-editor
+  [(value)]="draftSummary"
+  sourceLabel="Epic summary, markdown source"
+  emptyTitle="This summary is empty"
+  emptyHint="Write what this epic delivers, and what it deliberately leaves out."
+>
+  <qbc-select
+    fields
+    label="Initiative"
+    [required]="true"
+    [options]="initiativeOptions()"
+    [value]="draftInitiativeId()"
+    (valueChange)="draftInitiativeId.set($event === null ? '' : $event.toString())"
+  />
+  <qbc-text-input
+    fields
+    label="Epic name"
+    placeholder="Name the capability"
+    [required]="true"
+    [value]="draftName()"
+    (valueChange)="draftName.set($event)"
+  />
+</app-document-editor>
+
+<app-unsaved-changes-dialog
+  (keepEditing)="keepEditing()"
+  (discardChanges)="discardAndLeave()"
+  (saveAndContinue)="saveAndLeave()"
+  (dismissed)="onGuardDismissed()"
+/>

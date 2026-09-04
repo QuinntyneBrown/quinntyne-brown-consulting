@@ -14,8 +14,12 @@ would flatten the markdown the brief is made of.
 
 *outcome brief* — the initiative description, written and read as a markdown document
 
-*editor handle* — what the page needs from the control carrying the markdown, which keeps the
+*editor handle* — what a page needs from the control carrying the markdown, which keeps the
 code editor's own types inside the editor folder
+
+*document editor* — the surface a markdown document is written on, shared with
+[Write an epic summary](../edit-epic-summary/): the fields that identify the record, the
+formatting toolbar, the three views, and the size report
 
 *unsaved-changes guard* — the question raised before a navigation would discard markdown that
 has not been saved
@@ -28,6 +32,10 @@ schema change; the API bounds its length instead.
 A brief is markdown whichever control carries it, so there is no plainer editor to fall back to.
 An editor that cannot be loaded is reported as unavailable rather than replaced by a surface
 that would present the same document less well.
+
+An epic's summary is the same kind of document, so the editor is shared rather than copied. This
+design owns the initiative's half of it; [Write an epic
+summary](../edit-epic-summary/) owns the epic's.
 
 Nothing about the brief is written to browser storage. A draft lives in the page's signals for
 as long as the page does, which keeps the workspace's single stored value the session credential
@@ -44,22 +52,32 @@ required by `L2-021`.
 - **`InitiativeBriefService`** and **`IInitiativeBriefService`** — token-backed contract and
   Signal implementation that reads one initiative and creates or saves its name and brief
   together, answering with the stored initiative or with null when a save was refused.
-- **`unsavedBriefGuard`** — `CanDeactivateFn` that asks the page whether a navigation away may
-  proceed. It guards the create route as well as an identified initiative.
-- **`BriefEditorComponent`** — hosts the markdown source in the code editor and reports a
-  `BriefEditorState` of loading, ready, or failed.
-- **`BriefEditorHandle`** — what the page needs from that editor: source, selection, focus,
-  change notification, and layout.
-- **`createMonacoEditor`** — the one implementation, imported only when the route is opened.
-- **`briefEditorWorker`** — the worker entry that lets the application bundler own and emit the
-  code editor's background worker.
-- **`renderMarkdown`** — escape-first renderer for the block and inline markdown a brief uses.
-- **`summariseBrief`** — a brief's first line of prose, which the hierarchy card carries where
+- **`unsavedDocumentGuard`** — `CanDeactivateFn<EditsADocument>` that asks the page whether a
+  navigation away may proceed. It guards the create route as well as an identified initiative,
+  and the epic routes too.
+- **`DocumentEditorComponent`** — the shared surface, under
+  `features/markdown-document/`. It takes the markdown as a two-way `value`, projects each
+  page's own fields into a `fields` slot, and owns the formatting toolbar, the write, split,
+  and preview views, the empty-state hint, and the size report. A record with a house shape
+  passes a `template`; one without passes none, and the empty state then offers nothing to
+  insert.
+- **`MarkdownEditorComponent`** — hosts the markdown source in the code editor and reports a
+  `MarkdownEditorState` of loading, ready, or failed. Its `ariaLabel` names the document, so a
+  screen reader says which record is being written.
+- **`MarkdownEditorHandle`** — what the editor surface needs from that control: source,
+  selection, focus, change notification, and layout.
+- **`createMonacoEditor`** — the one implementation, imported only when a route is opened.
+- **`markdownEditorWorker`** — the worker entry that lets the application bundler own and emit
+  the code editor's background worker.
+- **`renderMarkdown`** — escape-first renderer for the block and inline markdown a document uses.
+- **`summariseMarkdown`** — a document's first line of prose, which the hierarchy carries where
   there is room for one line rather than for a markdown document.
 - **`MARKDOWN_COMMANDS`** and **`insertBlock`** — pure transforms over the source and its
   selection, which the toolbar runs against the editor handle.
 - **`BRIEF_TEMPLATE`** — the house shape of an outcome brief, which a new initiative opens from
   and an emptied brief offers back.
+- **`UnsavedChangesDialogComponent`** — the shared question raised before a navigation would
+  discard unsaved markdown, which each page answers because only the page knows how to save.
 - **`SegmentedComponent`** — `@qbc/components` control presenting the write, split, and preview
   choice with `aria-pressed`; `Alt+1`, `Alt+2`, and `Alt+3` reach the same three views.
 - **`HierarchyService.getInitiative`**, **`createInitiative`**, and **`updateInitiative`** — read
@@ -79,8 +97,8 @@ level-1 (L1) requirement.
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-046` | `L1-002` | An initiative's description shall be authored and read as a markdown outcome brief on its own addressable route. The same route shall create an initiative and edit an existing one. The application shall present the name and the brief for one initiative, shall save them together, and shall preserve the brief's markdown structure. A brief shall remain required, and the API shall reject a brief longer than the supported length. |
-| `L2-047` | `L1-002` | The brief editor shall provide markdown authoring aids: formatting commands that act on the current selection, a rendered preview of the brief, and a report of its size. It shall present the markdown source in a code editor and shall report when that editor cannot be loaded. |
-| `L2-048` | `L1-002` | The brief editor shall report whether the brief holds unsaved changes, shall let the user discard them, and shall not allow a navigation away from the brief to discard them silently. Unsaved brief content shall be held in memory for the life of the page and shall not be written to browser storage. |
+| `L2-047` | `L1-002` | The markdown document editor shall provide authoring aids for every record written on it: formatting commands that act on the current selection, a rendered preview of the document, and a report of its size. It shall present the markdown source in a code editor and shall report when that editor cannot be loaded. |
+| `L2-048` | `L1-002` | The markdown document editor shall report whether the document holds unsaved changes, shall let the user discard them, and shall not allow a navigation away from the record to discard them silently. Unsaved document content shall be held in memory for the life of the page and shall not be written to browser storage. |
 
 ## Diagrams
 

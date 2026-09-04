@@ -1,0 +1,26 @@
+<qbc-dialog
+  #dialog
+  title="Keep your unsaved changes?"
+  subtitle="This document has changes that have not been saved."
+  size="sm"
+  (closed)="dismissed.emit()"
+>
+  <p body>Choose what should happen to the changes before leaving this document.</p>
+  <qbc-button
+    actions
+    variant="quiet"
+    (click)="keepEditing.emit()"
+    >Keep editing</qbc-button
+  >
+  <qbc-button
+    actions
+    variant="secondary"
+    (click)="discardChanges.emit()"
+    >Discard changes</qbc-button
+  >
+  <qbc-button
+    actions
+    (click)="saveAndContinue.emit()"
+    >Save and continue</qbc-button
+  >
+</qbc-dialog>

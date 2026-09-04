@@ -48,12 +48,19 @@ package "qbc-workboard — initiative brief" {
 
   class InitiativeBriefService
 
-  class BriefEditorComponent {
-    +Signal<BriefEditorState> state
-    +output ready : BriefEditorHandle
+  class DocumentEditorComponent {
+    +model<string> value
+    +input template
+    +write(markdown)
   }
 
-  interface BriefEditorHandle {
+  class MarkdownEditorComponent {
+    +Signal<MarkdownEditorState> state
+    +input ariaLabel
+    +output ready : MarkdownEditorHandle
+  }
+
+  interface MarkdownEditorHandle {
     +getState() : EditorSelection
     +apply(next)
     +getValue() : string
@@ -72,7 +79,7 @@ package "qbc-workboard — initiative brief" {
   }
 
   class renderMarkdown <<pure>>
-  class summariseBrief <<pure>>
+  class summariseMarkdown <<pure>>
   class BRIEF_TEMPLATE <<constant>>
 
   class EditorSelection <<record>> {
@@ -111,15 +118,16 @@ InitiativeBriefPageComponent --> IInitiativeBriefService : loads and saves throu
 InitiativeBriefService ..|> IInitiativeBriefService
 InitiativeBriefService --> IHierarchyService : reads and writes the initiative
 IHierarchyService --> Initiative : returns
-InitiativeBriefPageComponent --> BriefEditorComponent : hosts
-BriefEditorComponent --> BriefEditorHandle : reports one
-createMonacoEditor ..> BriefEditorHandle : creates
-InitiativeBriefPageComponent ..> MARKDOWN_COMMANDS : applies
-InitiativeBriefPageComponent ..> renderMarkdown : previews with
+InitiativeBriefPageComponent --> DocumentEditorComponent : writes the brief through
+DocumentEditorComponent --> MarkdownEditorComponent : hosts
+MarkdownEditorComponent --> MarkdownEditorHandle : reports one
+createMonacoEditor ..> MarkdownEditorHandle : creates
+DocumentEditorComponent ..> MARKDOWN_COMMANDS : applies
+DocumentEditorComponent ..> renderMarkdown : previews with
 InitiativeBriefPageComponent ..> BRIEF_TEMPLATE : starts a new brief from
 InitiativeBriefPageComponent --> InitiativeDraft : holds as its baseline
-HierarchyPageComponent ..> summariseBrief : summarises a card with
+HierarchyPageComponent ..> summariseMarkdown : summarises a card with
 MARKDOWN_COMMANDS --> EditorSelection : rewrites
-BriefEditorHandle --> EditorSelection : reads and applies
+MarkdownEditorHandle --> EditorSelection : reads and applies
 IHierarchyService ..> SaveInitiativeCommand : is validated by
 @enduml

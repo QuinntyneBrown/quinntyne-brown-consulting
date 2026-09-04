@@ -28,14 +28,14 @@
       @for (initiative of service.hierarchy().initiatives; track initiative.id) {
         <qbc-initiative-card
           [title]="initiative.name"
-          [description]="summarise(initiative.description)"
+          [description]="summariseBrief(initiative.description)"
           [summary]="initiative.epicCount + ' epics · ' + initiative.storyCount + ' stories'"
         >
           <qbc-button
             actions
             variant="quiet"
             size="sm"
-            (click)="openEpic(initiative.id)"
+            (click)="newEpic(initiative.id)"
             >＋ Epic</qbc-button
           >
           <qbc-button
@@ -55,7 +55,7 @@
           @for (epic of initiative.epics; track epic.id) {
             <qbc-epic-row
               [title]="epic.name"
-              [summary]="epic.summary"
+              [summary]="summariseSummary(epic.summary)"
               [storyCount]="epic.storyCount"
               [progress]="epic.completionPercentage"
             >
@@ -63,7 +63,7 @@
                 actions
                 variant="quiet"
                 size="sm"
-                (click)="openEpic(initiative.id, epic)"
+                (click)="editEpic(epic)"
                 >Edit</qbc-button
               >
               <qbc-button
@@ -83,51 +83,4 @@
   }
 </qbc-page>
 
-<form
-  [formGroup]="epicForm"
-  (ngSubmit)="saveEpic()"
->
-  <qbc-dialog
-    #epicDialog
-    [title]="epicId() ? 'Edit epic' : 'New epic'"
-    subtitle="Describe a substantial body of related work."
-  >
-    @if (epicError()) {
-      <qbc-form-error body>{{ epicError() }}</qbc-form-error>
-    }
-    <qbc-form-grid body>
-      <qbc-select
-        label="Initiative"
-        [required]="true"
-        [full]="true"
-        [options]="initiativeOptions()"
-        formControlName="initiativeId"
-      />
-      <qbc-text-input
-        label="Name"
-        [required]="true"
-        [full]="true"
-        formControlName="name"
-      />
-      <qbc-textarea
-        label="Summary"
-        [required]="true"
-        [full]="true"
-        formControlName="summary"
-      />
-    </qbc-form-grid>
-    <qbc-button
-      actions
-      variant="secondary"
-      (click)="epicDialog.close()"
-      >Cancel</qbc-button
-    >
-    <qbc-button
-      actions
-      type="submit"
-      [disabled]="pending()"
-      >Save epic</qbc-button
-    >
-  </qbc-dialog>
-</form>
 <qbc-confirm-dialog />

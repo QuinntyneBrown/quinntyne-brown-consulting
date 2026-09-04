@@ -3,6 +3,7 @@ import { AccessibilityPage } from '../pages/accessibility.page';
 import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
+import { EpicSummaryPage } from '../pages/epic-summary.page';
 import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { SprintManagerPage } from '../pages/sprint-manager.page';
 import { WorkboardPage, type WorkspaceRoute } from '../pages/workboard.page';
@@ -101,12 +102,27 @@ test('L2-040 · Verify accessibility on every dialog type', async ({ page }) => 
   await sprints.close();
 
   await workboard.navigateTo('initiatives');
-  await accessibility.scanDialogOpenedBy(/Epic/, 'New epic');
   await accessibility.scanDialogOpenedBy('Delete', /Delete .+\?/);
 
   await workboard.navigateTo('assistants');
   await accessibility.scanDialogOpenedBy(/New assistant/, 'New assistant');
   await accessibility.scanDialogOpenedBy('Delete', 'Reassign work first');
+});
+
+test('L2-040 · Verify accessibility on the epic summary', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  const accessibility = new AccessibilityPage(page);
+  const epic = new EpicSummaryPage(page);
+
+  await workboard.navigateTo('initiatives');
+
+  // A new epic is written on the same route, so the scan covers it before an existing one.
+  await epic.startNewUnder('Client delivery excellence');
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
+  await epic.leaveForInitiatives();
+
+  await epic.openFrom('Client delivery portal');
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
 });
 
 test('L2-040 · Verify accessibility on the initiative brief', async ({ page }) => {
@@ -119,17 +135,17 @@ test('L2-040 · Verify accessibility on the initiative brief', async ({ page }) 
 
   // A new initiative is written on the same route, so the scan covers it before an existing one.
   await brief.startNew();
-  await accessibility.expectNoSeriousViolationsOutside('app-brief-editor');
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
   await brief.leaveForInitiatives();
 
   await brief.openFrom('Client delivery excellence');
   // The markdown editor is a third-party control with an accessibility mode of its own, so the
   // scan covers the page around it rather than its internals.
-  await accessibility.expectNoSeriousViolationsOutside('app-brief-editor');
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
 
   // The unsaved-changes question is the one dialog this route raises.
   await brief.writeBrief('# Outcome');
   await brief.leaveForBacklog();
-  await accessibility.expectNoSeriousViolationsOutside('app-brief-editor');
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
   await brief.chooseFromGuard('Discard changes');
 });

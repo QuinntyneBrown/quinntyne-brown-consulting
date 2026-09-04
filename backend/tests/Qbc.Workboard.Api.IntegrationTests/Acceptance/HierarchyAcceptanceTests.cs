@@ -150,6 +150,51 @@ public sealed class HierarchyAcceptanceTests : AcceptanceTest
     }
 
     [Fact]
+    public async Task L2_003_Reject_an_invalid_epic()
+    {
+        var initiative = await Given.AddInitiativeAsync();
+        var epic = await Given.AddEpicAsync(initiative.Id);
+
+        var response = await Client.PutAsJsonAsync(
+            $"/api/epics/{epic.Id}",
+            new EpicRequest(initiative.Id, "  ", "  \n  \n "));
+
+        await ExpectInvalidFieldsAsync(response, "name", "summary");
+        Assert.Equal("Give clients a clear view of outcomes.", (await Given.ReadEpicAsync(epic.Id)).Summary);
+    }
+
+    [Fact]
+    public async Task L2_003_Reject_an_oversized_summary()
+    {
+        var initiative = await Given.AddInitiativeAsync();
+        var epic = await Given.AddEpicAsync(initiative.Id);
+
+        var response = await Client.PutAsJsonAsync(
+            $"/api/epics/{epic.Id}",
+            new EpicRequest(initiative.Id, "Engagement margin insight", new string('a', 100_001)));
+
+        await ExpectInvalidFieldsAsync(response, "summary");
+        Assert.Equal("Give clients a clear view of outcomes.", (await Given.ReadEpicAsync(epic.Id)).Summary);
+    }
+
+    [Fact]
+    public async Task L2_049_Preserve_markdown_structure()
+    {
+        var initiative = await Given.AddInitiativeAsync();
+        var epic = await Given.AddEpicAsync(initiative.Id, "Client delivery portal", MarkdownBrief);
+
+        // A second application over the same store, as a redeployment would be.
+        using var restarted = Factory.Restart();
+        using var client = restarted.CreateUnlockedClient();
+
+        var reread = await new Workspace(client).ReadEpicAsync(epic.Id);
+
+        // Every structural line survives: no collapsing, escaping, or re-wrapping.
+        Assert.Equal(MarkdownBrief.Split('\n'), reread.Summary.Split('\n'));
+        Assert.Equal(initiative.Id, reread.InitiativeId);
+    }
+
+    [Fact]
     public async Task L2_004_View_hierarchy_roll_ups()
     {
         var initiative = await Given.AddInitiativeAsync();

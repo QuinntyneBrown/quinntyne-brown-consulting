@@ -8,12 +8,6 @@ export interface IHierarchyService {
   readonly error: Signal<string | null>;
   load(): Promise<void>;
   deleteInitiative(id: string): Promise<boolean>;
-  saveEpic(
-    id: string | null,
-    initiativeId: string,
-    name: string,
-    summary: string,
-  ): Promise<boolean>;
   deleteEpic(id: string): Promise<boolean>;
 }
 
