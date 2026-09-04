@@ -149,8 +149,8 @@ npm run test:e2e
 ```
 
 The format check enforces the committed Prettier configuration. The Playwright
-suite starts only Angular and exercises the application with isolated, stateful
-API mocks in Chromium, Firefox, and WebKit.
+suite serves the built Angular application and exercises it with isolated,
+stateful API mocks in Chromium, so `npm run build` comes first.
 
 ### Design-system checks
 

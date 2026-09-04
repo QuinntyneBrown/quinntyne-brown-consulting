@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node scripts/build-app.mjs serve --proxy-config proxy.conf.json",
+    "serve:dist": "node scripts/serve-dist.mjs",
     "build": "npm run build:api && npm run build:components && npm run build:app",
     "build:api": "ng build api",
     "build:components": "ng build components",

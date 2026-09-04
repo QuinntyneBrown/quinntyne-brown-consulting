@@ -2,11 +2,23 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+
+# Superseded work on a branch is dropped. A run on main is grouped by its own commit instead, so
+# main runs never supersede one another: only one run per group may wait, and a main run that is
+# dropped while waiting is a commit that never deploys.
+concurrency:
+  group: ci-${{ github.head_ref || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # The build stamps this into the bundle and the acceptance suite expects to read it back, so
+    # both take it from one place rather than each resolving the checked-out revision themselves.
+    env:
+      QBC_SOURCE_REVISION_ID: ${{ github.sha }}
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -26,6 +38,12 @@ jobs:
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/Directory.Packages.props', 'backend/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
@@ -33,7 +51,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Restore frontend dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Check frontend formatting
         working-directory: frontend
         run: npm run format:check
@@ -47,13 +65,16 @@ jobs:
         run: dotnet test backend/Qbc.Workboard.slnx --configuration Release
       - name: Install Playwright browsers
         working-directory: frontend
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
       - name: Run browser acceptance tests
         working-directory: frontend
         run: npm run test:e2e
-      # Stamp the exact workflow revision into both the backend metadata and frontend bundle.
+      # The frontend was stamped and built above, so publishing carries that build into the
+      # package rather than making a second one; the backend takes the same revision here.
       - name: Publish single-host application
-        run: dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish -p:SourceRevisionId=${{ github.sha }}
+        run: dotnet publish backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj --configuration Release --output artifacts/publish -p:SourceRevisionId=${{ github.sha }} -p:SkipFrontendBuild=true
+      - name: Verify the published application carries the frontend
+        run: test -s artifacts/publish/wwwroot/index.html
       - name: Upload Workboard publish artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
@@ -75,7 +96,7 @@ jobs:
           cache-dependency-path: design-system/package-lock.json
       - name: Restore design-system dependencies
         working-directory: design-system
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit --no-fund
       - name: Install Playwright browsers
         working-directory: design-system
         run: npx playwright install --with-deps chromium

@@ -15,12 +15,18 @@
     <FrontendRoot>$(MSBuildThisFileDirectory)..\..\..\frontend\</FrontendRoot>
     <FrontendDist>$(FrontendRoot)dist\qbc-workboard\browser\</FrontendDist>
   </PropertyGroup>
-  <Target Name="BuildFrontend" BeforeTargets="Publish" Condition="'$(SkipFrontendBuild)' != 'true'">
-    <Exec WorkingDirectory="$(FrontendRoot)" Command="npm ci" />
-    <Exec WorkingDirectory="$(FrontendRoot)" Command="npm run build" EnvironmentVariables="QBC_SOURCE_REVISION_ID=$(SourceRevisionId)" />
+  <!-- The published application answers every route from wwwroot, so publishing carries the
+       Angular build into the package. A caller that has already built the frontend passes
+       SkipFrontendBuild=true: the build is skipped, the copy still happens. -->
+  <Target Name="BuildFrontend" BeforeTargets="Publish">
+    <Exec Condition="'$(SkipFrontendBuild)' != 'true'" WorkingDirectory="$(FrontendRoot)" Command="npm ci" />
+    <Exec Condition="'$(SkipFrontendBuild)' != 'true'" WorkingDirectory="$(FrontendRoot)" Command="npm run build" EnvironmentVariables="QBC_SOURCE_REVISION_ID=$(SourceRevisionId)" />
     <ItemGroup>
       <FrontendFiles Include="$(FrontendDist)**\*" />
     </ItemGroup>
+    <!-- An empty wwwroot publishes and deploys cleanly, then answers every route with 404. A
+         frontend that was never built fails the publish here instead. -->
+    <Error Condition="'@(FrontendFiles)' == ''" Text="No frontend build was found at $(FrontendDist). Build the frontend before publishing, or drop SkipFrontendBuild to have this project build it." />
     <Copy SourceFiles="@(FrontendFiles)" DestinationFiles="@(FrontendFiles->'$(PublishDir)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 </Project>

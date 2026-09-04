@@ -33,7 +33,7 @@ jobs:
           cache: npm
           cache-dependency-path: design-system/package-lock.json
 
-      - run: npm ci
+      - run: npm ci --prefer-offline --no-audit --no-fund
         working-directory: design-system
 
       - run: npx playwright install --with-deps chromium

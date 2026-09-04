@@ -21,5 +21,5 @@ function revision(): string | null {
 const commit = revision();
 const suffix = commit ? ` · ${commit.slice(0, commitLength)}` : '';
 
-/** Expected identity compiled into the Angular development build exercised by Playwright. */
+/** Expected identity compiled into the build the suite reads, which CI stamps with its own revision. */
 export const expectedFrontendBuild = `Frontend ${packageMetadata.version}${suffix}`;

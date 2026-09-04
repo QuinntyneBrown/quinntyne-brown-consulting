@@ -97,12 +97,12 @@ npm run typecheck:e2e
 npm run test:e2e
 ```
 
-The command starts the Angular server and runs the Page Object Model suite. A
+The command serves the build and runs the Page Object Model suite. A
 Playwright fixture intercepts every backend API request with a fresh, stateful
 mock for each test, so reload and CRUD scenarios remain deterministic without
 starting .NET or creating a test database. The mocked backend version is
 test-only; the frontend identity still comes from the metadata compiled into the
-Angular development build.
+Angular build under test.
 
 Every applicable acceptance criterion in
 [`docs/specs/L2.md`](../docs/specs/L2.md) has one test, named for the
@@ -128,11 +128,15 @@ the suite. Specifications are grouped by requirement:
 | `deployment.spec.ts`       | `L2-045`                            |
 | `delivery-journey.spec.ts` | `L2-038` critical-workflow coverage |
 
-Chromium carries the whole suite. Firefox and WebKit run the `@smoke` subset,
-which proves each workflow works in every supported engine without repeating
-every scenario three times. Scenarios own their workspace state through the
-`seed` fixture option, so the suite runs in parallel and no test depends on
-another test's changes.
+Chromium carries the whole suite. The `@smoke` tags mark the critical workflows
+and remain in place, so a second engine can be restored by adding it back to
+`playwright.config.ts`. Scenarios own their workspace state through the `seed`
+fixture option, so the suite runs in parallel and no test depends on another
+test's changes.
+
+The suite reads the built application rather than the development server, so
+what it proves is what gets deployed. Run `npm run build` first; the server that
+carries the build refuses to start without one.
 
 Every backend route has an explicit mock handler. An unhandled API request fails
 the test, making contract growth visible instead of silently reaching a developer
