@@ -44,6 +44,21 @@ and five rendered PNG diagrams.
 - [`mocks/index.html`](mocks/index.html), [`mocks/styles.css`](mocks/styles.css),
   and [`mocks/app.js`](mocks/app.js) form the original product interaction and
   visual baseline.
+- [`mocks/assistant-hours.html`](mocks/assistant-hours.html) is the self-contained
+  interaction study for an assistant's logged hours: every story they worked on, the hours
+  against each, and how much of that time landed on work that is now done. Open it with
+  `?assistantId=asst-noah`, `?assistantId=asst-maya`, or `?assistantId=asst-amara&empty`
+  for the first-entry state. The product mock carries the surfaces that feed it — a
+  **Time logged** panel in the story editor, a quick **Log hours** action on a board card,
+  and an hours total on each assistant card.
+
+  **This study proposes behavior the requirements baseline excludes.** `L1.md` §4 places
+  time tracking outside the baseline, and `L1-013` records that the workspace establishes
+  no individual identity, so the study picks the assistant rather than assuming one. Two
+  records the product does not keep are invented here: a time entry, and "worked on"
+  meaning "has logged hours against", since a story only remembers who owns it now. Nothing
+  in `specs/` or `detailed-designs/` describes any of it yet.
+
 - [`mocks/pin-auth.html`](mocks/pin-auth.html) is the self-contained interaction
   study behind the passcode gate. It carries its own copy of the design tokens
   and accepts any four digits; the working gate is described in

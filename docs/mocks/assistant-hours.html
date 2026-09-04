@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaction study for an assistant's logged hours in QBC Workboard: every story they worked on, and how much of that time landed on completed work.">
+  <title>Assistant hours &middot; QBC Workboard</title>
+  <style>
+    /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
+       subset this page uses is repeated here, so the mock stays one self-contained
+       file and never touches the visual baseline in docs/mocks/styles.css. The
+       --qbc-* names are used rather than the older --ink/--accent names in
+       styles.css, so this mock matches the design system and the Angular app. */
+    :root {
+      color-scheme: light;
+
+      --qbc-ink:        #18201d;
+      --qbc-ink-soft:   #68726d;
+      --qbc-ink-faint:  #87918c;
+
+      --qbc-line:        #e4e9e6;
+      --qbc-line-strong: #d8dfdb;
+      --qbc-line-card:   #e8ece9;
+
+      --qbc-panel:          #ffffff;
+      --qbc-soft:           #f5f7f5;
+      --qbc-surface-raised: #fbfcfb;
+      --qbc-surface-hover:  #fcfdfc;
+
+      --qbc-accent:      #276749;
+      --qbc-accent-dark: #184c35;
+      --qbc-accent-soft: #e8f3ed;
+
+      --qbc-blue:   #315f88;  --qbc-blue-soft:   #eaf1f8;
+      --qbc-amber:  #8a6100;  --qbc-amber-soft:  #fff4d9;
+      --qbc-danger: #a33a37;  --qbc-danger-soft: #faeceb;
+
+      --qbc-nav-ink:          #5e6863;
+      --qbc-nav-icon:         #83908a;
+      --qbc-placeholder:      #a0a9a4;
+      --qbc-focus-ring:       rgba(39, 103, 73, .25);
+      --qbc-focus-ring-field: rgba(39, 103, 73, .1);
+      --qbc-scrim:            rgba(18, 25, 22, .4);
+
+      --qbc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      /* The design system has no monospace token yet. An hours column has to line up
+         digit under digit to be read down, so this study proposes the same value the
+         initiative-editor study proposes for the token the design system would add. */
+      --qbc-font-mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+      --qbc-fs-2xs:  11px;
+      --qbc-fs-xs:   12px;
+      --qbc-fs-sm:   13px;
+      --qbc-fs-md:   14px;
+      --qbc-fs-base: 15px;
+      --qbc-fs-lg:   16px;
+      --qbc-fs-2xl:  18px;
+      --qbc-fs-3xl:  21px;
+      --qbc-fs-4xl:  22px;
+
+      --qbc-lh-snug: 1.4;
+      --qbc-lh-base: 1.5;
+
+      --qbc-fw-medium:   600;
+      --qbc-fw-nav:      620;
+      --qbc-fw-button:   680;
+      --qbc-fw-semibold: 700;
+      --qbc-fw-bold:     750;
+      --qbc-fw-heavy:    800;
+
+      --qbc-tracking-heading: -.02em;
+      --qbc-tracking-key:     .04em;
+      --qbc-tracking-brand:   .06em;
+      --qbc-tracking-eyebrow: .1em;
+
+      --qbc-s-1: 4px;   --qbc-s-2: 8px;   --qbc-s-3: 12px;  --qbc-s-4: 16px;
+      --qbc-s-5: 20px;  --qbc-s-6: 24px;  --qbc-s-7: 32px;  --qbc-s-8: 40px;
+
+      --qbc-r-2xs:     6px;
+      --qbc-r-sm:      8px;
+      --qbc-r-control: 9px;
+      --qbc-r-md:      10px;
+      --qbc-r-lg:      11px;
+      --qbc-r-xl:      14px;
+      --qbc-r-2xl:     16px;
+      --qbc-r-pill:    20px;
+      --qbc-r-round:   50%;
+
+      --qbc-shadow-card:    0 2px 3px rgba(24, 32, 29, .025);
+      --qbc-shadow-overlay: 0 18px 50px rgba(24, 32, 29, .12);
+
+      --qbc-dur-fast: 180ms;
+      --qbc-dur-base: 200ms;
+      --qbc-ease: ease-out;
+
+      --qbc-sidebar-w: 224px;
+      --qbc-topbar-h:  82px;
+      --qbc-control-h: 42px;
+      --qbc-button-h:  40px;
+
+      --qbc-z-sidebar: 20;
+      --qbc-z-toast:   90;
+      --qbc-z-skip:    100;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :root { --qbc-dur-fast: 1ms; --qbc-dur-base: 1ms; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* The class rules below set display, which would otherwise beat the user
+       agent's [hidden] rule and leave hidden rows on screen. */
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font-family: var(--qbc-font-sans);
+      font-size: var(--qbc-fs-base);
+      line-height: var(--qbc-lh-base);
+    }
+
+    h1, h2, h3 { margin: 0; letter-spacing: var(--qbc-tracking-heading); }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .skip-link {
+      position: absolute;
+      z-index: var(--qbc-z-skip);
+      top: var(--qbc-s-2); left: var(--qbc-s-2);
+      padding: var(--qbc-s-2) var(--qbc-s-3);
+      transform: translateY(-200%);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-panel);
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-button);
+      text-decoration: none;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* ---- Buttons, copied in behaviour from docs/mocks/styles.css --------- */
+    .primary-button, .secondary-button, .quiet-button {
+      display: inline-flex;
+      min-height: var(--qbc-button-h);
+      align-items: center;
+      justify-content: center;
+      padding: 0 var(--qbc-s-4);
+      border: 1px solid transparent;
+      border-radius: var(--qbc-r-control);
+      font: inherit;
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+      transition: background var(--qbc-dur-fast) var(--qbc-ease), color var(--qbc-dur-fast) var(--qbc-ease);
+    }
+    .primary-button { color: var(--qbc-panel); background: var(--qbc-accent); }
+    .primary-button:hover { background: var(--qbc-accent-dark); }
+    .secondary-button { border-color: var(--qbc-line-strong); color: var(--qbc-ink); background: var(--qbc-panel); }
+    .secondary-button:hover { background: var(--qbc-soft); }
+    .quiet-button { padding: 0 var(--qbc-s-3); color: var(--qbc-ink-soft); background: none; }
+    .quiet-button:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
+    .icon-button {
+      display: inline-grid;
+      width: 34px; height: 34px;
+      border: 0;
+      border-radius: var(--qbc-r-sm);
+      background: none;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xl);
+      place-items: center;
+      cursor: pointer;
+    }
+    .icon-button:hover { background: var(--qbc-soft); }
+    :focus-visible { outline: 2px solid var(--qbc-accent); outline-offset: 2px; }
+
+    input, select {
+      width: 100%;
+      min-height: var(--qbc-control-h);
+      padding: 0 var(--qbc-s-3);
+      border: 1px solid var(--qbc-line-strong);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font: inherit;
+      font-size: var(--qbc-fs-md);
+    }
+    input::placeholder { color: var(--qbc-placeholder); }
+    input:focus, select:focus { outline: 0; border-color: var(--qbc-accent); box-shadow: 0 0 0 3px var(--qbc-focus-ring-field); }
+
+    /* ---- Shell ----------------------------------------------------------- */
+    .app-shell { display: flex; min-height: 100dvh; }
+
+    .sidebar {
+      display: flex;
+      width: var(--qbc-sidebar-w);
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: var(--qbc-s-5) var(--qbc-s-4);
+      border-right: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+    }
+
+    .brand { display: flex; gap: var(--qbc-s-3); align-items: center; margin-bottom: var(--qbc-s-7); color: inherit; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      width: 32px; height: 32px;
+      border-radius: var(--qbc-r-md);
+      color: var(--qbc-panel);
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-bold);
+      place-items: center;
+    }
+    .brand strong { display: block; font-size: var(--qbc-fs-lg); line-height: 1.1; }
+    .brand small { display: block; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); letter-spacing: var(--qbc-tracking-brand); text-transform: uppercase; }
+
+    .nav-list { display: grid; gap: 2px; }
+    .nav-list a {
+      display: flex;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      padding: var(--qbc-s-2) var(--qbc-s-3);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-nav-ink);
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-nav);
+      text-decoration: none;
+    }
+    .nav-list a span { color: var(--qbc-nav-icon); }
+    .nav-list a:hover { background: var(--qbc-soft); }
+    .nav-list a.active { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .nav-list a.active span { color: var(--qbc-accent); }
+
+    .sidebar-foot { margin-top: auto; color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); }
+    .sidebar-foot p { margin: 0; }
+
+    .workspace { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+
+    .topbar {
+      display: flex;
+      min-height: var(--qbc-topbar-h);
+      gap: var(--qbc-s-4);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7));
+      border-bottom: 1px solid var(--qbc-line);
+    }
+    .breadcrumb { overflow: hidden; margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); text-overflow: ellipsis; white-space: nowrap; }
+    .breadcrumb b { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .breadcrumb a:hover { color: var(--qbc-accent-dark); text-decoration: underline; }
+    .topbar-actions { display: flex; gap: var(--qbc-s-2); align-items: center; }
+
+    main { flex: 1; padding: var(--qbc-s-6) clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7)); }
+    .page { max-width: 1080px; margin-inline: auto; }
+
+    /* ---- Assistant identity ---------------------------------------------- */
+    .profile {
+      display: flex;
+      gap: var(--qbc-s-4);
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: var(--qbc-s-5);
+      border-bottom: 1px solid var(--qbc-line);
+    }
+    .profile-main { display: flex; gap: var(--qbc-s-4); align-items: center; }
+    .avatar {
+      display: grid;
+      width: 52px; height: 52px;
+      flex-shrink: 0;
+      border-radius: var(--qbc-r-round);
+      color: var(--qbc-accent-dark);
+      background: var(--qbc-accent-soft);
+      font-size: var(--qbc-fs-lg);
+      font-weight: var(--qbc-fw-bold);
+      place-items: center;
+    }
+    .profile h1 { font-size: var(--qbc-fs-4xl); }
+    .profile-role { margin: 2px 0 var(--qbc-s-2); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+    .tag-list { display: flex; flex-wrap: wrap; gap: var(--qbc-s-1); }
+    .tag { padding: 3px var(--qbc-s-2); border-radius: var(--qbc-r-2xs); color: var(--qbc-ink-soft); background: var(--qbc-soft); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-medium); }
+    .availability { display: inline-flex; gap: 6px; align-items: center; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-medium); }
+    .availability::before { width: 7px; height: 7px; border-radius: var(--qbc-r-round); background: var(--qbc-accent); content: ""; }
+    .availability.limited::before { background: var(--qbc-amber); }
+    .availability.unavailable::before { background: var(--qbc-ink-faint); }
+
+    /* ---- The four numbers, and the share they describe -------------------- */
+    .stat-grid {
+      display: grid;
+      gap: var(--qbc-s-3);
+      margin: var(--qbc-s-5) 0 var(--qbc-s-4);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .stat {
+      padding: var(--qbc-s-4);
+      border: 1px solid var(--qbc-line-card);
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-surface-raised);
+    }
+    .stat strong { display: block; font-size: var(--qbc-fs-3xl); font-variant-numeric: tabular-nums; letter-spacing: var(--qbc-tracking-heading); }
+    .stat small { display: block; margin-top: 2px; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+    .stat.is-complete strong { color: var(--qbc-accent-dark); }
+
+    .share { display: flex; gap: var(--qbc-s-3); align-items: center; margin-bottom: var(--qbc-s-6); }
+    .progress-track { overflow: hidden; height: 8px; flex: 1; border-radius: var(--qbc-r-pill); background: var(--qbc-soft); }
+    .progress-bar { height: 100%; border-radius: var(--qbc-r-pill); background: var(--qbc-accent); }
+    .share small { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+
+    /* ---- Filter ----------------------------------------------------------- */
+    .toolbar { display: flex; gap: var(--qbc-s-3); align-items: center; justify-content: space-between; margin-bottom: var(--qbc-s-4); }
+    .segmented { display: inline-flex; padding: 3px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-md); background: var(--qbc-soft); }
+    .segmented button {
+      padding: 6px var(--qbc-s-3);
+      border: 0;
+      border-radius: var(--qbc-r-2xs);
+      background: none;
+      color: var(--qbc-ink-soft);
+      font: inherit;
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+    }
+    .segmented button[aria-pressed="true"] { color: var(--qbc-ink); background: var(--qbc-panel); box-shadow: var(--qbc-shadow-card); }
+    .result-count { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+
+    /* ---- One story an assistant put hours into ---------------------------- */
+    .story-list { display: grid; gap: var(--qbc-s-2); }
+    .story-row {
+      border: 1px solid var(--qbc-line-card);
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-panel);
+      box-shadow: var(--qbc-shadow-card);
+    }
+    .story-summary {
+      display: grid;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      padding: var(--qbc-s-4) var(--qbc-s-5);
+      grid-template-columns: minmax(0, 2fr) 118px 74px 92px 116px auto;
+    }
+    .row-identity { display: flex; gap: var(--qbc-s-3); align-items: baseline; min-width: 0; }
+    .story-key { color: var(--qbc-ink-faint); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); letter-spacing: var(--qbc-tracking-key); }
+    .row-identity > div { min-width: 0; }
+    .row-identity strong { display: block; overflow: hidden; font-size: var(--qbc-fs-md); text-overflow: ellipsis; white-space: nowrap; }
+    .row-identity small { display: block; overflow: hidden; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); text-overflow: ellipsis; white-space: nowrap; }
+    .cell-label { display: none; color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-heavy); letter-spacing: var(--qbc-tracking-eyebrow); text-transform: uppercase; }
+
+    .pill { display: inline-flex; padding: 3px var(--qbc-s-2); border-radius: var(--qbc-r-pill); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-semibold); }
+    .pill.done { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .pill.progress { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
+    .pill.todo { color: var(--qbc-blue); background: var(--qbc-blue-soft); }
+    .pill.archived { color: var(--qbc-ink-soft); background: var(--qbc-soft); }
+
+    .points { display: inline-grid; min-width: 30px; height: 26px; padding: 0 6px; border-radius: var(--qbc-r-2xs); color: var(--qbc-ink-soft); background: var(--qbc-soft); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); place-items: center; }
+    /* Hours read as a quantity rather than an estimate, so they take the capsule shape and the
+       blue tone rather than the squircle and green the story-point chip uses. */
+    .hours { display: inline-flex; align-items: center; padding: 3px var(--qbc-s-2); border-radius: var(--qbc-r-pill); color: var(--qbc-blue); background: var(--qbc-blue-soft); font-family: var(--qbc-font-mono); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); white-space: nowrap; }
+    .last-logged { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); font-variant-numeric: tabular-nums; }
+    /* A story may carry other people's hours too, so the column says whose share this is. */
+    .of-total { display: block; margin-top: 2px; color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); }
+
+    .disclose { display: inline-flex; gap: 6px; align-items: center; }
+    .disclose::after { color: var(--qbc-ink-faint); content: "\25be"; transition: transform var(--qbc-dur-fast) var(--qbc-ease); }
+    .story-row.is-open .disclose::after { transform: rotate(180deg); }
+
+    .entry-list { padding: 0 var(--qbc-s-5) var(--qbc-s-4); border-top: 1px dashed var(--qbc-line); }
+    .entry-row { display: grid; gap: var(--qbc-s-3); align-items: center; padding: var(--qbc-s-2) 0; grid-template-columns: 104px 132px 62px 1fr; }
+    .entry-row + .entry-row { border-top: 1px solid var(--qbc-line); }
+    .entry-date { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); font-variant-numeric: tabular-nums; }
+    .entry-who { font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); }
+    .entry-note { overflow: hidden; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); text-overflow: ellipsis; white-space: nowrap; }
+    .entry-list .heading { margin: var(--qbc-s-3) 0 var(--qbc-s-1); color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-heavy); letter-spacing: var(--qbc-tracking-eyebrow); text-transform: uppercase; }
+
+    /* ---- Empty state ------------------------------------------------------ */
+    .empty-state {
+      padding: var(--qbc-s-8) var(--qbc-s-6);
+      border: 1px dashed var(--qbc-line-strong);
+      border-radius: var(--qbc-r-2xl);
+      background: var(--qbc-surface-raised);
+      text-align: center;
+    }
+    .empty-state h2 { margin-bottom: var(--qbc-s-2); font-size: var(--qbc-fs-2xl); }
+    .empty-state p { margin: 0 auto var(--qbc-s-4); max-width: 46ch; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+
+    /* ---- Dialog and toast -------------------------------------------------- */
+    dialog { padding: 0; border: 0; border-radius: var(--qbc-r-2xl); box-shadow: var(--qbc-shadow-overlay); }
+    dialog::backdrop { background: var(--qbc-scrim); }
+    .dialog-shell { width: min(520px, calc(100vw - 32px)); }
+    .dialog-head { display: flex; gap: var(--qbc-s-3); align-items: flex-start; justify-content: space-between; padding: var(--qbc-s-6) var(--qbc-s-6) var(--qbc-s-4); }
+    .dialog-head h2 { font-size: var(--qbc-fs-2xl); }
+    .dialog-head p { margin: var(--qbc-s-1) 0 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); }
+    .dialog-body { padding: 0 var(--qbc-s-6); }
+    .dialog-actions { display: flex; gap: var(--qbc-s-2); justify-content: flex-end; padding: var(--qbc-s-5) var(--qbc-s-6) var(--qbc-s-6); }
+    .form-grid { display: grid; gap: var(--qbc-s-3); grid-template-columns: 1fr 1fr; }
+    .field { display: grid; gap: var(--qbc-s-1); }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--qbc-ink); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); }
+    .form-error { margin: 0 0 var(--qbc-s-3); padding: var(--qbc-s-2) var(--qbc-s-3); border-radius: var(--qbc-r-control); color: var(--qbc-danger); background: var(--qbc-danger-soft); font-size: var(--qbc-fs-sm); }
+
+    .toast-region { position: fixed; z-index: var(--qbc-z-toast); right: var(--qbc-s-5); bottom: var(--qbc-s-5); display: grid; gap: var(--qbc-s-2); }
+    .toast { margin: 0; padding: var(--qbc-s-3) var(--qbc-s-4); border-radius: var(--qbc-r-md); color: var(--qbc-panel); background: var(--qbc-ink); font-size: var(--qbc-fs-sm); box-shadow: var(--qbc-shadow-overlay); }
+
+    .mock-note {
+      margin: 0;
+      padding: var(--qbc-s-4) clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7));
+      border-top: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-xs);
+    }
+    .mock-note code { padding: 1px 5px; border-radius: var(--qbc-r-2xs); background: var(--qbc-soft); font-family: var(--qbc-font-mono); }
+
+    /* ---- Responsive --------------------------------------------------------- */
+    /* The row carries six columns beside a 224px rail, which is more than a 1024 viewport has;
+       it stacks one breakpoint earlier than the shell does. */
+    @media (max-width: 1180px) {
+      .story-summary { grid-template-columns: minmax(0, 1fr) auto; }
+      .story-summary > div:not(.row-identity):not(.row-actions) { display: flex; gap: var(--qbc-s-2); align-items: center; }
+      .cell-label { display: inline; }
+    }
+    @media (max-width: 1000px) {
+      .app-shell { display: block; }
+      .sidebar { width: auto; flex-direction: row; align-items: center; gap: var(--qbc-s-6); border-right: 0; border-bottom: 1px solid var(--qbc-line); }
+      .brand { margin-bottom: 0; }
+      .nav-list { display: flex; flex-wrap: wrap; }
+      .sidebar-foot { display: none; }
+      .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .topbar { min-height: 0; flex-wrap: wrap; padding-block: var(--qbc-s-3); }
+      .profile { display: block; }
+      .profile .primary-button { margin-top: var(--qbc-s-3); }
+      .entry-row { grid-template-columns: 1fr auto; }
+      .entry-note { grid-column: 1 / -1; white-space: normal; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to the hours</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="index.html#board" aria-label="QBC Workboard home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span><strong>QBC</strong><small>Workboard</small></span>
+      </a>
+
+      <nav class="nav-list" aria-label="Workspace">
+        <a href="index.html#board"><span aria-hidden="true">&#9638;</span> Board</a>
+        <a href="index.html#backlog"><span aria-hidden="true">&#8801;</span> Backlog</a>
+        <a href="index.html#hierarchy"><span aria-hidden="true">&#8984;</span> Initiatives</a>
+        <a href="index.html#assistants" class="active" aria-current="page"><span aria-hidden="true">&#9678;</span> Assistants</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p>Quinntyne Brown<br>Consulting Inc.</p>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <p class="breadcrumb"><a href="index.html#assistants">Workspace</a> / <a href="index.html#assistants">Assistants</a> / <b id="breadcrumb-name">Noah Williams</b></p>
+        <div class="topbar-actions">
+          <label class="visually-hidden" for="assistant-picker">Assistant</label>
+          <select id="assistant-picker"></select>
+        </div>
+      </header>
+
+      <main id="main-content" tabindex="-1">
+        <section class="page">
+          <div class="profile">
+            <div class="profile-main">
+              <span class="avatar" id="profile-avatar" aria-hidden="true">NW</span>
+              <div>
+                <h1 id="profile-name">Noah Williams</h1>
+                <p class="profile-role" id="profile-role">Software Development Assistant</p>
+                <div class="tag-list" id="profile-tags"></div>
+              </div>
+            </div>
+            <button class="primary-button" type="button" id="log-hours">Log hours</button>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat"><strong id="stat-total">0 h</strong><small>logged by this assistant</small></div>
+            <div class="stat is-complete"><strong id="stat-complete">0 h</strong><small>on completed stories</small></div>
+            <div class="stat"><strong id="stat-stories">0</strong><small>stories worked on</small></div>
+            <div class="stat"><strong id="stat-done">0</strong><small>of them completed</small></div>
+          </div>
+
+          <div class="share">
+            <div class="progress-track"><div class="progress-bar" id="share-bar" style="width:0%"></div></div>
+            <small id="share-copy">Nothing logged yet.</small>
+          </div>
+
+          <div class="toolbar" id="toolbar">
+            <div class="segmented" role="group" aria-label="Which stories to show">
+              <button type="button" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" data-filter="completed" aria-pressed="false">Completed</button>
+              <button type="button" data-filter="flight" aria-pressed="false">In flight</button>
+            </div>
+            <span class="result-count" id="result-count" role="status"></span>
+          </div>
+
+          <div class="story-list" id="story-list"></div>
+
+          <div class="empty-state" id="empty-state" hidden>
+            <h2 id="empty-title">No hours logged yet</h2>
+            <p id="empty-copy">Once this assistant logs time against a story, it appears here with the story it belongs to.</p>
+            <button class="primary-button" type="button" id="empty-log">Log the first hours</button>
+          </div>
+        </section>
+      </main>
+
+      <p class="mock-note">
+        Interaction study. Nothing is persisted: entries live in this tab only, and reloading
+        restores the samples. It shows the hours an assistant logged against a story, and how
+        much of that time landed on work that is now done. Open it with
+        <code>?assistantId=asst-noah</code>, <code>?assistantId=asst-maya</code>, or
+        <code>?assistantId=asst-amara&amp;empty</code> for the first-entry state. Time tracking
+        is outside the requirements baseline today (<code>docs/specs/L1.md</code>), and nothing
+        records who is acting, so the assistant is picked rather than assumed. Two facts the
+        product does not store are invented here: a time entry, and &ldquo;worked on&rdquo;
+        meaning &ldquo;has logged hours against&rdquo; &mdash; a story only ever remembers who
+        owns it now.
+      </p>
+    </div>
+  </div>
+
+  <dialog id="log-dialog" aria-labelledby="log-title">
+    <form class="dialog-shell" id="log-form" novalidate>
+      <header class="dialog-head">
+        <div><h2 id="log-title">Log hours</h2><p id="log-subtitle">Against a story this assistant is working on.</p></div>
+        <button class="icon-button" type="button" data-close aria-label="Close dialog">&times;</button>
+      </header>
+      <div class="dialog-body">
+        <div id="log-error"></div>
+        <div class="form-grid">
+          <div class="field full"><label for="log-story">Story</label><select id="log-story" required></select></div>
+          <div class="field"><label for="log-date">Date worked</label><input id="log-date" type="date" required></div>
+          <div class="field"><label for="log-hours-value">Hours</label><input id="log-hours-value" type="number" min="0.25" step="0.25" placeholder="1.5" required></div>
+          <div class="field full"><label for="log-note">What was done</label><input id="log-note" placeholder="A short note for whoever reads this later"></div>
+        </div>
+      </div>
+      <footer class="dialog-actions">
+        <button class="secondary-button" type="button" data-close>Cancel</button>
+        <button class="primary-button" type="submit">Log hours</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    /* Sample content only. The assistants, stories, and epics below stand in for what the API
+       returns today; the time entries stand in for a record the product does not have. */
+    const ASSISTANTS = [
+      { id: "asst-maya", name: "Maya Chen", role: "Product & Research Assistant", specialties: ["Discovery", "User research", "Product ops"], availability: "Available" },
+      { id: "asst-noah", name: "Noah Williams", role: "Software Development Assistant", specialties: ["Full-stack", "Quality", "APIs"], availability: "Available" },
+      { id: "asst-amara", name: "Amara Okafor", role: "AI Delivery Assistant", specialties: ["AI workflows", "Evaluation", "Data"], availability: "Limited" }
+    ];
+
+    const STORIES = [
+      { id: "story-101", key: "QBC-101", title: "See a concise project health summary", context: "Client Delivery Excellence / Client project portal", points: 5, boardStatus: "progress", state: "active" },
+      { id: "story-102", key: "QBC-102", title: "Capture a client decision", context: "Client Delivery Excellence / Client project portal", points: 3, boardStatus: "todo", state: "active" },
+      { id: "story-103", key: "QBC-103", title: "Evaluate answers against source material", context: "AI-Enabled Consulting / Consulting copilot", points: 8, boardStatus: "progress", state: "active" },
+      { id: "story-104", key: "QBC-104", title: "Start a project from a lightweight checklist", context: "Client Delivery Excellence / Delivery playbook", points: 3, boardStatus: "done", state: "active" },
+      { id: "story-105", key: "QBC-105", title: "Create an AI engagement risk canvas", context: "AI-Enabled Consulting / Consulting copilot", points: 5, boardStatus: "todo", state: "active" },
+      { id: "story-098", key: "QBC-098", title: "Publish the first delivery playbook", context: "Client Delivery Excellence / Delivery playbook", points: 5, boardStatus: "done", state: "active" },
+      { id: "story-099", key: "QBC-099", title: "Agree the engagement health signals", context: "Client Delivery Excellence / Client project portal", points: 3, boardStatus: "done", state: "active" },
+      { id: "story-097", key: "QBC-097", title: "Compare kickoff template formats", context: "Client Delivery Excellence / Delivery playbook", points: 2, boardStatus: "todo", state: "archived" }
+    ];
+
+    /* An entry is the whole of the invention: one assistant, one story, one day, and a note.
+       Sixteen of them, so the totals and the completed share are worth reading. */
+    const ENTRIES = [
+      { id: "time-001", storyId: "story-101", assistantId: "asst-noah", date: "2026-08-31", hours: 3, note: "Sketched the summary card" },
+      { id: "time-002", storyId: "story-101", assistantId: "asst-noah", date: "2026-09-01", hours: 4.5, note: "Built the card and its states" },
+      { id: "time-003", storyId: "story-101", assistantId: "asst-maya", date: "2026-09-02", hours: 1.5, note: "Reviewed the health language" },
+      { id: "time-004", storyId: "story-101", assistantId: "asst-noah", date: "2026-09-03", hours: 2, note: "Handled the empty and stale cases" },
+      { id: "time-005", storyId: "story-102", assistantId: "asst-maya", date: "2026-09-01", hours: 2.5, note: "Drafted the decision form" },
+      { id: "time-006", storyId: "story-102", assistantId: "asst-maya", date: "2026-09-03", hours: 3, note: "Walked it through with delivery" },
+      { id: "time-007", storyId: "story-103", assistantId: "asst-amara", date: "2026-09-01", hours: 5, note: "Built the citation-coverage check" },
+      { id: "time-008", storyId: "story-103", assistantId: "asst-amara", date: "2026-09-02", hours: 3, note: "Assembled the test set" },
+      { id: "time-009", storyId: "story-103", assistantId: "asst-noah", date: "2026-09-04", hours: 1.5, note: "Paired on the evaluation harness" },
+      { id: "time-010", storyId: "story-104", assistantId: "asst-maya", date: "2026-08-31", hours: 4, note: "Validated against three recent projects" },
+      { id: "time-011", storyId: "story-104", assistantId: "asst-noah", date: "2026-09-01", hours: 2, note: "Turned the notes into a checklist" },
+      { id: "time-012", storyId: "story-105", assistantId: "asst-amara", date: "2026-09-03", hours: 2.5, note: "First pass at the risk canvas" },
+      { id: "time-013", storyId: "story-098", assistantId: "asst-noah", date: "2026-08-24", hours: 9.5, note: "Wrote and reviewed the playbook" },
+      { id: "time-014", storyId: "story-098", assistantId: "asst-maya", date: "2026-08-25", hours: 3, note: "Edited it down to one page" },
+      { id: "time-015", storyId: "story-099", assistantId: "asst-noah", date: "2026-08-26", hours: 6, note: "Agreed the signals with delivery" },
+      { id: "time-016", storyId: "story-097", assistantId: "asst-maya", date: "2026-08-20", hours: 1, note: "Closed out the old comparison" }
+    ];
+
+    const STATUS_LABELS = { todo: "To do", progress: "In progress", done: "Done" };
+
+    const el = (id) => document.getElementById(id);
+    const HTML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+    const escapeHtml = (value = "") => String(value).replace(/[&<>"]/g, (character) => HTML_ESCAPES[character]);
+    const initials = (name = "") => name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0].toUpperCase()).join("") || "?";
+    const formatDate = (date) => new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00`));
+
+    /* Hours are logged in quarters, so two decimals are kept and trailing zeros dropped: 3 reads
+       as "3 h", 4.5 as "4.5 h", and 10.25 as "10.25 h" rather than a total that does not add up. */
+    const formatHours = (hours) => `${Math.round(hours * 100) / 100} h`;
+
+    const state = { assistantId: ASSISTANTS[1].id, filter: "all", entries: ENTRIES.slice(), open: new Set() };
+
+    const assistant = () => ASSISTANTS.find((item) => item.id === state.assistantId);
+    const storyOf = (id) => STORIES.find((item) => item.id === id);
+    const isComplete = (story) => story.boardStatus === "done";
+    const sum = (entries) => entries.reduce((total, entry) => total + Number(entry.hours), 0);
+    const mine = () => state.entries.filter((entry) => entry.assistantId === state.assistantId);
+
+    /**
+     * Every story this assistant has logged hours against, newest activity first. A story's own
+     * owner is deliberately not consulted: it names who holds the story now, which is a different
+     * question from who has worked on it.
+     */
+    function workedOn() {
+      const byStory = new Map();
+      mine().forEach((entry) => {
+        const list = byStory.get(entry.storyId) || [];
+        list.push(entry);
+        byStory.set(entry.storyId, list);
+      });
+      return [...byStory.entries()]
+        .map(([storyId, entries]) => {
+          const ordered = entries.slice().sort((a, b) => a.date.localeCompare(b.date));
+          const everyone = sum(state.entries.filter((entry) => entry.storyId === storyId));
+          return { story: storyOf(storyId), entries: ordered, hours: sum(entries), everyone, last: ordered[ordered.length - 1].date };
+        })
+        .filter((row) => row.story)
+        .sort((a, b) => b.last.localeCompare(a.last));
+    }
+
+    function visibleRows() {
+      const rows = workedOn();
+      if (state.filter === "completed") return rows.filter((row) => isComplete(row.story));
+      if (state.filter === "flight") return rows.filter((row) => !isComplete(row.story));
+      return rows;
+    }
+
+    function renderProfile() {
+      const person = assistant();
+      el("breadcrumb-name").textContent = person.name;
+      el("profile-avatar").textContent = initials(person.name);
+      el("profile-name").textContent = person.name;
+      el("profile-role").textContent = person.role;
+      el("profile-tags").innerHTML = person.specialties
+        .map((item) => `<span class="tag">${escapeHtml(item)}</span>`)
+        .join("") + `<span class="availability ${person.availability.toLowerCase()}">${escapeHtml(person.availability)}</span>`;
+      document.title = `${person.name} · hours · QBC Workboard`;
+    }
+
+    function renderStats() {
+      const rows = workedOn();
+      const total = sum(mine());
+      const completed = rows.filter((row) => isComplete(row.story));
+      const completedHours = sum(completed.flatMap((row) => row.entries));
+      const share = total ? Math.round((completedHours / total) * 100) : 0;
+
+      el("stat-total").textContent = formatHours(total);
+      el("stat-complete").textContent = formatHours(completedHours);
+      el("stat-stories").textContent = String(rows.length);
+      el("stat-done").textContent = String(completed.length);
+      el("share-bar").style.width = `${share}%`;
+      el("share-copy").textContent = total
+        ? `${share}% of logged hours are on work that is done`
+        : "Nothing logged yet.";
+    }
+
+    function renderRows() {
+      const rows = visibleRows();
+      const list = el("story-list");
+      const empty = el("empty-state");
+      const hasAny = workedOn().length > 0;
+
+      // Nothing to filter until something has been logged, so the switch stays out of the way.
+      empty.hidden = hasAny;
+      el("toolbar").hidden = !hasAny;
+      list.hidden = !hasAny;
+      el("result-count").textContent = hasAny
+        ? `${rows.length} of ${workedOn().length} stories`
+        : "";
+
+      if (!hasAny) { list.innerHTML = ""; return; }
+
+      list.innerHTML = rows.length ? rows.map((row) => {
+        const open = state.open.has(row.story.id);
+        const status = row.story.state === "archived" ? "archived" : row.story.boardStatus;
+        const label = row.story.state === "archived" ? "Archived" : STATUS_LABELS[row.story.boardStatus];
+        return `<article class="story-row ${open ? "is-open" : ""}" data-story="${row.story.id}">
+          <div class="story-summary">
+            <div class="row-identity">
+              <span class="story-key">${escapeHtml(row.story.key)}</span>
+              <div><strong>${escapeHtml(row.story.title)}</strong><small>${escapeHtml(row.story.context)}</small></div>
+            </div>
+            <div><span class="cell-label">State</span><span class="pill ${status}">${label}</span></div>
+            <div><span class="cell-label">Estimate</span><span class="points">${row.story.points}</span></div>
+            <div><span class="cell-label">Hours</span><span class="hours">${formatHours(row.hours)}</span>${row.everyone > row.hours ? `<small class="of-total" title="${formatHours(row.everyone)} logged on this story by everyone">of ${formatHours(row.everyone)}</small>` : ""}</div>
+            <div><span class="cell-label">Last</span><span class="last-logged">${formatDate(row.last)}</span></div>
+            <div class="row-actions">
+              <button class="quiet-button disclose" type="button" data-toggle="${row.story.id}" aria-expanded="${open}">${row.entries.length} ${row.entries.length === 1 ? "entry" : "entries"}</button>
+            </div>
+          </div>
+          ${open ? `<div class="entry-list">
+            <p class="heading">Entries</p>
+            ${row.entries.map((entry) => `<div class="entry-row"><span class="entry-date">${formatDate(entry.date)}</span><span class="entry-who">${escapeHtml(assistant().name)}</span><span class="hours">${formatHours(entry.hours)}</span><span class="entry-note">${escapeHtml(entry.note) || "<em>No note</em>"}</span></div>`).join("")}
+          </div>` : ""}
+        </article>`;
+      }).join("") : `<p class="result-count">No stories match this filter.</p>`;
+    }
+
+    function render() {
+      renderProfile();
+      renderStats();
+      renderRows();
+    }
+
+    function toast(message) {
+      const node = document.createElement("p");
+      node.className = "toast";
+      node.textContent = message;
+      el("toast-region").appendChild(node);
+      window.setTimeout(() => node.remove(), 3200);
+    }
+
+    /* ---- Logging ---------------------------------------------------------- */
+    function openLogDialog() {
+      const picker = el("log-story");
+      picker.innerHTML = STORIES.filter((story) => story.state !== "archived")
+        .map((story) => `<option value="${story.id}">${escapeHtml(story.key)} · ${escapeHtml(story.title)}</option>`)
+        .join("");
+      el("log-subtitle").textContent = `Hours ${assistant().name} spent on a story.`;
+      el("log-date").value = "2026-09-04";
+      el("log-hours-value").value = "";
+      el("log-note").value = "";
+      el("log-error").innerHTML = "";
+      el("log-dialog").showModal();
+      window.requestAnimationFrame(() => picker.focus());
+    }
+
+    el("log-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const hours = Number(el("log-hours-value").value);
+      if (!el("log-form").checkValidity() || !(hours > 0)) {
+        el("log-error").innerHTML = `<p class="form-error">Choose a story, a date, and a number of hours above zero.</p>`;
+        el("log-form").reportValidity();
+        return;
+      }
+      const storyId = el("log-story").value;
+      state.entries.push({
+        id: `time-${Date.now()}`, storyId, assistantId: state.assistantId,
+        date: el("log-date").value, hours, note: el("log-note").value.trim()
+      });
+      state.open.add(storyId);
+      el("log-dialog").close();
+      render();
+      toast(`${formatHours(hours)} logged against ${storyOf(storyId).key}.`);
+    });
+
+    document.addEventListener("click", (event) => {
+      const closer = event.target.closest("[data-close]");
+      if (closer) { el("log-dialog").close(); return; }
+
+      const toggle = event.target.closest("[data-toggle]");
+      if (toggle) {
+        const id = toggle.dataset.toggle;
+        if (state.open.has(id)) state.open.delete(id); else state.open.add(id);
+        renderRows();
+        return;
+      }
+
+      const filter = event.target.closest("[data-filter]");
+      if (filter) {
+        state.filter = filter.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.filter === state.filter));
+        });
+        renderRows();
+      }
+    });
+
+    el("log-hours").addEventListener("click", openLogDialog);
+    el("empty-log").addEventListener("click", openLogDialog);
+
+    el("assistant-picker").addEventListener("change", (event) => {
+      state.assistantId = event.target.value;
+      state.open.clear();
+      render();
+    });
+
+    /* ---- Bootstrap --------------------------------------------------------- */
+    /* The directory addresses one assistant with ?assistantId. An id the study does not carry
+       opens the first sample, so the link still demonstrates the flow; ?empty shows the page an
+       assistant sees before they have logged anything. */
+    const route = new URLSearchParams(window.location.search);
+    const requested = route.get("assistantId");
+    if (ASSISTANTS.some((item) => item.id === requested)) state.assistantId = requested;
+    if (route.has("empty")) state.entries = state.entries.filter((entry) => entry.assistantId !== state.assistantId);
+
+    el("assistant-picker").innerHTML = ASSISTANTS
+      .map((item) => `<option value="${item.id}" ${item.id === state.assistantId ? "selected" : ""}>${escapeHtml(item.name)}</option>`)
+      .join("");
+
+    render();
+  </script>
+</body>
+</html>

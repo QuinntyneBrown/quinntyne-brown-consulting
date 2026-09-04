@@ -55,6 +55,14 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   field.
 - An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
   showing the entry, error, lockout, and unlocked states offline.
+- An interaction study for logging hours against a story at
+  `docs/mocks/assistant-hours.html`. It shows an assistant's page: the hours they logged,
+  how many of those hours are on completed stories, and every story they worked on, filtered
+  to completed or in-flight work and expandable to the individual entries. The product mock
+  gains the surfaces that feed it — a **Time logged** panel in the story editor, a quick
+  **Log hours** action on a board card, and an hours total on each assistant card. Time
+  tracking is outside the requirements baseline, so this is a proposal rather than a
+  specification.
 - An interaction study for writing a record at
   `docs/mocks/initiative-editor.html`. A Monaco editor carries the outcome brief
   beside the initiative name, with a markdown toolbar, live preview, and an
