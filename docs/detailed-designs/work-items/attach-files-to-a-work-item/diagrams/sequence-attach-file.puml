@@ -1,0 +1,55 @@
+@startuml
+title Behaviour — attach, read, retrieve, and remove a file
+
+actor Consultant
+participant "AttachmentsPanelComponent" as Panel
+participant "AttachmentsService" as Feature
+participant "AttachmentsController" as Controller
+participant "UploadAttachmentCommandHandler" as Upload
+participant "GetAttachmentsQueryHandler" as List
+database "Workspace database" as Db
+
+Consultant -> Panel : drop or choose a file
+Panel -> Feature : upload(kind, workItemId, file)
+Feature -> Controller : POST /api/attachments (multipart)
+Controller -> Upload : UploadAttachmentCommand
+
+alt the file is empty, oversized, or a program
+  Upload --> Controller : RequestValidationException
+  Controller --> Feature : 400 with the field named
+  Feature -> Panel : announce the reason, list unchanged
+else the name is already attached here
+  Upload -> Db : read this work item's file names
+  Upload --> Controller : ConflictException
+  Controller --> Feature : 409
+  Feature -> Panel : announce the reason, list unchanged
+else the work item does not exist
+  Upload --> Controller : NotFoundException
+  Controller --> Feature : 404
+else accepted
+  Upload -> Db : insert Attachment and AttachmentContent
+  Upload --> Controller : AttachmentDto
+  Controller --> Feature : 201
+  Feature -> Controller : GET /api/attachments?workItemKind&workItemId
+  Controller -> List : GetAttachmentsQuery
+  List -> Db : read this work item's records, without bytes
+  List --> Controller : AttachmentDto[]
+  Controller --> Feature : 200
+  Feature -> Panel : the server's list, newest first
+end
+
+Consultant -> Panel : download a file
+Panel -> Feature : download(id)
+Feature -> Controller : GET /api/attachments/{id}/content
+Controller --> Feature : bytes, as an attachment disposition
+Feature -> Consultant : saved under its original name
+
+Consultant -> Panel : remove a file
+Panel -> Consultant : ask to confirm
+Consultant -> Panel : confirm
+Panel -> Feature : delete(id)
+Feature -> Controller : DELETE /api/attachments/{id}
+Controller -> Db : delete the record and its content
+Controller --> Feature : 204
+Feature -> Panel : re-read the list
+@enduml

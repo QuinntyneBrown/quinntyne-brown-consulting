@@ -76,6 +76,12 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
         Assert.Equal(3m, (await Given.AmendTimeAsync(entry.Id, story.Id, assistant.Id, hours: 3m)).Hours);
         Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/time-entries/{entry.Id}")).StatusCode);
 
+        // A file is attached to a work item, read back, retrieved, and detached.
+        var attachment = await Given.AttachFileAsync(WorkItemKind.Story, story.Id, "story-screenshot.png");
+        Assert.Single(await Given.ReadAttachmentsAsync(WorkItemKind.Story, story.Id));
+        Assert.Equal(HttpStatusCode.OK, (await Client.GetAsync($"/api/attachments/{attachment.Id}/content")).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/attachments/{attachment.Id}")).StatusCode);
+
         // The permitted deletes, in the order the guards allow them.
         Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/stories/{story.Id}")).StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/assistants/{assistant.Id}")).StatusCode);
@@ -108,6 +114,9 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
                      "/api/assistants",
                      "/api/assistants/{id}",
                      "/api/assistants/{id}/hours",
+                     "/api/attachments",
+                     "/api/attachments/{id}",
+                     "/api/attachments/{id}/content",
                      "/api/time-entries",
                      "/api/time-entries/{id}",
                      "/api/stories",

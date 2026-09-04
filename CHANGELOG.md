@@ -9,6 +9,16 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Work item attachments. An initiative, an epic, and a story each carry their
+  own list of files, attached by dropping them on the work item or choosing
+  them from the computer, downloaded under the name they arrived with, and
+  removed once the removal is confirmed. A file belongs to the work item it was
+  attached to and is inherited neither up nor down the hierarchy, so an epic
+  never shows its initiative's files. Four kinds of file are turned away, each
+  saying which rule it met: an empty file or a dropped folder, a file over
+  25 MB, a program or script, and a name already attached to that work item.
+  Deleting a work item deletes its files with it; deleting an assistant leaves
+  the files they attached in place, without an uploader.
 - Recorded hours. A time entry names a story, an assistant, a date, an amount of
   hours in quarter-hour increments, and an optional note.
   `/assistants/{assistantId}` reports one assistant's totals, the share of their

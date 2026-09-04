@@ -29,6 +29,7 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 | Work items | [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/) | `L2-046`–`L2-048` |
 | Work items | [Write an epic summary](detailed-designs/work-items/edit-epic-summary/) | `L2-003`, `L2-049` |
 | Work items | [Log hours against a story](detailed-designs/work-items/log-hours-against-a-story/) | `L2-050`–`L2-051` |
+| Work items | [Attach files to a work item](detailed-designs/work-items/attach-files-to-a-work-item/) | `L2-052`–`L2-053` |
 | Planning | [Groom the backlog](detailed-designs/planning/groom-backlog/) | `L2-011`–`L2-012` |
 | Planning | [Plan two-week sprints](detailed-designs/planning/plan-two-week-sprints/) | `L2-013`–`L2-016` |
 | Delivery | [Execute the active sprint](detailed-designs/delivery/execute-active-sprint/) | `L2-017`–`L2-020` |
@@ -94,14 +95,22 @@ and five rendered PNG diagrams.
   `?itemId=init-planning`, `?itemId=epic-portal`, `?itemId=story-101`, or
   `?itemId=story-102&empty` for the first-file state.
 
-  Attachments sit outside the requirements baseline: `L1.md` §5 excludes them
-  alongside comments and notifications, so every behavior in the study is a
-  proposal rather than a rendering of shipped work. It invents three things a
-  specification would have to settle — one attachment list per work item with no
-  inheritance down the hierarchy, so an epic does not show its initiative's files;
-  refusing a duplicate name rather than versioning it; and, since `L1-013`
-  establishes no individual identity, recording the uploader as the assistant
-  named at the time rather than a signed-in person.
+  The study proposed behavior the baseline then excluded, and the product has
+  since taken it up: `L1-016` brings work item attachments inside the scope
+  `L1.md` §4 defines, `L2-052` and `L2-053` specify them, and
+  [Attach files to a work item](detailed-designs/work-items/attach-files-to-a-work-item/)
+  describes the implementation. All three of the study's inventions survived into
+  the product — one attachment list per work item with no inheritance in either
+  direction, so an epic does not show its initiative's files; refusing a duplicate
+  name rather than versioning it; and, since `L1-013` establishes no individual
+  identity, recording the uploader as the assistant named at the time rather than
+  a signed-in person, held without one when no assistant is named. Four of the
+  study's affordances did not ship: pasting from the clipboard, the image preview,
+  the sort control, and the in-flight cancel with its progress bar and its
+  retryable failed row. The four refusals are enforced, but they are announced
+  through the workspace's own feedback rather than the study's panel of reasons,
+  and the study's standalone page with its work-item picker became one panel shown
+  on the initiative, the epic, and the story themselves.
 
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.

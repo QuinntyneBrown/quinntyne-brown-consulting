@@ -1,0 +1,72 @@
+.attachments {
+  display: grid;
+  gap: var(--qbc-s-3);
+}
+
+.file-list {
+  display: grid;
+  gap: var(--qbc-s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--qbc-s-3);
+  align-items: center;
+  padding: var(--qbc-s-3) var(--qbc-s-4);
+  border: 1px solid var(--qbc-line-card);
+  border-radius: var(--qbc-r-xl);
+  background: var(--qbc-panel);
+  box-shadow: var(--qbc-shadow-card);
+}
+
+.file-row:hover {
+  background: var(--qbc-surface-hover);
+}
+
+.file-main {
+  min-width: 0;
+}
+
+.file-name {
+  display: block;
+  overflow: hidden;
+  font-size: var(--qbc-fs-md);
+  font-weight: var(--qbc-fw-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--qbc-s-1);
+  margin: 2px 0 0;
+  color: var(--qbc-ink-soft);
+  font-size: var(--qbc-fs-xs);
+}
+
+/* A size has to line up digit under digit to be compared down the column. */
+.file-size {
+  font-family: var(--qbc-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.row-actions {
+  display: flex;
+  gap: var(--qbc-s-1);
+}
+
+@media (max-width: 760px) {
+  /* The badge and the name keep the top line, so a long file name gets the full width. */
+  .file-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .row-actions {
+    grid-column: 1 / -1;
+  }
+}

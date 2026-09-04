@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Attach files to a work item
+
+Person(consultant, "QBC consultant", "Attaches a file to an initiative, an epic, or a story")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Presents the dropzone and the list of attached files")
+  Container(api, "Workboard API", "ASP.NET Core", "Applies the attachment rules and serves the stored bytes")
+  ContainerDb(db, "Workspace database", "SQL Server", "Stores the attachment record and its content")
+}
+
+Rel(consultant, spa, "Uses", "HTTPS")
+Rel(spa, api, "Uploads a file and reads a work item's attachments", "multipart and JSON/HTTPS")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ButtonComponent } from './button/button.component';
 import { DialogComponent } from './dialog/dialog.component';
+import { FileDropComponent } from './file-drop/file-drop.component';
 import { ProgressComponent } from './progress/progress.component';
 import { SelectOption } from './select/select-option';
 import { SelectComponent } from './select/select.component';
@@ -57,6 +58,49 @@ describe('QBC component contracts', () => {
     const meter = fixture.nativeElement.querySelector('[role="progressbar"]') as HTMLElement;
     expect(meter.getAttribute('aria-label')).toBe('Completion');
     expect(meter.getAttribute('aria-valuenow')).toBe('100');
+  });
+
+  it('keeps the dropzone lit while a drag crosses its children', () => {
+    const fixture = TestBed.createComponent(FileDropComponent);
+    fixture.detectChanges();
+    const drop = fixture.componentInstance;
+    const drag = (type: string) =>
+      Object.assign(new Event(type), {
+        dataTransfer: { types: ['Files'], files: [] },
+        preventDefault: () => undefined,
+      }) as unknown as DragEvent;
+
+    // Entering a child fires enter before the parent's leave, so a naive flag would flicker off.
+    drop.dragEnter(drag('dragenter'));
+    drop.dragEnter(drag('dragenter'));
+    drop.dragLeave(drag('dragleave'));
+    expect(drop.isDragging()).toBe(true);
+
+    drop.dragLeave(drag('dragleave'));
+    expect(drop.isDragging()).toBe(false);
+  });
+
+  it('ignores a drag that carries no files', () => {
+    const fixture = TestBed.createComponent(FileDropComponent);
+    fixture.detectChanges();
+    const drop = fixture.componentInstance;
+    const textDrag = Object.assign(new Event('dragenter'), {
+      dataTransfer: { types: ['text/plain'], files: [] },
+      preventDefault: () => undefined,
+    }) as unknown as DragEvent;
+
+    drop.dragEnter(textDrag);
+    expect(drop.isDragging()).toBe(false);
+  });
+
+  it('names the file input apart from the control that opens it', () => {
+    const fixture = TestBed.createComponent(FileDropComponent);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+
+    // Both are buttons in the accessibility tree, so they must not answer to the same name.
+    expect(element.querySelector('button.choose')?.textContent?.trim()).toBe('Choose files');
+    expect(element.querySelector('label')?.textContent?.trim()).toBe('Attach files');
   });
 
   it('opens and closes dialogs through the imperative API', () => {

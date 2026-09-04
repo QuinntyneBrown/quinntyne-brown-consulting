@@ -1,6 +1,7 @@
 import type {
   ActiveSprintBoard,
   Assistant,
+  Attachment,
   AssistantHours,
   AssistantHoursStory,
   AssignmentLink,
@@ -12,6 +13,7 @@ import type {
   StoryDraft,
   TimeEntry,
   TimeEntryDraft,
+  WorkItemKind,
 } from '@qbc/api';
 import type { Page, Route } from '@playwright/test';
 import { createWorkboardApiState } from './workboard-api-state.factory';
@@ -22,6 +24,19 @@ type EpicDraft = Pick<Epic, 'initiativeId' | 'name' | 'summary'>;
 type InitiativeDraft = Pick<Initiative, 'name' | 'description'>;
 type SprintDraft = Pick<Sprint, 'name' | 'goal' | 'startDate'>;
 type FieldErrors = Record<string, string[]>;
+
+/** The published per-file attachment limit, and the extensions the product will not hold. */
+const MAXIMUM_ATTACHMENT_BYTES = 25 * 1024 * 1024;
+const BLOCKED_EXTENSIONS = ['exe', 'bat', 'cmd', 'com', 'msi', 'scr', 'sh', 'ps1', 'dll', 'jar'];
+
+/** One part of a multipart upload, reduced to what the rules are decided on. */
+interface UploadPart {
+  readonly name: string;
+  readonly fileName: string | null;
+  readonly contentType: string;
+  readonly value: string;
+  readonly size: number;
+}
 
 /** Time is recorded in quarter hours, and no single entry covers more than a day. */
 const HOURS_INCREMENT = 0.25;
@@ -52,6 +67,8 @@ export class WorkboardApiMock {
   requestCount = 0;
 
   private readonly state: WorkboardApiState = createWorkboardApiState();
+  /** What each attachment holds, kept out of the state so a listing never carries bytes. */
+  private readonly contents = new Map<string, string>();
 
   /** Shape the workspace a scenario starts from, before the browser loads the application. */
   seed(mutate: (state: WorkboardApiState) => void): void {
@@ -279,6 +296,38 @@ export class WorkboardApiMock {
         return assistant
           ? this.json(route, 200, this.assistantHours(assistant))
           : this.notFound(route, 'Assistant');
+      }
+
+      if (path === '/api/attachments' && method === 'GET') {
+        const kind = url.searchParams.get('workItemKind') as WorkItemKind;
+        const workItemId = url.searchParams.get('workItemId') ?? '';
+        return this.json(route, 200, this.attachmentsFor(kind, workItemId));
+      }
+
+      if (path === '/api/attachments' && method === 'POST') {
+        return this.attach(route);
+      }
+
+      const attachmentMatch = path.match(/^\/api\/attachments\/([^/]+)\/content$/);
+      if (attachmentMatch && method === 'GET') {
+        const attachment = this.state.attachments.find((item) => item.id === attachmentMatch[1]);
+        if (!attachment) return this.notFound(route, 'Attachment');
+        return route.fulfill({
+          status: 200,
+          contentType: attachment.contentType,
+          headers: { 'content-disposition': `attachment; filename="${attachment.fileName}"` },
+          body: this.contents.get(attachment.id) ?? '',
+        });
+      }
+
+      const attachmentItemMatch = path.match(/^\/api\/attachments\/([^/]+)$/);
+      if (attachmentItemMatch && method === 'DELETE') {
+        const id = attachmentItemMatch[1];
+        if (!this.state.attachments.some((item) => item.id === id))
+          return this.notFound(route, 'Attachment');
+        this.remove(this.state.attachments, id);
+        this.contents.delete(id);
+        return this.empty(route);
       }
 
       if (path === '/api/time-entries' && method === 'POST') {
@@ -970,6 +1019,104 @@ export class WorkboardApiMock {
 
   private validDate(value: string): boolean {
     return /^\d{4}-\d{2}-\d{2}$/.test(value ?? '') && !Number.isNaN(Date.parse(value));
+  }
+
+  /**
+   * The upload arrives as multipart rather than JSON, so the parts are read out of the raw body.
+   * The mock enforces the same four refusals the API does, because the scenarios that prove a
+   * refusal is reported are observed through the feedback those rules produce.
+   */
+  private async attach(route: Route): Promise<void> {
+    const parts = this.uploadParts(route);
+    const file = parts.find((part) => part.name === 'file' && part.fileName !== null);
+    const kind = (parts.find((part) => part.name === 'workItemKind')?.value ??
+      'story') as WorkItemKind;
+    const workItemId = parts.find((part) => part.name === 'workItemId')?.value ?? '';
+    const assistantId = parts.find((part) => part.name === 'uploadedByAssistantId')?.value ?? null;
+
+    if (!this.workItemExists(kind, workItemId)) {
+      return this.notFound(route, kind.charAt(0).toUpperCase() + kind.slice(1));
+    }
+
+    const fileName = (file?.fileName ?? '').trim();
+    if (fileName.length === 0) return this.invalid(route, { file: ['A file is required.'] });
+    if (file!.size === 0)
+      return this.invalid(route, {
+        file: ['The file is empty, or is a folder. Folders have to be zipped first.'],
+      });
+    if (file!.size > MAXIMUM_ATTACHMENT_BYTES)
+      return this.invalid(route, { file: ['The file is over the 25 MB limit.'] });
+    if (BLOCKED_EXTENSIONS.includes(this.extensionOf(fileName)))
+      return this.invalid(route, { file: ['Programs and scripts cannot be attached.'] });
+
+    const lowered = fileName.toLowerCase();
+    if (
+      this.attachmentsFor(kind, workItemId).some((item) => item.fileName.toLowerCase() === lowered)
+    )
+      return this.problem(
+        route,
+        409,
+        'Already attached',
+        `'${fileName}' is already attached to this work item.`,
+      );
+
+    const assistant = this.state.assistants.find((item) => item.id === assistantId);
+    const attachment: Attachment = {
+      id: this.newId(),
+      workItemKind: kind,
+      workItemId,
+      fileName,
+      contentType: file!.contentType,
+      sizeInBytes: file!.size,
+      uploadedByAssistantId: assistant?.id ?? null,
+      uploadedBy: assistant?.fullName ?? null,
+      uploadedOn: new Date().toISOString(),
+    };
+
+    this.state.attachments.push(attachment);
+    this.contents.set(attachment.id, file!.value);
+    return this.json(route, 201, attachment);
+  }
+
+  private attachmentsFor(kind: WorkItemKind, workItemId: string): Attachment[] {
+    // One work item's own files and no other's: nothing is inherited up or down the hierarchy.
+    return this.state.attachments
+      .filter((item) => item.workItemKind === kind && item.workItemId === workItemId)
+      .sort((left, right) => right.uploadedOn.localeCompare(left.uploadedOn));
+  }
+
+  private workItemExists(kind: WorkItemKind, workItemId: string): boolean {
+    if (kind === 'initiative') return this.state.initiatives.some((item) => item.id === workItemId);
+    if (kind === 'epic') return this.state.epics.some((item) => item.id === workItemId);
+    return this.state.stories.some((item) => item.id === workItemId);
+  }
+
+  private extensionOf(fileName: string): string {
+    const dot = fileName.lastIndexOf('.');
+    return dot > 0 ? fileName.slice(dot + 1).toLowerCase() : '';
+  }
+
+  private uploadParts(route: Route): UploadPart[] {
+    const body = route.request().postData() ?? '';
+    const boundary = /boundary=(.+)$/.exec(route.request().headers()['content-type'] ?? '')?.[1];
+    if (!boundary) return [];
+
+    return body
+      .split(`--${boundary}`)
+      .filter((section) => section.includes('Content-Disposition'))
+      .map((section) => {
+        const [head, ...rest] = section.split('\r\n\r\n');
+        // The part's body carries a trailing CRLF that belongs to the delimiter, not the content.
+        const value = rest.join('\r\n\r\n').replace(/\r\n$/, '');
+        return {
+          name: /name="([^"]*)"/.exec(head)?.[1] ?? '',
+          fileName: /filename="([^"]*)"/.exec(head)?.[1] ?? null,
+          contentType:
+            /Content-Type:\s*(.+)/i.exec(head)?.[1]?.trim() ?? 'application/octet-stream',
+          value,
+          size: value.length,
+        };
+      });
   }
 
   private body<T>(route: Route): T {

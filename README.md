@@ -29,6 +29,8 @@ releases. Requirements and data migrations may change before the first release.
   page, with a formatting toolbar and a live preview.
 - Record the hours an assistant spent on a story, and read back what they
   worked on and how much of that time is on work that is now done.
+- Attach files to an initiative, an epic, or a story, and download or remove
+  them from the work item they belong to.
 - Groom and estimate stories before assigning them to a 14-day sprint.
 - Move active work through To do, In progress, and Done with pointer, keyboard,
   and touch-friendly controls.

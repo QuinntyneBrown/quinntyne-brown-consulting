@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "package": "@qbc/components",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "catalogSource": "../../../design-system/component-manifest.json",
   "catalogComponents": [
     "qbc-icon",
@@ -45,6 +45,7 @@
     "qbc-assignment-link",
     "qbc-back-link",
     "qbc-checkbox",
+    "qbc-file-drop",
     "qbc-form-grid",
     "qbc-loading-state",
     "qbc-page",

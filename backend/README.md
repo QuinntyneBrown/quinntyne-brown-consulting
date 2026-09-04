@@ -98,6 +98,7 @@ only when representative records are wanted in an empty database.
 | Stories and backlog       | `/api/stories`     |
 | Assistants                | `/api/assistants`  |
 | Time entries              | `/api/time-entries` |
+| Work item attachments     | `/api/attachments` |
 | Sprints and active board  | `/api/sprints`     |
 | Deployed build            | `/api/version`     |
 | OpenAPI                   | `/openapi/v1.json` |

@@ -65,6 +65,13 @@
   />
 </app-document-editor>
 
+@if (epicId(); as id) {
+  <app-attachments-panel
+    workItemKind="epic"
+    [workItemId]="id"
+  />
+}
+
 <app-unsaved-changes-dialog
   (keepEditing)="keepEditing()"
   (discardChanges)="discardAndLeave()"

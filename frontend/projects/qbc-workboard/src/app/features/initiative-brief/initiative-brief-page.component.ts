@@ -8,6 +8,7 @@ import {
   PageHeaderComponent,
   TextInputComponent,
 } from '@qbc/components';
+import { AttachmentsPanelComponent } from '../attachments/attachments-panel.component';
 import { DocumentEditorComponent } from '../markdown-document/document-editor.component';
 import { EditsADocument } from '../markdown-document/unsaved-document.guard';
 import { UnsavedChangesDialogComponent } from '../markdown-document/unsaved-changes-dialog.component';
@@ -27,6 +28,7 @@ const NEW_INITIATIVE: InitiativeDraft = { name: '', description: BRIEF_TEMPLATE 
 @Component({
   selector: 'app-initiative-brief-page',
   imports: [
+    AttachmentsPanelComponent,
     BackLinkComponent,
     ButtonComponent,
     DocumentEditorComponent,

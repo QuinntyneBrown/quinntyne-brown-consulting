@@ -19,6 +19,7 @@ export * from './lib/dialog/dialog.component';
 export * from './lib/empty-state/empty-state.component';
 export * from './lib/epic-row/epic-row.component';
 export * from './lib/field/field.component';
+export * from './lib/file-drop/file-drop.component';
 export * from './lib/form-error/form-error.component';
 export * from './lib/form-grid/form-grid.component';
 export * from './lib/icon-button/icon-button.component';

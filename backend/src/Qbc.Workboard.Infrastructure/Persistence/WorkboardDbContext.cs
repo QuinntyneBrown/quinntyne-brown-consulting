@@ -13,6 +13,8 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
     public IQueryable<Story> Stories => Set<Story>();
     public IQueryable<StoryTask> StoryTasks => Set<StoryTask>();
     public IQueryable<Assistant> Assistants => Set<Assistant>();
+    public IQueryable<Attachment> Attachments => Set<Attachment>();
+    public IQueryable<AttachmentContent> AttachmentContents => Set<AttachmentContent>();
     public IQueryable<TimeEntry> TimeEntries => Set<TimeEntry>();
     public IQueryable<Sprint> Sprints => Set<Sprint>();
     public IQueryable<StoryKeySequence> StoryKeySequences => Set<StoryKeySequence>();
@@ -100,6 +102,36 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
             entity.HasOne<Assistant>().WithMany().HasForeignKey(item => item.AssistantId).OnDelete(DeleteBehavior.Restrict);
         });
 
+        modelBuilder.Entity<Attachment>(entity =>
+        {
+            entity.ToTable("Attachment");
+            entity.HasKey(item => item.Id);
+            entity.Property(item => item.FileName).IsRequired();
+            entity.Property(item => item.ContentType).IsRequired();
+
+            // Three optional parents, exactly one of which the entity sets. Epic and Story both
+            // restrict upward, so these are three independent single-hop cascades rather than a
+            // second path to the same table, and SQL Server accepts all three.
+            entity.HasOne<Initiative>().WithMany().HasForeignKey(item => item.InitiativeId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<Epic>().WithMany().HasForeignKey(item => item.EpicId).OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<Story>().WithMany().HasForeignKey(item => item.StoryId).OnDelete(DeleteBehavior.Cascade);
+
+            // The attribution is optional, so deleting an assistant costs a file its uploader
+            // rather than its existence, and never blocks the deletion.
+            entity.HasOne<Assistant>().WithMany().HasForeignKey(item => item.UploadedByAssistantId).OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(item => item.InitiativeId);
+            entity.HasIndex(item => item.EpicId);
+            entity.HasIndex(item => item.StoryId);
+        });
+
+        modelBuilder.Entity<AttachmentContent>(entity =>
+        {
+            entity.ToTable("AttachmentContent");
+            entity.HasKey(item => item.AttachmentId);
+            entity.Property(item => item.Bytes).IsRequired();
+            entity.HasOne<Attachment>().WithOne().HasForeignKey<AttachmentContent>(item => item.AttachmentId).OnDelete(DeleteBehavior.Cascade);
+        });
         modelBuilder.Entity<StoryKeySequence>(entity =>
         {
             entity.HasKey(item => item.Id);

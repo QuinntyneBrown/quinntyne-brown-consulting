@@ -60,6 +60,13 @@
   />
 </app-document-editor>
 
+@if (initiativeId(); as id) {
+  <app-attachments-panel
+    workItemKind="initiative"
+    [workItemId]="id"
+  />
+}
+
 <app-unsaved-changes-dialog
   (keepEditing)="keepEditing()"
   (discardChanges)="discardAndLeave()"

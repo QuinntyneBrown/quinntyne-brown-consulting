@@ -1,0 +1,35 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Attach files to a work item
+
+Container_Boundary(spa, "Web application") {
+  Component(panel, "AttachmentsPanelComponent", "Angular component", "One panel, shown on an initiative, an epic, and a story alike")
+  Component(drop, "FileDropComponent", "Angular component", "Owns the dropzone and the native file input")
+  Component(feature, "IAttachmentsService", "Injection token", "Signal-backed list, upload, download, and removal")
+  Component(client, "IAttachmentService", "Injection token", "Multipart upload and blob download over HTTP")
+}
+
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "AttachmentsController", "ASP.NET Core controller", "Reads the multipart body and dispatches through MediatR")
+  Component(upload, "UploadAttachmentCommandHandler", "MediatR handler", "Checks the work item and refuses a name already taken")
+  Component(list, "GetAttachmentsQueryHandler", "MediatR handler", "Reads one work item's files without their bytes")
+  Component(content, "GetAttachmentContentQueryHandler", "MediatR handler", "The only reader of the stored bytes")
+  Component(remove, "DeleteAttachmentCommandHandler", "MediatR handler", "Removes the record and its content together")
+}
+
+ContainerDb(db, "Workspace database", "SQL Server", "Attachment and AttachmentContent")
+
+Rel(panel, drop, "Receives dropped and chosen files from")
+Rel(panel, feature, "Reads and writes through")
+Rel(feature, client, "Calls")
+Rel(client, controller, "JSON and multipart over HTTPS")
+Rel(controller, upload, "Sends")
+Rel(controller, list, "Sends")
+Rel(controller, content, "Sends")
+Rel(controller, remove, "Sends")
+Rel(upload, db, "Writes the record and its bytes")
+Rel(list, db, "Reads records")
+Rel(content, db, "Reads bytes")
+Rel(remove, db, "Deletes both")
+@enduml
