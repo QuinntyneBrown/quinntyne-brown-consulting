@@ -160,6 +160,9 @@ public sealed class Workspace
     public async Task<InitiativeDto> ReadInitiativeAsync(Guid initiativeId) =>
         (await _client.GetFromJsonAsync<InitiativeDto>($"/api/initiatives/{initiativeId}", Json))!;
 
+    public async Task<EpicDto> ReadEpicAsync(Guid epicId) =>
+        (await _client.GetFromJsonAsync<EpicDto>($"/api/epics/{epicId}", Json))!;
+
     public async Task<StoryDto> ReadStoryAsync(Guid storyId) =>
         (await _client.GetFromJsonAsync<StoryDto>($"/api/stories/{storyId}", Json))!;
 

@@ -1,6 +1,5 @@
-import { BriefEditorHandle } from './brief-editor-handle';
+import { MarkdownEditorHandle } from './markdown-editor-handle';
 
-const BRIEF_SOURCE_LABEL = 'Initiative brief, markdown source';
 const EDITOR_STYLESHEET = 'monaco-editor.css';
 
 let stylesheetLoad: Promise<void> | null = null;
@@ -29,7 +28,7 @@ function loadEditorStylesheet(): Promise<void> {
 
 /**
  * The code editor the brief is written in. It is imported only when the brief route is opened, so
- * neither the editor nor its worker reaches a reader who never edits a brief.
+ * neither the editor nor its worker reaches a reader who never writes a document.
  *
  * Auto-closing and auto-surrounding are turned off: a brief is markdown, and inserting a companion
  * bracket or backtick while the author types changes the document they meant to write.
@@ -37,12 +36,13 @@ function loadEditorStylesheet(): Promise<void> {
 export async function createMonacoEditor(
   host: HTMLElement,
   initialText: string,
-): Promise<BriefEditorHandle> {
+  ariaLabel: string,
+): Promise<MarkdownEditorHandle> {
   // The editor resolves its worker relative to its own module by default, which the application
   // bundler does not emit. Naming the worker here lets the bundler own it like any other chunk.
   (self as unknown as { MonacoEnvironment?: { getWorker: () => Worker } }).MonacoEnvironment = {
     getWorker: () =>
-      new Worker(new URL('./brief-editor.worker', import.meta.url), {
+      new Worker(new URL('./markdown-editor.worker', import.meta.url), {
         type: 'module',
       }),
   };
@@ -80,7 +80,7 @@ export async function createMonacoEditor(
     value: initialText,
     language: 'markdown',
     theme: 'qbc-light',
-    ariaLabel: BRIEF_SOURCE_LABEL,
+    ariaLabel,
     automaticLayout: true,
     wordWrap: 'on',
     wrappingIndent: 'same',

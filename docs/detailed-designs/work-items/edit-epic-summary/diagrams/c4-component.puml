@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Write an epic summary
+
+Person(consultant, "QBC consultant", "Names an epic and summarises the capability it delivers")
+ContainerDb(db, "Workspace database", "SQL Server", "Stores the summary on the epic")
+
+Container_Boundary(spa, "Web application") {
+  Component(page, "EpicSummaryPageComponent", "Angular component", "Holds the draft parent, name, and summary, and the unsaved-changes question")
+  Component(editor, "DocumentEditorComponent", "Angular component", "The surface the initiative brief is written on, shared with the epic")
+  Component(guard, "unsavedDocumentGuard", "CanDeactivateFn", "Asks the page before a navigation discards the draft")
+  Component(renderer, "renderMarkdown", "Pure function", "Renders the summary for the preview, escaping every value")
+  Component(summary, "summariseMarkdown", "Pure function", "Reduces a summary to its first line of prose for the hierarchy")
+  Component(service, "EpicSummaryService", "Signal service", "Reads one epic and creates or saves its parent, name, and summary")
+}
+
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "EpicsController", "MVC controller", "Exposes the epic resource")
+  Component(command, "SaveEpicCommand", "MediatR request", "Requires a parent, a name, and a summary, and bounds the summary's length")
+  Component(handler, "SaveEpicCommandHandler", "MediatR handler", "Creates or updates the epic beneath its initiative")
+}
+
+Rel(consultant, page, "Writes the epic in", "HTTPS")
+Rel(page, editor, "Reads and rewrites the source through")
+Rel(editor, renderer, "Renders the preview with")
+Rel(guard, page, "Asks whether the navigation may proceed")
+Rel(page, summary, "Summarises a saved epic with")
+Rel(page, service, "Loads, creates, and saves the epic through")
+Rel(service, controller, "Reads, creates, and saves the epic", "JSON/HTTPS")
+Rel(controller, command, "Sends", "MediatR")
+Rel(command, handler, "Is handled by")
+Rel(handler, db, "Writes the epic", "EF Core")
+@enduml

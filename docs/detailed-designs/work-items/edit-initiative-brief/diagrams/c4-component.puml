@@ -9,10 +9,10 @@ ContainerDb(db, "Workspace database", "SQL Server", "Stores the brief as the ini
 Container_Boundary(spa, "Web application") {
   Component(page, "InitiativeBriefPageComponent", "Angular component", "Holds the draft name and brief, the chosen view, and the unsaved-changes question")
   Component(guard, "unsavedBriefGuard", "CanDeactivateFn", "Asks the page before a navigation discards the draft")
-  Component(editor, "BriefEditorComponent", "Angular component", "Carries the markdown source in the code editor")
+  Component(editor, "DocumentEditorComponent", "Angular component", "The shared surface: fields, toolbar, views, and the size report")
   Component(commands, "MARKDOWN_COMMANDS", "Pure transforms", "Rewrites the source and selection for each toolbar command")
   Component(renderer, "renderMarkdown", "Pure function", "Renders the brief for the preview, escaping every value")
-  Component(summary, "summariseBrief", "Pure function", "Reduces a brief to its first line of prose for the hierarchy")
+  Component(summary, "summariseMarkdown", "Pure function", "Reduces a document to its first line of prose for the hierarchy")
   Component(service, "InitiativeBriefService", "Signal service", "Reads one initiative and creates or saves its name and brief")
 }
 

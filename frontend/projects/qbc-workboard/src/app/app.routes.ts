@@ -1,12 +1,18 @@
 import { Routes } from '@angular/router';
 import { unlockedGuard } from './core/unlocked.guard';
-import { unsavedBriefGuard } from './features/initiative-brief/unsaved-brief.guard';
+import { unsavedDocumentGuard } from './features/markdown-document/unsaved-document.guard';
 import { AppShellComponent } from './shell/app-shell.component';
 
 /** The one surface an initiative is written on, whether it is being created or edited. */
 const initiativeEditor = () =>
   import('./features/initiative-brief/initiative-brief-page.component').then(
     (value) => value.InitiativeBriefPageComponent,
+  );
+
+/** The same surface for an epic, which is a name, a parent initiative, and a markdown summary. */
+const epicEditor = () =>
+  import('./features/epic-summary/epic-summary-page.component').then(
+    (value) => value.EpicSummaryPageComponent,
   );
 
 export const routes: Routes = [
@@ -48,16 +54,29 @@ export const routes: Routes = [
         path: 'initiatives/new',
         loadComponent: initiativeEditor,
         title: 'New initiative · QBC Workboard',
-        canDeactivate: [unsavedBriefGuard],
+        canDeactivate: [unsavedDocumentGuard],
       },
       {
         path: 'initiatives/:initiativeId',
         loadComponent: initiativeEditor,
         title: 'Edit initiative · QBC Workboard',
-        canDeactivate: [unsavedBriefGuard],
+        canDeactivate: [unsavedDocumentGuard],
       },
       // The brief used to have a route of its own, before the name moved onto the same page.
       { path: 'initiatives/:initiativeId/brief', redirectTo: 'initiatives/:initiativeId' },
+      // Ahead of the identified route, which would otherwise read "new" as an epic's ID.
+      {
+        path: 'epics/new',
+        loadComponent: epicEditor,
+        title: 'New epic · QBC Workboard',
+        canDeactivate: [unsavedDocumentGuard],
+      },
+      {
+        path: 'epics/:epicId',
+        loadComponent: epicEditor,
+        title: 'Edit epic · QBC Workboard',
+        canDeactivate: [unsavedDocumentGuard],
+      },
       {
         path: 'assistants',
         loadComponent: () =>

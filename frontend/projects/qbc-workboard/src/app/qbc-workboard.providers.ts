@@ -14,6 +14,8 @@ import { BacklogService } from './features/backlog/backlog.service';
 import { SPRINT_EXECUTION_SERVICE } from './features/board/sprint-execution.service.contract';
 import { SprintExecutionService } from './features/board/sprint-execution.service';
 import { HIERARCHY_SERVICE } from './features/hierarchy/hierarchy.service.contract';
+import { EPIC_SUMMARY_SERVICE } from './features/epic-summary/epic-summary.service.contract';
+import { EpicSummaryService } from './features/epic-summary/epic-summary.service';
 import { INITIATIVE_BRIEF_SERVICE } from './features/initiative-brief/initiative-brief.service.contract';
 import { InitiativeBriefService } from './features/initiative-brief/initiative-brief.service';
 import { HierarchyService } from './features/hierarchy/hierarchy.service';
@@ -32,6 +34,7 @@ export function provideQbcWorkboard(): EnvironmentProviders {
     { provide: SESSION_SERVICE, useExisting: SessionService },
     { provide: HIERARCHY_SERVICE, useExisting: HierarchyService },
     { provide: INITIATIVE_BRIEF_SERVICE, useExisting: InitiativeBriefService },
+    { provide: EPIC_SUMMARY_SERVICE, useExisting: EpicSummaryService },
     { provide: ASSISTANT_SERVICE, useExisting: AssistantService },
     { provide: STORY_SERVICE, useExisting: StoryService },
     { provide: STORY_EDITOR_SERVICE, useExisting: StoryEditorService },

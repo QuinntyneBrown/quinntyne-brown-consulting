@@ -170,6 +170,10 @@ export class WorkboardApiMock {
       }
 
       const epicMatch = path.match(/^\/api\/epics\/([^/]+)$/);
+      if (epicMatch && method === 'GET') {
+        const epic = this.state.epics.find((item) => item.id === epicMatch[1]);
+        return epic ? this.json(route, 200, epic) : this.notFound(route, 'Epic');
+      }
       if (epicMatch && method === 'PUT') {
         const id = epicMatch[1];
         if (!this.state.epics.some((item) => item.id === id)) return this.notFound(route, 'Epic');
@@ -584,8 +588,14 @@ export class WorkboardApiMock {
   private epicErrors(draft: EpicDraft): FieldErrors | null {
     return this.errors({
       name: this.blank(draft.name) ? 'Enter a name.' : null,
-      summary: this.blank(draft.summary) ? 'Enter a summary.' : null,
+      summary: this.describeSummary(draft.summary),
     });
+  }
+
+  /** The summary carries the epic's markdown, so it is bounded exactly as a brief is. */
+  private describeSummary(summary: string): string | null {
+    if (this.blank(summary)) return 'Enter a summary.';
+    return summary.length > 100_000 ? 'Summary must be 100,000 characters or fewer.' : null;
   }
 
   private assistantErrors(draft: AssistantDraft): FieldErrors | null {

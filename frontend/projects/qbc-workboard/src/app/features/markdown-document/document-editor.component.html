@@ -1,0 +1,86 @@
+<section
+  class="document-layout"
+  [class.is-split]="view() === 'split'"
+>
+  <div class="document-head">
+    <ng-content select="[fields]" />
+  </div>
+
+  <div class="toolbar">
+    <div
+      class="tool-group"
+      role="group"
+      aria-label="Markdown formatting"
+    >
+      @for (tool of tools; track tool.command) {
+        <qbc-button
+          class="tool"
+          variant="quiet"
+          size="xs"
+          [ariaLabel]="tool.name"
+          (click)="runCommand(tool.command)"
+          >{{ tool.label }}</qbc-button
+        >
+      }
+    </div>
+    <qbc-segmented
+      class="views"
+      ariaLabel="Editor view"
+      [options]="views"
+      [selected]="view()"
+      (selectedChange)="showView($event)"
+    />
+  </div>
+
+  <div
+    class="panes"
+    [class.is-split]="view() === 'split'"
+  >
+    <div
+      class="pane write-pane"
+      [class.is-hidden]="view() === 'preview'"
+    >
+      <p class="pane-label"><span>Markdown</span></p>
+      <app-markdown-editor
+        [initialValue]="value()"
+        [ariaLabel]="sourceLabel()"
+        (ready)="onEditorReady($event)"
+      />
+      @if (isEmpty()) {
+        <div class="empty-hint">
+          <h2>{{ emptyTitle() }}</h2>
+          <p>{{ emptyHint() }}</p>
+          @if (template() !== undefined) {
+            <qbc-button (click)="insertTemplate()">{{ templateLabel() }}</qbc-button>
+          }
+        </div>
+      }
+    </div>
+
+    <div
+      class="pane preview-pane"
+      [class.is-hidden]="view() === 'write'"
+    >
+      <p class="pane-label"><span>Preview</span><span>Updates as you type</span></p>
+      <div class="preview-scroll">
+        @if (isEmpty()) {
+          <p class="preview-empty">Nothing to preview yet. The document is empty.</p>
+        } @else {
+          <article
+            class="document-preview"
+            [innerHTML]="rendered()"
+          ></article>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span
+      role="status"
+      aria-label="Document size"
+      >{{ wordCount().toLocaleString() }} words · {{ characterCount().toLocaleString() }} characters
+      · {{ readingTime() }}</span
+    >
+  </div>
+</section>

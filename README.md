@@ -25,8 +25,8 @@ releases. Requirements and data migrations may change before the first release.
 - Navigate among the sprint board, backlog, initiative hierarchy, and assistant
   directory without a full-page reload.
 - Manage initiatives, epics, stories, checklist tasks, and assistant assignments.
-- Write every initiative as a name and an outcome brief in markdown, on one page,
-  with a formatting toolbar and a live preview.
+- Write every initiative and every epic as a name and a markdown document, on one
+  page, with a formatting toolbar and a live preview.
 - Groom and estimate stories before assigning them to a 14-day sprint.
 - Move active work through To do, In progress, and Done with pointer, keyboard,
   and touch-friendly controls.
@@ -188,14 +188,16 @@ answered with HTTP 429. A four-digit passcode is only ten thousand combinations,
 so that throttle, rather than the passcode itself, is what makes guessing
 impractical.
 
-## Initiatives and their outcome briefs
+## Initiatives, epics, and their markdown
 
-An initiative is a name and an outcome brief: its description, written and read
-as markdown. Both are saved together on one page, so there is one way to write an
-initiative and no plain-text description field anywhere. **New initiative** opens
-that page at `/initiatives/new`, and **Edit** on an initiative opens it at
-`/initiatives/{initiativeId}`. Both are ordinary deep links and can be shared or
-reloaded.
+An initiative is a name and an outcome brief. An epic is a parent initiative, a
+name, and a summary. In both cases the document is markdown, and the record and
+its document are saved together on one page, so there is one way to write each
+and no plain-text field anywhere. **New initiative** opens that page at
+`/initiatives/new` and **Edit** opens it at `/initiatives/{initiativeId}`;
+**＋ Epic** on an initiative opens `/epics/new` with that initiative already
+chosen, and **Edit** on an epic opens `/epics/{epicId}`. All are ordinary deep
+links and can be shared or reloaded.
 
 | Route | Purpose |
 | --- | --- |
@@ -204,22 +206,26 @@ reloaded.
 | `/initiatives` | The initiative and epic hierarchy |
 | `/initiatives/new` | A new initiative: its name and outcome brief |
 | `/initiatives/{initiativeId}` | An existing initiative's name and outcome brief |
+| `/epics/new` | A new epic: its initiative, name, and summary |
+| `/epics/{epicId}` | An existing epic's initiative, name, and summary |
 | `/assistants` | The assistant directory |
 | `/unlock` | The shared passcode screen |
 
-The brief supports headings, emphasis, links, inline and fenced code, bulleted,
-numbered and task lists with nesting, blockquotes, tables, and dividers. Write,
-split, and preview views show the markdown source, both panes, or the rendered
-brief alone, and `Alt+1`, `Alt+2`, and `Alt+3` reach the same three. The status
-bar reports the word and character count. A new initiative opens from the outcome
-brief template, which an emptied brief offers back.
+Both documents support headings, emphasis, links, inline and fenced code,
+bulleted, numbered and task lists with nesting, blockquotes, tables, and
+dividers. Write, split, and preview views show the markdown source, both panes,
+or the rendered document alone, and `Alt+1`, `Alt+2`, and `Alt+3` reach the same
+three. The status bar reports the word and character count. A new initiative
+opens from the outcome brief template, which an emptied brief offers back; an
+epic has no house shape, so a new summary opens empty.
 
-A name and a brief are both required, and a brief is limited to 100,000
-characters. Saving stores them on the initiative, so a renamed initiative is
-renamed everywhere it appears, and the hierarchy shows the brief's first line of
-prose rather than its markdown source. Leaving the page with unsaved markdown asks
-whether to keep editing, discard the changes, or save and continue; nothing about
-the brief is written to browser storage.
+A name and a document are both required, and a document is limited to 100,000
+characters. Saving stores them on the record, so a renamed initiative or epic is
+renamed everywhere it appears, and the hierarchy shows each document's first line
+of prose rather than its markdown source. An epic can be moved to another
+initiative from the same page. Leaving with unsaved markdown asks whether to keep
+editing, discard the changes, or save and continue; nothing is written to browser
+storage.
 
 The markdown source is carried by a bundled code editor that is loaded only when
 the route is opened. A brief is markdown whichever control carries it, so there is

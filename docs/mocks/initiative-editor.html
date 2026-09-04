@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Interaction study for creating and editing an initiative in QBC Workboard: a name and an outcome brief written as markdown.">
-  <title>Edit initiative &middot; QBC Workboard</title>
+  <meta name="description" content="Interaction study for writing an initiative or an epic in QBC Workboard: a name and a markdown document, on one page.">
+  <title>Write a record &middot; QBC Workboard</title>
   <style>
     /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
        subset this page uses is repeated here, so the mock stays one self-contained
@@ -307,6 +307,9 @@
     .editor-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--qbc-panel); }
 
     .brief-head { padding: var(--qbc-s-5) var(--qbc-s-6) var(--qbc-s-4); border-bottom: 1px solid var(--qbc-line); }
+    .parent-field { display: flex; gap: var(--qbc-s-2); align-items: center; margin-bottom: var(--qbc-s-3); }
+    .parent-field label { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); }
+    .parent-select { padding: 5px 9px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-control); background: var(--qbc-panel); color: var(--qbc-ink); font: inherit; font-size: var(--qbc-fs-sm); }
     .eyebrow { margin: 0 0 6px; color: var(--qbc-accent); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-heavy); letter-spacing: var(--qbc-tracking-eyebrow); text-transform: uppercase; }
 
     .title-input {
@@ -604,10 +607,14 @@
         <!-- ---- Writing column -------------------------------------------- -->
         <section class="editor-column" aria-label="Initiative brief">
           <div class="brief-head">
-            <p class="eyebrow">Outcome brief</p>
-            <label class="visually-hidden" for="title">Initiative name</label>
+            <p class="eyebrow" id="eyebrow">Outcome brief</p>
+            <div class="parent-field" id="parent-field" hidden>
+              <label for="parent">Initiative</label>
+              <select class="parent-select" id="parent"></select>
+            </div>
+            <label class="visually-hidden" for="title">Record name</label>
             <input class="title-input" id="title" type="text" placeholder="Name the outcome" autocomplete="off" spellcheck="false">
-            <p class="field-error" id="title-error" hidden>An initiative needs a name before its brief can be saved.</p>
+            <p class="field-error" id="title-error" hidden>This record needs a name before it can be saved.</p>
           </div>
 
           <div class="toolbar">
@@ -644,9 +651,9 @@
               <div id="editor-host">
                 <div class="editor-loading" id="editor-loading">Loading the markdown editor…</div>
                 <div class="empty-hint" id="empty-hint" hidden>
-                  <h2>This brief is empty</h2>
-                  <p>Start from the outcome template, or write the outcome in your own words.</p>
-                  <button class="primary-button" type="button" data-snippet="template">Insert the outcome brief template</button>
+                  <h2 id="empty-title">This brief is empty</h2>
+                  <p id="empty-hint-copy">Start from the outcome template, or write the outcome in your own words.</p>
+                  <button class="primary-button" type="button" id="template-action" data-snippet="template">Insert the outcome brief template</button>
                 </div>
               </div>
             </div>
@@ -671,10 +678,12 @@
 
       <p class="mock-note">
         Interaction study. Nothing is persisted: edits live in this tab only, and
-        reloading restores the sample briefs. An initiative is a name and an outcome
-        brief written as markdown, created and edited on this one page; open it with
-        <code>?new</code> to start one. The editor is Monaco, loaded from a CDN, and
-        a brief cannot be written without it.
+        reloading restores the samples. An initiative is a name and an outcome brief,
+        and an epic is a parent, a name, and a summary; both are markdown, written on
+        this one page. Open it with <code>?new</code>, or with
+        <code>?kind=epic</code> and <code>?kind=epic&amp;new</code>, to see each. The
+        editor is Monaco, loaded from a CDN, and neither document can be written
+        without it.
       </p>
     </div>
   </div>
@@ -697,7 +706,7 @@
   <script>
     /* Sample content only. The three briefs below stand in for what the API
        returns for `Initiative.description`, which this study treats as markdown
-       rather than the single-line text the current form saves. */
+       rather than as the single line of text an earlier form saved. */
     const INITIATIVES = [
       {
         id: "init-planning",
@@ -1287,7 +1296,91 @@
     const emptyHint = el("empty-hint");
     const guardDialog = el("guard-dialog");
 
+    /* The epics below stand in for what the API returns for `Epic.summary`, which this study
+       treats as markdown for the same reason it treats an initiative description as markdown. */
+    const EPICS = [
+      {
+        id: "epic-portal",
+        initiativeId: "init-planning",
+        name: "Client delivery portal",
+        savedAgo: "an hour ago",
+        body: [
+          "# Client delivery portal",
+          "",
+          "Give clients a **calm, shared view** of where their engagement stands, so a",
+          "status call is a conversation rather than a reconstruction.",
+          "",
+          "## Scope",
+          "",
+          "- Outcomes, decisions, and milestones on one page",
+          "  - Every decision carries the date it was taken",
+          "",
+          "## Out of scope",
+          "",
+          "- [ ] Invoicing"
+        ].join("\n")
+      },
+      {
+        id: "epic-playbook",
+        initiativeId: "init-explains",
+        name: "Delivery playbook",
+        savedAgo: "yesterday",
+        body: [
+          "# Delivery playbook",
+          "",
+          "Standardize the small practices that keep consulting work moving.",
+          "",
+          "## Scope",
+          "",
+          "- A written shape for kickoff, weekly review, and handover"
+        ].join("\n")
+      }
+    ];
+
+    /**
+     * The two records this study writes. They differ by the fields that identify them and the words
+     * around the document; everything about writing the markdown itself is the same, which is the
+     * point the study exists to make.
+     */
+    const KINDS = {
+      initiative: {
+        records: INITIATIVES,
+        idPrefix: "init-",
+        eyebrow: "Outcome brief",
+        nameLabel: "Initiative name",
+        namePlaceholder: "Name the outcome",
+        nameError: "An initiative needs a name before its brief can be saved.",
+        newName: "New initiative",
+        saveLabel: "Save initiative",
+        created: "Initiative created",
+        saved: "Initiative saved",
+        emptyTitle: "This brief is empty",
+        emptyHint: "Start from the outcome template, or write the outcome in your own words.",
+        sourceLabel: "Initiative brief, markdown source",
+        template: SNIPPETS.template,
+        hasParent: false
+      },
+      epic: {
+        records: EPICS,
+        idPrefix: "epic-",
+        eyebrow: "Epic summary",
+        nameLabel: "Epic name",
+        namePlaceholder: "Name the capability",
+        nameError: "An epic needs a name before its summary can be saved.",
+        newName: "New epic",
+        saveLabel: "Save epic",
+        created: "Epic created",
+        saved: "Epic saved",
+        emptyTitle: "This summary is empty",
+        emptyHint: "Write what this epic delivers, and what it deliberately leaves out.",
+        sourceLabel: "Epic summary, markdown source",
+        template: null,
+        hasParent: true
+      }
+    };
+
     const state = {
+      kind: "initiative",
       currentId: INITIATIVES[0].id,
       view: "write",
       dirty: false,
@@ -1298,7 +1391,8 @@
     };
 
     let adapter = null;
-    const current = () => INITIATIVES.find((initiative) => initiative.id === state.currentId);
+    const kind = () => KINDS[state.kind];
+    const current = () => kind().records.find((record) => record.id === state.currentId);
 
     const STATUS_LABELS = { active: "Active", planned: "Planned", draft: "Draft" };
 
@@ -1328,12 +1422,12 @@
     };
 
     const renderSaveState = () => {
-      const initiative = current();
+      const record = current();
       saveState.classList.toggle("is-dirty", state.dirty);
       saveState.classList.toggle("is-saved", !state.dirty);
       saveState.textContent = state.dirty
         ? "Unsaved changes"
-        : (initiative.savedAgo === "never" ? "Never saved" : "Saved " + initiative.savedAgo);
+        : (record.savedAgo === "never" ? "Never saved" : "Saved " + record.savedAgo);
       saveButton.disabled = !state.dirty;
       discardButton.disabled = !state.dirty;
     };
@@ -1345,8 +1439,9 @@
     };
 
     const isChanged = () => {
-      const initiative = current();
-      return titleInput.value !== initiative.name || adapter.getValue() !== initiative.body;
+      const record = current();
+      const movedParent = kind().hasParent && el("parent").value !== record.initiativeId;
+      return titleInput.value !== record.name || adapter.getValue() !== record.body || movedParent;
     };
 
     const onContentChanged = () => {
@@ -1405,27 +1500,29 @@
     const save = () => {
       if (!validate({ reveal: true })) {
         titleInput.focus();
-        toast("Give the initiative a name before saving");
+        toast("Give the record a name before saving");
         return false;
       }
 
-      const initiative = current();
-      initiative.name = titleInput.value.trim();
-      initiative.body = adapter.getValue();
-      initiative.savedAgo = "just now";
+      const record = current();
+      record.name = titleInput.value.trim();
+      record.body = adapter.getValue();
+      record.savedAgo = "just now";
+      if (kind().hasParent) { record.initiativeId = el("parent").value; }
 
-      titleInput.value = initiative.name;
-      el("breadcrumb-name").textContent = initiative.name;
+      titleInput.value = record.name;
+      el("breadcrumb-name").textContent = record.name;
       setDirty(false);
-      toast(state.isNew ? "Initiative created" : "Initiative saved");
+      toast(state.isNew ? kind().created : kind().saved);
       state.isNew = false;
       return true;
     };
 
     const discard = () => {
-      const initiative = current();
-      titleInput.value = initiative.name;
-      adapter.setValue(initiative.body);
+      const record = current();
+      titleInput.value = record.name;
+      if (kind().hasParent && record.initiativeId) { el("parent").value = record.initiativeId; }
+      adapter.setValue(record.body);
       validate();
       onContentChanged();
       setDirty(false);
@@ -1462,14 +1559,45 @@
       if (save() && action) { action(); }
     });
 
-    /* ---- Initiative selection ----------------------------------------------- */
-    const loadInitiative = (id) => {
-      state.currentId = id;
-      const initiative = current();
+    /* ---- Record selection ----------------------------------------------------- */
 
-      titleInput.value = initiative.name;
-      el("breadcrumb-name").textContent = initiative.name || "New initiative";
-      adapter.setValue(initiative.body);
+    /** Everything the page says about the record it is holding, in one place. */
+    const applyKind = () => {
+      const shape = kind();
+      el("eyebrow").textContent = shape.eyebrow;
+      titleInput.placeholder = shape.namePlaceholder;
+      titleInput.setAttribute("aria-label", shape.nameLabel);
+      titleError.textContent = shape.nameError;
+      el("save").textContent = shape.saveLabel;
+      el("empty-title").textContent = shape.emptyTitle;
+      el("empty-hint-copy").textContent = shape.emptyHint;
+      el("template-action").hidden = shape.template === null;
+      el("parent-field").hidden = !shape.hasParent;
+      if (shape.hasParent) { renderParents(); }
+    };
+
+    /** An epic belongs to exactly one initiative, and can be moved between them. */
+    const renderParents = () => {
+      const select = el("parent");
+      select.textContent = "";
+      INITIATIVES.forEach((initiative) => {
+        const option = document.createElement("option");
+        option.value = initiative.id;
+        option.textContent = initiative.name || "Untitled initiative";
+        select.appendChild(option);
+      });
+      const record = current();
+      if (record && record.initiativeId) { select.value = record.initiativeId; }
+    };
+
+    const loadRecord = (id) => {
+      state.currentId = id;
+      const record = current();
+
+      applyKind();
+      titleInput.value = record.name;
+      el("breadcrumb-name").textContent = record.name || kind().newName;
+      adapter.setValue(record.body);
 
       validate();
       onContentChanged();
@@ -1480,21 +1608,26 @@
      * A new initiative is the same surface with nothing saved behind it. The hierarchy asks for one
      * with ?new, and an existing one is addressed by its id, so both arrive here the same way.
      */
-    const startNewInitiative = () => {
-      const initiative = {
-        id: "init-" + Date.now(),
+    const startNewRecord = (initiativeId) => {
+      const shape = kind();
+      const record = {
+        id: shape.idPrefix + Date.now(),
         name: "",
         status: "draft",
         owner: "Unassigned",
         epicCount: 0,
         storyCount: 0,
         savedAgo: "never",
-        body: SNIPPETS.template
+        // An initiative opens from its house shape; an epic has none, so it opens empty.
+        body: shape.template === null ? "" : shape.template
       };
-      INITIATIVES.push(initiative);
+      if (shape.hasParent) {
+        record.initiativeId = initiativeId || INITIATIVES[0].id;
+      }
+      shape.records.push(record);
       state.isNew = true;
       state.nameAsked = false;
-      loadInitiative(initiative.id);
+      loadRecord(record.id);
       titleInput.focus();
     };
 
@@ -1507,8 +1640,10 @@
       button.addEventListener("click", insertTemplate);
     });
 
+    el("parent").addEventListener("change", () => setDirty(isChanged()));
+
     titleInput.addEventListener("input", () => {
-      el("breadcrumb-name").textContent = titleInput.value.trim() || "New initiative";
+      el("breadcrumb-name").textContent = titleInput.value.trim() || kind().newName;
       if (titleInput.value.trim()) { validate(); }
       setDirty(isChanged());
     });
@@ -1545,14 +1680,18 @@
 
       adapter.onChange(onContentChanged);
 
-      /* The hierarchy addresses a new initiative with ?new and an existing one with ?id. An id the
-         study does not carry opens the first sample brief, so the link still demonstrates the flow. */
+      /* The hierarchy addresses a new record with ?new and an existing one with ?id, and names
+         which kind with ?kind=epic. An id the study does not carry opens the first sample of that
+         kind, so the link still demonstrates the flow. */
       const route = new URLSearchParams(window.location.search);
+      if (route.get("kind") === "epic") { state.kind = "epic"; }
+      state.currentId = kind().records[0].id;
+
       const requested = route.get("id");
       if (route.has("new")) {
-        startNewInitiative();
+        startNewRecord(route.get("initiativeId"));
       } else {
-        loadInitiative(INITIATIVES.some((item) => item.id === requested) ? requested : state.currentId);
+        loadRecord(kind().records.some((item) => item.id === requested) ? requested : state.currentId);
       }
       setView("write");
     };

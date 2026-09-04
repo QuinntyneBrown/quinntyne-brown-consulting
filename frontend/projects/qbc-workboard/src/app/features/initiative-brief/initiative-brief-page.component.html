@@ -8,13 +8,6 @@
   [title]="title()"
   description="An initiative is a name and the outcome it is pursuing, written as markdown."
 >
-  <qbc-segmented
-    actions
-    ariaLabel="Editor view"
-    [options]="views"
-    [selected]="view()"
-    (selectedChange)="showView($event)"
-  />
   <span
     actions
     class="save-state"
@@ -49,111 +42,28 @@
   <qbc-loading-state>Loading the initiative…</qbc-loading-state>
 }
 
-<section
-  class="brief-layout"
-  [class.is-split]="view() === 'split'"
+<app-document-editor
+  [(value)]="draftBrief"
+  sourceLabel="Initiative brief, markdown source"
+  emptyTitle="This brief is empty"
+  emptyHint="Start from the outcome template, or write the outcome in your own words."
+  [template]="briefTemplate"
+  templateLabel="Insert the outcome brief template"
 >
-  <div class="brief-head">
-    <qbc-text-input
-      label="Initiative name"
-      placeholder="Name the outcome"
-      [required]="true"
-      [full]="true"
-      [value]="draftName()"
-      (valueChange)="draftName.set($event)"
-    />
-  </div>
+  <qbc-text-input
+    fields
+    label="Initiative name"
+    placeholder="Name the outcome"
+    [required]="true"
+    [full]="true"
+    [value]="draftName()"
+    (valueChange)="draftName.set($event)"
+  />
+</app-document-editor>
 
-  <div
-    class="toolbar"
-    role="group"
-    aria-label="Markdown formatting"
-  >
-    @for (tool of tools; track tool.command) {
-      <qbc-button
-        class="tool"
-        variant="quiet"
-        size="xs"
-        [ariaLabel]="tool.name"
-        (click)="runCommand(tool.command)"
-        >{{ tool.label }}</qbc-button
-      >
-    }
-  </div>
-
-  <div
-    class="panes"
-    [class.is-split]="view() === 'split'"
-  >
-    <div
-      class="pane write-pane"
-      [class.is-hidden]="view() === 'preview'"
-    >
-      <p class="pane-label"><span>Markdown</span></p>
-      <app-brief-editor
-        [initialValue]="draftBrief()"
-        (ready)="onEditorReady($event)"
-      />
-      @if (isEmpty()) {
-        <div class="empty-hint">
-          <h2>This brief is empty</h2>
-          <p>Start from the outcome template, or write the outcome in your own words.</p>
-          <qbc-button (click)="insertTemplate()">Insert the outcome brief template</qbc-button>
-        </div>
-      }
-    </div>
-
-    <div
-      class="pane preview-pane"
-      [class.is-hidden]="view() === 'write'"
-    >
-      <p class="pane-label"><span>Preview</span><span>Updates as you type</span></p>
-      <div class="preview-scroll">
-        @if (isEmpty()) {
-          <p class="preview-empty">Nothing to preview yet. The brief is empty.</p>
-        } @else {
-          <article
-            class="brief-preview"
-            [innerHTML]="rendered()"
-          ></article>
-        }
-      </div>
-    </div>
-  </div>
-
-  <div class="status-bar">
-    <span
-      role="status"
-      aria-label="Brief size"
-      >{{ wordCount().toLocaleString() }} words · {{ characterCount().toLocaleString() }} characters
-      · {{ readingTime() }}</span
-    >
-  </div>
-</section>
-
-<qbc-dialog
-  #guardDialog
-  title="Keep your unsaved changes?"
-  subtitle="This brief has changes that have not been saved."
-  size="sm"
-  (closed)="onGuardDismissed()"
->
-  <p body>Choose what should happen to the changes before leaving this brief.</p>
-  <qbc-button
-    actions
-    variant="quiet"
-    (click)="keepEditing()"
-    >Keep editing</qbc-button
-  >
-  <qbc-button
-    actions
-    variant="secondary"
-    (click)="discardAndLeave()"
-    >Discard changes</qbc-button
-  >
-  <qbc-button
-    actions
-    (click)="saveAndLeave()"
-    >Save and continue</qbc-button
-  >
-</qbc-dialog>
+<app-unsaved-changes-dialog
+  (keepEditing)="keepEditing()"
+  (discardChanges)="discardAndLeave()"
+  (saveAndContinue)="saveAndLeave()"
+  (dismissed)="onGuardDismissed()"
+/>

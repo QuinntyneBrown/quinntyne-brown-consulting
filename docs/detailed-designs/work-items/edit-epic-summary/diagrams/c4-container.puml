@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Write an epic summary
+
+Person(consultant, "QBC consultant", "Names an epic and summarises the capability it delivers")
+System_Boundary(workboard, "QBC Workboard") {
+  Container(spa, "Web application", "Angular", "Carries the markdown source, its preview, and the unsaved-changes question")
+  Container(api, "Workboard API", "ASP.NET Core", "Reads one epic and validates the summary on save")
+  ContainerDb(db, "Workspace database", "SQL Server", "Stores the summary on the epic")
+}
+
+Rel(consultant, spa, "Writes the summary in", "HTTPS")
+Rel(spa, api, "Reads one epic", "GET /api/epics/{id}")
+Rel(spa, api, "Creates the epic beneath an initiative", "POST /api/epics")
+Rel(spa, api, "Saves the parent, name, and summary together", "PUT /api/epics/{id}")
+Rel(api, db, "Reads and writes the epic", "EF Core")
+@enduml

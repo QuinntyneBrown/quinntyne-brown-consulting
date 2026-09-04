@@ -3,6 +3,7 @@ import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
 import { HierarchyPage } from '../pages/hierarchy.page';
+import { EpicSummaryPage } from '../pages/epic-summary.page';
 import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { SprintManagerPage } from '../pages/sprint-manager.page';
 import { StoryEditorPage } from '../pages/story-editor.page';
@@ -29,6 +30,7 @@ test('L2-038 · Exercise critical product workflows', { tag: '@smoke' }, async (
   const board = new BoardPage(page);
   const sprints = new SprintManagerPage(page);
   const initiativeEditor = new InitiativeBriefPage(page);
+  const epicEditor = new EpicSummaryPage(page);
 
   // Initiative and epic creation.
   await workboard.navigateTo('initiatives');
@@ -38,7 +40,9 @@ test('L2-038 · Exercise critical product workflows', { tag: '@smoke' }, async (
     'An outcome created through the acceptance boundary.',
   );
   await hierarchy.returnToHierarchy();
-  await hierarchy.createEpic(INITIATIVE, EPIC, 'A coherent slice of delivery capability.');
+  await epicEditor.startNewUnder(INITIATIVE);
+  await epicEditor.writeEpic(EPIC, 'A coherent slice of delivery capability.');
+  await hierarchy.returnToHierarchy();
 
   // Assistant and task assignment.
   await workboard.usePrimaryNavigation('Assistants');

@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Write an epic summary
+
+Person(consultant, "QBC consultant", "Names an epic and summarises the capability it delivers")
+System(workboard, "QBC Workboard", "Keeps each epic's summary with the epic, beneath the initiative it belongs to")
+
+Rel(consultant, workboard, "Writes and reads the epic summary in", "HTTPS")
+@enduml

@@ -1,6 +1,7 @@
 import { test } from '../fixtures/workboard.fixture';
 import { epicWithoutStories, initiativeWithoutEpics } from '../mocks/workspace-scenarios';
 import { BacklogPage } from '../pages/backlog.page';
+import { EpicSummaryPage } from '../pages/epic-summary.page';
 import { HierarchyPage } from '../pages/hierarchy.page';
 import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { WorkboardPage } from '../pages/workboard.page';
@@ -13,7 +14,12 @@ const OUTCOME_BRIEF = [
 ].join('\n');
 const OUTCOME_SUMMARY = 'Make every engagement profitable without eroding quality.';
 const CAPABILITY = 'Engagement margin insight';
-const CAPABILITY_SUMMARY = 'Show where an engagement earns and where it leaks.';
+const CAPABILITY_SUMMARY = [
+  '# Engagement margin insight',
+  '',
+  'Show where an engagement earns and where it leaks.',
+].join('\n');
+const CAPABILITY_PROSE = 'Show where an engagement earns and where it leaks.';
 
 test.beforeEach(async ({ page }) => {
   await new WorkboardPage(page).navigateTo('initiatives');
@@ -106,16 +112,47 @@ test('L2-002 · Protect an initiative with epics', async ({ page }) => {
 
 test('L2-003 · Create an epic', { tag: '@smoke' }, async ({ page }) => {
   const hierarchy = new HierarchyPage(page);
-  await hierarchy.createEpic('Applied AI advantage', CAPABILITY, CAPABILITY_SUMMARY);
+  const editor = new EpicSummaryPage(page);
+  await editor.startNewUnder('Applied AI advantage');
+  await editor.writeEpic(CAPABILITY, CAPABILITY_SUMMARY);
+
+  await hierarchy.returnToHierarchy();
   await new WorkboardPage(page).reload();
   await hierarchy.expectEpicUnder('Applied AI advantage', CAPABILITY);
 });
 
+test('L2-003 · Author the summary only as markdown', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  const editor = new EpicSummaryPage(page);
+
+  // Creating one offers the markdown editor and no plain-text summary anywhere.
+  await editor.startNewUnder('Applied AI advantage');
+  await editor.expectNoPlainSummaryField();
+  await editor.writeEpic(CAPABILITY, CAPABILITY_SUMMARY);
+
+  // Updating one arrives at the same surface.
+  await hierarchy.returnToHierarchy();
+  await editor.openFrom(CAPABILITY);
+  await editor.expectNoPlainSummaryField();
+
+  // The hierarchy reads the summary rather than reprinting its markdown source.
+  await hierarchy.returnToHierarchy();
+  await hierarchy.expectEpicSummarised(CAPABILITY, CAPABILITY_PROSE);
+  await hierarchy.expectEpicNotMarkdownSource(CAPABILITY, '# Engagement margin insight');
+});
+
 test('L2-003 · Update or move an epic', async ({ page }) => {
   const hierarchy = new HierarchyPage(page);
+  const editor = new EpicSummaryPage(page);
   const workboard = new WorkboardPage(page);
-  await hierarchy.updateEpic('Engagement copilot', CAPABILITY, CAPABILITY_SUMMARY);
-  await hierarchy.moveEpic(CAPABILITY, 'Client delivery excellence');
+  await editor.openFrom('Engagement copilot');
+  await editor.renameTo(CAPABILITY);
+  await editor.write(CAPABILITY_SUMMARY);
+  await editor.chooseInitiative('Client delivery excellence');
+  await editor.save();
+  await editor.expectSaved();
+
+  await hierarchy.returnToHierarchy();
   await workboard.reload();
   await hierarchy.expectEpicUnder('Client delivery excellence', CAPABILITY);
 
@@ -163,5 +200,7 @@ test('L2-004 · View hierarchy roll-ups', async ({ page }) => {
 });
 
 test('L2-004 · Add nested work in context', async ({ page }) => {
-  await new HierarchyPage(page).expectInitiativePreselected('Applied AI advantage');
+  const editor = new EpicSummaryPage(page);
+  await editor.startNewUnder('Applied AI advantage');
+  await editor.expectInitiative('Applied AI advantage');
 });

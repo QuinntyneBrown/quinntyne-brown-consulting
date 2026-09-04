@@ -1,0 +1,94 @@
+@startuml
+title UML class structure — Write an epic summary
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #FFFFFF
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+
+package "qbc-workboard — epic summary" {
+  class EpicSummaryPageComponent {
+    +Signal<string|undefined> epicId
+    +Signal<string|undefined> initiativeId
+    +Signal<string> draftInitiativeId
+    +Signal<string> draftName
+    +Signal<string> draftSummary
+    +Signal<EpicDraft> baseline
+    +Signal<boolean> dirty
+    +save() : Promise<boolean>
+    +discard()
+    +confirmLeaving() : Promise<boolean>
+  }
+
+  interface IEpicSummaryService {
+    +Signal<Epic> epic
+    +load(id) : Promise<void>
+    +create(initiativeId, name, summary) : Promise<Epic|null>
+    +save(id, initiativeId, name, summary) : Promise<Epic|null>
+  }
+
+  class EpicSummaryService
+
+  class EpicDraft <<record>> {
+    +string initiativeId
+    +string name
+    +string summary
+  }
+}
+
+package "qbc-workboard — markdown document" {
+  class DocumentEditorComponent {
+    +model<string> value
+    +input sourceLabel
+    +input template
+    +write(markdown)
+  }
+  interface EditsADocument {
+    +confirmLeaving() : Promise<boolean>
+  }
+  class UnsavedChangesDialogComponent
+  class summariseMarkdown <<pure>>
+}
+
+package "@qbc/api" {
+  interface IHierarchyService {
+    +getEpic(id) : Promise<Epic>
+    +createEpic(initiativeId, name, summary) : Promise<Epic>
+    +updateEpic(id, initiativeId, name, summary) : Promise<Epic>
+  }
+  class Epic <<record>> {
+    +string id
+    +string initiativeId
+    +string name
+    +string summary
+  }
+}
+
+package "Qbc.Workboard.Application" {
+  class SaveEpicCommand <<record>> {
+    -int MaxSummaryLength
+    +Validate() : IReadOnlyDictionary
+  }
+}
+
+EpicSummaryPageComponent ..|> EditsADocument
+EpicSummaryPageComponent --> IEpicSummaryService : loads and saves through
+EpicSummaryService ..|> IEpicSummaryService
+EpicSummaryService --> IHierarchyService : reads and writes the epic
+IHierarchyService --> Epic : returns
+EpicSummaryPageComponent --> DocumentEditorComponent : writes the summary through
+EpicSummaryPageComponent --> UnsavedChangesDialogComponent : asks through
+EpicSummaryPageComponent --> EpicDraft : holds as its baseline
+HierarchyPageComponent ..> summariseMarkdown : summarises an epic row with
+IHierarchyService ..> SaveEpicCommand : is validated by
+@enduml

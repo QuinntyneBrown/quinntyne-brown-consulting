@@ -1,0 +1,81 @@
+@startuml
+title UML sequence behaviour — Write an epic summary
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "HierarchyPageComponent" as hierarchy
+  participant "EpicSummaryPageComponent" as page
+  participant "DocumentEditorComponent" as editor
+  participant "EpicSummaryService" as service
+  participant "unsavedDocumentGuard" as guard
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "EpicsController" as controller
+  participant "ProblemDetailsExceptionHandler" as problem
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "SaveEpicCommand" as command
+  participant "SaveEpicCommandHandler" as handler
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "SQL Server workspace database" as db
+end box
+
+alt Start a new epic
+  actor -> hierarchy : Choose ＋ Epic on an initiative
+  hierarchy -> page : Navigate to /epics/new?initiativeId per L2-049
+  page -> page : Open an empty summary parented by that initiative
+else Open an existing epic
+  actor -> hierarchy : Choose Edit on an epic row
+  hierarchy -> page : Navigate to /epics/{id} per L2-049
+  page -> service : Load the epic
+  service -> controller : GET /api/epics/{id}
+  controller -> db : Read the epic
+  db --> controller : Epic
+  controller --> service : Parent, name, and markdown summary
+  service --> page : Saved epic
+end
+page -> editor : Show the markdown source
+
+actor -> page : Apply a formatting command per L2-047
+page -> editor : Rewrite the source and render the preview
+
+actor -> page : Save the epic
+alt The parent, the name, or the summary is blank
+  page --> actor : Name every field that still needs a value per L2-003
+else The epic is complete
+  page -> service : Save the parent, name, and summary together
+  alt The epic is new
+    service -> controller : POST /api/epics
+  else The epic exists
+    service -> controller : PUT /api/epics/{id}
+  end
+  controller -> command : Send through the mediator
+  command -> command : Require a summary and bound its length per L2-003
+  alt The summary is too long
+    command --> problem : Raise a validation failure
+    problem --> service : 400 Problem Details naming the summary
+    service --> actor : Announce the refusal and keep the epic open
+  else The summary is within the bound
+    command -> handler : Handle
+    handler -> db : Write the epic beneath its initiative
+    db --> handler : Committed
+    handler --> service : Saved epic
+    service --> page : Report the epic as saved per L2-048
+    page -> page : Move the baseline and, when new, address the stored epic
+  end
+end
+
+actor -> guard : Navigate away with unsaved changes
+guard -> page : Ask whether the navigation may proceed per L2-048
+page --> actor : Offer keep editing, discard, or save and continue
+@enduml

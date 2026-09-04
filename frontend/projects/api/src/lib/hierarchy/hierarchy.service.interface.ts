@@ -8,6 +8,7 @@ export interface IHierarchyService {
   createInitiative(name: string, description: string): Promise<Initiative>;
   updateInitiative(id: string, name: string, description: string): Promise<Initiative>;
   deleteInitiative(id: string): Promise<void>;
+  getEpic(id: string): Promise<Epic>;
   createEpic(initiativeId: string, name: string, summary: string): Promise<Epic>;
   updateEpic(id: string, initiativeId: string, name: string, summary: string): Promise<Epic>;
   deleteEpic(id: string): Promise<void>;

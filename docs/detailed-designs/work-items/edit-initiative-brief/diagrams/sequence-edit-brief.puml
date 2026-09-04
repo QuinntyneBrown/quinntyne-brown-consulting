@@ -18,7 +18,7 @@ actor "QBC consultant" as actor
 box "Frontend — Angular web application" #E0F2FE
   participant "HierarchyPageComponent" as hierarchy
   participant "InitiativeBriefPageComponent" as page
-  participant "BriefEditorComponent" as editor
+  participant "DocumentEditorComponent" as editor
   participant "MARKDOWN_COMMANDS" as commands
   participant "renderMarkdown" as renderer
   participant "InitiativeBriefService" as service
@@ -54,7 +54,7 @@ page -> editor : Show the markdown source
 alt The code editor cannot be loaded
   editor --> actor : Report the editor as unavailable per L2-047
 else The code editor is ready
-  editor --> page : Editor handle
+  editor --> page : Editor ready
 end
 
 actor -> page : Apply a formatting command per L2-047

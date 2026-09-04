@@ -27,6 +27,15 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   returns a signed session credential that authorizes every API request for
   seven days, repeated attempts from one address are throttled, and the passcode
   hash and signing key are created with the database rather than configured.
+- The same page for writing an epic: its parent initiative, its name, and its
+  summary, always markdown, saved together. **＋ Epic** on an initiative opens it
+  at `/epics/new` with that initiative already chosen, and **Edit** on an epic row
+  opens it at `/epics/{id}`; the modal with its plain summary box is gone, so an
+  epic has one way to be written and no plain-text field anywhere. An epic can be
+  moved to another initiative from the same page, and the hierarchy row shows the
+  summary's first line of prose rather than its markdown source. An epic has no
+  house shape, so a new summary opens empty rather than from a template. The API
+  now bounds a summary at 100,000 characters, as it already bounded a brief.
 - One page for writing an initiative: its name and its outcome brief, always
   markdown, saved together. **New initiative** opens it at `/initiatives/new` and
   **Edit** opens an existing one at `/initiatives/{id}`; there is no plain-text
@@ -46,10 +55,11 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   field.
 - An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
   showing the entry, error, lockout, and unlocked states offline.
-- An interaction study for writing an initiative at
+- An interaction study for writing a record at
   `docs/mocks/initiative-editor.html`. A Monaco editor carries the outcome brief
   beside the initiative name, with a markdown toolbar, live preview, and an
-  unsaved-changes guard; `?new` starts an initiative on the same page.
+  unsaved-changes guard; `?new` starts an initiative on the same page, and
+  `?kind=epic` writes an epic there, parent and all.
 - A deployed-build report. `GET /api/version` names the backend artifact, the
   Angular bundle carries its own version and commit, and the workspace shows the
   two identities separately in the sidebar footer and on the passcode screen.

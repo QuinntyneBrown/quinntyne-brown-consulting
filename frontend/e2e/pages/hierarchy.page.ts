@@ -22,43 +22,13 @@ export class HierarchyPage {
     await expect(this.initiative(name)).not.toContainText(source);
   }
 
-  async createEpic(initiativeName: string, epicName: string, summary: string): Promise<void> {
-    const initiative = this.initiative(initiativeName);
-    await initiative.getByRole('button', { name: /Epic/ }).click();
-    const dialog = this.page.getByRole('dialog', { name: 'New epic' });
-    await dialog.getByLabel('Name *').fill(epicName);
-    await dialog.getByLabel('Summary *').fill(summary);
-    await dialog.getByRole('button', { name: 'Save epic' }).click();
-    await expect(initiative.getByText(epicName, { exact: true })).toBeVisible();
+  /** A row has one line for a whole summary, so it carries the summary's first line of prose. */
+  async expectEpicSummarised(epicName: string, summary: string): Promise<void> {
+    await expect(this.epic(epicName)).toContainText(summary);
   }
 
-  /** Adding an epic in the context of an initiative arrives with that initiative chosen. */
-  async expectInitiativePreselected(initiativeName: string): Promise<void> {
-    await this.initiative(initiativeName).getByRole('button', { name: /Epic/ }).click();
-    const dialog = this.page.getByRole('dialog', { name: 'New epic' });
-    await expect(dialog.getByLabel('Initiative *').locator('option:checked')).toHaveText(
-      initiativeName,
-    );
-    await dialog.getByRole('button', { name: 'Cancel' }).click();
-  }
-
-  async updateEpic(epicName: string, newName: string, newSummary: string): Promise<void> {
-    await this.epic(epicName).getByRole('button', { name: 'Edit', exact: true }).click();
-    const dialog = this.page.getByRole('dialog', { name: 'Edit epic' });
-    await dialog.getByLabel('Name *').fill(newName);
-    await dialog.getByLabel('Summary *').fill(newSummary);
-    await dialog.getByRole('button', { name: 'Save epic' }).click();
-    await expect(this.epic(newName)).toContainText(newSummary);
-  }
-
-  async moveEpic(epicName: string, initiativeName: string): Promise<void> {
-    await this.epic(epicName).getByRole('button', { name: 'Edit', exact: true }).click();
-    const dialog = this.page.getByRole('dialog', { name: 'Edit epic' });
-    await dialog.getByLabel('Initiative *').selectOption({ label: initiativeName });
-    await dialog.getByRole('button', { name: 'Save epic' }).click();
-    await expect(
-      this.initiative(initiativeName).getByText(epicName, { exact: true }),
-    ).toBeVisible();
+  async expectEpicNotMarkdownSource(epicName: string, source: string): Promise<void> {
+    await expect(this.epic(epicName)).not.toContainText(source);
   }
 
   async deleteInitiative(name: string): Promise<void> {

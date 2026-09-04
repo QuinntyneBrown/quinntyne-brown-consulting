@@ -34,20 +34,6 @@ export class HierarchyService implements IHierarchyService {
     return this.mutate(this.backendService.deleteInitiative(id), 'Initiative deleted.');
   }
 
-  async saveEpic(
-    id: string | null,
-    initiativeId: string,
-    name: string,
-    summary: string,
-  ): Promise<boolean> {
-    return this.mutate(
-      id
-        ? this.backendService.updateEpic(id, initiativeId, name, summary)
-        : this.backendService.createEpic(initiativeId, name, summary),
-      'Epic saved.',
-    );
-  }
-
   async deleteEpic(id: string): Promise<boolean> {
     return this.mutate(this.backendService.deleteEpic(id), 'Epic deleted.');
   }
