@@ -43,7 +43,7 @@ Initialize representative local data and start the product:
 
 ```powershell
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database initialize --seed
-pwsh ./eng/Start-Workboard.ps1
+pwsh ./eng/scripts/Start-Workboard.ps1
 ```
 
 Never point an acceptance test or `database reset --force` command at a database

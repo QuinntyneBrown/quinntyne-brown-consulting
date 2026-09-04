@@ -135,7 +135,7 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 - A back control is a link again. The initiative and epic editors each carried a
   raw anchor, which the component-boundary gate forbids; `qbc-back-link` wraps it
   the way the skip link already wraps its own.
-- `eng/Start-Workboard.ps1` starts the workspace again. It waited on
+- `eng/scripts/Start-Workboard.ps1` starts the workspace again. It waited on
   `/api/workspace`, which the passcode gate answers `401`, and PowerShell threw
   on that status instead of reporting it, so the wait never ended. It also ran
   `ng serve` directly rather than through `scripts/build-app.mjs`, leaving

@@ -119,7 +119,7 @@ dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- d
 Start the API and Angular development server:
 
 ```powershell
-pwsh ./eng/Start-Workboard.ps1
+pwsh ./eng/scripts/Start-Workboard.ps1
 ```
 
 The launcher waits for both servers, opens the application, writes logs under

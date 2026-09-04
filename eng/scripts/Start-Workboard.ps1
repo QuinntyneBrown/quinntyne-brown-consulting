@@ -36,10 +36,10 @@
     How long to wait for each server to answer. Default 240.
 
 .EXAMPLE
-    pwsh ./eng/Start-Workboard.ps1
+    pwsh ./eng/scripts/Start-Workboard.ps1
 
 .EXAMPLE
-    pwsh ./eng/Start-Workboard.ps1 -BackendPort 5100 -FrontendPort 4300 -NoBrowser
+    pwsh ./eng/scripts/Start-Workboard.ps1 -BackendPort 5100 -FrontendPort 4300 -NoBrowser
 #>
 [CmdletBinding()]
 param(
@@ -55,10 +55,11 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = Split-Path -Parent $PSScriptRoot
+$engRoot = Split-Path -Parent $PSScriptRoot
+$repoRoot = Split-Path -Parent $engRoot
 $apiProject = Join-Path $repoRoot 'backend/src/Qbc.Workboard.Api/Qbc.Workboard.Api.csproj'
 $frontendDir = Join-Path $repoRoot 'frontend'
-$logDir = Join-Path $PSScriptRoot 'logs'
+$logDir = Join-Path $engRoot 'logs'
 
 $backendUrl = "http://localhost:$BackendPort"
 $frontendUrl = "http://localhost:$FrontendPort"

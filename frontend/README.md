@@ -44,7 +44,7 @@ npm start
 
 The development server listens on `http://localhost:4200` and proxies `/api`
 and `/openapi` to `http://localhost:5050`. Start the backend separately or use
-`pwsh ./eng/Start-Workboard.ps1` from the repository root.
+`pwsh ./eng/scripts/Start-Workboard.ps1` from the repository root.
 
 ## Build
 
