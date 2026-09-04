@@ -29,6 +29,10 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   hash and signing key are created with the database rather than configured.
 - An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
   showing the entry, error, lockout, and unlocked states offline.
+- An interaction study for editing an initiative outcome brief as markdown at
+  `docs/mocks/initiative-editor.html`. A Monaco editor carries the brief with a
+  markdown toolbar, snippet completions, an outline, live preview, and an
+  unsaved-changes guard, and falls back to a plain markdown text area offline.
 - A deployed-build report. `GET /api/version` names the backend artifact, the
   Angular bundle carries its own version and commit, and the workspace shows the
   two identities separately in the sidebar footer and on the passcode screen.

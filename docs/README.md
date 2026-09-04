@@ -46,6 +46,15 @@ and five rendered PNG diagrams.
   study behind the passcode gate. It carries its own copy of the design tokens
   and accepts any four digits; the working gate is described in
   [Gate workspace access](detailed-designs/platform/gate-workspace-access/).
+- [`mocks/initiative-editor.html`](mocks/initiative-editor.html) is the
+  self-contained interaction study for editing an initiative outcome brief as
+  markdown in a Monaco editor. It covers the write, split, and preview views, a
+  markdown toolbar, snippet completions, an outline, save and discard with an
+  unsaved-changes guard, and the empty brief. It proposes treating the
+  initiative description in `L2-002` as markdown rather than the single line of
+  text the current form saves, so it is a study rather than a committed change.
+  Monaco loads from a CDN; offline the page falls back to a plain markdown text
+  area with the same toolbar, shortcuts, and preview.
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and
