@@ -29,7 +29,7 @@
         <qbc-initiative-card
           [title]="initiative.name"
           [description]="summariseBrief(initiative.description)"
-          [summary]="initiative.epicCount + ' epics · ' + initiative.storyCount + ' stories'"
+          [summary]="rollUp(initiative)"
         >
           <qbc-button
             actions
