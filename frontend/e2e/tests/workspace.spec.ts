@@ -124,6 +124,20 @@ test('responsive workflows do not overflow supported viewports', async ({ page, 
   }
 });
 
+test('a tablet in landscape pins the top bar and keeps card actions readable', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'Viewport matrix runs once in Chromium.');
+  const workboard = new WorkboardPage(page);
+  // An iPad in landscape: wide enough to keep the three board columns, short enough that
+  // the board scrolls away from the top bar.
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await workboard.navigateTo('board');
+  await new BoardPage(page).expectStoryActionsOnOneLine();
+  await workboard.expectTopbarPinnedWhileScrolling();
+});
+
 test('a dialog keeps its actions on screen on a phone', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'Viewport matrix runs once in Chromium.');
   const workboard = new WorkboardPage(page);
