@@ -55,6 +55,11 @@ export class WorkboardPage {
     await this.page.evaluate(() => window.scrollTo(0, 0));
   }
 
+  async expectBuildVersions(...labels: string[]): Promise<void> {
+    const sidebar = this.page.locator('qbc-sidebar');
+    for (const label of labels) await expect(sidebar).toContainText(label);
+  }
+
   async expectNoHorizontalOverflow(): Promise<void> {
     const overflow = await this.page
       .locator('html')

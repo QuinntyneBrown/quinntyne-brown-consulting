@@ -14,8 +14,7 @@
     "test:components": "ng test components --watch=false",
     "validate:components": "node scripts/validate-component-boundary.mjs",
     "typecheck:e2e": "tsc --project tsconfig.e2e.json",
-    "test:e2e": "playwright test",
-    "test:e2e:version": "playwright test --config playwright.version.config.ts"
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@angular/common": "21.2.22",

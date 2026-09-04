@@ -32,8 +32,9 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 - A deployed-build report. `GET /api/version` names the backend artifact, the
   Angular bundle carries its own version and commit, and the workspace shows the
   two identities separately in the sidebar footer and on the passcode screen.
-- Published-application browser coverage verifies both identities against the
-  real API and bundle metadata without mocked version data.
+- Isolated browser coverage verifies both labels with a test-only backend
+  response and the identity compiled into the Angular test build; production
+  continues to read only artifact-derived identities.
 
 ### Changed
 

@@ -98,20 +98,16 @@ npm run test:e2e
 ```
 
 The command starts the Angular server and runs the Page Object Model suite in
-Chromium, Firefox, and WebKit. A Playwright fixture intercepts the work-management
-API requests with a fresh, stateful mock for each test, so reload and CRUD
-scenarios remain deterministic without starting .NET or creating a test database.
-`/api/version` is deliberately excluded; build identities are never mocked.
+Chromium, Firefox, and WebKit. A Playwright fixture intercepts every backend API
+request with a fresh, stateful mock for each test, so reload and CRUD scenarios
+remain deterministic without starting .NET or creating a test database. The
+mocked backend version is test-only; the frontend identity still comes from the
+metadata compiled into the Angular development build.
 
-Every mocked work-management route has an explicit handler. An unhandled request
-inside that boundary fails the test, making contract growth visible instead of
-silently reaching a developer backend.
-
-CI also publishes the single-host application and runs
-`npm run test:e2e:version` against that artifact and a real SQL Server database.
-That dedicated Chromium scenario verifies the real backend response and the
-frontend metadata compiled into the served bundle, both before and after a real
-passcode unlock.
+Every backend route has an explicit mock handler. An unhandled API request fails
+the test, making contract growth visible instead of silently reaching a developer
+backend. Mock and fixture files are excluded from the application TypeScript
+configuration and are never included in a production bundle.
 
 ## Conventions
 
