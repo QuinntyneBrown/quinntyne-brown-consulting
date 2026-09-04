@@ -1,0 +1,48 @@
+<div
+  class="zone"
+  [class.is-dragging]="isDragging()"
+  [class.is-disabled]="disabled()"
+  (dragenter)="dragEnter($event)"
+  (dragover)="dragOver($event)"
+  (dragleave)="dragLeave($event)"
+  (drop)="drop($event)"
+>
+  <span
+    class="mark"
+    aria-hidden="true"
+    >&#8681;</span
+  >
+  <h3 class="heading">{{ heading() }}</h3>
+  <button
+    class="choose"
+    type="button"
+    [disabled]="disabled()"
+    [attr.aria-describedby]="hint() ? controlId + '-hint' : null"
+    (click)="choose()"
+  >
+    {{ chooseLabel() }}
+  </button>
+  @if (hint()) {
+    <p
+      class="hint"
+      [id]="controlId + '-hint'"
+    >
+      {{ hint() }}
+    </p>
+  }
+  <label
+    class="visually-hidden"
+    [for]="controlId"
+    >{{ inputLabel() }}</label
+  >
+  <input
+    #field
+    class="visually-hidden"
+    type="file"
+    multiple
+    data-testid="file-drop-input"
+    [id]="controlId"
+    [disabled]="disabled()"
+    (change)="selected(field)"
+  />
+</div>

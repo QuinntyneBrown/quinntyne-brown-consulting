@@ -18,6 +18,7 @@ export function createWorkboardApiState(): WorkboardApiState {
     passcode: '2846',
     deployment: { version: '1.4.2', commit: 'a1b2c3d4e5f60718293a4b5c6d7e8f9012345678' },
     fault: createWorkboardApiFault(),
+    attachments: [],
     assistants: [
       {
         id: mayaId,

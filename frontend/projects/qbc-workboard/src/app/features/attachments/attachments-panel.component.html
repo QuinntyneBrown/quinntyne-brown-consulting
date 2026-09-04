@@ -1,0 +1,71 @@
+<section
+  class="attachments"
+  data-testid="attachments-panel"
+>
+  <qbc-section-label
+    heading="Attached files"
+    [hint]="attachments().length ? attachments().length + ' attached' : ''"
+  />
+
+  <qbc-file-drop
+    heading="Drop files here"
+    [hint]="hint"
+    chooseLabel="Choose files"
+    (filesSelected)="attach($event)"
+  />
+
+  @if (loadingState() === 'loading') {
+    <qbc-loading-state>Reading the attached files…</qbc-loading-state>
+  } @else if (attachments().length === 0) {
+    <qbc-empty-state
+      title="No files attached yet"
+      subtitle="Drop the brief, the diagram, or the export that explains this work, and whoever picks it up next will find it here."
+    />
+  } @else {
+    <ul
+      class="file-list"
+      data-testid="attachment-list"
+    >
+      @for (attachment of attachments(); track attachment.id) {
+        <li
+          class="file-row"
+          [attr.data-file-name]="attachment.fileName"
+        >
+          <qbc-pill
+            class="mark"
+            tone="muted"
+            [label]="extension(attachment.fileName)"
+          />
+          <div class="file-main">
+            <strong class="file-name">{{ attachment.fileName }}</strong>
+            <p class="file-meta">
+              <span class="file-size">{{ size(attachment.sizeInBytes) }}</span>
+              @if (attachment.uploadedBy) {
+                <span>· {{ attachment.uploadedBy }}</span>
+              }
+              <span>· {{ attachedOn(attachment.uploadedOn) }}</span>
+            </p>
+          </div>
+          <div class="row-actions">
+            <qbc-button
+              variant="quiet"
+              size="xs"
+              [ariaLabel]="'Download ' + attachment.fileName"
+              (click)="download(attachment)"
+              >Download</qbc-button
+            >
+            <qbc-button
+              variant="quiet"
+              size="xs"
+              [ariaLabel]="'Remove ' + attachment.fileName"
+              (click)="remove(attachment)"
+              >Remove</qbc-button
+            >
+          </div>
+        </li>
+      }
+    </ul>
+  }
+
+  <qbc-confirm-dialog />
+</section>

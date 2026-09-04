@@ -117,6 +117,7 @@ the suite. Specifications are grouped by requirement:
 | `stories.spec.ts`          | `L2-005` – `L2-008`                 |
 | `assistants.spec.ts`       | `L2-009`, `L2-010`                  |
 | `assistant-hours.spec.ts`  | `L2-050`, `L2-051`                  |
+| `attachments.spec.ts`      | `L2-053`                            |
 | `backlog.spec.ts`          | `L2-011`, `L2-012`                  |
 | `sprint-planning.spec.ts`  | `L2-013` – `L2-016`                 |
 | `board.spec.ts`            | `L2-017` – `L2-020`                 |

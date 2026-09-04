@@ -5,6 +5,7 @@ import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
 import { EpicSummaryPage } from '../pages/epic-summary.page';
+import { AttachmentsPage } from '../pages/attachments.page';
 import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { SprintManagerPage } from '../pages/sprint-manager.page';
 import { WorkboardPage, type WorkspaceRoute } from '../pages/workboard.page';
@@ -143,6 +144,25 @@ test('L2-040 · Verify accessibility on the epic summary', async ({ page }) => {
   await epic.leaveForInitiatives();
 
   await epic.openFrom('Client delivery portal');
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
+});
+
+test('L2-040 · Verify accessibility on work item attachments', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  const accessibility = new AccessibilityPage(page);
+  const brief = new InitiativeBriefPage(page);
+  const attachments = new AttachmentsPage(page);
+
+  await workboard.navigateTo('initiatives');
+  await brief.openFrom('Client delivery excellence');
+
+  // The panel is scanned empty, holding a file, and with its removal question open, because each
+  // state introduces controls the others do not have.
+  await attachments.expectEmptyState();
+  await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
+
+  await attachments.attach({ name: 'planning-outcome-brief.pdf' });
+  await attachments.expectFiles('planning-outcome-brief.pdf');
   await accessibility.expectNoSeriousViolationsOutside('app-markdown-editor');
 });
 

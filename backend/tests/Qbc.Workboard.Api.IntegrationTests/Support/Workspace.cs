@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -201,6 +202,54 @@ public sealed class Workspace
         var completed = await CompleteAsync(sprint.Id);
         return (completed, await ReadStoryAsync(story.Id));
     }
+
+    /// <summary>Attaches a file to a work item and returns the record the API answered with.</summary>
+    public async Task<AttachmentDto> AttachFileAsync(
+        WorkItemKind kind,
+        Guid workItemId,
+        string fileName = "planning-outcome-brief.pdf",
+        byte[]? content = null,
+        string contentType = "application/pdf",
+        Guid? assistantId = null)
+    {
+        var response = await AttachAsync(kind, workItemId, fileName, content, contentType, assistantId);
+        return await ReadAsync<AttachmentDto>(response);
+    }
+
+    /// <summary>
+    /// The same upload, left unread, for the scenarios that are about the refusal rather than
+    /// the record.
+    /// </summary>
+    public Task<HttpResponseMessage> AttachAsync(
+        WorkItemKind kind,
+        Guid workItemId,
+        string fileName = "planning-outcome-brief.pdf",
+        byte[]? content = null,
+        string contentType = "application/pdf",
+        Guid? assistantId = null)
+    {
+        var file = new ByteArrayContent(content ?? [0x25, 0x50, 0x44, 0x46]);
+        file.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+        var form = new MultipartFormDataContent
+        {
+            { file, "file", fileName },
+            { new StringContent(kind.ToString()), "workItemKind" },
+            { new StringContent(workItemId.ToString()), "workItemId" },
+        };
+
+        if (assistantId is not null)
+        {
+            form.Add(new StringContent(assistantId.Value.ToString()), "uploadedByAssistantId");
+        }
+
+        return _client.PostAsync("/api/attachments", form);
+    }
+
+    public async Task<IReadOnlyList<AttachmentDto>> ReadAttachmentsAsync(WorkItemKind kind, Guid workItemId) =>
+        (await _client.GetFromJsonAsync<IReadOnlyList<AttachmentDto>>(
+            $"/api/attachments?workItemKind={kind}&workItemId={workItemId}",
+            Json))!;
 
     public async Task<InitiativeDto> ReadInitiativeAsync(Guid initiativeId) =>
         (await _client.GetFromJsonAsync<InitiativeDto>($"/api/initiatives/{initiativeId}", Json))!;

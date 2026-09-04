@@ -1,5 +1,6 @@
 import type {
   Assistant,
+  Attachment,
   DeploymentVersion,
   Epic,
   Initiative,
@@ -13,6 +14,7 @@ export interface WorkboardApiState {
   passcode: string;
   readonly deployment: DeploymentVersion;
   readonly assistants: Assistant[];
+  readonly attachments: Attachment[];
   readonly initiatives: Initiative[];
   readonly epics: Epic[];
   readonly sprints: Sprint[];

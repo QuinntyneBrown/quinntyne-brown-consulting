@@ -1,5 +1,6 @@
 import { test } from '../fixtures/workboard.fixture';
 import { AssistantHoursPage } from '../pages/assistant-hours.page';
+import { AttachmentsPage } from '../pages/attachments.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
 import { StoryEditorPage } from '../pages/story-editor.page';
@@ -77,6 +78,16 @@ for (const width of [320, 390, 768, 1024, 1440]) {
       const hours = new AssistantHoursPage(page);
       await hours.openFromDirectory('Noah Williams');
       await hours.expandStory('Publish a concise engagement health summary');
+      await workboard.expectNoHorizontalOverflow();
+      await workboard.expectContentWithinViewport();
+
+      // An attachment row carries a badge, a file name that can be long, and two actions,
+      // so it is checked holding a file rather than empty.
+      await workboard.navigateTo('backlog');
+      await new BacklogPage(page).openStory('Publish a concise engagement health summary');
+      const attachments = new AttachmentsPage(page);
+      await attachments.attach({ name: 'a-rather-long-attachment-file-name.pdf' });
+      await attachments.expectFiles('a-rather-long-attachment-file-name.pdf');
       await workboard.expectNoHorizontalOverflow();
       await workboard.expectContentWithinViewport();
     });

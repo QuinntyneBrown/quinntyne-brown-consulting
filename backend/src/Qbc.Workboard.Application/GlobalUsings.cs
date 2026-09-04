@@ -5,6 +5,8 @@ global using Qbc.Workboard.Application.Common.Persistence;
 global using Qbc.Workboard.Application.Features.Access.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Dtos;
 global using Qbc.Workboard.Application.Features.Assistants.Projections;
+global using Qbc.Workboard.Application.Features.Attachments.Dtos;
+global using Qbc.Workboard.Application.Features.Attachments.Projections;
 global using Qbc.Workboard.Application.Features.Deployment.Dtos;
 global using Qbc.Workboard.Application.Features.Hierarchy.Dtos;
 global using Qbc.Workboard.Application.Features.Sprints.Dtos;

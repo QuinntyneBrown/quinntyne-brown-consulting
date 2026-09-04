@@ -3,7 +3,7 @@
 ## Purpose
 
 This document records differences between the current QBC Workboard
-implementation and the ten existing feature designs under
+implementation and the fifteen existing feature designs under
 [`docs/detailed-designs`](detailed-designs/). It also defines the work needed to
 make the implementation, detailed-design prose, PlantUML sources, rendered
 diagrams, and acceptance evidence describe the same system.
@@ -196,6 +196,35 @@ expect the opposite:
 deleting an assistant must be refused while any of their hours remain. Without
 it the delete meets the foreign key and answers `500` where `L2-050` requires
 `409`.
+
+### Work items — attach files to a work item
+
+The [attachments design](detailed-designs/work-items/attach-files-to-a-work-item/README.md)
+was written alongside the implementation, so its prose, class structure, and
+sequence name the types that exist. The two are aligned today.
+
+Three decisions in it are worth restating, because a later reader could
+reasonably expect the opposite:
+
+- The parent is three nullable foreign keys rather than a `WorkItemKind` column
+  beside a loose ID. A kind and a loose ID cannot be constrained, so deleting a
+  work item would leave its attachments as rows nothing could reach. Three
+  cascades into one table are usually where SQL Server refuses, but an epic
+  restricts upward to its initiative and a story to its epic, so no second path
+  to `Attachment` exists.
+- The bytes live in the workspace database, in their own table. The deployment
+  has one durable store: App Service replaces its filesystem on every release,
+  and the free-tier plan provisions no storage account. The second table is what
+  keeps a listing from reading the bytes it does not need.
+- `GetAttachmentsQueryHandler` orders after materialising. EF Core's SQLite
+  provider cannot translate `ORDER BY` over a `DateTimeOffset`, so a
+  database-side ordering would be correct in production and a `500` under test.
+
+`qbc-file-drop` is an Angular extension rather than a catalog component. The
+application templates may not declare a native `<input>`, so the file picker had
+to move into `@qbc/components`; registering it outside the catalog keeps the
+design system's native component set and this library in step without adding a
+web component the catalog does not need.
 
 ### Planning — groom the backlog
 
@@ -391,7 +420,7 @@ already copied from [`docs/specs`](specs/).
 ### Phase 3 — regenerate and verify design artifacts
 
 1. Render every changed `.puml` source to its sibling `.png`.
-2. Verify that all 70 PlantUML sources have rendered PNG siblings.
+2. Verify that all 75 PlantUML sources have rendered PNG siblings.
 3. Verify that every README image link resolves.
 4. Verify that C4 sources retain C4 macros and contain no raw replacement
    shapes or arrows.

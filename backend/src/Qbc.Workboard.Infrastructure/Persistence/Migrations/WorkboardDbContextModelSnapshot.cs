@@ -49,6 +49,65 @@ namespace Qbc.Workboard.Infrastructure.Persistence.Migrations
                     b.ToTable("Assistant");
                 });
 
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.Attachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EpicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("InitiativeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("SizeInBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid?>("StoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UploadedByAssistantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UploadedOn")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EpicId");
+
+                    b.HasIndex("InitiativeId");
+
+                    b.HasIndex("StoryId");
+
+                    b.HasIndex("UploadedByAssistantId");
+
+                    b.ToTable("Attachment", (string)null);
+                });
+
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.AttachmentContent", b =>
+                {
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Bytes")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("AttachmentId");
+
+                    b.ToTable("AttachmentContent", (string)null);
+                });
+
             modelBuilder.Entity("Qbc.Workboard.Domain.Entities.Epic", b =>
                 {
                     b.Property<Guid>("Id")
@@ -275,6 +334,38 @@ namespace Qbc.Workboard.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WorkspaceAccess");
+                });
+
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.Attachment", b =>
+                {
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Epic", null)
+                        .WithMany()
+                        .HasForeignKey("EpicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Initiative", null)
+                        .WithMany()
+                        .HasForeignKey("InitiativeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Story", null)
+                        .WithMany()
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Assistant", null)
+                        .WithMany()
+                        .HasForeignKey("UploadedByAssistantId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.AttachmentContent", b =>
+                {
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Attachment", null)
+                        .WithOne()
+                        .HasForeignKey("Qbc.Workboard.Domain.Entities.AttachmentContent", "AttachmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Qbc.Workboard.Domain.Entities.Epic", b =>

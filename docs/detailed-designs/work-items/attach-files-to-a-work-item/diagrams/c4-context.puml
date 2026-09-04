@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Attach files to a work item
+
+Person(consultant, "QBC consultant", "Attaches the files that explain a piece of work and reads them back")
+System(workboard, "QBC Workboard", "Holds a file against one work item and returns it on request")
+
+Rel(consultant, workboard, "Attaches, downloads, and removes files using", "HTTPS")
+@enduml

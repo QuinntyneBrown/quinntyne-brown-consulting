@@ -1,0 +1,53 @@
+@startuml
+title Class structure — Attach files to a work item
+
+enum WorkItemKind {
+  Initiative
+  Epic
+  Story
+}
+
+class Attachment {
+  +Guid Id
+  +Guid? InitiativeId
+  +Guid? EpicId
+  +Guid? StoryId
+  +string FileName
+  +string ContentType
+  +long SizeInBytes
+  +Guid? UploadedByAssistantId
+  +DateTimeOffset UploadedOn
+  +WorkItemKind Kind
+  +Guid WorkItemId
+}
+
+class AttachmentContent {
+  +Guid AttachmentId
+  +byte[] Bytes
+}
+
+class Initiative
+class Epic
+class Story
+class Assistant
+
+Attachment "0..1" -- "1" AttachmentContent : holds >
+Initiative "1" o-- "0..*" Attachment : cascades >
+Epic "1" o-- "0..*" Attachment : cascades >
+Story "1" o-- "0..*" Attachment : cascades >
+Assistant "0..1" <.. "0..*" Attachment : attributed to >
+Attachment ..> WorkItemKind : reads back as >
+
+note bottom of Attachment
+  Exactly one of the three keys is set. The parent is
+  three real foreign keys rather than a kind and a loose
+  ID, so deleting a work item takes its files with it
+  instead of leaving them unreachable.
+end note
+
+note right of Assistant
+  The attribution is optional and set null on delete:
+  L1-013 establishes no individual identity, so a file
+  may be held without an uploader.
+end note
+@enduml

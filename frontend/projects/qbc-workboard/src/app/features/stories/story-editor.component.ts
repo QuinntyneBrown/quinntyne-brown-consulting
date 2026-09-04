@@ -22,6 +22,7 @@ import {
   TextInputComponent,
 } from '@qbc/components';
 import { describeInvalidFields } from '../../core/describe-invalid-fields';
+import { AttachmentsPanelComponent } from '../attachments/attachments-panel.component';
 import { ASSISTANT_SERVICE } from '../assistants/assistant.service.contract';
 import { BACKLOG_SERVICE } from '../backlog/backlog.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
@@ -34,6 +35,7 @@ import { STORY_SERVICE } from './story.service.contract';
   imports: [
     ReactiveFormsModule,
     ActionGroupComponent,
+    AttachmentsPanelComponent,
     ButtonComponent,
     CheckboxComponent,
     ConfirmDialogComponent,

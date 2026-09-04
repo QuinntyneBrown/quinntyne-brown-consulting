@@ -10,6 +10,7 @@ import {
   SelectOption,
   TextInputComponent,
 } from '@qbc/components';
+import { AttachmentsPanelComponent } from '../attachments/attachments-panel.component';
 import { HIERARCHY_SERVICE } from '../hierarchy/hierarchy.service.contract';
 import { DocumentEditorComponent } from '../markdown-document/document-editor.component';
 import { EditsADocument } from '../markdown-document/unsaved-document.guard';
@@ -25,6 +26,7 @@ import { EpicDraft } from './epic-draft';
 @Component({
   selector: 'app-epic-summary-page',
   imports: [
+    AttachmentsPanelComponent,
     BackLinkComponent,
     ButtonComponent,
     DocumentEditorComponent,

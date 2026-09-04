@@ -99,6 +99,15 @@
           }
         </div>
       </section>
+      <!-- Bound to the editor being open on a saved story rather than to the last story loaded:
+           the dialog stays in the DOM once closed, and this does not rely on close() having
+           cleared the selection. A new story has nothing to attach to until it is saved. -->
+      @if (editor.storyId(); as storyId) {
+        <app-attachments-panel
+          workItemKind="story"
+          [workItemId]="storyId"
+        />
+      }
     </qbc-form-grid>
     <qbc-action-group
       actions

@@ -11,6 +11,8 @@ import { ASSISTANT_HOURS_SERVICE } from './features/assistant-hours/assistant-ho
 import { AssistantHoursService } from './features/assistant-hours/assistant-hours.service';
 import { ASSISTANT_SERVICE } from './features/assistants/assistant.service.contract';
 import { AssistantService } from './features/assistants/assistant.service';
+import { ATTACHMENTS_SERVICE } from './features/attachments/attachments.service.contract';
+import { AttachmentsService } from './features/attachments/attachments.service';
 import { BACKLOG_SERVICE } from './features/backlog/backlog.service.contract';
 import { BacklogService } from './features/backlog/backlog.service';
 import { SPRINT_EXECUTION_SERVICE } from './features/board/sprint-execution.service.contract';
@@ -39,6 +41,7 @@ export function provideQbcWorkboard(): EnvironmentProviders {
     { provide: EPIC_SUMMARY_SERVICE, useExisting: EpicSummaryService },
     { provide: ASSISTANT_SERVICE, useExisting: AssistantService },
     { provide: ASSISTANT_HOURS_SERVICE, useExisting: AssistantHoursService },
+    { provide: ATTACHMENTS_SERVICE, useExisting: AttachmentsService },
     { provide: STORY_SERVICE, useExisting: StoryService },
     { provide: STORY_EDITOR_SERVICE, useExisting: StoryEditorService },
     { provide: BACKLOG_SERVICE, useExisting: BacklogService },
