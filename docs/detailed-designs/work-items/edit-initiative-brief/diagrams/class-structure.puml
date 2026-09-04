@@ -1,5 +1,5 @@
 @startuml
-title UML class structure — Edit the initiative brief
+title UML class structure — Write an initiative
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -17,16 +17,23 @@ skinparam package {
 }
 
 package "qbc-workboard — initiative brief" {
+  class HierarchyPageComponent {
+    +newInitiative()
+    +editInitiative(initiative)
+    +summarise(description) : string
+  }
+
   class InitiativeBriefPageComponent {
-    +Signal<string> initiativeId
+    +Signal<string|undefined> initiativeId
     +Signal<string> draftName
     +Signal<string> draftBrief
+    +Signal<InitiativeDraft> baseline
+    +Signal<boolean> isNew
     +Signal<boolean> dirty
     +Signal<string> rendered
-    +Signal<BriefHeading[]> outline
     +runCommand(command)
-    +insertBuildingBlock(key)
-    +goToHeading(id, line)
+    +insertTemplate()
+    +showView(view)
     +save() : Promise<boolean>
     +discard()
     +confirmLeaving() : Promise<boolean>
@@ -35,27 +42,27 @@ package "qbc-workboard — initiative brief" {
   interface IInitiativeBriefService {
     +Signal<Initiative> initiative
     +load(id) : Promise<void>
-    +save(id, name, description) : Promise<boolean>
+    +create(name, description) : Promise<Initiative|null>
+    +save(id, name, description) : Promise<Initiative|null>
   }
 
   class InitiativeBriefService
 
   class BriefEditorComponent {
-    +Signal<BriefEditorEngine> engine
-    +output ready : BriefEditorAdapter
+    +Signal<BriefEditorState> state
+    +output ready : BriefEditorHandle
   }
 
-  interface BriefEditorAdapter {
+  interface BriefEditorHandle {
     +getState() : EditorSelection
     +apply(next)
     +getValue() : string
     +setValue(text)
-    +revealLine(line)
-    +positionAt(offset) : CursorPosition
+    +focus()
+    +onChange(handler)
   }
 
   class createMonacoEditor <<factory>>
-  class createTextareaEditor <<factory>>
 
   class MARKDOWN_COMMANDS <<pure>> {
     +bold(state) : EditorSelection
@@ -65,18 +72,25 @@ package "qbc-workboard — initiative brief" {
   }
 
   class renderMarkdown <<pure>>
-  class readOutline <<pure>>
+  class summariseBrief <<pure>>
+  class BRIEF_TEMPLATE <<constant>>
 
   class EditorSelection <<record>> {
     +string text
     +number start
     +number end
   }
+
+  class InitiativeDraft <<record>> {
+    +string name
+    +string description
+  }
 }
 
 package "@qbc/api" {
   interface IHierarchyService {
     +getInitiative(id) : Promise<Initiative>
+    +createInitiative(name, description) : Promise<Initiative>
     +updateInitiative(id, name, description) : Promise<Initiative>
   }
   class Initiative <<record>> {
@@ -98,13 +112,14 @@ InitiativeBriefService ..|> IInitiativeBriefService
 InitiativeBriefService --> IHierarchyService : reads and writes the initiative
 IHierarchyService --> Initiative : returns
 InitiativeBriefPageComponent --> BriefEditorComponent : hosts
-BriefEditorComponent --> BriefEditorAdapter : reports one
-createMonacoEditor ..> BriefEditorAdapter : creates
-createTextareaEditor ..> BriefEditorAdapter : creates
+BriefEditorComponent --> BriefEditorHandle : reports one
+createMonacoEditor ..> BriefEditorHandle : creates
 InitiativeBriefPageComponent ..> MARKDOWN_COMMANDS : applies
 InitiativeBriefPageComponent ..> renderMarkdown : previews with
-InitiativeBriefPageComponent ..> readOutline : outlines with
+InitiativeBriefPageComponent ..> BRIEF_TEMPLATE : starts a new brief from
+InitiativeBriefPageComponent --> InitiativeDraft : holds as its baseline
+HierarchyPageComponent ..> summariseBrief : summarises a card with
 MARKDOWN_COMMANDS --> EditorSelection : rewrites
-BriefEditorAdapter --> EditorSelection : reads and applies
+BriefEditorHandle --> EditorSelection : reads and applies
 IHierarchyService ..> SaveInitiativeCommand : is validated by
 @enduml

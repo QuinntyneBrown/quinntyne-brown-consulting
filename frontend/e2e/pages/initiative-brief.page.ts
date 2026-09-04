@@ -5,28 +5,70 @@ export type BriefView = 'Write' | 'Split' | 'Preview';
 export type GuardChoice = 'Keep editing' | 'Discard changes' | 'Save and continue';
 
 /**
- * The initiative outcome brief editor. Markdown source is typed through whichever editor the page
- * loaded, and what the brief says is observed through the rendered preview, the outline, and the
- * size report, which are the surfaces a writer actually reads.
+ * The initiative editor: the one surface an initiative's name and outcome brief are written on.
+ * What the brief says is observed through the rendered preview and the size report, which are the
+ * surfaces a writer actually reads.
  */
 export class InitiativeBriefPage {
   constructor(private readonly page: Page) {}
 
-  /** Opens the brief the way a reader reaches it: from the initiative in the hierarchy. */
-  async openFrom(initiativeName: string): Promise<void> {
+  /** Opens an initiative the way a reader reaches it: from the hierarchy. */
+  async openFrom(initiativeName: string, options: { editorLoads?: boolean } = {}): Promise<void> {
     await this.page
       .locator('.initiative-card')
       .filter({ hasText: initiativeName })
-      .getByRole('button', { name: 'Edit brief' })
+      .locator('article > header')
+      .getByRole('button', { name: 'Edit', exact: true })
       .click();
+    if (options.editorLoads === false) {
+      await expect(this.page.getByRole('heading', { name: 'Edit initiative' })).toBeVisible();
+      return;
+    }
     await this.expectOpen();
   }
 
-  async expectOpen(): Promise<void> {
-    await expect(this.page.getByRole('heading', { name: 'Edit initiative brief' })).toBeVisible();
+  /**
+   * Withholds the stylesheet the code editor is only created once it has, which is the observable
+   * way an editor that cannot be loaded is produced.
+   */
+  async blockTheEditorStylesheet(): Promise<void> {
+    await this.page.route('**/monaco-editor.css', (route) => route.abort());
+  }
+
+  async expectEditorUnavailable(): Promise<void> {
+    await expect(
+      this.page.getByRole('alert').filter({ hasText: 'could not be loaded' }),
+    ).toBeVisible();
+    await expect(this.source()).toHaveCount(0);
+  }
+
+  /** Starts an initiative from the hierarchy, which lands on the same editor with nothing saved. */
+  async startNew(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: /New initiative/ })
+      .first()
+      .click();
+    await this.expectOpen('New initiative');
+  }
+
+  async expectOpen(title = 'Edit initiative'): Promise<void> {
+    await expect(this.page.getByRole('heading', { name: title })).toBeVisible();
     await expect(this.editorSurface()).toBeVisible();
     // The code editor keeps its input off-screen, so its presence is what identifies it.
     await expect(this.source()).toBeAttached();
+  }
+
+  /** A whole initiative written on one surface, which is the only way one is created. */
+  async writeInitiative(name: string, markdown: string): Promise<void> {
+    await this.renameTo(name);
+    await this.writeBrief(markdown);
+    await this.save();
+  }
+
+  /** The brief is markdown, so the editor offers no plain-text field to write it in. */
+  async expectNoPlainDescriptionField(): Promise<void> {
+    await expect(this.page.getByLabel('Outcome description *')).toHaveCount(0);
+    await expect(this.editorPage().locator('qbc-textarea')).toHaveCount(0);
   }
 
   /** The address of the brief currently open, so a test can return to it directly. */
@@ -65,10 +107,6 @@ export class InitiativeBriefPage {
 
   async applyFormatting(command: string): Promise<void> {
     await this.formattingTools().getByRole('button', { name: command, exact: true }).click();
-  }
-
-  async insertBuildingBlock(label: string): Promise<void> {
-    await this.page.getByLabel('Insert a building block').selectOption({ label });
   }
 
   async acceptTheEmptyBriefTemplate(): Promise<void> {
@@ -122,22 +160,6 @@ export class InitiativeBriefPage {
     await expect(this.preview()).toContainText(text);
   }
 
-  async selectOutlineHeading(text: string): Promise<void> {
-    await this.outline().getByRole('button', { name: text, exact: true }).click();
-  }
-
-  async expectOutlineLists(...headings: string[]): Promise<void> {
-    for (const heading of headings) {
-      await expect(
-        this.outline().getByRole('button', { name: heading, exact: true }),
-      ).toBeVisible();
-    }
-  }
-
-  async expectCurrentOutlineHeading(text: string): Promise<void> {
-    await expect(this.outline().locator('li.is-current')).toContainText(text);
-  }
-
   /** The reported size of the brief, which also shows whether its source survived a round trip. */
   async expectSize(words: number, characters: number): Promise<void> {
     await expect(this.size()).toContainText(`${words.toLocaleString('en-US')} words`);
@@ -157,7 +179,7 @@ export class InitiativeBriefPage {
   }
 
   async save(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Save brief' }).click();
+    await this.page.getByRole('button', { name: 'Save initiative' }).click();
   }
 
   async saveExpectingRejection(...fields: string[]): Promise<void> {
@@ -169,6 +191,13 @@ export class InitiativeBriefPage {
 
   async discard(): Promise<void> {
     await this.page.getByRole('button', { name: 'Discard', exact: true }).click();
+  }
+
+  /** Leaves the editor by its own way back, which the unsaved-changes guard also watches. */
+  async leaveForInitiatives(options: { guarded?: boolean } = {}): Promise<void> {
+    await this.page.getByRole('link', { name: 'All initiatives' }).click();
+    if (options.guarded === true) await this.chooseFromGuard('Discard changes');
+    await expect(this.page.getByRole('heading', { name: 'Initiatives', level: 1 })).toBeVisible();
   }
 
   /** Leaves the brief for another work area, which is what the unsaved-changes guard watches for. */
@@ -193,26 +222,26 @@ export class InitiativeBriefPage {
     await expect(this.page.getByRole('heading', { name: 'Backlog', level: 1 })).toBeVisible();
   }
 
+  private editorPage(): Locator {
+    return this.page.locator('app-initiative-brief-page');
+  }
+
   private nameField(): Locator {
     return this.page.getByLabel('Initiative name *');
   }
 
-  /** The markdown source, whichever editor the page managed to load. */
+  /** The markdown source the code editor carries. */
   private source(): Locator {
     return this.page.getByLabel('Initiative brief, markdown source');
   }
 
-  /** Where a writer clicks to put the caret in the brief, in either editor. */
+  /** Where a writer clicks to put the caret in the brief. */
   private editorSurface(): Locator {
     return this.page.locator('app-brief-editor');
   }
 
   private preview(): Locator {
     return this.page.locator('.brief-preview');
-  }
-
-  private outline(): Locator {
-    return this.page.getByRole('navigation', { name: 'Brief outline' });
   }
 
   private viewSwitch(): Locator {

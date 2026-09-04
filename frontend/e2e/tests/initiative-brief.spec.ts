@@ -7,6 +7,7 @@ import { WorkboardPage } from '../pages/workboard.page';
 
 const INITIATIVE = 'Client delivery excellence';
 const SHORT_BRIEF = '# Outcome\n\nCommit a sprint in under ten minutes.';
+const NEW_OUTCOME = 'Sustainable delivery economics';
 
 /** Every block an outcome brief uses, so one round trip proves the structure survives storage. */
 const STRUCTURED_BRIEF = [
@@ -35,7 +36,7 @@ test.beforeEach(async ({ page }) => {
   await new WorkboardPage(page).navigateTo('initiatives');
 });
 
-test('L2-046 · Open the brief for an initiative', { tag: '@smoke' }, async ({ page }) => {
+test('L2-046 · Open an initiative and its brief', { tag: '@smoke' }, async ({ page }) => {
   const brief = new InitiativeBriefPage(page);
   await brief.openFrom(INITIATIVE);
   await brief.expectName(INITIATIVE);
@@ -46,6 +47,23 @@ test('L2-046 · Open the brief for an initiative', { tag: '@smoke' }, async ({ p
   const address = brief.currentAddress();
   await brief.openAddress(address);
   await brief.expectName(INITIATIVE);
+});
+
+test('L2-046 · Create an initiative from the editor', { tag: '@smoke' }, async ({ page }) => {
+  const brief = new InitiativeBriefPage(page);
+  const hierarchy = new HierarchyPage(page);
+
+  await brief.startNew();
+  await brief.writeInitiative(NEW_OUTCOME, SHORT_BRIEF);
+  await brief.expectSaved();
+
+  // The address now identifies the initiative that was just created.
+  await brief.expectOpen();
+  await brief.openAddress(brief.currentAddress());
+  await brief.expectName(NEW_OUTCOME);
+
+  await hierarchy.returnToHierarchy();
+  await hierarchy.expectInitiativeRollUp(NEW_OUTCOME, 0, 0);
 });
 
 test('L2-046 · Save an edited brief', { tag: '@smoke' }, async ({ page }) => {
@@ -112,18 +130,6 @@ test('L2-047 · Apply markdown formatting', async ({ page }) => {
   await brief.expectPreviewHasNoEmphasis();
 });
 
-test('L2-047 · Insert a brief building block', async ({ page }) => {
-  const brief = new InitiativeBriefPage(page);
-  await brief.openFrom(INITIATIVE);
-  await brief.writeBrief('Commit a sprint quickly.');
-  await brief.insertBuildingBlock('Success signals table');
-  await brief.expectUnsavedChanges();
-
-  await brief.show('Preview');
-  await brief.expectPreviewHeading('Success signals');
-  await brief.expectPreviewTableRow('Signal', 'Baseline', 'Target');
-});
-
 test('L2-047 · Preview the rendered brief', { tag: '@smoke' }, async ({ page }) => {
   const brief = new InitiativeBriefPage(page);
   await brief.openFrom(INITIATIVE);
@@ -138,12 +144,11 @@ test('L2-047 · Preview the rendered brief', { tag: '@smoke' }, async ({ page })
   await brief.expectOpen();
 });
 
-test('L2-047 · Navigate the brief by heading', async ({ page }) => {
+test('L2-047 · Report an editor that cannot load', async ({ page }) => {
   const brief = new InitiativeBriefPage(page);
-  await brief.openFrom(INITIATIVE);
-  await brief.expectOutlineLists('Zero-friction sprint planning', 'Outcome', 'Guardrails', 'Epics');
-  await brief.selectOutlineHeading('Epics');
-  await brief.expectCurrentOutlineHeading('Epics');
+  await brief.blockTheEditorStylesheet();
+  await brief.openFrom(INITIATIVE, { editorLoads: false });
+  await brief.expectEditorUnavailable();
 });
 
 test('L2-047 · Report the size of a brief', async ({ page }) => {
@@ -215,6 +220,24 @@ test('L2-048 · Save and continue from the guard', async ({ page }) => {
   // The brief was persisted on the way out.
   await new WorkboardPage(page).usePrimaryNavigation('Initiatives');
   await new HierarchyPage(page).expectInitiativeRollUp('Zero-friction sprint planning', 2, 5);
+});
+
+test('L2-048 · Save and continue from a new initiative', async ({ page }) => {
+  const brief = new InitiativeBriefPage(page);
+  const hierarchy = new HierarchyPage(page);
+
+  // An initiative that has never been saved leaves through the same question, and the save it
+  // makes on the way out must not replace the navigation the writer asked for.
+  await brief.startNew();
+  await brief.renameTo(NEW_OUTCOME);
+  await brief.writeBrief(SHORT_BRIEF);
+
+  await brief.leaveForBacklog();
+  await brief.chooseFromGuard('Save and continue');
+  await brief.expectLeftForBacklog();
+
+  await new WorkboardPage(page).usePrimaryNavigation('Initiatives');
+  await hierarchy.expectInitiativeRollUp(NEW_OUTCOME, 0, 0);
 });
 
 test('L2-048 · Keep the brief out of browser storage', async ({ page }) => {

@@ -1,17 +1,13 @@
-@if (engine() === 'loading') {
+@if (state() === 'loading') {
   <qbc-loading-state>Loading the markdown editor…</qbc-loading-state>
+}
+@if (state() === 'failed') {
+  <qbc-form-error
+    >The markdown editor could not be loaded. Reload the page to write this brief.</qbc-form-error
+  >
 }
 <div
   class="editor-host"
-  [class.is-hidden]="engine() === 'textarea'"
+  [class.is-hidden]="state() === 'failed'"
   #host
 ></div>
-@if (engine() === 'textarea') {
-  <qbc-textarea
-    #fallback
-    class="editor-fallback"
-    ariaLabel="Initiative brief, markdown source"
-    [value]="initialValue()"
-    [full]="true"
-  />
-}

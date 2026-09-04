@@ -8,7 +8,9 @@ export interface IInitiativeBriefService {
   readonly loadingState: Signal<LoadingState>;
   readonly error: Signal<string | null>;
   load(id: string): Promise<void>;
-  save(id: string, name: string, description: string): Promise<boolean>;
+  /** Resolves to the stored initiative, or to null when the save was refused. */
+  create(name: string, description: string): Promise<Initiative | null>;
+  save(id: string, name: string, description: string): Promise<Initiative | null>;
 }
 
 export const INITIATIVE_BRIEF_SERVICE = new InjectionToken<IInitiativeBriefService>(

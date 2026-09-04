@@ -101,7 +101,6 @@ test('L2-040 · Verify accessibility on every dialog type', async ({ page }) => 
   await sprints.close();
 
   await workboard.navigateTo('initiatives');
-  await accessibility.scanDialogOpenedBy(/New initiative/, 'New initiative');
   await accessibility.scanDialogOpenedBy(/Epic/, 'New epic');
   await accessibility.scanDialogOpenedBy('Delete', /Delete .+\?/);
 
@@ -117,6 +116,12 @@ test('L2-040 · Verify accessibility on the initiative brief', async ({ page }) 
   const brief = new InitiativeBriefPage(page);
 
   await workboard.navigateTo('initiatives');
+
+  // A new initiative is written on the same route, so the scan covers it before an existing one.
+  await brief.startNew();
+  await accessibility.expectNoSeriousViolationsOutside('app-brief-editor');
+  await brief.leaveForInitiatives();
+
   await brief.openFrom('Client delivery excellence');
   // The markdown editor is a third-party control with an accessibility mode of its own, so the
   // scan covers the page around it rather than its internals.

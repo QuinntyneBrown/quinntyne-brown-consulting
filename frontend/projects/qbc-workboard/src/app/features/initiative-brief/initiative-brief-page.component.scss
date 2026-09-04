@@ -31,84 +31,38 @@
 }
 
 /* The editor has no intrinsic height, so the writing surface is given a definite one rather than
-   left to collapse whenever the preview is not on screen to stretch the row. */
+   left to collapse whenever the preview is not on screen to stretch the row. The column is held to
+   a comfortable measure for prose, and widened only when the preview sits beside the source. */
 .brief-layout {
-  display: grid;
+  display: flex;
+  width: 100%;
+  max-width: 880px;
   height: calc(100dvh - 240px);
   min-height: 480px;
+  flex-direction: column;
+  margin-inline: auto;
   border: 1px solid var(--qbc-line);
   border-radius: var(--qbc-r-xl);
   background: var(--qbc-panel);
-  grid-template-columns: 216px minmax(0, 1fr) 232px;
   overflow: hidden;
 }
-
-.rail {
-  display: flex;
-  min-height: 0;
-  flex-direction: column;
-  padding: 16px 12px;
-  background: var(--qbc-surface-raised);
-  overflow-y: auto;
-}
-.rail.initiatives {
-  border-right: 1px solid var(--qbc-line);
-}
-.rail.outline {
-  border-left: 1px solid var(--qbc-line);
+.brief-layout.is-split {
+  max-width: 1180px;
 }
 
-.initiative-list,
-.outline-list {
-  display: grid;
-  margin: 8px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.initiative-list {
-  gap: 10px;
-}
-.initiative-list small {
-  display: block;
-  padding: 0 11px;
+/* The editor's way back sits above the title rather than among the actions, so the save controls
+   stay on one row and the escape from the page reads before the page names itself. */
+.back-link {
+  align-self: flex-start;
   color: var(--qbc-ink-soft);
-  font-size: 11px;
-}
-.initiative-list .is-current {
-  border-radius: var(--qbc-r-control);
-  background: var(--qbc-soft);
-  box-shadow: inset 2px 0 0 var(--qbc-accent);
-}
-
-.outline-list li {
-  border-left: 2px solid transparent;
-}
-/* The selected heading is marked with the accent rule and a light ground. The accent tint is
-   deliberately not used here: it does not carry enough contrast behind quiet button text. */
-.outline-list li.is-current {
-  border-left-color: var(--qbc-accent);
-  background: var(--qbc-soft);
-}
-.outline-list .level-2 {
-  padding-left: 10px;
-}
-.outline-list .level-3,
-.outline-list .level-4,
-.outline-list .level-5,
-.outline-list .level-6 {
-  padding-left: 20px;
-}
-.rail-empty {
-  padding: 4px 11px;
-  color: var(--qbc-ink-faint);
   font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
 }
-
-.editor-column {
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  flex-direction: column;
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--qbc-accent-dark);
+  text-decoration: underline;
 }
 
 .brief-head {
@@ -119,21 +73,11 @@
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 2px;
   align-items: center;
-  justify-content: space-between;
   padding: 6px 20px;
   border-bottom: 1px solid var(--qbc-line);
   background: var(--qbc-surface-raised);
-}
-.tool-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  align-items: center;
-}
-.toolbar .insert {
-  min-width: 190px;
 }
 
 .panes {
@@ -216,7 +160,6 @@
   flex-wrap: wrap;
   gap: 8px 16px;
   align-items: center;
-  justify-content: space-between;
   padding: 8px 20px;
   border-top: 1px solid var(--qbc-line);
   background: var(--qbc-surface-raised);
@@ -352,32 +295,18 @@
   text-decoration: line-through;
 }
 
-@media (max-width: 1180px) {
-  .brief-layout {
-    grid-template-columns: 216px minmax(0, 1fr);
-  }
-  .rail.outline {
-    display: none;
-  }
-}
 @media (max-width: 900px) {
   :host {
     padding: 16px;
   }
   .brief-layout {
     height: auto;
-    grid-template-columns: minmax(0, 1fr);
   }
   app-brief-editor {
     min-height: 380px;
   }
   .preview-scroll {
     min-height: 300px;
-  }
-  .rail.initiatives {
-    max-height: 200px;
-    border-right: 0;
-    border-bottom: 1px solid var(--qbc-line);
   }
   .panes.is-split {
     grid-template-columns: minmax(0, 1fr);

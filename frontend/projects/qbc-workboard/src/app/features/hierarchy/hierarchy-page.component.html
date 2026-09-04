@@ -4,7 +4,7 @@
     description="Connect strategic outcomes to the epics and stories that make them real."
     ><qbc-button
       actions
-      (click)="openInitiative()"
+      (click)="newInitiative()"
       >＋ New initiative</qbc-button
     ></qbc-page-header
   >
@@ -19,7 +19,7 @@
       description="Create an outcome to start organizing delivery work."
       ><qbc-button
         actions
-        (click)="openInitiative()"
+        (click)="newInitiative()"
         >New initiative</qbc-button
       ></qbc-empty-state
     >
@@ -28,7 +28,7 @@
       @for (initiative of service.hierarchy().initiatives; track initiative.id) {
         <qbc-initiative-card
           [title]="initiative.name"
-          [description]="initiative.description"
+          [description]="summarise(initiative.description)"
           [summary]="initiative.epicCount + ' epics · ' + initiative.storyCount + ' stories'"
         >
           <qbc-button
@@ -42,15 +42,8 @@
             actions
             variant="quiet"
             size="sm"
-            (click)="openInitiative(initiative)"
+            (click)="editInitiative(initiative)"
             >Edit</qbc-button
-          >
-          <qbc-button
-            actions
-            variant="quiet"
-            size="sm"
-            (click)="openBrief(initiative)"
-            >Edit brief</qbc-button
           >
           <qbc-button
             actions
@@ -89,47 +82,6 @@
     </div>
   }
 </qbc-page>
-
-<form
-  [formGroup]="initiativeForm"
-  (ngSubmit)="saveInitiative()"
->
-  <qbc-dialog
-    #initiativeDialog
-    [title]="initiativeId() ? 'Edit initiative' : 'New initiative'"
-    subtitle="Name the outcome the organization is pursuing."
-  >
-    @if (initiativeError()) {
-      <qbc-form-error body>{{ initiativeError() }}</qbc-form-error>
-    }
-    <qbc-form-grid body>
-      <qbc-text-input
-        label="Name"
-        [required]="true"
-        [full]="true"
-        formControlName="name"
-      />
-      <qbc-textarea
-        label="Outcome description"
-        [required]="true"
-        [full]="true"
-        formControlName="description"
-      />
-    </qbc-form-grid>
-    <qbc-button
-      actions
-      variant="secondary"
-      (click)="initiativeDialog.close()"
-      >Cancel</qbc-button
-    >
-    <qbc-button
-      actions
-      type="submit"
-      [disabled]="pending()"
-      >Save initiative</qbc-button
-    >
-  </qbc-dialog>
-</form>
 
 <form
   [formGroup]="epicForm"

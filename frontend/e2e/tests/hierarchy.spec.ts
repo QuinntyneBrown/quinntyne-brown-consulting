@@ -2,10 +2,16 @@ import { test } from '../fixtures/workboard.fixture';
 import { epicWithoutStories, initiativeWithoutEpics } from '../mocks/workspace-scenarios';
 import { BacklogPage } from '../pages/backlog.page';
 import { HierarchyPage } from '../pages/hierarchy.page';
+import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { WorkboardPage } from '../pages/workboard.page';
 
 const OUTCOME = 'Sustainable delivery economics';
-const OUTCOME_DESCRIPTION = 'Make every engagement profitable without eroding quality.';
+const OUTCOME_BRIEF = [
+  '# Sustainable delivery economics',
+  '',
+  'Make every engagement profitable without eroding quality.',
+].join('\n');
+const OUTCOME_SUMMARY = 'Make every engagement profitable without eroding quality.';
 const CAPABILITY = 'Engagement margin insight';
 const CAPABILITY_SUMMARY = 'Show where an engagement earns and where it leaks.';
 
@@ -15,21 +21,55 @@ test.beforeEach(async ({ page }) => {
 
 test('L2-002 · Create an initiative', { tag: '@smoke' }, async ({ page }) => {
   const hierarchy = new HierarchyPage(page);
-  await hierarchy.createInitiative(OUTCOME, OUTCOME_DESCRIPTION);
+  const editor = new InitiativeBriefPage(page);
+  await editor.startNew();
+  await editor.writeInitiative(OUTCOME, OUTCOME_BRIEF);
+
+  await hierarchy.returnToHierarchy();
   await new WorkboardPage(page).reload();
   await hierarchy.expectInitiativeRollUp(OUTCOME, 0, 0);
 });
 
+test('L2-002 · Author the description only as markdown', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  const editor = new InitiativeBriefPage(page);
+
+  // Creating one offers the markdown editor and no plain-text description anywhere.
+  await editor.startNew();
+  await editor.expectNoPlainDescriptionField();
+  await editor.writeInitiative(OUTCOME, OUTCOME_BRIEF);
+
+  // Updating one arrives at the same surface.
+  await hierarchy.returnToHierarchy();
+  await editor.openFrom(OUTCOME);
+  await editor.expectNoPlainDescriptionField();
+
+  // The hierarchy reads the brief rather than reprinting its markdown source.
+  await hierarchy.returnToHierarchy();
+  await hierarchy.expectInitiativeSummarised(OUTCOME, OUTCOME_SUMMARY);
+  await hierarchy.expectInitiativeNotMarkdownSource(OUTCOME, '# Sustainable delivery economics');
+});
+
 test('L2-002 · Reject an invalid initiative', async ({ page }) => {
   const hierarchy = new HierarchyPage(page);
-  await hierarchy.expectInitiativeRejected('Name', 'Outcome description');
+  const editor = new InitiativeBriefPage(page);
+  await editor.startNew();
+  await editor.clearBrief();
+  await editor.saveExpectingRejection('Initiative name', 'Outcome brief');
+
+  // Nothing was stored, and leaving the refused draft asks before discarding it.
+  await editor.leaveForInitiatives({ guarded: true });
   await hierarchy.expectInitiativeCount(2);
 });
 
 test('L2-002 · Update an initiative', async ({ page }) => {
   const hierarchy = new HierarchyPage(page);
+  const editor = new InitiativeBriefPage(page);
   const workboard = new WorkboardPage(page);
-  await hierarchy.updateInitiative('Applied AI advantage', OUTCOME, OUTCOME_DESCRIPTION);
+  await editor.openFrom('Applied AI advantage');
+  await editor.writeInitiative(OUTCOME, OUTCOME_BRIEF);
+
+  await hierarchy.returnToHierarchy();
   await workboard.reload();
   await hierarchy.expectEpicUnder(OUTCOME, 'Engagement copilot');
 

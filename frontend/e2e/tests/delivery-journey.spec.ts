@@ -3,6 +3,7 @@ import { AssistantsPage } from '../pages/assistants.page';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
 import { HierarchyPage } from '../pages/hierarchy.page';
+import { InitiativeBriefPage } from '../pages/initiative-brief.page';
 import { SprintManagerPage } from '../pages/sprint-manager.page';
 import { StoryEditorPage } from '../pages/story-editor.page';
 import { WorkboardPage } from '../pages/workboard.page';
@@ -27,13 +28,16 @@ test('L2-038 · Exercise critical product workflows', { tag: '@smoke' }, async (
   const backlog = new BacklogPage(page);
   const board = new BoardPage(page);
   const sprints = new SprintManagerPage(page);
+  const initiativeEditor = new InitiativeBriefPage(page);
 
   // Initiative and epic creation.
   await workboard.navigateTo('initiatives');
-  await hierarchy.createInitiative(
+  await initiativeEditor.startNew();
+  await initiativeEditor.writeInitiative(
     INITIATIVE,
     'An outcome created through the acceptance boundary.',
   );
+  await hierarchy.returnToHierarchy();
   await hierarchy.createEpic(INITIATIVE, EPIC, 'A coherent slice of delivery capability.');
 
   // Assistant and task assignment.

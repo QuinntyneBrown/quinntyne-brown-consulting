@@ -27,22 +27,29 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   returns a signed session credential that authorizes every API request for
   seven days, repeated attempts from one address are throttled, and the passcode
   hash and signing key are created with the database rather than configured.
-- An outcome brief for every initiative, written as markdown on its own page at
-  **Edit brief**. The brief carries headings, lists, task lists, tables, quotes,
-  and fenced code; a formatting toolbar and insertable building blocks compose
-  it; and write, split, and preview views show the source, both, or the rendered
-  brief. An outline lists the brief's headings and moves the editor to any of
-  them, and the page reports the word and character count as the brief grows.
-  Saving stores the brief on the initiative it belongs to, so a renamed
-  initiative is renamed everywhere. Leaving the page with unsaved markdown asks
-  whether to keep editing, discard the changes, or save and continue; nothing is
-  kept in the browser.
+- One page for writing an initiative: its name and its outcome brief, always
+  markdown, saved together. **New initiative** opens it at `/initiatives/new` and
+  **Edit** opens an existing one at `/initiatives/{id}`; there is no plain-text
+  description field anywhere, and no separate form beside the hierarchy. The
+  brief carries headings, lists, task lists, tables, quotes, and fenced code; a
+  formatting toolbar composes it; write, split, and preview views show the
+  source, both, or the rendered brief, and `Alt+1`, `Alt+2`, and `Alt+3` reach
+  the same three. The page reports the word and character count as the brief
+  grows, a new initiative starts from the outcome brief template, and the
+  hierarchy shows a brief's first line of prose rather than its markdown source.
+  Saving stores both on the initiative, so a renamed initiative is renamed
+  everywhere. Leaving the page with unsaved markdown asks whether to keep
+  editing, discard the changes, or save and continue; nothing is kept in the
+  browser. The markdown editor is bundled with the application and loaded only
+  when the page is opened; a brief is markdown whichever control carries it, so
+  an editor that cannot be loaded is reported rather than replaced by a plainer
+  field.
 - An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
   showing the entry, error, lockout, and unlocked states offline.
-- An interaction study for editing an initiative outcome brief as markdown at
-  `docs/mocks/initiative-editor.html`. A Monaco editor carries the brief with a
-  markdown toolbar, snippet completions, an outline, live preview, and an
-  unsaved-changes guard, and falls back to a plain markdown text area offline.
+- An interaction study for writing an initiative at
+  `docs/mocks/initiative-editor.html`. A Monaco editor carries the outcome brief
+  beside the initiative name, with a markdown toolbar, live preview, and an
+  unsaved-changes guard; `?new` starts an initiative on the same page.
 - A deployed-build report. `GET /api/version` names the backend artifact, the
   Angular bundle carries its own version and commit, and the workspace shows the
   two identities separately in the sidebar footer and on the passcode screen.

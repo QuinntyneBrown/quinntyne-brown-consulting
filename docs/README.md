@@ -48,16 +48,17 @@ and five rendered PNG diagrams.
   and accepts any four digits; the working gate is described in
   [Gate workspace access](detailed-designs/platform/gate-workspace-access/).
 - [`mocks/initiative-editor.html`](mocks/initiative-editor.html) is the
-  self-contained interaction study for editing an initiative outcome brief as
-  markdown in a Monaco editor. It covers the write, split, and preview views, a
-  markdown toolbar, snippet completions, an outline, save and discard with an
-  unsaved-changes guard, and the empty brief. The study proposed treating the
-  initiative description as markdown rather than the single line of text the
-  initiative form saves; that behavior is now specified by `L2-046` through
-  `L2-048` and described in
+  self-contained interaction study for writing an initiative: its name and its
+  outcome brief, authored as markdown in a Monaco editor on one page. It covers
+  creating an initiative and editing an existing one, the write, split, and
+  preview views, a markdown toolbar, save and discard with an unsaved-changes
+  guard, and the empty brief. Open it with `?new` to start an initiative. The
+  study established treating the initiative description as markdown rather than
+  as the single line of text an earlier form saved; that behavior is specified by
+  `L2-002` and `L2-046` through `L2-048` and described in
   [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/).
-  The study loads Monaco from a CDN, while the working editor bundles it with
-  the application and falls back to a plain markdown field offline.
+  The study loads Monaco from a CDN, while the working editor bundles it with the
+  application; neither offers a plainer field when the editor cannot be loaded.
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and

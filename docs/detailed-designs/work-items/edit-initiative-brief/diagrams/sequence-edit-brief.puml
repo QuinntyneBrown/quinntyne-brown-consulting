@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Edit an initiative brief
+title UML sequence behaviour — Write an initiative
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -36,30 +36,44 @@ box "Backend — Workboard Infrastructure" #FFF4E5
   database "SQL Server workspace database" as db
 end box
 
-actor -> hierarchy : Choose Edit brief
-hierarchy -> page : Navigate to the brief route per L2-046
-page -> service : Load the initiative
-service -> controller : GET /api/initiatives/{id}
-controller -> db : Read the initiative
-db --> controller : Initiative
-controller --> service : Name and markdown description
-service --> page : Saved initiative
+alt Start a new initiative
+  actor -> hierarchy : Choose New initiative
+  hierarchy -> page : Navigate to /initiatives/new per L2-046
+  page -> page : Open the outcome brief template as the baseline
+else Open an existing initiative
+  actor -> hierarchy : Choose Edit
+  hierarchy -> page : Navigate to /initiatives/{id} per L2-046
+  page -> service : Load the initiative
+  service -> controller : GET /api/initiatives/{id}
+  controller -> db : Read the initiative
+  db --> controller : Initiative
+  controller --> service : Name and markdown description
+  service --> page : Saved initiative
+end
 page -> editor : Show the markdown source
-editor --> page : Editor adapter
+alt The code editor cannot be loaded
+  editor --> actor : Report the editor as unavailable per L2-047
+else The code editor is ready
+  editor --> page : Editor handle
+end
 
 actor -> page : Apply a formatting command per L2-047
 page -> commands : Rewrite the source and selection
 commands --> page : Rewritten source
 page -> editor : Apply the rewritten source
 page -> renderer : Render the brief
-renderer --> page : Preview markup and outline
+renderer --> page : Preview markup
 
-actor -> page : Save the brief
+actor -> page : Save the initiative
 alt The name or the brief is blank
   page --> actor : Name every field that still needs a value per L2-046
-else The brief is complete
+else The initiative is complete
   page -> service : Save the name and brief together
-  service -> controller : PUT /api/initiatives/{id}
+  alt The initiative is new
+    service -> controller : POST /api/initiatives
+  else The initiative exists
+    service -> controller : PUT /api/initiatives/{id}
+  end
   controller -> command : Send through the mediator
   command -> command : Require a brief and bound its length per L2-046
   alt The brief is too long
@@ -71,7 +85,8 @@ else The brief is complete
     handler -> db : Write the initiative
     db --> handler : Committed
     handler --> service : Saved initiative
-    service --> page : Report the brief as saved per L2-048
+    service --> page : Report the initiative as saved per L2-048
+    page -> page : Move the baseline and, when new, address the stored initiative
   end
 end
 

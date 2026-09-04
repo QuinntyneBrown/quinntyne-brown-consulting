@@ -1,4 +1,4 @@
-import { BriefEditorAdapter } from './brief-editor-adapter';
+import { BriefEditorHandle } from './brief-editor-handle';
 
 const BRIEF_SOURCE_LABEL = 'Initiative brief, markdown source';
 const EDITOR_STYLESHEET = 'monaco-editor.css';
@@ -10,8 +10,8 @@ let stylesheetLoad: Promise<void> | null = null;
  * fixed name rather than folding into the page styles every reader downloads. The editor's markup
  * relies on it to place the writing surface and to keep its scaffolding — the screen reader's live
  * region and the hidden field that carries typing — out of sight, so the editor is only created
- * once the stylesheet has arrived. A stylesheet that never arrives fails the editor, which leaves
- * the brief writable as plain markdown instead of on a surface that renders as scrambled text.
+ * once the stylesheet has arrived. A stylesheet that never arrives fails the editor, which the
+ * page reports, rather than presenting a surface that renders as scrambled text.
  */
 function loadEditorStylesheet(): Promise<void> {
   stylesheetLoad ??= new Promise<void>((resolve, reject) => {
@@ -37,7 +37,7 @@ function loadEditorStylesheet(): Promise<void> {
 export async function createMonacoEditor(
   host: HTMLElement,
   initialText: string,
-): Promise<BriefEditorAdapter> {
+): Promise<BriefEditorHandle> {
   // The editor resolves its worker relative to its own module by default, which the application
   // bundler does not emit. Naming the worker here lets the bundler own it like any other chunk.
   (self as unknown as { MonacoEnvironment?: { getWorker: () => Worker } }).MonacoEnvironment = {
@@ -110,13 +110,10 @@ export async function createMonacoEditor(
   if (model === null) throw new Error('The markdown editor started without a model.');
 
   let onChange: () => void = () => undefined;
-  let onCursor: (offset: number) => void = () => undefined;
 
   model.onDidChangeContent(() => onChange());
-  editor.onDidChangeCursorPosition((event) => onCursor(model.getOffsetAt(event.position)));
 
   return {
-    kind: 'monaco',
     getState: () => {
       const selection = editor.getSelection();
       if (selection === null) return { text: model.getValue(), start: 0, end: 0 };
@@ -143,20 +140,8 @@ export async function createMonacoEditor(
       editor.setScrollPosition({ scrollTop: 0 });
     },
     focus: () => editor.focus(),
-    revealLine: (line) => {
-      editor.revealLineInCenter(line);
-      editor.setPosition({ lineNumber: line, column: 1 });
-      editor.focus();
-    },
-    positionAt: (offset) => {
-      const position = model.getPositionAt(offset);
-      return { line: position.lineNumber, column: position.column };
-    },
     onChange: (handler) => {
       onChange = handler;
-    },
-    onCursor: (handler) => {
-      onCursor = handler;
     },
     layout: () => editor.layout(),
     dispose: () => editor.dispose(),

@@ -3,33 +3,23 @@ import { expect, Locator, Page } from '@playwright/test';
 export class HierarchyPage {
   constructor(private readonly page: Page) {}
 
-  async createInitiative(name: string, description: string): Promise<void> {
-    await this.openInitiativeForm();
-    const dialog = this.page.getByRole('dialog', { name: 'New initiative' });
-    await dialog.getByLabel('Name *').fill(name);
-    await dialog.getByLabel('Outcome description *').fill(description);
-    await dialog.getByRole('button', { name: 'Save initiative' }).click();
+  /** Returns to the hierarchy from the initiative editor, which is where a save lands. */
+  async returnToHierarchy(): Promise<void> {
+    await this.page.getByRole('link', { name: 'All initiatives' }).click();
+    await expect(this.page.getByRole('heading', { name: 'Initiatives', level: 1 })).toBeVisible();
+  }
+
+  async expectInitiativeVisible(name: string): Promise<void> {
     await expect(this.initiative(name)).toBeVisible();
   }
 
-  /** A save the form refuses names every field that is still missing. */
-  async expectInitiativeRejected(...fields: string[]): Promise<void> {
-    await this.openInitiativeForm();
-    const dialog = this.page.getByRole('dialog', { name: 'New initiative' });
-    await dialog.getByRole('button', { name: 'Save initiative' }).click();
-    const alert = dialog.getByRole('alert');
-    for (const field of fields) await expect(alert).toContainText(field);
-    await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: 'Cancel' }).click();
+  /** The card has one line for a whole brief, so it carries the brief's first line of prose. */
+  async expectInitiativeSummarised(name: string, summary: string): Promise<void> {
+    await expect(this.initiative(name)).toContainText(summary);
   }
 
-  async updateInitiative(name: string, newName: string, newDescription: string): Promise<void> {
-    await this.initiativeActions(name).getByRole('button', { name: 'Edit', exact: true }).click();
-    const dialog = this.page.getByRole('dialog', { name: 'Edit initiative' });
-    await dialog.getByLabel('Name *').fill(newName);
-    await dialog.getByLabel('Outcome description *').fill(newDescription);
-    await dialog.getByRole('button', { name: 'Save initiative' }).click();
-    await expect(this.initiative(newName)).toContainText(newDescription);
+  async expectInitiativeNotMarkdownSource(name: string, source: string): Promise<void> {
+    await expect(this.initiative(name)).not.toContainText(source);
   }
 
   async createEpic(initiativeName: string, epicName: string, summary: string): Promise<void> {
@@ -152,16 +142,18 @@ export class HierarchyPage {
     ).toBeVisible();
   }
 
-  async expectNoEpicsMessage(initiativeName: string): Promise<void> {
-    await expect(this.initiative(initiativeName)).toContainText('No epics yet');
+  /** Starting an initiative opens its own page rather than a form beside the hierarchy. */
+  async expectNewInitiativeOpensTheEditor(): Promise<void> {
+    await this.page
+      .locator('qbc-empty-state')
+      .getByRole('button', { name: 'New initiative' })
+      .click();
+    await expect(this.page.getByRole('heading', { name: 'New initiative' })).toBeVisible();
+    await expect(this.page).toHaveURL(/\/initiatives\/new$/);
   }
 
-  private async openInitiativeForm(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: /New initiative/ })
-      .first()
-      .click();
-    await expect(this.page.getByRole('dialog', { name: 'New initiative' })).toBeVisible();
+  async expectNoEpicsMessage(initiativeName: string): Promise<void> {
+    await expect(this.initiative(initiativeName)).toContainText('No epics yet');
   }
 
   private initiative(name: string): Locator {

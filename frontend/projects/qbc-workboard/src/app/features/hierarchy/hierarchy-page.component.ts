@@ -20,6 +20,7 @@ import {
   TextInputComponent,
 } from '@qbc/components';
 import { describeInvalidFields } from '../../core/describe-invalid-fields';
+import { summariseBrief } from '../initiative-brief/markdown/summarise-brief';
 import { HIERARCHY_SERVICE } from './hierarchy.service.contract';
 
 @Component({
@@ -45,21 +46,14 @@ import { HIERARCHY_SERVICE } from './hierarchy.service.contract';
   styleUrl: './hierarchy-page.component.scss',
 })
 export class HierarchyPageComponent implements OnInit {
-  private readonly initiativeDialog = viewChild.required<DialogComponent>('initiativeDialog');
   private readonly epicDialog = viewChild.required<DialogComponent>('epicDialog');
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
   private readonly router = inject(Router);
   readonly service = inject(HIERARCHY_SERVICE);
   readonly pending = signal(false);
-  readonly initiativeId = signal<string | null>(null);
   readonly epicId = signal<string | null>(null);
-  readonly initiativeError = signal('');
   readonly epicError = signal('');
-  readonly initiativeForm = this.fb.group({
-    name: ['', Validators.required],
-    description: ['', Validators.required],
-  });
   readonly epicForm = this.fb.group({
     initiativeId: ['', Validators.required],
     name: ['', Validators.required],
@@ -70,14 +64,21 @@ export class HierarchyPageComponent implements OnInit {
     void this.service.load();
   }
 
-  openInitiative(initiative?: InitiativeHierarchy): void {
-    this.initiativeId.set(initiative?.id ?? null);
-    this.initiativeError.set('');
-    this.initiativeForm.reset({
-      name: initiative?.name ?? '',
-      description: initiative?.description ?? '',
-    });
-    this.initiativeDialog().open();
+  /**
+   * An initiative is a name and a markdown brief saved together, so both are written on the
+   * initiative's own page rather than in a form beside the hierarchy.
+   */
+  newInitiative(): void {
+    void this.router.navigate(['/initiatives', 'new']);
+  }
+
+  editInitiative(initiative: InitiativeHierarchy): void {
+    void this.router.navigate(['/initiatives', initiative.id]);
+  }
+
+  /** The card has one line for a whole brief, so it carries the brief's first line of prose. */
+  summarise(description: string): string {
+    return summariseBrief(description);
   }
 
   openEpic(initiativeId: string, epic?: EpicHierarchy): void {
@@ -85,29 +86,6 @@ export class HierarchyPageComponent implements OnInit {
     this.epicError.set('');
     this.epicForm.reset({ initiativeId, name: epic?.name ?? '', summary: epic?.summary ?? '' });
     this.epicDialog().open();
-  }
-
-  async saveInitiative(): Promise<void> {
-    if (this.initiativeForm.invalid) {
-      this.initiativeForm.markAllAsTouched();
-      this.initiativeError.set(
-        describeInvalidFields(this.initiativeForm, {
-          name: 'Name',
-          description: 'Outcome description',
-        }),
-      );
-      return;
-    }
-    this.initiativeError.set('');
-    this.pending.set(true);
-    const value = this.initiativeForm.getRawValue();
-    const saved = await this.service.saveInitiative(
-      this.initiativeId(),
-      value.name,
-      value.description,
-    );
-    this.pending.set(false);
-    if (saved) this.initiativeDialog().close();
   }
 
   async saveEpic(): Promise<void> {
@@ -157,11 +135,6 @@ export class HierarchyPageComponent implements OnInit {
     ) {
       await this.service.deleteEpic(epic.id);
     }
-  }
-
-  /** The outcome brief is a route of its own, so it can be linked to and deep-linked into. */
-  openBrief(initiative: InitiativeHierarchy): void {
-    void this.router.navigate(['/initiatives', initiative.id, 'brief']);
   }
 
   initiativeOptions(): readonly SelectOption<string>[] {

@@ -30,15 +30,6 @@ export class HierarchyService implements IHierarchyService {
     }
   }
 
-  async saveInitiative(id: string | null, name: string, description: string): Promise<boolean> {
-    return this.mutate(
-      id
-        ? this.backendService.updateInitiative(id, name, description)
-        : this.backendService.createInitiative(name, description),
-      'Initiative saved.',
-    );
-  }
-
   async deleteInitiative(id: string): Promise<boolean> {
     return this.mutate(this.backendService.deleteInitiative(id), 'Initiative deleted.');
   }

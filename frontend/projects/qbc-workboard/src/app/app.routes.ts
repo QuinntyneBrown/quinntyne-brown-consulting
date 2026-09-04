@@ -3,6 +3,12 @@ import { unlockedGuard } from './core/unlocked.guard';
 import { unsavedBriefGuard } from './features/initiative-brief/unsaved-brief.guard';
 import { AppShellComponent } from './shell/app-shell.component';
 
+/** The one surface an initiative is written on, whether it is being created or edited. */
+const initiativeEditor = () =>
+  import('./features/initiative-brief/initiative-brief-page.component').then(
+    (value) => value.InitiativeBriefPageComponent,
+  );
+
 export const routes: Routes = [
   {
     path: 'unlock',
@@ -37,15 +43,21 @@ export const routes: Routes = [
           ),
         title: 'Initiatives · QBC Workboard',
       },
+      // Ahead of the identified route, which would otherwise read "new" as an initiative's ID.
       {
-        path: 'initiatives/:initiativeId/brief',
-        loadComponent: () =>
-          import('./features/initiative-brief/initiative-brief-page.component').then(
-            (value) => value.InitiativeBriefPageComponent,
-          ),
-        title: 'Edit initiative brief · QBC Workboard',
+        path: 'initiatives/new',
+        loadComponent: initiativeEditor,
+        title: 'New initiative · QBC Workboard',
         canDeactivate: [unsavedBriefGuard],
       },
+      {
+        path: 'initiatives/:initiativeId',
+        loadComponent: initiativeEditor,
+        title: 'Edit initiative · QBC Workboard',
+        canDeactivate: [unsavedBriefGuard],
+      },
+      // The brief used to have a route of its own, before the name moved onto the same page.
+      { path: 'initiatives/:initiativeId/brief', redirectTo: 'initiatives/:initiativeId' },
       {
         path: 'assistants',
         loadComponent: () =>

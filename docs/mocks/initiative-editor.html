@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Interaction study for the Monaco-based markdown editor behind an initiative outcome brief in QBC Workboard.">
-  <title>Edit initiative brief &middot; QBC Workboard</title>
+  <meta name="description" content="Interaction study for creating and editing an initiative in QBC Workboard: a name and an outcome brief written as markdown.">
+  <title>Edit initiative &middot; QBC Workboard</title>
   <style>
     /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
        subset this page uses is repeated here, so the mock stays one self-contained
@@ -107,8 +107,6 @@
 
       /* Editor-only measurements, named here so the two rails and the writing
          column stay in one place while the layout is being reviewed. */
-      --qbc-rail-w:    268px;
-      --qbc-outline-w: 272px;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -244,6 +242,8 @@
     }
     .breadcrumb { overflow: hidden; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); text-overflow: ellipsis; white-space: nowrap; }
     .breadcrumb b { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .breadcrumb a:hover, .breadcrumb a:focus-visible { color: var(--qbc-accent-dark); text-decoration: underline; }
     .topbar-actions { display: flex; flex-wrap: wrap; gap: var(--qbc-s-2); align-items: center; justify-content: flex-end; }
 
     /* ---- Segmented view switch ------------------------------------------ */
@@ -284,85 +284,26 @@
     .save-state.is-dirty { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
     .save-state.is-saved { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
 
-    /* ---- Three-column editor layout -------------------------------------- */
+    /* ---- One centred writing column ---------------------------------------- */
     .editor-layout {
-      display: grid;
+      display: flex;
       min-height: 0;
       flex: 1;
-      grid-template-columns: var(--qbc-rail-w) minmax(0, 1fr) var(--qbc-outline-w);
+      justify-content: center;
+      padding: var(--qbc-s-5) var(--qbc-s-4);
+      overflow-y: auto;
     }
-    .editor-layout.is-focus-mode { grid-template-columns: minmax(0, 1fr); }
-    .editor-layout.is-focus-mode .rail { display: none; }
-
-    .rail {
-      display: flex;
-      min-height: 0;
-      flex-direction: column;
-      background: var(--qbc-surface-raised);
-    }
-    .rail.initiatives { border-right: 1px solid var(--qbc-line); }
-    .rail.outline { border-left: 1px solid var(--qbc-line); }
-
-    .rail-head {
-      display: flex;
-      gap: var(--qbc-s-2);
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--qbc-s-5) var(--qbc-s-4) var(--qbc-s-3);
-    }
-    .section-label {
-      margin: 0;
-      color: var(--qbc-ink-soft);
-      font-size: var(--qbc-fs-2xs);
-      font-weight: var(--qbc-fw-heavy);
-      letter-spacing: var(--qbc-tracking-eyebrow);
-      text-transform: uppercase;
-    }
-    .rail-body { overflow-y: auto; padding: 0 var(--qbc-s-3) var(--qbc-s-5); }
-
-    .initiative-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
-    .initiative-button {
-      display: block;
+    .editor-layout .editor-column {
       width: 100%;
-      padding: var(--qbc-s-3);
-      border: 1px solid transparent;
-      border-radius: var(--qbc-r-lg);
-      background: transparent;
-      font: inherit;
-      text-align: left;
-      cursor: pointer;
-    }
-    .initiative-button:hover { background: var(--qbc-surface-hover); }
-    .initiative-button[aria-current="true"] { border-color: var(--qbc-line); background: var(--qbc-panel); box-shadow: var(--qbc-shadow-card); }
-    .initiative-button strong { display: block; font-size: var(--qbc-fs-sm); line-height: var(--qbc-lh-snug); }
-    .initiative-button small {
-      display: -webkit-box;
+      max-width: 880px;
+      border: 1px solid var(--qbc-line);
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-panel);
       overflow: hidden;
-      margin-top: 3px;
-      color: var(--qbc-ink-soft);
-      font-size: var(--qbc-fs-2xs);
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
     }
-    .initiative-meta { display: flex; gap: var(--qbc-s-2); align-items: center; margin-top: var(--qbc-s-2); }
-    .initiative-button .dot { color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); }
+    /* The measure widens only when the preview sits beside the source. */
+    .editor-layout.is-split .editor-column { max-width: 1180px; }
 
-    .pill {
-      display: inline-flex;
-      gap: 5px;
-      align-items: center;
-      width: max-content;
-      padding: 3px 8px;
-      border-radius: var(--qbc-r-pill);
-      font-size: var(--qbc-fs-2xs);
-      font-weight: var(--qbc-fw-semibold);
-    }
-    .pill.active { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
-    .pill.draft { color: var(--qbc-blue); background: var(--qbc-blue-soft); }
-    .pill.planned { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
-    .pill.muted { color: var(--qbc-ink-soft); background: var(--qbc-soft); }
-
-    /* ---- Writing column --------------------------------------------------- */
     .editor-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--qbc-panel); }
 
     .brief-head { padding: var(--qbc-s-5) var(--qbc-s-6) var(--qbc-s-4); border-bottom: 1px solid var(--qbc-line); }
@@ -388,8 +329,6 @@
 
     .field-error { margin: var(--qbc-s-2) 0 0; color: var(--qbc-danger); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-medium); }
 
-    .brief-meta { display: flex; flex-wrap: wrap; gap: var(--qbc-s-2) var(--qbc-s-3); align-items: center; margin-top: var(--qbc-s-3); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
-    .brief-meta .dot { color: var(--qbc-ink-faint); }
 
     /* ---- Markdown toolbar --------------------------------------------------- */
     .toolbar {
@@ -404,11 +343,7 @@
     }
     .tool-group { display: flex; gap: 2px; align-items: center; }
     .tool-group + .tool-group { margin-left: var(--qbc-s-2); padding-left: var(--qbc-s-2); border-left: 1px solid var(--qbc-line); }
-    /* The formatting side takes the room it needs and the editor menu stays
-       at the end of the row, wrapped or not. */
     .toolbar-side { display: flex; flex-wrap: wrap; align-items: center; }
-    .toolbar-side.formatting { flex: 1 1 auto; }
-    .toolbar-side:not(.formatting) { flex: 0 0 auto; justify-content: flex-end; margin-left: auto; }
 
     .tool {
       display: grid;
@@ -433,40 +368,7 @@
     .tool.strike { text-decoration: line-through; }
     .tool.mono { font-family: var(--qbc-font-mono); font-size: var(--qbc-fs-xs); }
 
-    .menu-wrap { position: relative; }
-    .menu {
-      position: absolute;
-      z-index: 30;
-      top: calc(100% + 6px);
-      left: 0;
-      display: grid;
-      width: 250px;
-      padding: 6px;
-      border: 1px solid var(--qbc-line);
-      border-radius: var(--qbc-r-xl);
-      background: var(--qbc-panel);
-      box-shadow: var(--qbc-shadow-overlay);
-    }
-    .menu.to-right { right: 0; left: auto; }
-    .menu button {
-      padding: 9px var(--qbc-s-3);
-      border: 0;
-      border-radius: var(--qbc-r-sm);
-      background: transparent;
-      font: inherit;
-      font-size: var(--qbc-fs-sm);
-      text-align: left;
-      cursor: pointer;
-    }
-    .menu button:hover { background: var(--qbc-soft); }
-    .menu button small { display: block; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); }
-    .menu .menu-label { padding: var(--qbc-s-2) var(--qbc-s-3) 4px; }
-    .menu button[aria-checked] { position: relative; padding-left: 28px; }
-    .menu button[aria-checked="true"]::before { position: absolute; left: var(--qbc-s-3); color: var(--qbc-accent); content: "\2713"; }
-
-    /* Preview on its own hides the formatting controls: there is no source on
-       screen for them to act on. */
-    .toolbar.is-preview .toolbar-side.formatting { display: none; }
+    .toolbar.is-preview .toolbar-side { display: none; }
 
     /* ---- Panes -------------------------------------------------------------- */
     .panes { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr); }
@@ -499,23 +401,6 @@
        collapses to zero height inside the flex column. */
     #editor-host .monaco-editor { position: absolute; }
     #editor-host { position: relative; }
-
-    /* Offline fallback. It carries the same padding and metrics as the Monaco
-       host so the two read as one control while the mock is reviewed. */
-    .fallback-editor {
-      width: 100%;
-      min-height: 0;
-      flex: 1;
-      padding: 18px var(--qbc-s-6) var(--qbc-s-6);
-      border: 0;
-      color: var(--qbc-ink);
-      background: var(--qbc-panel);
-      font-family: var(--qbc-font-mono);
-      font-size: var(--qbc-fs-md);
-      line-height: 1.65;
-      resize: none;
-    }
-    .fallback-editor:focus { outline: 0; }
 
     .editor-loading {
       position: absolute;
@@ -561,10 +446,6 @@
       font-size: var(--qbc-fs-2xs);
     }
     .status-group { display: flex; flex-wrap: wrap; gap: var(--qbc-s-3); align-items: center; }
-    .status-bar .mono { font-family: var(--qbc-font-mono); }
-    .status-bar .engine { display: inline-flex; gap: 6px; align-items: center; }
-    .status-bar .engine::before { width: 6px; height: 6px; border-radius: var(--qbc-r-round); background: var(--qbc-accent); content: ""; }
-    .status-bar .engine.is-fallback::before { background: var(--qbc-amber); }
 
     /* ---- Rendered markdown ---------------------------------------------------- */
     .preview-scroll { overflow-y: auto; min-height: 0; flex: 1; }
@@ -613,42 +494,6 @@
 
     .preview-empty { padding: var(--qbc-s-8) var(--qbc-s-6); color: var(--qbc-ink-soft); text-align: center; }
 
-    /* ---- Outline and details rail ----------------------------------------------- */
-    .outline-list { display: grid; gap: 1px; margin: 0 0 var(--qbc-s-5); padding: 0; list-style: none; }
-    .outline-list button {
-      display: block;
-      width: 100%;
-      padding: 6px var(--qbc-s-3);
-      border: 0;
-      border-left: 2px solid transparent;
-      border-radius: 0 var(--qbc-r-2xs) var(--qbc-r-2xs) 0;
-      background: transparent;
-      color: var(--qbc-ink-soft);
-      font: inherit;
-      font-size: var(--qbc-fs-sm);
-      text-align: left;
-      cursor: pointer;
-    }
-    .outline-list button:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
-    .outline-list .level-1 button { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
-    .outline-list .level-2 button { padding-left: var(--qbc-s-5); }
-    .outline-list .level-3 button { padding-left: var(--qbc-s-7); font-size: var(--qbc-fs-xs); }
-    .outline-list .level-4 button, .outline-list .level-5 button, .outline-list .level-6 button { padding-left: var(--qbc-s-8); font-size: var(--qbc-fs-xs); }
-    .outline-list li.is-current button { border-left-color: var(--qbc-accent); color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
-
-    .rail-empty { margin: 0 0 var(--qbc-s-5); padding: 0 var(--qbc-s-3); color: var(--qbc-ink-faint); font-size: var(--qbc-fs-xs); }
-
-    .detail-list { display: grid; gap: var(--qbc-s-3); margin: 0 0 var(--qbc-s-5); padding: 0 var(--qbc-s-3); }
-    .detail-list div { display: flex; gap: var(--qbc-s-3); align-items: center; justify-content: space-between; }
-    .detail-list dt { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
-    .detail-list dd { margin: 0; font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); }
-
-    .cheatsheet { margin: 0 var(--qbc-s-3); }
-    .cheatsheet summary { padding: var(--qbc-s-2) 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); cursor: pointer; }
-    .cheatsheet dl { display: grid; gap: 7px; margin: var(--qbc-s-2) 0 0; grid-template-columns: auto 1fr; }
-    .cheatsheet dt { color: var(--qbc-ink-soft); font-family: var(--qbc-font-mono); font-size: var(--qbc-fs-2xs); }
-    .cheatsheet dd { margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); }
-
     /* ---- Confirm dialog and toast ---------------------------------------------- */
     dialog { padding: 0; border: 0; border-radius: var(--qbc-r-2xl); box-shadow: var(--qbc-shadow-overlay); }
     dialog::backdrop { background: var(--qbc-scrim); }
@@ -689,23 +534,19 @@
       background: var(--qbc-surface-raised);
       font-size: var(--qbc-fs-2xs);
     }
+    .editor-loading.is-error { color: var(--qbc-danger); }
 
     /* ---- Responsive ---------------------------------------------------------- */
-    @media (max-width: 1180px) {
-      .editor-layout { grid-template-columns: var(--qbc-rail-w) minmax(0, 1fr); }
-      .rail.outline { display: none; }
-    }
     @media (max-width: 1000px) {
       .app-shell { display: block; height: auto; }
       .sidebar { flex-direction: row; width: auto; align-items: center; gap: var(--qbc-s-6); border-right: 0; border-bottom: 1px solid var(--qbc-line); }
       .sidebar .brand { margin-bottom: 0; }
       .nav-list { display: flex; flex-wrap: wrap; gap: 2px; }
       .sidebar-foot { display: none; }
-      .editor-layout { grid-template-columns: minmax(0, 1fr); }
-      .rail.initiatives { max-height: 240px; border-right: 0; border-bottom: 1px solid var(--qbc-line); }
+      .editor-layout { padding: var(--qbc-s-3); }
       .panes.is-split { grid-template-columns: minmax(0, 1fr); }
       .panes.is-split .pane.preview-pane { border-top: 1px solid var(--qbc-line); border-left: 0; }
-      #editor-host, .fallback-editor { min-height: 420px; }
+      #editor-host { min-height: 420px; }
       .preview-scroll { min-height: 320px; }
     }
     @media (max-width: 760px) {
@@ -743,7 +584,7 @@
 
     <div class="workspace">
       <header class="topbar">
-        <p class="breadcrumb">Workspace / Initiatives / <b id="breadcrumb-name">Zero-friction sprint planning</b></p>
+        <p class="breadcrumb"><a href="index.html#hierarchy">Workspace</a> / <a href="index.html#hierarchy">Initiatives</a> / <b id="breadcrumb-name">Zero-friction sprint planning</b></p>
 
         <div class="topbar-actions">
           <div class="segmented" role="group" aria-label="Editor view">
@@ -755,22 +596,11 @@
           <span class="save-state" id="save-state" role="status">Saved 4 minutes ago</span>
 
           <button class="secondary-button" type="button" id="discard" disabled>Discard</button>
-          <button class="primary-button" type="button" id="save" disabled title="Save (Ctrl+S)">Save brief</button>
+          <button class="primary-button" type="button" id="save" disabled title="Save (Ctrl+S)">Save initiative</button>
         </div>
       </header>
 
       <div class="editor-layout" id="layout">
-        <!-- ---- Initiative rail ------------------------------------------- -->
-        <aside class="rail initiatives" aria-label="Initiatives">
-          <div class="rail-head">
-            <h2 class="section-label">Initiatives</h2>
-            <button class="quiet-button" type="button" id="new-initiative">＋ New</button>
-          </div>
-          <div class="rail-body">
-            <ul class="initiative-list" id="initiative-list"></ul>
-          </div>
-        </aside>
-
         <!-- ---- Writing column -------------------------------------------- -->
         <section class="editor-column" aria-label="Initiative brief">
           <div class="brief-head">
@@ -778,7 +608,6 @@
             <label class="visually-hidden" for="title">Initiative name</label>
             <input class="title-input" id="title" type="text" placeholder="Name the outcome" autocomplete="off" spellcheck="false">
             <p class="field-error" id="title-error" hidden>An initiative needs a name before its brief can be saved.</p>
-            <p class="brief-meta" id="brief-meta"></p>
           </div>
 
           <div class="toolbar">
@@ -805,39 +634,13 @@
                 <button class="tool" type="button" data-command="rule" title="Divider" aria-label="Divider">—</button>
               </div>
 
-              <div class="tool-group">
-                <div class="menu-wrap">
-                  <button class="tool" type="button" id="snippet-trigger" aria-expanded="false" aria-haspopup="true" aria-controls="snippet-menu">Insert ▾</button>
-                  <div class="menu" id="snippet-menu" hidden role="menu" aria-labelledby="snippet-trigger">
-                    <p class="section-label menu-label">Brief building blocks</p>
-                    <button type="button" role="menuitem" data-snippet="template">Outcome brief template<small>Outcome, signals, guardrails, epics</small></button>
-                    <button type="button" role="menuitem" data-snippet="outcome">Outcome statement<small>Who, what changes, why now</small></button>
-                    <button type="button" role="menuitem" data-snippet="signals">Success signals table<small>Signal, baseline, target</small></button>
-                    <button type="button" role="menuitem" data-snippet="epics">Epic checklist<small>Task list of planned epics</small></button>
-                    <button type="button" role="menuitem" data-snippet="risk">Risk callout<small>Blockquote with an owner</small></button>
-                  </div>
-                </div>
-              </div>
             </div>
 
-            <div class="toolbar-side">
-              <div class="tool-group">
-                <div class="menu-wrap">
-                  <button class="tool" type="button" id="view-trigger" aria-expanded="false" aria-haspopup="true" aria-controls="view-menu" title="Editor settings" aria-label="Editor settings">⋯</button>
-                  <div class="menu to-right" id="view-menu" hidden role="menu" aria-labelledby="view-trigger">
-                    <p class="section-label menu-label">Editor</p>
-                    <button type="button" role="menuitemcheckbox" id="toggle-wrap" aria-checked="true">Soft-wrap long lines<small>Keep every line inside the column</small></button>
-                    <button type="button" role="menuitemcheckbox" id="toggle-numbers" aria-checked="false">Show line numbers<small>Useful when reviewing a change</small></button>
-                    <button type="button" role="menuitemcheckbox" id="toggle-focus" aria-checked="false">Focus mode<small>Hide both rails; Escape returns</small></button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div class="panes" id="panes">
             <div class="pane">
-              <div class="pane-label"><span>Markdown</span><span id="editor-engine-label">Monaco</span></div>
+              <div class="pane-label"><span>Markdown</span></div>
               <div id="editor-host">
                 <div class="editor-loading" id="editor-loading">Loading the markdown editor…</div>
                 <div class="empty-hint" id="empty-hint" hidden>
@@ -858,52 +661,20 @@
 
           <div class="status-bar">
             <div class="status-group">
-              <span class="mono" id="cursor-position">Ln 1, Col 1</span>
               <span id="word-count">0 words</span>
               <span id="char-count">0 characters</span>
               <span id="read-time">under a minute to read</span>
             </div>
-            <div class="status-group">
-              <span id="autosave-note">Local draft up to date</span>
-              <span class="engine" id="engine-note">Monaco 0.56.0 · markdown</span>
-            </div>
           </div>
         </section>
-
-        <!-- ---- Outline and details rail ------------------------------------ -->
-        <aside class="rail outline" aria-label="Brief outline and details">
-          <div class="rail-head"><h2 class="section-label">Outline</h2></div>
-          <div class="rail-body">
-            <ul class="outline-list" id="outline"></ul>
-            <p class="rail-empty" id="outline-empty" hidden>Headings appear here as you write them.</p>
-
-            <h2 class="section-label" style="padding: 0 var(--qbc-s-3) var(--qbc-s-2);">Details</h2>
-            <dl class="detail-list" id="details"></dl>
-
-            <details class="cheatsheet">
-              <summary>Markdown and shortcuts</summary>
-              <dl>
-                <dt>Ctrl/⌘ B</dt><dd>Bold</dd>
-                <dt>Ctrl/⌘ I</dt><dd>Italic</dd>
-                <dt>Ctrl/⌘ K</dt><dd>Link</dd>
-                <dt>Ctrl/⌘ S</dt><dd>Save the brief</dd>
-                <dt>Ctrl/⌘ F</dt><dd>Find in the brief</dd>
-                <dt>Alt 1/2/3</dt><dd>Write, split, preview</dd>
-                <dt>## text</dt><dd>Heading</dd>
-                <dt>- [ ]</dt><dd>Task</dd>
-                <dt>| a | b |</dt><dd>Table row</dd>
-                <dt>/</dt><dd>Snippet suggestions</dd>
-              </dl>
-            </details>
-          </div>
-        </aside>
       </div>
 
       <p class="mock-note">
         Interaction study. Nothing is persisted: edits live in this tab only, and
-        reloading restores the sample briefs. The editor is Monaco, loaded from a
-        CDN; offline it falls back to a plain markdown text area with the same
-        toolbar, shortcuts, and preview.
+        reloading restores the sample briefs. An initiative is a name and an outcome
+        brief written as markdown, created and edited on this one page; open it with
+        <code>?new</code> to start one. The editor is Monaco, loaded from a CDN, and
+        a brief cannot be written without it.
       </p>
     </div>
   </div>
@@ -1083,33 +854,6 @@
         "## Open questions",
         "",
         "1. <question that still needs an owner>",
-        ""
-      ].join("\n"),
-      outcome: [
-        "## Outcome",
-        "",
-        "A <role> can <do the thing> in <constraint>, so that <benefit>.",
-        ""
-      ].join("\n"),
-      signals: [
-        "## Success signals",
-        "",
-        "| Signal | Baseline | Target |",
-        "| --- | --- | --- |",
-        "| <what is measured> | <today> | <after> |",
-        "| <what is measured> | <today> | <after> |",
-        ""
-      ].join("\n"),
-      epics: [
-        "## Epics",
-        "",
-        "- [ ] <epic name>",
-        "- [ ] <epic name>",
-        ""
-      ].join("\n"),
-      risk: [
-        "> **Risk** — <what could go wrong>.",
-        "> Owner: <name>. Reviewed: <date>.",
         ""
       ].join("\n")
     };
@@ -1300,23 +1044,6 @@
       return out.join("\n");
     };
 
-    /* Headings in document order, for the outline rail. */
-    const readOutline = (source) => {
-      const headings = [];
-      source.split("\n").forEach((line, position) => {
-        const match = line.match(/^(#{1,6})\s+(.*)$/);
-        if (match && match[2].trim()) {
-          headings.push({
-            level: match[1].length,
-            text: match[2].replace(/[*_`~]/g, "").trim(),
-            line: position + 1,
-            id: "heading-" + position
-          });
-        }
-      });
-      return headings;
-    };
-
     /* ------------------------------------------------------------------ *
      * Editing primitives
      *
@@ -1424,58 +1151,6 @@
      * Both expose the same surface: read and write text with a selection,
      * report changes and cursor moves, and reveal a line.
      * ------------------------------------------------------------------ */
-    const createFallbackAdapter = (host) => {
-      const area = document.createElement("textarea");
-      area.className = "fallback-editor";
-      area.setAttribute("aria-label", "Initiative brief, markdown source");
-      area.spellcheck = true;
-      host.appendChild(area);
-
-      let onChange = () => {};
-      let onCursor = () => {};
-
-      const report = () => onCursor(area.selectionStart);
-      area.addEventListener("input", () => { onChange(); report(); });
-      area.addEventListener("keyup", report);
-      area.addEventListener("click", report);
-      area.addEventListener("select", report);
-
-      return {
-        kind: "textarea",
-        label: "Text area (offline fallback)",
-        getState: () => ({ text: area.value, start: area.selectionStart, end: area.selectionEnd }),
-        apply: (next) => {
-          area.value = next.text;
-          area.setSelectionRange(next.start, next.end);
-          area.focus();
-          onChange();
-          report();
-        },
-        getValue: () => area.value,
-        setValue: (text) => { area.value = text; area.setSelectionRange(0, 0); report(); },
-        focus: () => area.focus(),
-        revealLine: (line) => {
-          const offset = area.value.split("\n").slice(0, line - 1).join("\n").length + (line > 1 ? 1 : 0);
-          area.focus();
-          area.setSelectionRange(offset, offset);
-          /* No line metrics are available here, so scroll proportionally. */
-          const total = Math.max(area.value.split("\n").length, 1);
-          area.scrollTop = Math.max(0, ((line - 1) / total) * area.scrollHeight - 40);
-          report();
-        },
-        positionAt: (offset) => {
-          const before = area.value.slice(0, offset).split("\n");
-          return { line: before.length, column: before[before.length - 1].length + 1 };
-        },
-        setWordWrap: () => {},
-        setLineNumbers: () => {},
-        supportsLineNumbers: false,
-        onChange: (handler) => { onChange = handler; },
-        onCursor: (handler) => { onCursor = handler; },
-        layout: () => {}
-      };
-    };
-
     const createMonacoAdapter = (host, monaco, initialText) => {
       monaco.editor.defineTheme("qbc-light", {
         base: "vs",
@@ -1585,9 +1260,6 @@
           const position = model.getPositionAt(offset);
           return { line: position.lineNumber, column: position.column };
         },
-        setWordWrap: (on) => editor.updateOptions({ wordWrap: on ? "on" : "off" }),
-        setLineNumbers: (on) => editor.updateOptions({ lineNumbers: on ? "on" : "off" }),
-        supportsLineNumbers: true,
         onChange: (handler) => { onChange = handler; },
         onCursor: (handler) => { onCursor = handler; },
         layout: () => editor.layout()
@@ -1612,8 +1284,6 @@
     const saveButton = el("save");
     const discardButton = el("discard");
     const saveState = el("save-state");
-    const outlineList = el("outline");
-    const outlineEmpty = el("outline-empty");
     const emptyHint = el("empty-hint");
     const guardDialog = el("guard-dialog");
 
@@ -1621,11 +1291,9 @@
       currentId: INITIATIVES[0].id,
       view: "write",
       dirty: false,
-      wordWrap: true,
-      lineNumbers: false,
-      focusMode: false,
       pendingAction: null,
-      autosaveTimer: 0,
+      isNew: false,
+      nameAsked: false,
       previewTimer: 0
     };
 
@@ -1643,121 +1311,6 @@
     };
 
     /* ---- Rendering ---------------------------------------------------- */
-    const renderRail = () => {
-      const list = el("initiative-list");
-      list.textContent = "";
-
-      INITIATIVES.forEach((initiative) => {
-        const item = document.createElement("li");
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "initiative-button";
-        button.setAttribute("aria-current", initiative.id === state.currentId ? "true" : "false");
-
-        const name = document.createElement("strong");
-        name.textContent = initiative.name || "Untitled initiative";
-
-        const summary = document.createElement("small");
-        const firstProse = initiative.body
-          .split("\n")
-          .find((line) => line.trim() && !line.startsWith("#") && !line.startsWith(">") && !line.startsWith("|"));
-        summary.textContent = firstProse ? firstProse.replace(/[*_`]/g, "") : "No brief written yet.";
-
-        const meta = document.createElement("span");
-        meta.className = "initiative-meta";
-        const pill = document.createElement("span");
-        pill.className = "pill " + initiative.status;
-        pill.textContent = STATUS_LABELS[initiative.status];
-        const counts = document.createElement("span");
-        counts.className = "dot";
-        counts.textContent = initiative.epicCount + " epics · " + initiative.storyCount + " stories";
-        meta.append(pill, counts);
-
-        button.append(name, summary, meta);
-        button.addEventListener("click", () => selectInitiative(initiative.id));
-        item.appendChild(button);
-        list.appendChild(item);
-      });
-    };
-
-    const renderBriefMeta = () => {
-      const initiative = current();
-      const meta = el("brief-meta");
-      meta.textContent = "";
-
-      const pill = document.createElement("span");
-      pill.className = "pill " + initiative.status;
-      pill.textContent = STATUS_LABELS[initiative.status];
-
-      const counts = document.createElement("span");
-      counts.textContent = initiative.epicCount + " epics · " + initiative.storyCount + " stories";
-
-      const owner = document.createElement("span");
-      owner.textContent = "Owner: " + initiative.owner;
-
-      const separator = () => {
-        const dot = document.createElement("span");
-        dot.className = "dot";
-        dot.textContent = "·";
-        return dot;
-      };
-
-      meta.append(pill, counts, separator(), owner);
-
-      el("details").textContent = "";
-      [
-        ["Status", STATUS_LABELS[initiative.status]],
-        ["Owner", initiative.owner],
-        ["Epics", String(initiative.epicCount)],
-        ["Stories", String(initiative.storyCount)],
-        ["Last saved", initiative.savedAgo]
-      ].forEach((pair) => {
-        const row = document.createElement("div");
-        const term = document.createElement("dt");
-        term.textContent = pair[0];
-        const value = document.createElement("dd");
-        value.textContent = pair[1];
-        row.append(term, value);
-        el("details").appendChild(row);
-      });
-    };
-
-    const renderOutline = (source) => {
-      const headings = readOutline(source);
-      outlineList.textContent = "";
-      outlineEmpty.hidden = headings.length > 0;
-
-      headings.forEach((heading) => {
-        const item = document.createElement("li");
-        item.className = "level-" + heading.level;
-        item.dataset.line = String(heading.line);
-
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = heading.text;
-        button.addEventListener("click", () => {
-          if (state.view === "preview") {
-            const target = preview.querySelector("#" + heading.id);
-            if (target) { target.scrollIntoView({ behavior: "smooth", block: "start" }); }
-            return;
-          }
-          adapter.revealLine(heading.line);
-        });
-
-        item.appendChild(button);
-        outlineList.appendChild(item);
-      });
-    };
-
-    const markCurrentHeading = (line) => {
-      let currentItem = null;
-      Array.prototype.forEach.call(outlineList.children, (item) => {
-        item.classList.remove("is-current");
-        if (Number(item.dataset.line) <= line) { currentItem = item; }
-      });
-      if (currentItem) { currentItem.classList.add("is-current"); }
-    };
-
     const renderPreview = (source) => {
       if (!source.trim()) {
         preview.innerHTML = '<p class="preview-empty">Nothing to preview yet. The brief is empty.</p>';
@@ -1801,25 +1354,10 @@
 
       emptyHint.hidden = source.trim().length > 0;
       renderCounts(source);
-      renderOutline(source);
       setDirty(isChanged());
 
       window.clearTimeout(state.previewTimer);
       state.previewTimer = window.setTimeout(() => renderPreview(source), 120);
-
-      window.clearTimeout(state.autosaveTimer);
-      el("autosave-note").textContent = state.dirty ? "Draft not yet saved" : "Local draft up to date";
-      if (state.dirty) {
-        state.autosaveTimer = window.setTimeout(() => {
-          el("autosave-note").textContent = "Local draft kept in this tab";
-        }, 1400);
-      }
-    };
-
-    const onCursorMoved = (offset) => {
-      const position = adapter.positionAt(offset);
-      el("cursor-position").textContent = "Ln " + position.line + ", Col " + position.column;
-      markCurrentHeading(position.line);
     };
 
     /* ---- Commands -------------------------------------------------------- */
@@ -1829,18 +1367,18 @@
       adapter.apply(command(adapter.getState()));
     };
 
-    const insertSnippet = (name) => {
-      const block = SNIPPETS[name];
-      if (!block || !adapter) { return; }
-      const editorState = adapter.getState();
-      adapter.apply(insertBlock(editorState.text, editorState.start, editorState.end, block));
-      toast("Inserted the " + name + " block");
+    /* The empty brief offers the house template; nothing else is inserted for the writer. */
+    const insertTemplate = () => {
+      if (!adapter) { return; }
+      adapter.setValue(SNIPPETS.template);
+      onContentChanged();
     };
 
     /* ---- Views ------------------------------------------------------------ */
     const setView = (view) => {
       state.view = view;
       panes.classList.toggle("is-split", view === "split");
+      layout.classList.toggle("is-split", view === "split");
       document.querySelector(".toolbar").classList.toggle("is-preview", view === "preview");
       writePane.hidden = view === "preview";
       previewPane.hidden = view === "write";
@@ -1853,23 +1391,19 @@
       if (view !== "preview" && adapter) { window.setTimeout(() => adapter.layout(), 0); }
     };
 
-    const setFocusMode = (on) => {
-      state.focusMode = on;
-      layout.classList.toggle("is-focus-mode", on);
-      el("toggle-focus").setAttribute("aria-checked", String(on));
-      if (adapter) { window.setTimeout(() => adapter.layout(), 0); }
-    };
-
     /* ---- Saving ------------------------------------------------------------ */
-    const validate = () => {
+    /* A new initiative opens with an empty name, which is not yet a mistake. The name is only
+       reported as missing once a save has asked for it. */
+    const validate = ({ reveal = false } = {}) => {
       const valid = titleInput.value.trim().length > 0;
-      titleError.hidden = valid;
-      titleInput.setAttribute("aria-invalid", String(!valid));
+      if (reveal) { state.nameAsked = true; }
+      titleError.hidden = valid || !state.nameAsked;
+      titleInput.setAttribute("aria-invalid", String(!valid && state.nameAsked));
       return valid;
     };
 
     const save = () => {
-      if (!validate()) {
+      if (!validate({ reveal: true })) {
         titleInput.focus();
         toast("Give the initiative a name before saving");
         return false;
@@ -1883,10 +1417,8 @@
       titleInput.value = initiative.name;
       el("breadcrumb-name").textContent = initiative.name;
       setDirty(false);
-      el("autosave-note").textContent = "Local draft up to date";
-      renderRail();
-      renderBriefMeta();
-      toast("Initiative brief saved");
+      toast(state.isNew ? "Initiative created" : "Initiative saved");
+      state.isNew = false;
       return true;
     };
 
@@ -1936,40 +1468,35 @@
       const initiative = current();
 
       titleInput.value = initiative.name;
-      el("breadcrumb-name").textContent = initiative.name || "Untitled initiative";
+      el("breadcrumb-name").textContent = initiative.name || "New initiative";
       adapter.setValue(initiative.body);
 
       validate();
-      renderRail();
-      renderBriefMeta();
       onContentChanged();
       setDirty(false);
-      onCursorMoved(0);
     };
 
-    const selectInitiative = (id) => {
-      if (id === state.currentId) { return; }
-      guard(() => loadInitiative(id));
+    /**
+     * A new initiative is the same surface with nothing saved behind it. The hierarchy asks for one
+     * with ?new, and an existing one is addressed by its id, so both arrive here the same way.
+     */
+    const startNewInitiative = () => {
+      const initiative = {
+        id: "init-" + Date.now(),
+        name: "",
+        status: "draft",
+        owner: "Unassigned",
+        epicCount: 0,
+        storyCount: 0,
+        savedAgo: "never",
+        body: SNIPPETS.template
+      };
+      INITIATIVES.push(initiative);
+      state.isNew = true;
+      state.nameAsked = false;
+      loadInitiative(initiative.id);
+      titleInput.focus();
     };
-
-    el("new-initiative").addEventListener("click", () => {
-      guard(() => {
-        const initiative = {
-          id: "init-" + Date.now(),
-          name: "",
-          status: "draft",
-          owner: "Unassigned",
-          epicCount: 0,
-          storyCount: 0,
-          savedAgo: "never",
-          body: ""
-        };
-        INITIATIVES.push(initiative);
-        loadInitiative(initiative.id);
-        titleInput.focus();
-        setView("write");
-      });
-    });
 
     /* ---- Toolbar, title, and menus -------------------------------------------- */
     document.querySelectorAll("[data-command]").forEach((button) => {
@@ -1977,46 +1504,11 @@
     });
 
     document.querySelectorAll("[data-snippet]").forEach((button) => {
-      button.addEventListener("click", () => {
-        insertSnippet(button.dataset.snippet);
-        closeMenus();
-      });
+      button.addEventListener("click", insertTemplate);
     });
 
-    /* Both toolbar menus share one discipline: at most one open, closed by a
-       click anywhere else or by Escape. */
-    const MENUS = [];
-
-    const closeMenus = () => {
-      MENUS.forEach((menu) => {
-        menu.panel.hidden = true;
-        menu.trigger.setAttribute("aria-expanded", "false");
-      });
-    };
-
-    const anyMenuOpen = () => MENUS.some((menu) => !menu.panel.hidden);
-
-    const registerMenu = (triggerId, panelId) => {
-      const trigger = el(triggerId);
-      const panel = el(panelId);
-      MENUS.push({ trigger: trigger, panel: panel });
-
-      trigger.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const willOpen = panel.hidden;
-        closeMenus();
-        panel.hidden = !willOpen;
-        trigger.setAttribute("aria-expanded", String(willOpen));
-      });
-      panel.addEventListener("click", (event) => event.stopPropagation());
-    };
-
-    registerMenu("snippet-trigger", "snippet-menu");
-    registerMenu("view-trigger", "view-menu");
-    document.addEventListener("click", closeMenus);
-
     titleInput.addEventListener("input", () => {
-      el("breadcrumb-name").textContent = titleInput.value.trim() || "Untitled initiative";
+      el("breadcrumb-name").textContent = titleInput.value.trim() || "New initiative";
       if (titleInput.value.trim()) { validate(); }
       setDirty(isChanged());
     });
@@ -2026,26 +1518,6 @@
 
     document.querySelectorAll(".segmented button").forEach((button) => {
       button.addEventListener("click", () => setView(button.dataset.view));
-    });
-
-    el("toggle-wrap").addEventListener("click", () => {
-      state.wordWrap = !state.wordWrap;
-      el("toggle-wrap").setAttribute("aria-checked", String(state.wordWrap));
-      adapter.setWordWrap(state.wordWrap);
-    });
-
-    el("toggle-numbers").addEventListener("click", () => {
-      state.lineNumbers = !state.lineNumbers;
-      el("toggle-numbers").setAttribute("aria-checked", String(state.lineNumbers));
-      adapter.setLineNumbers(state.lineNumbers);
-    });
-
-    /* Focus mode changes the whole layout, so the menu it was chosen from
-       gets out of the way. The two display toggles above leave it open, so a
-       reviewer can flip both without reopening it. */
-    el("toggle-focus").addEventListener("click", () => {
-      closeMenus();
-      setFocusMode(!state.focusMode);
     });
 
     /* Shortcuts that must work from anywhere on the page. Monaco owns the same
@@ -2064,10 +1536,6 @@
         setView({ 1: "write", 2: "split", 3: "preview" }[Number(event.key)]);
         return;
       }
-      if (event.key === "Escape") {
-        if (anyMenuOpen()) { closeMenus(); }
-        else if (state.focusMode) { setFocusMode(false); }
-      }
     });
 
     /* ---- Editor bootstrap ------------------------------------------------------ */
@@ -2075,31 +1543,29 @@
       adapter = created;
       el("editor-loading").remove();
 
-      el("editor-engine-label").textContent = adapter.kind === "monaco" ? "Monaco" : "Text area";
-      el("engine-note").textContent = adapter.kind === "monaco"
-        ? "Monaco " + MONACO_VERSION + " · markdown"
-        : "Offline fallback · markdown";
-      el("engine-note").classList.toggle("is-fallback", adapter.kind !== "monaco");
-
-      if (!adapter.supportsLineNumbers) {
-        const numbers = el("toggle-numbers");
-        numbers.disabled = true;
-        numbers.title = "Line numbers need the Monaco editor";
-      }
-
       adapter.onChange(onContentChanged);
-      adapter.onCursor(onCursorMoved);
 
-      loadInitiative(state.currentId);
+      /* The hierarchy addresses a new initiative with ?new and an existing one with ?id. An id the
+         study does not carry opens the first sample brief, so the link still demonstrates the flow. */
+      const route = new URLSearchParams(window.location.search);
+      const requested = route.get("id");
+      if (route.has("new")) {
+        startNewInitiative();
+      } else {
+        loadInitiative(INITIATIVES.some((item) => item.id === requested) ? requested : state.currentId);
+      }
       setView("write");
     };
 
-    const startFallback = (reason) => {
+    /**
+     * A brief is markdown whichever way it is written, so there is no plainer control to fall back
+     * to. An editor that cannot be loaded says so instead of offering a lesser surface.
+     */
+    const reportEditorUnavailable = () => {
       if (adapter) { return; }
-      finishBootstrap(createFallbackAdapter(host));
-      if (reason) {
-        toast("Monaco could not load; using the offline markdown editor");
-      }
+      el("editor-loading").textContent =
+        "The markdown editor could not be loaded. Reload the page to write this brief.";
+      el("editor-loading").classList.add("is-error");
     };
 
     const startMonaco = () => {
@@ -2114,24 +1580,23 @@
 
       const loader = document.createElement("script");
       loader.src = MONACO_BASE + "/vs/loader.js";
-      loader.addEventListener("error", () => startFallback("network"));
+      loader.addEventListener("error", reportEditorUnavailable);
       loader.addEventListener("load", () => {
         window.require.config({ paths: { vs: MONACO_BASE + "/vs" } });
         window.require(["vs/editor/editor.main"], (monaco) => {
           if (adapter) { return; }
           finishBootstrap(createMonacoAdapter(host, monaco, current().body));
           registerMonacoExtras(monaco, adapter.editor);
-        }, () => startFallback("network"));
+        }, reportEditorUnavailable);
       });
 
       document.head.appendChild(loader);
-      /* If the CDN is unreachable the load event never fires, so the study
-         falls back on its own rather than sitting on a spinner. */
-      window.setTimeout(() => startFallback("timeout"), 9000);
+      /* If the CDN is unreachable the load event never fires, so the study reports the failure on
+         its own rather than sitting on a spinner. */
+      window.setTimeout(reportEditorUnavailable, 9000);
     };
 
-    /* Editor-local actions and the snippet completions that make the markdown
-       experience feel native rather than bolted on. */
+    /* Editor-local actions for the commands the toolbar also carries. */
     const registerMonacoExtras = (monaco, editor) => {
       const action = (id, label, keybinding, run) => editor.addAction({
         id: id,
@@ -2149,49 +1614,8 @@
       action("qbc.table", "Markdown: Signals table", null, () => runCommand("table"));
       action("qbc.save", "Save the initiative brief", monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => { save(); });
 
-      monaco.languages.registerCompletionItemProvider("markdown", {
-        triggerCharacters: ["/"],
-        provideCompletionItems: (model, position) => {
-          const word = model.getWordUntilPosition(position);
-          const line = model.getValueInRange({
-            startLineNumber: position.lineNumber,
-            startColumn: 1,
-            endLineNumber: position.lineNumber,
-            endColumn: position.column
-          });
-          const slash = line.lastIndexOf("/");
-          const range = {
-            startLineNumber: position.lineNumber,
-            endLineNumber: position.lineNumber,
-            startColumn: slash >= 0 ? slash + 1 : word.startColumn,
-            endColumn: position.column
-          };
-
-          const snippet = (label, detail, text) => ({
-            label: label,
-            detail: detail,
-            kind: monaco.languages.CompletionItemKind.Snippet,
-            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-            insertText: text,
-            range: range
-          });
-
-          return {
-            suggestions: [
-              snippet("/outcome", "Outcome statement", "## Outcome\n\nA ${1:role} can ${2:do the thing} in ${3:constraint}, so that ${4:benefit}.\n"),
-              snippet("/signals", "Success signals table", "## Success signals\n\n| Signal | Baseline | Target |\n| --- | --- | --- |\n| ${1:what is measured} | ${2:today} | ${3:after} |\n"),
-              snippet("/epic", "Epic checklist item", "- [ ] ${1:epic name}"),
-              snippet("/risk", "Risk callout", "> **Risk** — ${1:what could go wrong}.\n> Owner: ${2:name}. Reviewed: ${3:date}.\n"),
-              snippet("/question", "Open question", "1. ${1:question that still needs an owner}"),
-              snippet("/guardrail", "Guardrail", "## Guardrails\n\n- ${1:a constraint delivery must respect}\n")
-            ]
-          };
-        }
-      });
     };
 
-    renderRail();
-    renderBriefMeta();
     startMonaco();
   </script>
 </body>
