@@ -58,6 +58,9 @@ export class BacklogPageComponent implements OnInit {
   edit(id: string): void {
     this.editor.open(id);
   }
+  create(): void {
+    this.editor.openNew();
+  }
   search(value: string): void {
     this.service.setSearch(value);
   }
@@ -77,9 +80,18 @@ export class BacklogPageComponent implements OnInit {
     this.pendingStoryId.set(null);
   }
 
-  sprintOptions(): readonly SelectOption[] {
+  /**
+   * A story may only be planned into a sprint that has not finished. A story kept in a completed
+   * sprint still names it, because that membership is the story's current disposition.
+   */
+  sprintOptions(story: Story): readonly SelectOption[] {
+    const history: SelectOption[] =
+      story.sprintId !== null && story.sprintStatus === 'completed'
+        ? [{ value: story.sprintId, label: story.sprintName ?? 'Completed sprint', disabled: true }]
+        : [];
     return [
       { value: '', label: 'Backlog' },
+      ...history,
       ...this.planning
         .sprints()
         .filter((sprint) => sprint.status !== 'completed')

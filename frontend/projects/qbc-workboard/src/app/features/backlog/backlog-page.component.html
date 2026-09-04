@@ -31,7 +31,12 @@
     <qbc-empty-state
       title="No matching stories"
       description="Try another filter or create a new story."
-    />
+      ><qbc-button
+        actions
+        (click)="create()"
+        >New story</qbc-button
+      ></qbc-empty-state
+    >
   } @else {
     <div class="data-list">
       @for (story of service.visibleStories(); track story.id) {
@@ -56,7 +61,7 @@
             ariaLabel="Sprint assignment"
             [labelHidden]="true"
             [value]="story.sprintId ?? ''"
-            [options]="sprintOptions()"
+            [options]="sprintOptions(story)"
             [disabled]="
               pendingStoryId() === story.id ||
               !story.isReady ||
@@ -75,7 +80,9 @@
               >Groom</qbc-button
             >
           }
-          @if (story.isReady && !story.sprintId) {
+          @if (
+            story.isReady && story.lifecycle !== 'archived' && story.sprintStatus !== 'completed'
+          ) {
             <qbc-button
               actions
               variant="quiet"

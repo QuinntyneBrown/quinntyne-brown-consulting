@@ -17,12 +17,43 @@ type AssistantDraft = Pick<Assistant, 'fullName' | 'role' | 'specialties' | 'ava
 type EpicDraft = Pick<Epic, 'initiativeId' | 'name' | 'summary'>;
 type InitiativeDraft = Pick<Initiative, 'name' | 'description'>;
 type SprintDraft = Pick<Sprint, 'name' | 'goal' | 'startDate'>;
+type FieldErrors = Record<string, string[]>;
+
+/** The only estimates the product accepts, in the order the story editor offers them. */
+export const ACCEPTED_ESTIMATES: readonly number[] = [1, 2, 3, 5, 8, 13];
+
+const AVAILABILITIES: readonly Assistant['availability'][] = [
+  'available',
+  'limited',
+  'unavailable',
+];
+
+/**
+ * A stateful stand-in for the workspace API, answered inside the browser so the acceptance suite
+ * needs neither a server process nor a database. It enforces the same relationship, grooming, and
+ * lifecycle rules the real API exposes, because the rejection scenarios in `docs/specs/L2.md` are
+ * observed through the feedback those rules produce.
+ */
+/** The resources a caller may read without holding a workspace session. */
+const UNGATED = new Set(['/api/access/unlock', '/api/version']);
 
 export class WorkboardApiMock {
   readonly unexpectedRequests: string[] = [];
+  /** Every request the browser made that needs a workspace session, as `METHOD /path`. */
+  readonly gatedRequests: string[] = [];
   requestCount = 0;
 
   private readonly state: WorkboardApiState = createWorkboardApiState();
+
+  /** Shape the workspace a scenario starts from, before the browser loads the application. */
+  seed(mutate: (state: WorkboardApiState) => void): void {
+    mutate(this.state);
+  }
+
+  /** End the workspace session, so the credential the browser holds is refused from now on. */
+  expireSession(): void {
+    this.state.fault.rejectSession = true;
+  }
 
   async install(page: Page): Promise<void> {
     await page.route('**/api/**', (route) => this.handle(route));
@@ -34,9 +65,21 @@ export class WorkboardApiMock {
     const method = request.method();
     const path = url.pathname;
     this.requestCount += 1;
+    if (!UNGATED.has(path)) this.gatedRequests.push(`${method} ${path}`);
+
+    const { delayPath, delayMs } = this.state.fault;
+    if (delayPath?.test(path)) await new Promise((resolve) => setTimeout(resolve, delayMs));
 
     try {
       if (method === 'POST' && path === '/api/access/unlock') {
+        if (this.state.fault.throttleUnlock) {
+          return this.problem(
+            route,
+            429,
+            'Too many attempts',
+            'Too many passcode attempts. Try again later.',
+          );
+        }
         const { passcode } = request.postDataJSON() as { passcode: string };
         if (passcode !== this.state.passcode) {
           return this.problem(route, 401, 'Workspace is locked', 'That passcode is not right.');
@@ -48,7 +91,17 @@ export class WorkboardApiMock {
       }
 
       if (method === 'GET' && path === '/api/version') {
+        if (this.state.fault.versionUnreachable) return route.abort('failed');
         return this.json(route, 200, this.state.deployment);
+      }
+
+      if (this.state.fault.rejectSession) {
+        return this.problem(
+          route,
+          401,
+          'Workspace is locked',
+          'This workspace session has ended. Enter the passcode again.',
+        );
       }
 
       if (method === 'GET' && path === '/api/workspace') {
@@ -65,6 +118,8 @@ export class WorkboardApiMock {
 
       if (path === '/api/initiatives' && method === 'POST') {
         const draft = this.body<InitiativeDraft>(route);
+        const errors = this.initiativeErrors(draft);
+        if (errors) return this.invalid(route, errors);
         const initiative: Initiative = { id: this.newId(), ...draft };
         this.state.initiatives.push(initiative);
         return this.json(route, 201, initiative);
@@ -73,9 +128,12 @@ export class WorkboardApiMock {
       const initiativeMatch = path.match(/^\/api\/initiatives\/([^/]+)$/);
       if (initiativeMatch && method === 'PUT') {
         const id = initiativeMatch[1];
-        const existing = this.state.initiatives.find((item) => item.id === id);
-        if (!existing) return this.notFound(route, 'Initiative');
-        const initiative: Initiative = { id, ...this.body<InitiativeDraft>(route) };
+        if (!this.state.initiatives.some((item) => item.id === id))
+          return this.notFound(route, 'Initiative');
+        const draft = this.body<InitiativeDraft>(route);
+        const errors = this.initiativeErrors(draft);
+        if (errors) return this.invalid(route, errors);
+        const initiative: Initiative = { id, ...draft };
         this.replace(this.state.initiatives, id, initiative);
         return this.json(route, 200, initiative);
       }
@@ -99,6 +157,8 @@ export class WorkboardApiMock {
         const draft = this.body<EpicDraft>(route);
         if (!this.state.initiatives.some((item) => item.id === draft.initiativeId))
           return this.notFound(route, 'Initiative');
+        const errors = this.epicErrors(draft);
+        if (errors) return this.invalid(route, errors);
         const epic: Epic = { id: this.newId(), ...draft };
         this.state.epics.push(epic);
         return this.json(route, 201, epic);
@@ -108,7 +168,12 @@ export class WorkboardApiMock {
       if (epicMatch && method === 'PUT') {
         const id = epicMatch[1];
         if (!this.state.epics.some((item) => item.id === id)) return this.notFound(route, 'Epic');
-        const epic: Epic = { id, ...this.body<EpicDraft>(route) };
+        const draft = this.body<EpicDraft>(route);
+        if (!this.state.initiatives.some((item) => item.id === draft.initiativeId))
+          return this.notFound(route, 'Initiative');
+        const errors = this.epicErrors(draft);
+        if (errors) return this.invalid(route, errors);
+        const epic: Epic = { id, ...draft };
         this.replace(this.state.epics, id, epic);
         return this.json(route, 200, epic);
       }
@@ -135,9 +200,12 @@ export class WorkboardApiMock {
         );
       }
       if (path === '/api/assistants' && method === 'POST') {
+        const draft = this.body<AssistantDraft>(route);
+        const errors = this.assistantErrors(draft);
+        if (errors) return this.invalid(route, errors);
         const assistant: Assistant = {
           id: this.newId(),
-          ...this.body<AssistantDraft>(route),
+          ...draft,
           storyCount: 0,
           incompleteTaskCount: 0,
           blockingAssignments: [],
@@ -157,9 +225,12 @@ export class WorkboardApiMock {
         const id = assistantMatch[1];
         const existing = this.state.assistants.find((item) => item.id === id);
         if (!existing) return this.notFound(route, 'Assistant');
+        const draft = this.body<AssistantDraft>(route);
+        const errors = this.assistantErrors(draft);
+        if (errors) return this.invalid(route, errors);
         const assistant: Assistant = {
           id,
-          ...this.body<AssistantDraft>(route),
+          ...draft,
           storyCount: existing.storyCount,
           incompleteTaskCount: existing.incompleteTaskCount,
           blockingAssignments: existing.blockingAssignments,
@@ -169,8 +240,8 @@ export class WorkboardApiMock {
       }
       if (assistantMatch && method === 'DELETE') {
         const id = assistantMatch[1];
-        const assistant = this.state.assistants.find((item) => item.id === id);
-        if (!assistant) return this.notFound(route, 'Assistant');
+        if (!this.state.assistants.some((item) => item.id === id))
+          return this.notFound(route, 'Assistant');
         const blockingAssignments = this.blockingAssignments(id);
         if (blockingAssignments.length > 0) {
           return this.problem(
@@ -196,6 +267,8 @@ export class WorkboardApiMock {
         const draft = this.body<StoryDraft>(route);
         if (!this.state.epics.some((epic) => epic.id === draft.epicId))
           return this.notFound(route, 'Epic');
+        const errors = this.storyErrors(draft);
+        if (errors) return this.invalid(route, errors);
         const story: Story = {
           id: this.newId(),
           key: `QBC-${this.state.nextStoryNumber++}`,
@@ -236,13 +309,26 @@ export class WorkboardApiMock {
         if (!story) return this.notFound(route, 'Story');
         let updated: Story = story;
         switch (action) {
-          case 'groom':
+          case 'groom': {
+            const errors = this.groomingErrors(story);
+            if (errors) return this.invalid(route, errors);
             updated = { ...story, lifecycle: 'active', isReady: true };
             break;
+          }
           case 'mark-unready':
+            if (this.isSprintHistory(story)) return this.sprintHistory(route);
+            if (this.isPlanned(story)) {
+              return this.problem(
+                route,
+                409,
+                'Story is planned',
+                'Remove the story from its sprint before marking it unready.',
+              );
+            }
             updated = { ...story, isReady: false };
             break;
           case 'archive':
+            if (this.isSprintHistory(story)) return this.sprintHistory(route);
             updated = {
               ...story,
               lifecycle: 'archived',
@@ -260,12 +346,21 @@ export class WorkboardApiMock {
               boardStatus: 'toDo',
             };
             break;
-          case 'move':
+          case 'move': {
+            if (this.sprintOf(story)?.status !== 'active') {
+              return this.problem(
+                route,
+                409,
+                'Story is not on the board',
+                'Only a story in the active sprint can change board status.',
+              );
+            }
             updated = {
               ...story,
               boardStatus: this.body<{ readonly status: Story['boardStatus'] }>(route).status,
             };
             break;
+          }
         }
         this.replace(this.state.stories, id, updated);
         return this.json(route, 200, this.storyView(updated));
@@ -281,6 +376,10 @@ export class WorkboardApiMock {
         const story = this.state.stories.find((item) => item.id === id);
         if (!story) return this.notFound(route, 'Story');
         const draft = this.body<StoryDraft>(route);
+        if (!this.state.epics.some((epic) => epic.id === draft.epicId))
+          return this.notFound(route, 'Epic');
+        const errors = this.storyErrors(draft);
+        if (errors) return this.invalid(route, errors);
         const updated: Story = {
           ...story,
           epicId: draft.epicId,
@@ -302,8 +401,9 @@ export class WorkboardApiMock {
       }
       if (storyMatch && method === 'DELETE') {
         const id = storyMatch[1];
-        if (!this.state.stories.some((item) => item.id === id))
-          return this.notFound(route, 'Story');
+        const story = this.state.stories.find((item) => item.id === id);
+        if (!story) return this.notFound(route, 'Story');
+        if (this.isSprintHistory(story)) return this.sprintHistory(route);
         this.remove(this.state.stories, id);
         return this.empty(route);
       }
@@ -320,6 +420,8 @@ export class WorkboardApiMock {
       }
       if (path === '/api/sprints' && method === 'POST') {
         const draft = this.body<SprintDraft>(route);
+        const errors = this.sprintErrors(draft, null, false);
+        if (errors) return this.invalid(route, errors);
         const sprint: Sprint = {
           id: this.newId(),
           ...draft,
@@ -335,17 +437,20 @@ export class WorkboardApiMock {
       const sprintStoryMatch = path.match(/^\/api\/sprints\/([^/]+)\/stories\/([^/]+)$/);
       if (sprintStoryMatch && (method === 'PUT' || method === 'DELETE')) {
         const sprintId = sprintStoryMatch[1];
-        const storyId = sprintStoryMatch[2];
-        if (!this.state.sprints.some((sprint) => sprint.id === sprintId))
-          return this.notFound(route, 'Sprint');
-        const story = this.state.stories.find((item) => item.id === storyId);
+        const sprint = this.state.sprints.find((item) => item.id === sprintId);
+        if (!sprint) return this.notFound(route, 'Sprint');
+        const story = this.state.stories.find((item) => item.id === sprintStoryMatch[2]);
         if (!story) return this.notFound(route, 'Story');
-        const updated: Story = {
+        if (sprint.status === 'completed') return this.sprintHistory(route);
+        if (method === 'PUT') {
+          const rejection = this.assignmentRejection(story);
+          if (rejection) return this.problem(route, 409, 'Story cannot be planned', rejection);
+        }
+        this.replace(this.state.stories, story.id, {
           ...story,
           sprintId: method === 'PUT' ? sprintId : null,
           boardStatus: 'toDo',
-        };
-        this.replace(this.state.stories, storyId, updated);
+        });
         return this.empty(route);
       }
 
@@ -356,7 +461,15 @@ export class WorkboardApiMock {
         const sprint = this.state.sprints.find((item) => item.id === id);
         if (!sprint) return this.notFound(route, 'Sprint');
         if (action === 'start') {
-          if (this.state.sprints.some((item) => item.status === 'active' && item.id !== id)) {
+          if (sprint.status !== 'planned') {
+            return this.problem(
+              route,
+              409,
+              'Sprint cannot start',
+              'Only a planned sprint can be started.',
+            );
+          }
+          if (this.state.sprints.some((item) => item.status === 'active')) {
             return this.problem(
               route,
               409,
@@ -364,13 +477,21 @@ export class WorkboardApiMock {
               'Complete the active sprint before starting another one.',
             );
           }
-          const updated: Sprint = { ...sprint, status: 'active' };
-          this.replace(this.state.sprints, id, updated);
-          return this.json(route, 200, this.sprintView(updated));
+          const started: Sprint = { ...sprint, status: 'active' };
+          this.replace(this.state.sprints, id, started);
+          return this.json(route, 200, this.sprintView(started));
         }
 
-        const updated: Sprint = { ...sprint, status: 'completed' };
-        this.replace(this.state.sprints, id, updated);
+        if (sprint.status !== 'active') {
+          return this.problem(
+            route,
+            409,
+            'Sprint cannot complete',
+            'Only the active sprint can be completed.',
+          );
+        }
+        const completed: Sprint = { ...sprint, status: 'completed' };
+        this.replace(this.state.sprints, id, completed);
         for (const story of this.state.stories.filter(
           (item) => item.sprintId === id && item.boardStatus !== 'done',
         )) {
@@ -380,7 +501,7 @@ export class WorkboardApiMock {
             boardStatus: 'toDo',
           });
         }
-        return this.json(route, 200, this.sprintView(updated));
+        return this.json(route, 200, this.sprintView(completed));
       }
 
       const sprintMatch = path.match(/^\/api\/sprints\/([^/]+)$/);
@@ -395,14 +516,28 @@ export class WorkboardApiMock {
         const sprint = this.state.sprints.find((item) => item.id === id);
         if (!sprint) return this.notFound(route, 'Sprint');
         const draft = this.body<SprintDraft>(route);
-        const updated: Sprint = { ...sprint, ...draft, endDate: this.endDate(draft.startDate) };
+        const history = sprint.status === 'completed';
+        const errors = this.sprintErrors(draft, id, history);
+        if (errors) return this.invalid(route, errors);
+        // A completed sprint is history: only its display name and goal may be corrected.
+        const updated: Sprint = history
+          ? { ...sprint, name: draft.name, goal: draft.goal }
+          : { ...sprint, ...draft, endDate: this.endDate(draft.startDate) };
         this.replace(this.state.sprints, id, updated);
         return this.json(route, 200, this.sprintView(updated));
       }
       if (sprintMatch && method === 'DELETE') {
         const id = sprintMatch[1];
-        if (!this.state.sprints.some((item) => item.id === id))
-          return this.notFound(route, 'Sprint');
+        const sprint = this.state.sprints.find((item) => item.id === id);
+        if (!sprint) return this.notFound(route, 'Sprint');
+        if (sprint.status !== 'planned') {
+          return this.problem(
+            route,
+            409,
+            'Sprint cannot be deleted',
+            'Only a planned sprint can be deleted.',
+          );
+        }
         for (const story of this.state.stories.filter((item) => item.sprintId === id)) {
           this.replace(this.state.stories, story.id, {
             ...story,
@@ -428,11 +563,104 @@ export class WorkboardApiMock {
     }
   }
 
+  private initiativeErrors(draft: InitiativeDraft): FieldErrors | null {
+    return this.errors({
+      name: this.blank(draft.name) ? 'Enter a name.' : null,
+      description: this.blank(draft.description) ? 'Enter an outcome description.' : null,
+    });
+  }
+
+  private epicErrors(draft: EpicDraft): FieldErrors | null {
+    return this.errors({
+      name: this.blank(draft.name) ? 'Enter a name.' : null,
+      summary: this.blank(draft.summary) ? 'Enter a summary.' : null,
+    });
+  }
+
+  private assistantErrors(draft: AssistantDraft): FieldErrors | null {
+    return this.errors({
+      fullName: this.blank(draft.fullName) ? 'Enter a full name.' : null,
+      role: this.blank(draft.role) ? 'Enter a role.' : null,
+      availability: AVAILABILITIES.includes(draft.availability)
+        ? null
+        : 'Choose Available, Limited, or Unavailable.',
+    });
+  }
+
+  private storyErrors(draft: StoryDraft): FieldErrors | null {
+    const fields: Record<string, string | null> = {
+      title: this.blank(draft.title) ? 'Enter a title.' : null,
+      points: this.validEstimate(draft.points) ? null : 'Estimate in 1, 2, 3, 5, 8, or 13 points.',
+    };
+    draft.tasks.forEach((task, index) => {
+      fields[`tasks[${index}].title`] = this.blank(task.title) ? 'Enter a task title.' : null;
+    });
+    return this.errors(fields);
+  }
+
+  private groomingErrors(story: Story): FieldErrors | null {
+    return this.errors({
+      title: this.blank(story.title) ? 'Enter a title.' : null,
+      epicId: this.state.epics.some((epic) => epic.id === story.epicId) ? null : 'Choose an epic.',
+      description: this.blank(story.description) ? 'Describe the story.' : null,
+      acceptanceCriteria: this.blank(story.acceptanceCriteria)
+        ? 'Enter acceptance criteria.'
+        : null,
+      points:
+        story.points !== null && this.validEstimate(story.points)
+          ? null
+          : 'Estimate the story before marking it Ready.',
+    });
+  }
+
+  private sprintErrors(
+    draft: SprintDraft,
+    id: string | null,
+    history: boolean,
+  ): FieldErrors | null {
+    const name = (draft.name ?? '').trim().toLowerCase();
+    const duplicate = this.state.sprints.some(
+      (sprint) => sprint.id !== id && sprint.name.trim().toLowerCase() === name,
+    );
+    return this.errors({
+      name: this.blank(draft.name)
+        ? 'Enter a name.'
+        : duplicate
+          ? 'Another sprint already uses that name.'
+          : null,
+      goal: this.blank(draft.goal) ? 'Enter a goal.' : null,
+      // A completed sprint keeps the dates it ran on, so its start date is not revalidated.
+      startDate: history || this.validDate(draft.startDate) ? null : 'Choose a valid start date.',
+    });
+  }
+
+  /** Why this story may not be planned, or null when it is eligible. */
+  private assignmentRejection(story: Story): string | null {
+    if (story.lifecycle === 'archived') return 'An archived story cannot be planned.';
+    if (!story.isReady) return 'Groom the story before planning it.';
+    if (this.isSprintHistory(story))
+      return 'A story kept in a completed sprint cannot be replanned.';
+    return null;
+  }
+
+  private isSprintHistory(story: Story): boolean {
+    return this.sprintOf(story)?.status === 'completed';
+  }
+
+  private isPlanned(story: Story): boolean {
+    const status = this.sprintOf(story)?.status;
+    return status === 'planned' || status === 'active';
+  }
+
+  private sprintOf(story: Story): Sprint | undefined {
+    return this.state.sprints.find((sprint) => sprint.id === story.sprintId);
+  }
+
   private hierarchy(): Hierarchy {
     return {
       initiatives: this.state.initiatives.map((initiative) => {
         const epics = this.state.epics.filter((epic) => epic.initiativeId === initiative.id);
-        const stories = this.state.stories.filter((story) =>
+        const stories = this.live().filter((story) =>
           epics.some((epic) => epic.id === story.epicId),
         );
         return {
@@ -457,14 +685,13 @@ export class WorkboardApiMock {
   }
 
   private assistantView(assistant: Assistant): Assistant {
-    const blockingAssignments = this.blockingAssignments(assistant.id);
     return {
       ...assistant,
-      storyCount: this.state.stories.filter((story) => story.assistantId === assistant.id).length,
-      incompleteTaskCount: this.state.stories
+      storyCount: this.live().filter((story) => story.assistantId === assistant.id).length,
+      incompleteTaskCount: this.live()
         .flatMap((story) => story.tasks)
         .filter((task) => task.assistantId === assistant.id && !task.isComplete).length,
-      blockingAssignments,
+      blockingAssignments: this.blockingAssignments(assistant.id),
     };
   }
 
@@ -497,7 +724,7 @@ export class WorkboardApiMock {
     const epic = this.state.epics.find((item) => item.id === story.epicId);
     const initiative = this.state.initiatives.find((item) => item.id === epic?.initiativeId);
     const assistant = this.state.assistants.find((item) => item.id === story.assistantId);
-    const sprint = this.state.sprints.find((item) => item.id === story.sprintId);
+    const sprint = this.sprintOf(story);
     return {
       ...story,
       epicName: epic?.name ?? '',
@@ -521,7 +748,7 @@ export class WorkboardApiMock {
   private activeBoard(): ActiveSprintBoard | null {
     const sprint = this.state.sprints.find((item) => item.status === 'active');
     if (!sprint) return null;
-    const stories = this.state.stories
+    const stories = this.live()
       .filter((story) => story.sprintId === sprint.id)
       .map((story) => this.storyView(story));
     const doneCount = stories.filter((story) => story.boardStatus === 'done').length;
@@ -548,6 +775,31 @@ export class WorkboardApiMock {
         boardStatus: story.boardStatus,
       })),
     };
+  }
+
+  /** The stories the product counts as current work: everything that is not archived. */
+  private live(): Story[] {
+    return this.state.stories.filter((story) => story.lifecycle !== 'archived');
+  }
+
+  private errors(fields: Record<string, string | null>): FieldErrors | null {
+    const entries = Object.entries(fields).filter(
+      (entry): entry is [string, string] => entry[1] !== null,
+    );
+    if (entries.length === 0) return null;
+    return Object.fromEntries(entries.map(([field, message]) => [field, [message]]));
+  }
+
+  private blank(value: string | null | undefined): boolean {
+    return (value ?? '').trim().length === 0;
+  }
+
+  private validEstimate(points: number | null): boolean {
+    return points === null || ACCEPTED_ESTIMATES.includes(points);
+  }
+
+  private validDate(value: string): boolean {
+    return /^\d{4}-\d{2}-\d{2}$/.test(value ?? '') && !Number.isNaN(Date.parse(value));
   }
 
   private body<T>(route: Route): T {
@@ -592,12 +844,33 @@ export class WorkboardApiMock {
     );
   }
 
+  private async sprintHistory(route: Route): Promise<void> {
+    await this.problem(
+      route,
+      409,
+      'Sprint history is preserved',
+      'A story recorded in a completed sprint cannot be changed.',
+    );
+  }
+
+  private async invalid(route: Route, errors: FieldErrors): Promise<void> {
+    await this.problem(
+      route,
+      400,
+      'Validation failed',
+      'The request contains one or more invalid fields.',
+      undefined,
+      errors,
+    );
+  }
+
   private async problem(
     route: Route,
     status: number,
     title: string,
     detail: string,
     context?: unknown,
+    errors?: FieldErrors,
   ): Promise<void> {
     await route.fulfill({
       status,
@@ -608,6 +881,7 @@ export class WorkboardApiMock {
         status,
         detail,
         ...(context === undefined ? {} : { context }),
+        ...(errors === undefined ? {} : { errors }),
       }),
     });
   }

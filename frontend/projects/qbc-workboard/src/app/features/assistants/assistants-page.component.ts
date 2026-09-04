@@ -18,6 +18,7 @@ import {
   TextInputComponent,
 } from '@qbc/components';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
+import { describeInvalidFields } from '../../core/describe-invalid-fields';
 import { ASSISTANT_SERVICE } from './assistant.service.contract';
 
 @Component({
@@ -51,6 +52,7 @@ export class AssistantsPageComponent implements OnInit {
   readonly assistantId = signal<string | null>(null);
   readonly blockingAssistant = signal<Assistant | null>(null);
   readonly pending = signal(false);
+  readonly formError = signal('');
   readonly availabilityOptions: readonly SelectOption<string>[] = [
     { value: 'available', label: 'Available' },
     { value: 'limited', label: 'Limited' },
@@ -69,6 +71,7 @@ export class AssistantsPageComponent implements OnInit {
 
   openForm(assistant?: Assistant): void {
     this.assistantId.set(assistant?.id ?? null);
+    this.formError.set('');
     this.form.reset({
       fullName: assistant?.fullName ?? '',
       role: assistant?.role ?? '',
@@ -81,8 +84,16 @@ export class AssistantsPageComponent implements OnInit {
   async save(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.formError.set(
+        describeInvalidFields(this.form, {
+          fullName: 'Full name',
+          role: 'Role',
+          availability: 'Availability',
+        }),
+      );
       return;
     }
+    this.formError.set('');
     this.pending.set(true);
     const value = this.form.getRawValue();
     const specialties = value.specialties

@@ -97,17 +97,53 @@ npm run typecheck:e2e
 npm run test:e2e
 ```
 
-The command starts the Angular server and runs the Page Object Model suite in
-Chromium, Firefox, and WebKit. A Playwright fixture intercepts every backend API
-request with a fresh, stateful mock for each test, so reload and CRUD scenarios
-remain deterministic without starting .NET or creating a test database. The
-mocked backend version is test-only; the frontend identity still comes from the
-metadata compiled into the Angular development build.
+The command starts the Angular server and runs the Page Object Model suite. A
+Playwright fixture intercepts every backend API request with a fresh, stateful
+mock for each test, so reload and CRUD scenarios remain deterministic without
+starting .NET or creating a test database. The mocked backend version is
+test-only; the frontend identity still comes from the metadata compiled into the
+Angular development build.
+
+Every applicable acceptance criterion in
+[`docs/specs/L2.md`](../docs/specs/L2.md) has one test, named for the
+requirement and the scenario it proves, so coverage can be audited by reading
+the suite. Specifications are grouped by requirement:
+
+| File                       | Requirements                        |
+| -------------------------- | ----------------------------------- |
+| `navigation.spec.ts`       | `L2-001`                            |
+| `hierarchy.spec.ts`        | `L2-002`, `L2-003`, `L2-004`        |
+| `stories.spec.ts`          | `L2-005` – `L2-008`                 |
+| `assistants.spec.ts`       | `L2-009`, `L2-010`                  |
+| `backlog.spec.ts`          | `L2-011`, `L2-012`                  |
+| `sprint-planning.spec.ts`  | `L2-013` – `L2-016`                 |
+| `board.spec.ts`            | `L2-017` – `L2-020`                 |
+| `persistence.spec.ts`      | `L2-021`, `L2-032`                  |
+| `api-boundary.spec.ts`     | `L2-034`                            |
+| `interaction.spec.ts`      | `L2-026`                            |
+| `responsive.spec.ts`       | `L2-024`, `L2-040`                  |
+| `accessibility.spec.ts`    | `L2-025`, `L2-040`                  |
+| `access.spec.ts`           | `L2-042`, `L2-043`                  |
+| `deployment.spec.ts`       | `L2-045`                            |
+| `delivery-journey.spec.ts` | `L2-038` critical-workflow coverage |
+
+Chromium carries the whole suite. Firefox and WebKit run the `@smoke` subset,
+which proves each workflow works in every supported engine without repeating
+every scenario three times. Scenarios own their workspace state through the
+`seed` fixture option, so the suite runs in parallel and no test depends on
+another test's changes.
 
 Every backend route has an explicit mock handler. An unhandled API request fails
 the test, making contract growth visible instead of silently reaching a developer
-backend. Mock and fixture files are excluded from the application TypeScript
-configuration and are never included in a production bundle.
+backend. The mock enforces the same relationship, grooming, and lifecycle rules
+the real API exposes, because the specification's rejection scenarios are
+observed through the feedback those rules produce. Mock and fixture files are
+excluded from the application TypeScript configuration and are never included in
+a production bundle.
+
+Acceptance criteria that describe backend enforcement, infrastructure, or code
+organisation get no browser test; `L2-039` prohibits tests that inspect source,
+and backend integration tests own the rules a browser cannot reach.
 
 ## Conventions
 

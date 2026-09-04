@@ -1,98 +1,191 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
+
+export type BoardColumnName = 'To do' | 'In progress' | 'Done';
+
+/** The board's columns, in the order the product lays them out. */
+const COLUMNS: readonly BoardColumnName[] = ['To do', 'In progress', 'Done'];
 
 export class BoardPage {
   constructor(private readonly page: Page) {}
 
   async expectActiveSprint(): Promise<void> {
-    await expect(this.page.getByText(/Current sprint/)).toBeVisible();
-    await expect(this.page.getByRole('heading', { name: 'To do' })).toBeVisible();
-    await expect(this.page.getByRole('heading', { name: 'In progress' })).toBeVisible();
-    await expect(this.page.getByRole('heading', { name: 'Done' })).toBeVisible();
+    await expect(this.summary()).toBeVisible();
+    for (const column of COLUMNS)
+      await expect(this.page.getByRole('heading', { name: column })).toBeVisible();
   }
 
   async expectWorkspace(): Promise<void> {
     await expect(
-      this.page
-        .getByRole('region', { name: 'Current sprint summary' })
-        .or(this.page.getByRole('heading', { name: 'No active sprint' })),
+      this.summary().or(this.page.getByRole('heading', { name: 'No active sprint' })),
     ).toBeVisible();
+  }
+
+  /** Everything the board promises about the sprint it is showing. */
+  async expectSprintSummary(detail: {
+    readonly name: string;
+    readonly goal: string;
+    readonly startDate: string;
+    readonly endDate: string;
+    readonly done: number;
+    readonly total: number;
+    readonly percentage: number;
+  }): Promise<void> {
+    const summary = this.summary();
+    await expect(summary).toContainText(`Current sprint · ${detail.name}`);
+    await expect(summary).toContainText(detail.goal);
+    await expect(summary).toContainText(`${detail.startDate} – ${detail.endDate}`);
+    await expect(summary).toContainText(`${detail.done} of ${detail.total} stories complete`);
+    await this.expectCompletionPercentage(detail.percentage);
+  }
+
+  async expectCompletionPercentage(percentage: number): Promise<void> {
+    await expect(this.summary()).toContainText(`${percentage}%`);
+    await expect(this.page.getByRole('progressbar', { name: 'Sprint completion' })).toHaveAttribute(
+      'aria-valuenow',
+      String(percentage),
+    );
+  }
+
+  async expectNoActiveSprint(): Promise<void> {
+    await expect(this.page.getByRole('heading', { name: 'No active sprint' })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Choose a sprint' })).toBeVisible();
+  }
+
+  async expectStoryInColumn(title: string, column: BoardColumnName): Promise<void> {
+    await expect(this.column(column).getByRole('heading', { name: title })).toBeVisible();
+    await expect(this.page.locator('.story-card').filter({ hasText: title })).toHaveCount(1);
+  }
+
+  async expectColumnCount(column: BoardColumnName, count: number): Promise<void> {
+    await expect(this.column(column).locator('qbc-count')).toHaveText(String(count));
+  }
+
+  async expectEmptyColumn(column: BoardColumnName): Promise<void> {
+    await this.expectColumnCount(column, 0);
+    await expect(this.column(column)).toContainText('No stories here');
+  }
+
+  /** Everything a card promises about the story it stands for. */
+  async expectCardDetail(
+    title: string,
+    detail: {
+      readonly key: string;
+      readonly epic: string;
+      readonly points: string;
+      readonly owner: string;
+      readonly tasks?: string;
+    },
+  ): Promise<void> {
+    const card = this.card(title);
+    await expect(card).toContainText(detail.key);
+    await expect(card).toContainText(
+      detail.tasks ? `${detail.epic} · ${detail.tasks}` : detail.epic,
+    );
+    await expect(card.getByRole('img', { name: detail.points })).toBeVisible();
+    await expect(card).toContainText(detail.owner);
+  }
+
+  async expectNoTaskCount(title: string): Promise<void> {
+    await expect(this.card(title)).not.toContainText('tasks');
   }
 
   async moveStoryForward(title: string): Promise<void> {
-    const card = this.page.locator('.story-card').filter({ hasText: title });
-    const moveResponse = this.page.waitForResponse(
-      (response) => response.request().method() === 'POST' && response.url().endsWith('/move'),
-    );
-    const boardResponse = this.page.waitForResponse(
-      (response) =>
-        response.request().method() === 'GET' &&
-        response.url().endsWith('/api/sprints/active/board'),
-    );
-    await card.getByRole('button', { name: new RegExp(`Move ${title} forward`) }).click();
-    expect((await moveResponse).ok()).toBeTruthy();
-    expect((await boardResponse).ok()).toBeTruthy();
-    await expect(this.page.getByText('Story moved.')).toBeVisible();
+    await this.move(title, `Move ${title} forward`);
+  }
+
+  async moveStoryBackward(title: string): Promise<void> {
+    await this.move(title, `Move ${title} backward`);
   }
 
   async moveStoryForwardIfPresent(title: string): Promise<void> {
-    if ((await this.page.locator('.story-card').filter({ hasText: title }).count()) > 0)
-      await this.moveStoryForward(title);
+    if ((await this.card(title).count()) > 0) await this.moveStoryForward(title);
   }
 
-  async createSprint(name: string, goal: string, startDate: string): Promise<void> {
-    await this.page.getByRole('button', { name: 'Manage sprints', exact: true }).click();
-    const manager = this.page.getByRole('dialog', { name: 'Manage sprints' });
-    await manager.getByRole('button', { name: /New sprint/ }).click();
-    const form = this.page.getByRole('dialog', { name: 'New sprint' });
-    await form.getByLabel('Name *').fill(name);
-    await form.getByLabel('Goal *').fill(goal);
-    await form.getByLabel('Start date *').fill(startDate);
-    await form.getByRole('button', { name: 'Save sprint' }).click();
-    await expect(
-      manager.getByRole('heading', { name: new RegExp(`^${this.escape(name)} planned$`) }),
-    ).toBeVisible();
-    await manager.getByRole('button', { name: 'Close', exact: true }).last().click();
+  /**
+   * Reproduces a pointer drag between columns. The board moves a story on the data the drag
+   * carries, so the test hands the same transfer object to each stage exactly as a pointer does.
+   */
+  async dragStoryToColumn(title: string, column: BoardColumnName): Promise<void> {
+    await expect(this.card(title)).toBeVisible();
+    const moved = this.page.waitForResponse(
+      (response) => response.request().method() === 'POST' && response.url().endsWith('/move'),
+    );
+    await this.card(title).evaluate((from, columnIndex) => {
+      const to = document.querySelectorAll('.board-column')[columnIndex];
+      if (!to) throw new Error('The board has no column at that position.');
+      const transfer = new DataTransfer();
+      from.dispatchEvent(new DragEvent('dragstart', { dataTransfer: transfer, bubbles: true }));
+      to.dispatchEvent(
+        new DragEvent('dragover', { dataTransfer: transfer, bubbles: true, cancelable: true }),
+      );
+      to.dispatchEvent(new DragEvent('drop', { dataTransfer: transfer, bubbles: true }));
+    }, COLUMNS.indexOf(column));
+    expect((await moved).ok()).toBeTruthy();
+    await expect(this.page.getByText('Story moved.')).toBeVisible();
   }
 
-  async completeActiveSprintIfPresent(): Promise<void> {
-    await expect(
-      this.page
-        .getByRole('region', { name: 'Current sprint summary' })
-        .or(this.page.getByRole('heading', { name: 'No active sprint' })),
-    ).toBeVisible();
-    const complete = this.page.getByRole('button', { name: 'Complete sprint' });
-    if ((await complete.count()) === 0) return;
-    await complete.click();
-    const confirmation = this.page
-      .getByRole('dialog')
-      .filter({ has: this.page.getByRole('button', { name: 'Complete sprint' }) });
+  async completeActiveSprint(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Complete sprint' }).click();
+    const confirmation = this.confirmation('Complete sprint');
+    await expect(confirmation).toContainText('Done stories remain in history');
     await confirmation.getByRole('button', { name: 'Complete sprint' }).click();
     await expect(this.page.getByRole('heading', { name: 'No active sprint' })).toBeVisible();
   }
 
-  async startSprint(name: string): Promise<void> {
+  async completeActiveSprintIfPresent(): Promise<void> {
+    await this.expectWorkspace();
+    if ((await this.page.getByRole('button', { name: 'Complete sprint' }).count()) === 0) return;
+    await this.completeActiveSprint();
+  }
+
+  /** The confirmation names the sprint and explains the consequence, then leaves data alone. */
+  async expectCompletionCancelKeepsSprint(name: string): Promise<void> {
+    await this.page.getByRole('button', { name: 'Complete sprint' }).click();
+    const confirmation = this.page.getByRole('dialog', { name: `Complete ${name}?` });
+    await expect(confirmation).toContainText(
+      'Done stories remain in history. Unfinished stories return Ready to the backlog.',
+    );
+    await confirmation.getByRole('button', { name: 'Cancel' }).click();
+    await expect(this.summary()).toContainText(`Current sprint · ${name}`);
+  }
+
+  async openSprintManager(): Promise<void> {
     await this.page.getByRole('button', { name: 'Manage sprints', exact: true }).click();
-    const manager = this.page.getByRole('dialog', { name: 'Manage sprints' });
-    const sprint = manager.locator('.sprint-row').filter({ hasText: name });
-    await sprint.getByRole('button', { name: 'Start' }).click();
-    await this.page
-      .getByRole('dialog', { name: `Start ${name}?` })
-      .getByRole('button', { name: 'Start sprint' })
-      .click();
-    await manager.getByRole('button', { name: 'Close', exact: true }).last().click();
-    await expect(this.page.getByText(`Current sprint · ${name}`)).toBeVisible();
+    await expect(this.page.getByRole('dialog', { name: 'Manage sprints' })).toBeVisible();
   }
 
-  async expectStoryInDone(title: string): Promise<void> {
-    const done = this.page
-      .locator('.board-column')
-      .filter({ has: this.page.getByRole('heading', { name: 'Done' }) });
-    await expect(done.getByRole('heading', { name: title })).toBeVisible();
+  async openSprintManagerFromEmptyState(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Choose a sprint' }).click();
+    await expect(this.page.getByRole('dialog', { name: 'Manage sprints' })).toBeVisible();
   }
 
-  async reloadAndExpectStoryInDone(title: string): Promise<void> {
+  async openStory(title: string): Promise<void> {
+    await this.card(title).getByRole('button', { name: 'Edit', exact: true }).click();
+    await expect(
+      this.page
+        .getByRole('dialog')
+        .filter({ has: this.page.getByRole('button', { name: 'Save story' }) }),
+    ).toBeVisible();
+  }
+
+  async reloadAndExpectStoryInColumn(title: string, column: BoardColumnName): Promise<void> {
     await this.page.reload();
-    await this.expectStoryInDone(title);
+    await this.expectStoryInColumn(title, column);
+  }
+
+  /** Three columns fit side by side when the viewport has room for them. */
+  async expectThreeColumnLayout(): Promise<void> {
+    const lefts = await this.page
+      .locator('.board-column')
+      .evaluateAll((columns) => columns.map((column) => column.getBoundingClientRect().left));
+    expect(new Set(lefts.map(Math.round)).size, 'the columns are not side by side').toBe(3);
+  }
+
+  async expectSingleColumnLayout(): Promise<void> {
+    const lefts = await this.page
+      .locator('.board-column')
+      .evaluateAll((columns) => columns.map((column) => column.getBoundingClientRect().left));
+    expect(new Set(lefts.map(Math.round)).size, 'the columns are not stacked').toBe(1);
   }
 
   /**
@@ -111,7 +204,50 @@ export class BoardPage {
     }
   }
 
-  private escape(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  /** Movement works from a touch device, with no hover and no drag. */
+  async tapStoryForward(title: string): Promise<void> {
+    const moved = this.page.waitForResponse(
+      (response) => response.request().method() === 'POST' && response.url().endsWith('/move'),
+    );
+    await this.card(title)
+      .getByRole('button', { name: `Move ${title} forward` })
+      .tap();
+    expect((await moved).ok()).toBeTruthy();
+    await expect(this.page.getByText('Story moved.')).toBeVisible();
+  }
+
+  private async move(title: string, action: string): Promise<void> {
+    const moved = this.page.waitForResponse(
+      (response) => response.request().method() === 'POST' && response.url().endsWith('/move'),
+    );
+    const reloaded = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'GET' &&
+        response.url().endsWith('/api/sprints/active/board'),
+    );
+    await this.card(title).getByRole('button', { name: action }).click();
+    expect((await moved).ok()).toBeTruthy();
+    expect((await reloaded).ok()).toBeTruthy();
+    await expect(this.page.getByText('Story moved.')).toBeVisible();
+  }
+
+  private card(title: string): Locator {
+    return this.page.locator('.story-card').filter({ hasText: title });
+  }
+
+  private column(name: BoardColumnName): Locator {
+    return this.page
+      .locator('.board-column')
+      .filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+  }
+
+  private summary(): Locator {
+    return this.page.getByRole('region', { name: 'Current sprint summary' });
+  }
+
+  private confirmation(action: string): Locator {
+    return this.page
+      .getByRole('dialog')
+      .filter({ has: this.page.getByRole('button', { name: action, exact: true }) });
   }
 }

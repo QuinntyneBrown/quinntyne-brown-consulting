@@ -1,0 +1,127 @@
+import { test } from '../fixtures/workboard.fixture';
+import { epicWithoutStories, initiativeWithoutEpics } from '../mocks/workspace-scenarios';
+import { BacklogPage } from '../pages/backlog.page';
+import { HierarchyPage } from '../pages/hierarchy.page';
+import { WorkboardPage } from '../pages/workboard.page';
+
+const OUTCOME = 'Sustainable delivery economics';
+const OUTCOME_DESCRIPTION = 'Make every engagement profitable without eroding quality.';
+const CAPABILITY = 'Engagement margin insight';
+const CAPABILITY_SUMMARY = 'Show where an engagement earns and where it leaks.';
+
+test.beforeEach(async ({ page }) => {
+  await new WorkboardPage(page).navigateTo('initiatives');
+});
+
+test('L2-002 · Create an initiative', { tag: '@smoke' }, async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  await hierarchy.createInitiative(OUTCOME, OUTCOME_DESCRIPTION);
+  await new WorkboardPage(page).reload();
+  await hierarchy.expectInitiativeRollUp(OUTCOME, 0, 0);
+});
+
+test('L2-002 · Reject an invalid initiative', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  await hierarchy.expectInitiativeRejected('Name', 'Outcome description');
+  await hierarchy.expectInitiativeCount(2);
+});
+
+test('L2-002 · Update an initiative', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  const workboard = new WorkboardPage(page);
+  await hierarchy.updateInitiative('Applied AI advantage', OUTCOME, OUTCOME_DESCRIPTION);
+  await workboard.reload();
+  await hierarchy.expectEpicUnder(OUTCOME, 'Engagement copilot');
+
+  // The new name reaches every view that names the initiative.
+  await workboard.usePrimaryNavigation('Backlog');
+  await new BacklogPage(page).expectRowDetail('Create an AI engagement risk canvas', {
+    key: 'QBC-105',
+    initiative: OUTCOME,
+    epic: 'Engagement copilot',
+    state: 'ready',
+    points: '3 story points',
+    sprint: 'Backlog',
+  });
+});
+
+test.describe(initiativeWithoutEpics.name, () => {
+  test.use({ seed: initiativeWithoutEpics });
+
+  test('L2-002 · Delete an empty initiative', async ({ page }) => {
+    const hierarchy = new HierarchyPage(page);
+    await hierarchy.deleteInitiative('Retired advisory practice');
+    await new WorkboardPage(page).reload();
+    await hierarchy.expectInitiativeCount(2);
+  });
+});
+
+test('L2-002 · Protect an initiative with epics', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  await hierarchy.expectInitiativeDeletionRejected(
+    'Client delivery excellence',
+    'Delete or move the initiative epics first.',
+  );
+});
+
+test('L2-003 · Create an epic', { tag: '@smoke' }, async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  await hierarchy.createEpic('Applied AI advantage', CAPABILITY, CAPABILITY_SUMMARY);
+  await new WorkboardPage(page).reload();
+  await hierarchy.expectEpicUnder('Applied AI advantage', CAPABILITY);
+});
+
+test('L2-003 · Update or move an epic', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  const workboard = new WorkboardPage(page);
+  await hierarchy.updateEpic('Engagement copilot', CAPABILITY, CAPABILITY_SUMMARY);
+  await hierarchy.moveEpic(CAPABILITY, 'Client delivery excellence');
+  await workboard.reload();
+  await hierarchy.expectEpicUnder('Client delivery excellence', CAPABILITY);
+
+  // Moving the epic keeps the stories that belong to it.
+  await workboard.usePrimaryNavigation('Backlog');
+  await new BacklogPage(page).expectRowDetail('Evaluate answers against engagement evidence', {
+    key: 'QBC-103',
+    initiative: 'Client delivery excellence',
+    epic: CAPABILITY,
+    state: 'ready',
+    points: '5 story points',
+    sprint: 'Sprint 14',
+  });
+});
+
+test.describe(epicWithoutStories.name, () => {
+  test.use({ seed: epicWithoutStories });
+
+  test('L2-003 · Delete an empty epic', async ({ page }) => {
+    const hierarchy = new HierarchyPage(page);
+    await hierarchy.deleteEpic('Retired onboarding kit');
+    await new WorkboardPage(page).reload();
+    await hierarchy.expectInitiativeRollUp('Client delivery excellence', 2, 5);
+  });
+});
+
+test('L2-003 · Protect an epic with stories', async ({ page }) => {
+  await new HierarchyPage(page).expectEpicDeletionRejected(
+    'Client delivery portal',
+    'Delete or move the epic stories first.',
+  );
+});
+
+test('L2-004 · View hierarchy roll-ups', async ({ page }) => {
+  const hierarchy = new HierarchyPage(page);
+  // The archived QBC-97 is excluded everywhere: roll-ups describe current work.
+  await hierarchy.expectInitiativeRollUp('Client delivery excellence', 2, 5);
+  await hierarchy.expectInitiativeRollUp('Applied AI advantage', 1, 2);
+  await hierarchy.expectEpicUnder('Client delivery excellence', 'Client delivery portal');
+  await hierarchy.expectEpicUnder('Client delivery excellence', 'Delivery playbook');
+  await hierarchy.expectEpicUnder('Applied AI advantage', 'Engagement copilot');
+  await hierarchy.expectEpicRollUp('Client delivery portal', 3, 0);
+  await hierarchy.expectEpicRollUp('Delivery playbook', 2, 100);
+  await hierarchy.expectEpicRollUp('Engagement copilot', 2, 0);
+});
+
+test('L2-004 · Add nested work in context', async ({ page }) => {
+  await new HierarchyPage(page).expectInitiativePreselected('Applied AI advantage');
+});

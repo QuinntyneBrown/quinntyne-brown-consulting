@@ -6,7 +6,7 @@ export function presentApiError(error: unknown): string {
     const problem = error.error as Partial<ApiProblem> | null;
     const fieldErrors = problem?.errors ? Object.values(problem.errors).flat() : [];
     return (
-      fieldErrors[0] ??
+      (fieldErrors.length > 0 ? fieldErrors.join(' ') : undefined) ??
       problem?.detail ??
       (error.status === 0
         ? 'The server could not be reached.'

@@ -13,6 +13,7 @@ import {
   TextInputComponent,
 } from '@qbc/components';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
+import { describeInvalidFields } from '../../core/describe-invalid-fields';
 import { SPRINT_PLANNING_SERVICE } from './sprint-planning.service.contract';
 
 @Component({
@@ -42,6 +43,7 @@ export class SprintManagerComponent {
   readonly sprintId = signal<string | null>(null);
   readonly editingCompleted = signal(false);
   readonly pending = signal(false);
+  readonly formError = signal('');
   readonly form = this.fb.group({
     name: ['', Validators.required],
     goal: ['', Validators.required],
@@ -56,6 +58,7 @@ export class SprintManagerComponent {
   openForm(sprint?: Sprint): void {
     this.sprintId.set(sprint?.id ?? null);
     this.editingCompleted.set(sprint?.status === 'completed');
+    this.formError.set('');
     this.form.reset({
       name: sprint?.name ?? '',
       goal: sprint?.goal ?? '',
@@ -67,8 +70,16 @@ export class SprintManagerComponent {
   async save(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.formError.set(
+        describeInvalidFields(this.form, {
+          name: 'Name',
+          goal: 'Goal',
+          startDate: 'Start date',
+        }),
+      );
       return;
     }
+    this.formError.set('');
     this.pending.set(true);
     const value = this.form.getRawValue();
     const saved = await this.planning.save(

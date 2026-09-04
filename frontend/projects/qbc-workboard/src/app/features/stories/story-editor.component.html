@@ -9,6 +9,9 @@
     closeLabel="Close story editor"
     (closed)="close()"
   >
+    @if (formError()) {
+      <qbc-form-error body>{{ formError() }}</qbc-form-error>
+    }
     @if (stories.error()) {
       <qbc-form-error body>{{ stories.error() }}</qbc-form-error>
     }

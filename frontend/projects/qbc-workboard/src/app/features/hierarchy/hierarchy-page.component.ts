@@ -18,6 +18,7 @@ import {
   TextareaComponent,
   TextInputComponent,
 } from '@qbc/components';
+import { describeInvalidFields } from '../../core/describe-invalid-fields';
 import { HIERARCHY_SERVICE } from './hierarchy.service.contract';
 
 @Component({
@@ -51,6 +52,8 @@ export class HierarchyPageComponent implements OnInit {
   readonly pending = signal(false);
   readonly initiativeId = signal<string | null>(null);
   readonly epicId = signal<string | null>(null);
+  readonly initiativeError = signal('');
+  readonly epicError = signal('');
   readonly initiativeForm = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
@@ -67,6 +70,7 @@ export class HierarchyPageComponent implements OnInit {
 
   openInitiative(initiative?: InitiativeHierarchy): void {
     this.initiativeId.set(initiative?.id ?? null);
+    this.initiativeError.set('');
     this.initiativeForm.reset({
       name: initiative?.name ?? '',
       description: initiative?.description ?? '',
@@ -76,6 +80,7 @@ export class HierarchyPageComponent implements OnInit {
 
   openEpic(initiativeId: string, epic?: EpicHierarchy): void {
     this.epicId.set(epic?.id ?? null);
+    this.epicError.set('');
     this.epicForm.reset({ initiativeId, name: epic?.name ?? '', summary: epic?.summary ?? '' });
     this.epicDialog().open();
   }
@@ -83,8 +88,15 @@ export class HierarchyPageComponent implements OnInit {
   async saveInitiative(): Promise<void> {
     if (this.initiativeForm.invalid) {
       this.initiativeForm.markAllAsTouched();
+      this.initiativeError.set(
+        describeInvalidFields(this.initiativeForm, {
+          name: 'Name',
+          description: 'Outcome description',
+        }),
+      );
       return;
     }
+    this.initiativeError.set('');
     this.pending.set(true);
     const value = this.initiativeForm.getRawValue();
     const saved = await this.service.saveInitiative(
@@ -99,8 +111,16 @@ export class HierarchyPageComponent implements OnInit {
   async saveEpic(): Promise<void> {
     if (this.epicForm.invalid) {
       this.epicForm.markAllAsTouched();
+      this.epicError.set(
+        describeInvalidFields(this.epicForm, {
+          initiativeId: 'Initiative',
+          name: 'Name',
+          summary: 'Summary',
+        }),
+      );
       return;
     }
+    this.epicError.set('');
     this.pending.set(true);
     const value = this.epicForm.getRawValue();
     const saved = await this.service.saveEpic(

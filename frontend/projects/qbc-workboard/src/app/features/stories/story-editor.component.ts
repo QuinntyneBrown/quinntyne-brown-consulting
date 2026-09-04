@@ -21,6 +21,7 @@ import {
   TextareaComponent,
   TextInputComponent,
 } from '@qbc/components';
+import { describeInvalidFields } from '../../core/describe-invalid-fields';
 import { ASSISTANT_SERVICE } from '../assistants/assistant.service.contract';
 import { BACKLOG_SERVICE } from '../backlog/backlog.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from '../board/sprint-execution.service.contract';
@@ -59,6 +60,7 @@ export class StoryEditorComponent {
   private readonly backlog = inject(BACKLOG_SERVICE);
   private readonly board = inject(SPRINT_EXECUTION_SERVICE);
   readonly pending = signal(false);
+  readonly formError = signal('');
   readonly pointOptions: readonly SelectOption<number | null>[] = [
     { value: null, label: 'Not estimated' },
     ...[1, 2, 3, 5, 8, 13].map((value) => ({ value, label: String(value) })),
@@ -122,8 +124,17 @@ export class StoryEditorComponent {
   async save(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.formError.set(
+        describeInvalidFields(this.form, {
+          title: 'Title',
+          epicId: 'Epic',
+          tasks: 'Task',
+          'tasks.title': 'title',
+        }),
+      );
       return;
     }
+    this.formError.set('');
     this.pending.set(true);
     const value = this.form.getRawValue();
     const saved = await this.stories.save(this.editor.storyId() ?? null, {
@@ -197,6 +208,7 @@ export class StoryEditorComponent {
 
   private async open(id: string | null): Promise<void> {
     await Promise.all([this.hierarchy.load(), this.assistants.load()]);
+    this.formError.set('');
     this.form.reset({
       epicId: '',
       title: '',

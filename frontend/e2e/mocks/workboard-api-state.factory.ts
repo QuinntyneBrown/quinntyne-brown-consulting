@@ -1,3 +1,4 @@
+import { createWorkboardApiFault } from './workboard-api-fault';
 import type { WorkboardApiState } from './workboard-api-state';
 
 export function createWorkboardApiState(): WorkboardApiState {
@@ -16,6 +17,7 @@ export function createWorkboardApiState(): WorkboardApiState {
   return {
     passcode: '2846',
     deployment: { version: '1.4.2', commit: 'a1b2c3d4e5f60718293a4b5c6d7e8f9012345678' },
+    fault: createWorkboardApiFault(),
     assistants: [
       {
         id: mayaId,
@@ -288,6 +290,27 @@ export function createWorkboardApiState(): WorkboardApiState {
         sprintName: null,
         sprintStatus: null,
         boardStatus: 'toDo',
+        tasks: [],
+      },
+      {
+        id: '50000000-0000-4000-8000-000000000099',
+        key: 'QBC-99',
+        epicId: playbookEpicId,
+        epicName: 'Delivery playbook',
+        initiativeName: 'Client delivery excellence',
+        title: 'Agree the engagement kickoff agenda',
+        description:
+          'As a delivery lead, I want an agreed kickoff agenda so that engagements start well.',
+        acceptanceCriteria: 'The agenda covers outcomes, roles, cadence, and risks.',
+        points: 2,
+        assistantId: null,
+        assistantName: null,
+        lifecycle: 'active',
+        isReady: true,
+        sprintId: completedSprintId,
+        sprintName: 'Sprint 13',
+        sprintStatus: 'completed',
+        boardStatus: 'done',
         tasks: [],
       },
     ],

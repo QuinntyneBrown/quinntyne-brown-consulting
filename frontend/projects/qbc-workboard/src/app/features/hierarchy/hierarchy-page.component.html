@@ -92,6 +92,9 @@
     [title]="initiativeId() ? 'Edit initiative' : 'New initiative'"
     subtitle="Name the outcome the organization is pursuing."
   >
+    @if (initiativeError()) {
+      <qbc-form-error body>{{ initiativeError() }}</qbc-form-error>
+    }
     <qbc-form-grid body>
       <qbc-text-input
         label="Name"
@@ -130,6 +133,9 @@
     [title]="epicId() ? 'Edit epic' : 'New epic'"
     subtitle="Describe a substantial body of related work."
   >
+    @if (epicError()) {
+      <qbc-form-error body>{{ epicError() }}</qbc-form-error>
+    }
     <qbc-form-grid body>
       <qbc-select
         label="Initiative"

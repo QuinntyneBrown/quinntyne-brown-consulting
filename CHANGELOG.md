@@ -35,6 +35,11 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 - Isolated browser coverage verifies both labels with a test-only backend
   response and the identity compiled into the Angular test build; production
   continues to read only artifact-derived identities.
+- The empty backlog result now offers **New story**, so a search that matches
+  nothing is a place to start work rather than a dead end.
+- A story already planned into a sprint now offers **Mark unready** and explains
+  that it has to leave the sprint first, instead of hiding the action without
+  saying why.
 
 ### Changed
 
@@ -44,6 +49,10 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   introducing individual user accounts.
 - The root README now documents the current SQL Server architecture, database
   CLI, combined publish, test suites, design system, and project limitations.
+- Every applicable acceptance criterion in `docs/specs/L2.md` now has its own
+  Playwright test, named for the requirement and scenario it proves. The suite
+  runs in parallel from per-scenario workspace state: Chromium carries all 98
+  scenarios and Firefox and WebKit run the critical-workflow subset.
 - QBC Workboard now composes every button, form control, dialog, navigation
   element, card, and reusable row from `@qbc/components`; feature pages retain
   only application state and workflow orchestration.
@@ -52,5 +61,15 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 - Backlog sprint selectors now show the story's assigned sprint when sprint
   options finish loading after story data.
+- A form that refuses to save now names every field that stopped it. Saving a
+  blank initiative, epic, assistant, sprint, or story task previously did
+  nothing visible at all.
+- Grooming feedback now reports every unmet requirement. A story missing both
+  acceptance criteria and an estimate previously named only one of them.
+- The backlog now names the completed sprint a finished story is kept in. Its
+  sprint column was previously blank, because the control offered only sprints
+  that could still be planned into.
+- Hierarchy roll-ups and assistant workload counts now exclude archived stories,
+  matching what those numbers claim to describe.
 
 No tagged release has been published.

@@ -71,6 +71,9 @@
     [title]="sprintId() ? 'Edit sprint' : 'New sprint'"
     subtitle="The end date is always 13 calendar days after the start date."
   >
+    @if (formError()) {
+      <qbc-form-error body>{{ formError() }}</qbc-form-error>
+    }
     <qbc-form-grid body>
       <qbc-text-input
         label="Name"

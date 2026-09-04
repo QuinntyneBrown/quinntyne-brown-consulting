@@ -63,6 +63,9 @@
     [title]="assistantId() ? 'Edit assistant' : 'New assistant'"
     subtitle="Record the assistant’s role, specialties, and availability."
   >
+    @if (formError()) {
+      <qbc-form-error body>{{ formError() }}</qbc-form-error>
+    }
     <qbc-form-grid body>
       <qbc-text-input
         label="Full name"
