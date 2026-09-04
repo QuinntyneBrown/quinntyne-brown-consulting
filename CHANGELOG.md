@@ -93,6 +93,9 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- A new initiative now opens on an empty outcome brief. The house template is no
+  longer written into the document for the writer; the empty brief offers
+  **Insert the outcome brief template** for anyone who wants to start from it.
 - The Azure Workboard now requires a shared passcode before any workspace record
   can be read or changed. Deployment and database access remain passwordless and
   identity-based; the gate replaces anonymous read/write access without

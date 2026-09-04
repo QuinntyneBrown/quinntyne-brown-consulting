@@ -39,7 +39,7 @@ end box
 alt Start a new initiative
   actor -> hierarchy : Choose New initiative
   hierarchy -> page : Navigate to /initiatives/new per L2-046
-  page -> page : Open the outcome brief template as the baseline
+  page -> page : Open an empty brief as the baseline per L2-046
 else Open an existing initiative
   actor -> hierarchy : Choose Edit
   hierarchy -> page : Navigate to /initiatives/{id} per L2-046

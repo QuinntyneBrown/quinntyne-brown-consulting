@@ -64,11 +64,11 @@ test('L2-002 · Reject an invalid initiative', async ({ page }) => {
   const hierarchy = new HierarchyPage(page);
   const editor = new InitiativeBriefPage(page);
   await editor.startNew();
-  await editor.clearBrief();
   await editor.saveExpectingRejection('Initiative name', 'Outcome brief');
 
-  // Nothing was stored, and leaving the refused draft asks before discarding it.
-  await editor.leaveForInitiatives({ guarded: true });
+  // Nothing was stored, and a refused initiative nobody has written in has nothing to discard, so
+  // leaving it asks nothing.
+  await editor.leaveForInitiatives();
   await hierarchy.expectInitiativeCount(2);
 });
 

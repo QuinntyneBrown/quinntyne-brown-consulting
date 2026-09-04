@@ -47,7 +47,8 @@ required by `L2-021`.
   toolbar, the write, split, and preview views, the size report, and the unsaved-changes
   question. It is reached with an initiative's ID to edit one and without it to create one. Its
   `baseline` signal holds the initiative as last saved, which unsaved changes are measured
-  against and which a new initiative starts from as the outcome template.
+  against and which a new initiative starts from as an empty brief, so the first words in a new
+  document are the writer's.
 - **`InitiativeDraft`** — the name and description the editor holds and saves as one record.
 - **`InitiativeBriefService`** and **`IInitiativeBriefService`** — token-backed contract and
   Signal implementation that reads one initiative and creates or saves its name and brief
@@ -74,8 +75,9 @@ required by `L2-021`.
   there is room for one line rather than for a markdown document.
 - **`MARKDOWN_COMMANDS`** and **`insertBlock`** — pure transforms over the source and its
   selection, which the toolbar runs against the editor handle.
-- **`BRIEF_TEMPLATE`** — the house shape of an outcome brief, which a new initiative opens from
-  and an emptied brief offers back.
+- **`BRIEF_TEMPLATE`** — the house shape of an outcome brief, which an empty brief offers to
+  insert. It is never written into the document on the writer's behalf, so a new initiative and an
+  emptied brief both reach it the same way: by asking for it.
 - **`UnsavedChangesDialogComponent`** — the shared question raised before a navigation would
   discard unsaved markdown, which each page answers because only the page knows how to save.
 - **`SegmentedComponent`** — `@qbc/components` control presenting the write, split, and preview

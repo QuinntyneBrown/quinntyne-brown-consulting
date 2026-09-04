@@ -15,8 +15,12 @@ import { BRIEF_TEMPLATE } from './brief-template';
 import { INITIATIVE_BRIEF_SERVICE } from './initiative-brief.service.contract';
 import { InitiativeDraft } from './initiative-draft';
 
-/** What a brief that has never been written starts from, so a new initiative opens structured. */
-const NEW_INITIATIVE: InitiativeDraft = { name: '', description: BRIEF_TEMPLATE };
+/**
+ * What a brief that has never been written starts from. A new initiative opens on an empty
+ * document, so the first words in it are the writer's; the house shape stays one click away in the
+ * empty state for a writer who wants it.
+ */
+const NEW_INITIATIVE: InitiativeDraft = { name: '', description: '' };
 
 /**
  * The one surface an initiative is written on. It carries the name and the outcome brief together,
@@ -55,7 +59,7 @@ export class InitiativeBriefPageComponent implements EditsADocument {
   readonly formError = signal('');
   /**
    * The initiative as it was last saved, which unsaved changes are measured against. A new
-   * initiative starts from the template, so opening the create route and leaving again asks nothing.
+   * initiative starts empty, so opening the create route and leaving again asks nothing.
    */
   private readonly baseline = signal<InitiativeDraft>(NEW_INITIATIVE);
   private resolveGuard: ((leave: boolean) => void) | null = null;

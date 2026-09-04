@@ -82,6 +82,7 @@ test('L2-049 · Reject a blank summary', async ({ page }) => {
   await epic.renameTo('');
   await epic.clear();
   await epic.saveExpectingRejection('Epic name', 'Summary');
+  await epic.expectUnsavedChanges();
 });
 
 test('L2-047 · Guide an empty summary', async ({ page }) => {

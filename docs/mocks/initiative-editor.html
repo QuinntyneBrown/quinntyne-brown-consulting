@@ -1618,8 +1618,8 @@
         epicCount: 0,
         storyCount: 0,
         savedAgo: "never",
-        // An initiative opens from its house shape; an epic has none, so it opens empty.
-        body: shape.template === null ? "" : shape.template
+        // A new record opens empty whichever kind it is; a house shape is offered, never written.
+        body: ""
       };
       if (shape.hasParent) {
         record.initiativeId = initiativeId || INITIATIVES[0].id;

@@ -44,8 +44,13 @@ export abstract class DocumentEditorPage {
     if (markdown.length > 0) await this.page.keyboard.type(markdown);
   }
 
+  /**
+   * Puts the caret on the document's own lines before clearing it, rather than anywhere on the
+   * surface: an empty document lays its empty state over the middle of the pane, and a click aimed
+   * at the centre would reach that panel's template button instead of the document.
+   */
   async clear(): Promise<void> {
-    await this.editorSurface().click();
+    await this.documentLines().click({ position: { x: 8, y: 8 } });
     await this.page.keyboard.press('ControlOrMeta+A');
     await this.page.keyboard.press('Delete');
   }
@@ -125,11 +130,15 @@ export abstract class DocumentEditorPage {
     await this.page.getByRole('button', { name: this.saveLabel }).click();
   }
 
+  /**
+   * A save the form refuses, which names every field that still needs a value. Whether the refused
+   * draft holds unsaved work depends on what the writer had written, so each scenario says so
+   * itself.
+   */
   async saveExpectingRejection(...fields: string[]): Promise<void> {
     await this.save();
     const alert = this.page.getByRole('alert').first();
     for (const field of fields) await expect(alert).toContainText(field);
-    await this.expectUnsavedChanges();
   }
 
   async discard(): Promise<void> {
@@ -173,6 +182,11 @@ export abstract class DocumentEditorPage {
   /** Where a writer clicks to put the caret in the document. */
   protected editorSurface(): Locator {
     return this.page.locator('app-markdown-editor');
+  }
+
+  /** The lines the document is written on, which is what a click has to land in to type. */
+  protected documentLines(): Locator {
+    return this.editorSurface().locator('.view-lines');
   }
 
   /** The record's own page element, so a field assertion is not answered by another page. */

@@ -66,6 +66,22 @@ test('L2-046 · Create an initiative from the editor', { tag: '@smoke' }, async 
   await hierarchy.expectInitiativeRollUp(NEW_OUTCOME, 0, 0);
 });
 
+test('L2-046 · Start a new initiative on an empty brief', { tag: '@smoke' }, async ({ page }) => {
+  const brief = new InitiativeBriefPage(page);
+  await brief.startNew();
+
+  // Nothing has been written for the writer, so the document is empty and holds no unsaved work.
+  await brief.expectSize(0, 0);
+  await brief.expectEmptyBriefGuidance();
+  await brief.expectSaved();
+
+  // The house shape is still one click away for a writer who wants to start from it.
+  await brief.acceptTheEmptyBriefTemplate();
+  await brief.expectUnsavedChanges();
+  await brief.show('Preview');
+  await brief.expectPreviewHeading('Outcome');
+});
+
 test('L2-046 · Save an edited brief', { tag: '@smoke' }, async ({ page }) => {
   const brief = new InitiativeBriefPage(page);
   const workboard = new WorkboardPage(page);
@@ -110,6 +126,7 @@ test('L2-046 · Reject a blank brief', async ({ page }) => {
   await brief.renameTo('');
   await brief.clearBrief();
   await brief.saveExpectingRejection('Initiative name', 'Outcome brief');
+  await brief.expectUnsavedChanges();
 });
 
 test('L2-047 · Apply markdown formatting', async ({ page }) => {
