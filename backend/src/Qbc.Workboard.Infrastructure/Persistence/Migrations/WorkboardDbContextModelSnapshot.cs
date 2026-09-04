@@ -224,6 +224,38 @@ namespace Qbc.Workboard.Infrastructure.Persistence.Migrations
                     b.ToTable("StoryTask");
                 });
 
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.TimeEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssistantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Hours")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("StoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("WorkedOn")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssistantId");
+
+                    b.HasIndex("StoryId");
+
+                    b.ToTable("TimeEntry");
+                });
+
             modelBuilder.Entity("Qbc.Workboard.Domain.Entities.WorkspaceAccess", b =>
                 {
                     b.Property<int>("Id")
@@ -282,6 +314,21 @@ namespace Qbc.Workboard.Infrastructure.Persistence.Migrations
 
                     b.HasOne("Qbc.Workboard.Domain.Entities.Story", null)
                         .WithMany("Tasks")
+                        .HasForeignKey("StoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Qbc.Workboard.Domain.Entities.TimeEntry", b =>
+                {
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Assistant", null)
+                        .WithMany()
+                        .HasForeignKey("AssistantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Qbc.Workboard.Domain.Entities.Story", null)
+                        .WithMany()
                         .HasForeignKey("StoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

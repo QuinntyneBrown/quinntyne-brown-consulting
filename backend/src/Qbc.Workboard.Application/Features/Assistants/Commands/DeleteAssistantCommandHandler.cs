@@ -12,10 +12,10 @@ public sealed class DeleteAssistantCommandHandler : IRequestHandler<DeleteAssist
     {
         var assistant = _db.Assistants.SingleOrDefault(item => item.Id == request.Id)
             ?? throw new NotFoundException("Assistant", request.Id);
-        var projection = AssistantProjection.Create(assistant, _db.Stories.ToList(), _db.StoryTasks.ToList());
+        var projection = AssistantProjection.Create(assistant, _db.Stories.ToList(), _db.StoryTasks.ToList(), _db.TimeEntries.ToList());
         if (projection.BlockingAssignments.Count > 0)
         {
-            throw new ConflictException("Reassign or remove the assistant's work before deleting the assistant.", projection.BlockingAssignments);
+            throw new ConflictException("Reassign or remove the assistant's work and logged hours before deleting the assistant.", projection.BlockingAssignments);
         }
 
         _db.Remove(assistant);

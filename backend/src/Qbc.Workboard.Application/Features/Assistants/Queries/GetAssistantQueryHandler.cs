@@ -12,7 +12,7 @@ public sealed class GetAssistantQueryHandler : IRequestHandler<GetAssistantQuery
     {
         var assistant = _db.Assistants.SingleOrDefault(item => item.Id == request.Id)
             ?? throw new NotFoundException("Assistant", request.Id);
-        return Task.FromResult(AssistantProjection.Create(assistant, _db.Stories.ToList(), _db.StoryTasks.ToList()));
+        return Task.FromResult(AssistantProjection.Create(assistant, _db.Stories.ToList(), _db.StoryTasks.ToList(), _db.TimeEntries.ToList()));
     }
 }
 

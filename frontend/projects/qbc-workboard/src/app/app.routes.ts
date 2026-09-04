@@ -85,6 +85,14 @@ export const routes: Routes = [
           ),
         title: 'Assistants · QBC Workboard',
       },
+      {
+        path: 'assistants/:assistantId',
+        loadComponent: () =>
+          import('./features/assistant-hours/assistant-hours-page.component').then(
+            (value) => value.AssistantHoursPageComponent,
+          ),
+        title: 'Assistant hours · QBC Workboard',
+      },
       { path: '', pathMatch: 'full', redirectTo: 'board' },
     ],
   },

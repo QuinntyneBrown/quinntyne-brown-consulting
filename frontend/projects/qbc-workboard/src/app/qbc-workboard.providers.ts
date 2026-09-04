@@ -7,6 +7,8 @@ import { VERSION_SERVICE } from './core/version.service.contract';
 import { VersionService } from './core/version.service';
 import { WORKSPACE_SERVICE } from './core/workspace.service.contract';
 import { WorkspaceService } from './core/workspace.service';
+import { ASSISTANT_HOURS_SERVICE } from './features/assistant-hours/assistant-hours.service.contract';
+import { AssistantHoursService } from './features/assistant-hours/assistant-hours.service';
 import { ASSISTANT_SERVICE } from './features/assistants/assistant.service.contract';
 import { AssistantService } from './features/assistants/assistant.service';
 import { BACKLOG_SERVICE } from './features/backlog/backlog.service.contract';
@@ -36,6 +38,7 @@ export function provideQbcWorkboard(): EnvironmentProviders {
     { provide: INITIATIVE_BRIEF_SERVICE, useExisting: InitiativeBriefService },
     { provide: EPIC_SUMMARY_SERVICE, useExisting: EpicSummaryService },
     { provide: ASSISTANT_SERVICE, useExisting: AssistantService },
+    { provide: ASSISTANT_HOURS_SERVICE, useExisting: AssistantHoursService },
     { provide: STORY_SERVICE, useExisting: StoryService },
     { provide: STORY_EDITOR_SERVICE, useExisting: StoryEditorService },
     { provide: BACKLOG_SERVICE, useExisting: BacklogService },

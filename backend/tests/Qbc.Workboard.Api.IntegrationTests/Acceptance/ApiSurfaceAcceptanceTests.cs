@@ -35,6 +35,8 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
                 $"/api/assistants/{assistant.Id}",
                 new AssistantRequest("Renamed", "Updated", [], Availability.Limited))).StatusCode);
 
+        Assert.Equal(HttpStatusCode.OK, (await Client.GetAsync($"/api/assistants/{assistant.Id}/hours")).StatusCode);
+
         var story = await Given.AddGroomableStoryAsync(epic.Id);
         Assert.Single((await Client.GetFromJsonAsync<IReadOnlyList<StoryDto>>("/api/stories/backlog", Workspace.Json))!);
         Assert.Equal(HttpStatusCode.OK, (await Client.GetAsync($"/api/stories/{story.Id}")).StatusCode);
@@ -69,6 +71,10 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
         Assert.Equal(HttpStatusCode.OK, (await Client.DeleteAsync($"/api/sprints/{sprint.Id}/stories/{story.Id}")).StatusCode);
         Assert.Equal(HttpStatusCode.OK, (await Client.PostAsJsonAsync($"/api/sprints/{sprint.Id}/complete", new { })).StatusCode);
 
+        // Time entries are created and removed through their own resource.
+        var entry = await Given.LogTimeAsync(story.Id, assistant.Id, hours: 2m);
+        Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/time-entries/{entry.Id}")).StatusCode);
+
         // The permitted deletes, in the order the guards allow them.
         Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/stories/{story.Id}")).StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, (await Client.DeleteAsync($"/api/assistants/{assistant.Id}")).StatusCode);
@@ -100,6 +106,9 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
                      "/api/epics/{id}",
                      "/api/assistants",
                      "/api/assistants/{id}",
+                     "/api/assistants/{id}/hours",
+                     "/api/time-entries",
+                     "/api/time-entries/{id}",
                      "/api/stories",
                      "/api/stories/backlog",
                      "/api/stories/{id}",

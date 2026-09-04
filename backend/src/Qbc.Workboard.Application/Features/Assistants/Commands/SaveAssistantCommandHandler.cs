@@ -24,7 +24,7 @@ public sealed class SaveAssistantCommandHandler : IRequestHandler<SaveAssistantC
         }
 
         await _db.SaveChangesAsync(cancellationToken);
-        return AssistantProjection.Create(assistant, _db.Stories.ToList(), _db.StoryTasks.ToList());
+        return AssistantProjection.Create(assistant, _db.Stories.ToList(), _db.StoryTasks.ToList(), _db.TimeEntries.ToList());
     }
 }
 

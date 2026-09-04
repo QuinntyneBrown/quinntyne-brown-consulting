@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
+  BackLinkComponent,
   ButtonComponent,
   FormErrorComponent,
   LoadingStateComponent,
@@ -26,12 +27,12 @@ const NEW_INITIATIVE: InitiativeDraft = { name: '', description: BRIEF_TEMPLATE 
 @Component({
   selector: 'app-initiative-brief-page',
   imports: [
+    BackLinkComponent,
     ButtonComponent,
     DocumentEditorComponent,
     FormErrorComponent,
     LoadingStateComponent,
     PageHeaderComponent,
-    RouterLink,
     TextInputComponent,
     UnsavedChangesDialogComponent,
   ],

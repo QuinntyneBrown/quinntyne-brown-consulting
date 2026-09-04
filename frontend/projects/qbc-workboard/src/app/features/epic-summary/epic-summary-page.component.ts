@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import {
+  BackLinkComponent,
   ButtonComponent,
   FormErrorComponent,
   LoadingStateComponent,
@@ -24,12 +25,12 @@ import { EpicDraft } from './epic-draft';
 @Component({
   selector: 'app-epic-summary-page',
   imports: [
+    BackLinkComponent,
     ButtonComponent,
     DocumentEditorComponent,
     FormErrorComponent,
     LoadingStateComponent,
     PageHeaderComponent,
-    RouterLink,
     SelectComponent,
     TextInputComponent,
     UnsavedChangesDialogComponent,

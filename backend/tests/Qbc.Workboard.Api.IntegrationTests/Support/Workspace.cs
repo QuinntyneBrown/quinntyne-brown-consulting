@@ -142,6 +142,37 @@ public sealed class Workspace
         return await ReadAsync<StoryDto>(response);
     }
 
+    /// <summary>
+    /// A started sprint holding one Done story and one still in flight, which is the arrangement an
+    /// assistant's hours are reported against: some time on finished work, some on work in progress.
+    /// </summary>
+    public async Task<(StoryDto Done, StoryDto InFlight)> AddSprintWithDoneAndInFlightStoriesAsync(
+        Guid epicId,
+        string doneTitle = "Publish an engagement health summary",
+        string inFlightTitle = "Capture a client decision")
+    {
+        var done = await AddReadyStoryAsync(epicId, doneTitle, 5);
+        var inFlight = await AddReadyStoryAsync(epicId, inFlightTitle, 3);
+        var sprint = await AddSprintAsync();
+        await PlanAsync(sprint.Id, done.Id);
+        await PlanAsync(sprint.Id, inFlight.Id);
+        await StartAsync(sprint.Id);
+        return (await MoveAsync(done.Id, BoardStatus.Done), await ReadStoryAsync(inFlight.Id));
+    }
+
+    public async Task<TimeEntryDto> LogTimeAsync(
+        Guid storyId,
+        Guid assistantId,
+        DateOnly? workedOn = null,
+        decimal hours = 1.5m,
+        string note = "")
+    {
+        var response = await _client.PostAsJsonAsync(
+            "/api/time-entries",
+            new TimeEntryRequest(storyId, assistantId, workedOn ?? new DateOnly(2026, 8, 31), hours, note));
+        return await ReadAsync<TimeEntryDto>(response);
+    }
+
     /// <summary>A Done story kept in a completed sprint: the workspace's immutable history.</summary>
     public async Task<(SprintDto Sprint, StoryDto Story)> AddCompletedSprintHistoryAsync(
         Guid epicId,
@@ -171,6 +202,9 @@ public sealed class Workspace
 
     public async Task<AssistantDto> ReadAssistantAsync(Guid assistantId) =>
         (await _client.GetFromJsonAsync<AssistantDto>($"/api/assistants/{assistantId}", Json))!;
+
+    public async Task<AssistantHoursDto> ReadAssistantHoursAsync(Guid assistantId) =>
+        (await _client.GetFromJsonAsync<AssistantHoursDto>($"/api/assistants/{assistantId}/hours", Json))!;
 
     public async Task<IReadOnlyList<StoryDto>> ReadBacklogAsync() =>
         (await _client.GetFromJsonAsync<IReadOnlyList<StoryDto>>("/api/stories/backlog", Json))!;

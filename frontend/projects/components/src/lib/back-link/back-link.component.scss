@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+a {
+  align-self: flex-start;
+  color: var(--qbc-ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+a:hover,
+a:focus-visible {
+  color: var(--qbc-accent-dark);
+  text-decoration: underline;
+}

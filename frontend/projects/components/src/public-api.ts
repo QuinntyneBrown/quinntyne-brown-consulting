@@ -3,6 +3,7 @@ export * from './lib/app-shell/app-shell.component';
 export * from './lib/assignment-link/assignment-link.component';
 export * from './lib/assistant-card/assistant-card.component';
 export * from './lib/availability/availability.component';
+export * from './lib/back-link/back-link.component';
 export * from './lib/avatar/avatar.component';
 export * from './lib/board-column/board-column.component';
 export * from './lib/brand/brand.component';

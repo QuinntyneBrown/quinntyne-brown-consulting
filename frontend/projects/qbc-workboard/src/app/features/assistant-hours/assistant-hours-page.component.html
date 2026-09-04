@@ -1,0 +1,215 @@
+<qbc-back-link
+  href="/assistants"
+  label="All assistants"
+/>
+
+<qbc-page>
+  @if (service.error()) {
+    <qbc-form-error>{{ service.error() }}</qbc-form-error>
+  }
+  @if (service.loadingState() === 'loading') {
+    <qbc-loading-state>Loading logged hours…</qbc-loading-state>
+  } @else if (hours(); as summary) {
+    <qbc-page-header
+      [title]="summary.fullName"
+      [description]="summary.role"
+      ><qbc-button
+        actions
+        (click)="openLog()"
+        >Log hours</qbc-button
+      ></qbc-page-header
+    >
+
+    <div class="profile">
+      <qbc-avatar
+        [name]="summary.fullName"
+        size="lg"
+      />
+      <div class="profile-detail">
+        <qbc-availability [status]="summary.availability" />
+        @for (specialty of summary.specialties; track specialty) {
+          <qbc-tag>{{ specialty }}</qbc-tag>
+        }
+      </div>
+    </div>
+
+    <div class="totals">
+      <qbc-card>
+        <p class="stat-label">Hours logged</p>
+        <p class="stat-value">{{ formatHours(summary.hoursLogged) }}</p>
+      </qbc-card>
+      <qbc-card>
+        <p class="stat-label">Hours on completed stories</p>
+        <p class="stat-value">{{ formatHours(summary.hoursOnCompletedStories) }}</p>
+      </qbc-card>
+      <qbc-card>
+        <p class="stat-label">Stories worked on</p>
+        <p class="stat-value">{{ summary.storiesWorkedOn }}</p>
+      </qbc-card>
+      <qbc-card>
+        <p class="stat-label">Stories completed</p>
+        <p class="stat-value">{{ summary.completedStoriesWorkedOn }}</p>
+      </qbc-card>
+    </div>
+
+    @if (summary.stories.length === 0) {
+      <qbc-empty-state
+        title="No hours logged yet"
+        description="Record the time spent on a story and it will appear here, traced to the work it moved forward."
+        ><qbc-button
+          actions
+          (click)="openLog()"
+          >Log the first hours</qbc-button
+        ></qbc-empty-state
+      >
+    } @else {
+      <section class="share">
+        <qbc-progress
+          [value]="completedShare()"
+          label="Share of logged hours on completed stories"
+        />
+        <p class="share-caption">
+          {{ completedShare() }}% of logged hours are on work that is done
+        </p>
+      </section>
+
+      <div class="story-controls">
+        <qbc-segmented
+          [options]="filterOptions"
+          [selected]="filter()"
+          ariaLabel="Filter stories by completion"
+          (selectedChange)="choose($event)"
+        />
+        <p
+          class="result-count"
+          role="status"
+        >
+          {{ visibleStories().length }} of {{ summary.stories.length }} stories
+        </p>
+      </div>
+
+      <div class="story-list">
+        @for (story of visibleStories(); track story.storyId) {
+          <article class="hours-row">
+            <div class="row-main">
+              <div class="identity">
+                <span class="story-key">{{ story.storyKey }}</span>
+                <div>
+                  <strong>{{ story.title }}</strong>
+                  <small>{{ story.epicName }}</small>
+                </div>
+              </div>
+              <div class="cell">
+                <small class="cell-label">State</small>
+                <qbc-status-pill [tone]="story.boardStatus">{{
+                  statusLabel(story.boardStatus)
+                }}</qbc-status-pill>
+              </div>
+              <div class="cell">
+                <small class="cell-label">Estimate</small>
+                <qbc-points [value]="story.points" />
+              </div>
+              <div class="cell hours-cell">
+                <small class="cell-label">Hours</small>
+                <qbc-count [value]="formatHours(story.hours)" />
+                <small class="of-total">of {{ formatHours(story.storyHours) }}</small>
+              </div>
+              <div class="cell actions">
+                <qbc-button
+                  variant="quiet"
+                  size="sm"
+                  [ariaExpanded]="isExpanded(story.storyId)"
+                  (click)="toggle(story.storyId)"
+                  >{{ isExpanded(story.storyId) ? 'Hide' : 'Entries' }} ({{
+                    story.entries.length
+                  }})</qbc-button
+                >
+                <qbc-button
+                  variant="quiet"
+                  size="sm"
+                  (click)="openLog(story.storyId)"
+                  >Log</qbc-button
+                >
+              </div>
+            </div>
+            @if (isExpanded(story.storyId)) {
+              <div class="entries">
+                @for (entry of story.entries; track entry.id) {
+                  <div class="entry">
+                    <span class="entry-date">{{ entry.workedOn }}</span>
+                    <qbc-count [value]="formatHours(entry.hours)" />
+                    <span class="entry-note">{{ entry.note || 'No note' }}</span>
+                    <qbc-button
+                      variant="quiet"
+                      size="sm"
+                      (click)="deleteEntry(entry)"
+                      >Delete</qbc-button
+                    >
+                  </div>
+                }
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+  }
+</qbc-page>
+
+<form
+  [formGroup]="form"
+  (ngSubmit)="log()"
+>
+  <qbc-dialog
+    #logDialog
+    title="Log hours"
+    subtitle="Record the time spent on a story. Hours are recorded in quarter-hour increments."
+  >
+    @if (formError()) {
+      <qbc-form-error body>{{ formError() }}</qbc-form-error>
+    }
+    <qbc-form-grid body>
+      <qbc-select
+        label="Story"
+        [required]="true"
+        [full]="true"
+        [options]="storyOptions()"
+        formControlName="storyId"
+      />
+      <qbc-text-input
+        label="Date worked"
+        type="date"
+        [required]="true"
+        formControlName="workedOn"
+      />
+      <qbc-text-input
+        label="Hours"
+        type="number"
+        [required]="true"
+        [min]="0.25"
+        [step]="0.25"
+        hint="Quarter hours, so 2.5 is two and a half."
+        formControlName="hours"
+      />
+      <qbc-text-input
+        label="Note"
+        [full]="true"
+        hint="What the time went into. Optional."
+        formControlName="note"
+      />
+    </qbc-form-grid>
+    <qbc-button
+      actions
+      variant="secondary"
+      (click)="logDialog.close()"
+      >Cancel</qbc-button
+    >
+    <qbc-button
+      actions
+      type="submit"
+      [disabled]="pending()"
+      >Log hours</qbc-button
+    >
+  </qbc-dialog>
+</form>
+<qbc-confirm-dialog />

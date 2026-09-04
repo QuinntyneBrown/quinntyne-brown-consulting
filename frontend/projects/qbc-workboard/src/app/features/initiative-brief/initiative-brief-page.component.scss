@@ -32,15 +32,3 @@
 
 /* The editor's way back sits above the title rather than among the actions, so the save controls
    stay on one row and the escape from the page reads before the page names itself. */
-.back-link {
-  align-self: flex-start;
-  color: var(--qbc-ink-soft);
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-}
-.back-link:hover,
-.back-link:focus-visible {
-  color: var(--qbc-accent-dark);
-  text-decoration: underline;
-}

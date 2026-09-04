@@ -14,6 +14,8 @@ import { HIERARCHY_SERVICE } from './hierarchy/hierarchy.service.token';
 import { SprintService } from './sprints/sprint.service';
 import { SPRINT_SERVICE } from './sprints/sprint.service.token';
 import { StoryService } from './stories/story.service';
+import { TimeEntryService } from './time-entries/time-entry.service';
+import { TIME_ENTRY_SERVICE } from './time-entries/time-entry.service.token';
 import { STORY_SERVICE } from './stories/story.service.token';
 import { WorkspaceService } from './workspace/workspace.service';
 import { WORKSPACE_SERVICE } from './workspace/workspace.service.token';
@@ -27,6 +29,7 @@ export function provideQbcServices(): EnvironmentProviders {
     HierarchyService,
     SprintService,
     StoryService,
+    TimeEntryService,
     VersionService,
     WorkspaceService,
     { provide: ACCESS_SERVICE, useExisting: AccessService },
@@ -35,6 +38,7 @@ export function provideQbcServices(): EnvironmentProviders {
     { provide: HIERARCHY_SERVICE, useExisting: HierarchyService },
     { provide: SPRINT_SERVICE, useExisting: SprintService },
     { provide: STORY_SERVICE, useExisting: StoryService },
+    { provide: TIME_ENTRY_SERVICE, useExisting: TimeEntryService },
     { provide: VERSION_SERVICE, useExisting: VersionService },
     { provide: WORKSPACE_SERVICE, useExisting: WorkspaceService },
   ]);

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Assistant } from '../models/assistant';
+import { AssistantHours } from '../models/assistant-hours';
 import { IAssistantService } from './assistant.service.interface';
 
 @Injectable()
@@ -14,6 +15,10 @@ export class AssistantService implements IAssistantService {
 
   get(id: string): Promise<Assistant> {
     return firstValueFrom(this.http.get<Assistant>(`/api/assistants/${id}`));
+  }
+
+  getHours(id: string): Promise<AssistantHours> {
+    return firstValueFrom(this.http.get<AssistantHours>(`/api/assistants/${id}/hours`));
   }
 
   create(
