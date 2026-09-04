@@ -1,0 +1,2198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaction study for the Monaco-based markdown editor behind an initiative outcome brief in QBC Workboard.">
+  <title>Edit initiative brief &middot; QBC Workboard</title>
+  <style>
+    /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
+       subset this page uses is repeated here, so the mock stays one self-contained
+       file and never touches the visual baseline in docs/mocks/styles.css. The
+       --qbc-* names are used rather than the older --ink/--accent names in
+       styles.css, so this mock matches the design system and the Angular app. */
+    :root {
+      color-scheme: light;
+
+      --qbc-ink:        #18201d;
+      --qbc-ink-soft:   #68726d;
+      --qbc-ink-faint:  #87918c;
+
+      --qbc-line:        #e4e9e6;
+      --qbc-line-strong: #d8dfdb;
+      --qbc-line-dashed: #d7deda;
+      --qbc-line-card:   #e8ece9;
+
+      --qbc-panel:          #ffffff;
+      --qbc-soft:           #f5f7f5;
+      --qbc-surface-raised: #fbfcfb;
+      --qbc-surface-hover:  #fcfdfc;
+
+      --qbc-accent:      #276749;
+      --qbc-accent-dark: #184c35;
+      --qbc-accent-soft: #e8f3ed;
+
+      --qbc-blue:   #315f88;  --qbc-blue-soft:   #eaf1f8;
+      --qbc-amber:  #8a6100;  --qbc-amber-soft:  #fff4d9;
+      --qbc-danger: #a33a37;  --qbc-danger-soft: #faeceb;
+
+      --qbc-nav-ink:          #5e6863;
+      --qbc-nav-icon:         #83908a;
+      --qbc-placeholder:      #a0a9a4;
+      --qbc-focus-ring:       rgba(39, 103, 73, .25);
+      --qbc-focus-ring-field: rgba(39, 103, 73, .1);
+      --qbc-scrim:            rgba(18, 25, 22, .4);
+
+      --qbc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      /* The design system has no monospace token yet. Markdown source, the status
+         bar counters, and rendered code need one, so this study proposes a value
+         for the token the design system would have to add alongside it. */
+      --qbc-font-mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+      --qbc-fs-2xs:  11px;
+      --qbc-fs-xs:   12px;
+      --qbc-fs-sm:   13px;
+      --qbc-fs-md:   14px;
+      --qbc-fs-base: 15px;
+      --qbc-fs-lg:   16px;
+      --qbc-fs-xl:   17px;
+      --qbc-fs-2xl:  18px;
+      --qbc-fs-3xl:  21px;
+      --qbc-fs-4xl:  22px;
+
+      --qbc-lh-snug: 1.4;
+      --qbc-lh-base: 1.5;
+
+      --qbc-fw-medium:   600;
+      --qbc-fw-nav:      620;
+      --qbc-fw-button:   680;
+      --qbc-fw-semibold: 700;
+      --qbc-fw-bold:     750;
+      --qbc-fw-heavy:    800;
+
+      --qbc-tracking-heading: -.02em;
+      --qbc-tracking-key:     .04em;
+      --qbc-tracking-brand:   .06em;
+      --qbc-tracking-eyebrow: .1em;
+
+      --qbc-s-1: 4px;   --qbc-s-2: 8px;   --qbc-s-3: 12px;  --qbc-s-4: 16px;
+      --qbc-s-5: 20px;  --qbc-s-6: 24px;  --qbc-s-7: 32px;  --qbc-s-8: 40px;
+
+      --qbc-r-2xs:     6px;
+      --qbc-r-sm:      8px;
+      --qbc-r-control: 9px;
+      --qbc-r-md:      10px;
+      --qbc-r-lg:      11px;
+      --qbc-r-xl:      14px;
+      --qbc-r-2xl:     16px;
+      --qbc-r-pill:    20px;
+      --qbc-r-round:   50%;
+
+      --qbc-shadow-card:    0 2px 3px rgba(24, 32, 29, .025);
+      --qbc-shadow-overlay: 0 18px 50px rgba(24, 32, 29, .12);
+
+      --qbc-dur-fast: 180ms;
+      --qbc-dur-base: 200ms;
+      --qbc-ease: ease-out;
+
+      --qbc-sidebar-w: 224px;
+      --qbc-topbar-h:  82px;
+      --qbc-control-h: 42px;
+      --qbc-button-h:  40px;
+
+      --qbc-z-sidebar: 20;
+      --qbc-z-toast:   90;
+      --qbc-z-skip:    100;
+
+      /* Editor-only measurements, named here so the two rails and the writing
+         column stay in one place while the layout is being reviewed. */
+      --qbc-rail-w:    268px;
+      --qbc-outline-w: 272px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :root { --qbc-dur-fast: 1ms; --qbc-dur-base: 1ms; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* The class rules below set display, which would otherwise beat the user
+       agent's [hidden] rule and leave hidden panes on screen. */
+    [hidden] { display: none !important; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font-family: var(--qbc-font-sans);
+      font-size: var(--qbc-fs-base);
+      line-height: var(--qbc-lh-base);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      overflow: hidden;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: var(--qbc-z-skip);
+      top: var(--qbc-s-3);
+      left: var(--qbc-s-3);
+      padding: 10px var(--qbc-s-4);
+      border-radius: var(--qbc-r-sm);
+      color: var(--qbc-panel);
+      background: var(--qbc-ink);
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-button);
+      text-decoration: none;
+      transform: translateY(-200%);
+    }
+    .skip-link:focus { transform: none; }
+
+    :focus-visible { outline: 2px solid var(--qbc-accent); outline-offset: 2px; }
+
+    /* ---- Buttons, copied in behaviour from docs/mocks/styles.css --------- */
+    .primary-button, .secondary-button, .quiet-button, .danger-button, .icon-button {
+      min-height: var(--qbc-button-h);
+      border-radius: var(--qbc-r-control);
+      font: inherit;
+      font-size: var(--qbc-fs-xs);
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+      transition: background var(--qbc-dur-fast) var(--qbc-ease), color var(--qbc-dur-fast) var(--qbc-ease), border-color var(--qbc-dur-fast) var(--qbc-ease);
+    }
+    .primary-button { padding: 9px 16px; border: 1px solid var(--qbc-accent); color: #fff; background: var(--qbc-accent); }
+    .primary-button:hover:not(:disabled) { background: var(--qbc-accent-dark); }
+    .secondary-button { padding: 9px 15px; border: 1px solid var(--qbc-line); color: var(--qbc-ink); background: var(--qbc-panel); }
+    .secondary-button:hover:not(:disabled), .quiet-button:hover:not(:disabled) { background: var(--qbc-soft); }
+    .quiet-button { padding: 8px 11px; border: 0; color: var(--qbc-ink-soft); background: transparent; }
+    .danger-button { padding: 9px 15px; border: 1px solid var(--qbc-danger); color: #fff; background: var(--qbc-danger); }
+    .icon-button { display: grid; width: var(--qbc-button-h); border: 1px solid var(--qbc-line); place-items: center; background: var(--qbc-panel); }
+    button:disabled { cursor: not-allowed; opacity: .45; }
+
+    /* ---- Shell ----------------------------------------------------------- */
+    .app-shell { display: flex; height: 100vh; height: 100dvh; }
+
+    .sidebar {
+      display: flex;
+      width: var(--qbc-sidebar-w);
+      flex: 0 0 var(--qbc-sidebar-w);
+      flex-direction: column;
+      padding: var(--qbc-s-6) var(--qbc-s-4);
+      border-right: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+    }
+
+    .brand { display: flex; gap: var(--qbc-s-3); align-items: center; margin-bottom: var(--qbc-s-7); color: inherit; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: var(--qbc-r-md);
+      color: #fff;
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-lg);
+      font-weight: var(--qbc-fw-bold);
+    }
+    .brand strong, .brand small { display: block; }
+    .brand strong { font-size: var(--qbc-fs-md); letter-spacing: var(--qbc-tracking-brand); }
+    .brand small { margin-top: -2px; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); }
+
+    .nav-list { display: grid; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      padding: 10px var(--qbc-s-3);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-nav-ink);
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-nav);
+      text-decoration: none;
+    }
+    .nav-list a span { width: 18px; color: var(--qbc-nav-icon); text-align: center; }
+    .nav-list a:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
+    .nav-list a.active { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .nav-list a.active span { color: var(--qbc-accent-dark); }
+
+    .sidebar-foot { margin-top: auto; color: #8a938f; font-size: var(--qbc-fs-2xs); }
+    .sidebar-foot p { margin: 0; }
+
+    .workspace { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+
+    .topbar {
+      display: flex;
+      height: var(--qbc-topbar-h);
+      flex: 0 0 var(--qbc-topbar-h);
+      gap: var(--qbc-s-4);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--qbc-s-6);
+      border-bottom: 1px solid var(--qbc-line);
+      background: var(--qbc-panel);
+    }
+    .breadcrumb { overflow: hidden; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); text-overflow: ellipsis; white-space: nowrap; }
+    .breadcrumb b { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+    .topbar-actions { display: flex; flex-wrap: wrap; gap: var(--qbc-s-2); align-items: center; justify-content: flex-end; }
+
+    /* ---- Segmented view switch ------------------------------------------ */
+    .segmented { display: flex; padding: 3px; border: 1px solid var(--qbc-line); border-radius: var(--qbc-r-control); background: var(--qbc-soft); }
+    .segmented button {
+      min-height: 32px;
+      padding: 0 var(--qbc-s-3);
+      border: 0;
+      border-radius: 7px;
+      color: var(--qbc-ink-soft);
+      background: transparent;
+      font: inherit;
+      font-size: var(--qbc-fs-xs);
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+    }
+    .segmented button:hover { color: var(--qbc-ink); }
+    .segmented button[aria-pressed="true"] {
+      color: var(--qbc-accent-dark);
+      background: var(--qbc-panel);
+      box-shadow: var(--qbc-shadow-card);
+    }
+
+    /* ---- Save state ------------------------------------------------------ */
+    .save-state {
+      display: inline-flex;
+      gap: 7px;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: var(--qbc-r-pill);
+      color: var(--qbc-ink-soft);
+      background: var(--qbc-soft);
+      font-size: var(--qbc-fs-2xs);
+      font-weight: var(--qbc-fw-semibold);
+      white-space: nowrap;
+    }
+    .save-state::before { width: 7px; height: 7px; border-radius: var(--qbc-r-round); background: currentColor; content: ""; }
+    .save-state.is-dirty { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
+    .save-state.is-saved { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+
+    /* ---- Three-column editor layout -------------------------------------- */
+    .editor-layout {
+      display: grid;
+      min-height: 0;
+      flex: 1;
+      grid-template-columns: var(--qbc-rail-w) minmax(0, 1fr) var(--qbc-outline-w);
+    }
+    .editor-layout.is-focus-mode { grid-template-columns: minmax(0, 1fr); }
+    .editor-layout.is-focus-mode .rail { display: none; }
+
+    .rail {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      background: var(--qbc-surface-raised);
+    }
+    .rail.initiatives { border-right: 1px solid var(--qbc-line); }
+    .rail.outline { border-left: 1px solid var(--qbc-line); }
+
+    .rail-head {
+      display: flex;
+      gap: var(--qbc-s-2);
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--qbc-s-5) var(--qbc-s-4) var(--qbc-s-3);
+    }
+    .section-label {
+      margin: 0;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xs);
+      font-weight: var(--qbc-fw-heavy);
+      letter-spacing: var(--qbc-tracking-eyebrow);
+      text-transform: uppercase;
+    }
+    .rail-body { overflow-y: auto; padding: 0 var(--qbc-s-3) var(--qbc-s-5); }
+
+    .initiative-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .initiative-button {
+      display: block;
+      width: 100%;
+      padding: var(--qbc-s-3);
+      border: 1px solid transparent;
+      border-radius: var(--qbc-r-lg);
+      background: transparent;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .initiative-button:hover { background: var(--qbc-surface-hover); }
+    .initiative-button[aria-current="true"] { border-color: var(--qbc-line); background: var(--qbc-panel); box-shadow: var(--qbc-shadow-card); }
+    .initiative-button strong { display: block; font-size: var(--qbc-fs-sm); line-height: var(--qbc-lh-snug); }
+    .initiative-button small {
+      display: -webkit-box;
+      overflow: hidden;
+      margin-top: 3px;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xs);
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .initiative-meta { display: flex; gap: var(--qbc-s-2); align-items: center; margin-top: var(--qbc-s-2); }
+    .initiative-button .dot { color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); }
+
+    .pill {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      width: max-content;
+      padding: 3px 8px;
+      border-radius: var(--qbc-r-pill);
+      font-size: var(--qbc-fs-2xs);
+      font-weight: var(--qbc-fw-semibold);
+    }
+    .pill.active { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .pill.draft { color: var(--qbc-blue); background: var(--qbc-blue-soft); }
+    .pill.planned { color: var(--qbc-amber); background: var(--qbc-amber-soft); }
+    .pill.muted { color: var(--qbc-ink-soft); background: var(--qbc-soft); }
+
+    /* ---- Writing column --------------------------------------------------- */
+    .editor-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: var(--qbc-panel); }
+
+    .brief-head { padding: var(--qbc-s-5) var(--qbc-s-6) var(--qbc-s-4); border-bottom: 1px solid var(--qbc-line); }
+    .eyebrow { margin: 0 0 6px; color: var(--qbc-accent); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-heavy); letter-spacing: var(--qbc-tracking-eyebrow); text-transform: uppercase; }
+
+    .title-input {
+      display: block;
+      width: 100%;
+      padding: 2px 0;
+      border: 0;
+      border-bottom: 1px solid transparent;
+      color: var(--qbc-ink);
+      background: transparent;
+      font: inherit;
+      font-size: var(--qbc-fs-3xl);
+      font-weight: var(--qbc-fw-bold);
+      letter-spacing: var(--qbc-tracking-heading);
+    }
+    .title-input::placeholder { color: var(--qbc-placeholder); font-weight: var(--qbc-fw-medium); }
+    .title-input:hover { border-bottom-color: var(--qbc-line); }
+    .title-input:focus { border-bottom-color: var(--qbc-accent); outline: 0; }
+    .title-input[aria-invalid="true"] { border-bottom-color: var(--qbc-danger); }
+
+    .field-error { margin: var(--qbc-s-2) 0 0; color: var(--qbc-danger); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-medium); }
+
+    .brief-meta { display: flex; flex-wrap: wrap; gap: var(--qbc-s-2) var(--qbc-s-3); align-items: center; margin-top: var(--qbc-s-3); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+    .brief-meta .dot { color: var(--qbc-ink-faint); }
+
+    /* ---- Markdown toolbar --------------------------------------------------- */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--qbc-s-2);
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--qbc-s-2) var(--qbc-s-6);
+      border-bottom: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+    }
+    .tool-group { display: flex; gap: 2px; align-items: center; }
+    .tool-group + .tool-group { margin-left: var(--qbc-s-2); padding-left: var(--qbc-s-2); border-left: 1px solid var(--qbc-line); }
+    /* The formatting side takes the room it needs and the editor menu stays
+       at the end of the row, wrapped or not. */
+    .toolbar-side { display: flex; flex-wrap: wrap; align-items: center; }
+    .toolbar-side.formatting { flex: 1 1 auto; }
+    .toolbar-side:not(.formatting) { flex: 0 0 auto; justify-content: flex-end; margin-left: auto; }
+
+    .tool {
+      display: grid;
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0 7px;
+      border: 0;
+      border-radius: var(--qbc-r-2xs);
+      place-items: center;
+      color: var(--qbc-ink-soft);
+      background: transparent;
+      font: inherit;
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-button);
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tool:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
+    .tool[aria-pressed="true"], .tool[aria-expanded="true"] { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .tool.bold { font-weight: var(--qbc-fw-heavy); }
+    .tool.italic { font-style: italic; }
+    .tool.strike { text-decoration: line-through; }
+    .tool.mono { font-family: var(--qbc-font-mono); font-size: var(--qbc-fs-xs); }
+
+    .menu-wrap { position: relative; }
+    .menu {
+      position: absolute;
+      z-index: 30;
+      top: calc(100% + 6px);
+      left: 0;
+      display: grid;
+      width: 250px;
+      padding: 6px;
+      border: 1px solid var(--qbc-line);
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-panel);
+      box-shadow: var(--qbc-shadow-overlay);
+    }
+    .menu.to-right { right: 0; left: auto; }
+    .menu button {
+      padding: 9px var(--qbc-s-3);
+      border: 0;
+      border-radius: var(--qbc-r-sm);
+      background: transparent;
+      font: inherit;
+      font-size: var(--qbc-fs-sm);
+      text-align: left;
+      cursor: pointer;
+    }
+    .menu button:hover { background: var(--qbc-soft); }
+    .menu button small { display: block; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); }
+    .menu .menu-label { padding: var(--qbc-s-2) var(--qbc-s-3) 4px; }
+    .menu button[aria-checked] { position: relative; padding-left: 28px; }
+    .menu button[aria-checked="true"]::before { position: absolute; left: var(--qbc-s-3); color: var(--qbc-accent); content: "\2713"; }
+
+    /* Preview on its own hides the formatting controls: there is no source on
+       screen for them to act on. */
+    .toolbar.is-preview .toolbar-side.formatting { display: none; }
+
+    /* ---- Panes -------------------------------------------------------------- */
+    .panes { display: grid; min-height: 0; flex: 1; grid-template-columns: minmax(0, 1fr); }
+    .panes.is-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .pane { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+    .pane.preview-pane { border-left: 1px solid var(--qbc-line); background: var(--qbc-surface-hover); }
+    .panes:not(.is-split) .pane.preview-pane { border-left: 0; }
+
+    .pane-label {
+      display: flex;
+      min-height: 31px;
+      gap: var(--qbc-s-2);
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px var(--qbc-s-6);
+      border-bottom: 1px solid var(--qbc-line);
+      color: var(--qbc-ink-faint);
+      font-size: var(--qbc-fs-2xs);
+      font-weight: var(--qbc-fw-heavy);
+      letter-spacing: var(--qbc-tracking-eyebrow);
+      text-transform: uppercase;
+    }
+    /* The right-hand note is the first thing to give way, so both pane labels
+       keep the same height and the two panes stay aligned. */
+    .pane-label span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    #editor-host { min-height: 0; flex: 1; }
+
+    /* The Monaco container has no intrinsic size; without this the editor
+       collapses to zero height inside the flex column. */
+    #editor-host .monaco-editor { position: absolute; }
+    #editor-host { position: relative; }
+
+    /* Offline fallback. It carries the same padding and metrics as the Monaco
+       host so the two read as one control while the mock is reviewed. */
+    .fallback-editor {
+      width: 100%;
+      min-height: 0;
+      flex: 1;
+      padding: 18px var(--qbc-s-6) var(--qbc-s-6);
+      border: 0;
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font-family: var(--qbc-font-mono);
+      font-size: var(--qbc-fs-md);
+      line-height: 1.65;
+      resize: none;
+    }
+    .fallback-editor:focus { outline: 0; }
+
+    .editor-loading {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--qbc-ink-soft);
+      background: var(--qbc-panel);
+      font-size: var(--qbc-fs-sm);
+    }
+
+    /* The hint floats over the empty editor, so it must not swallow a click
+       meant for the text behind it. Only its button is interactive. */
+    .empty-hint {
+      position: absolute;
+      z-index: 4;
+      pointer-events: none;
+      top: 74px;
+      right: var(--qbc-s-6);
+      left: var(--qbc-s-6);
+      padding: var(--qbc-s-5);
+      border: 1px dashed var(--qbc-line-dashed);
+      border-radius: var(--qbc-r-xl);
+      background: var(--qbc-panel);
+      text-align: center;
+    }
+    .empty-hint h2 { margin: 0 0 5px; font-size: var(--qbc-fs-lg); }
+    .empty-hint p { margin: 0 0 var(--qbc-s-4); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); }
+    .empty-hint button { pointer-events: auto; }
+
+    /* ---- Status bar ---------------------------------------------------------- */
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--qbc-s-2) var(--qbc-s-4);
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--qbc-s-2) var(--qbc-s-6);
+      border-top: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xs);
+    }
+    .status-group { display: flex; flex-wrap: wrap; gap: var(--qbc-s-3); align-items: center; }
+    .status-bar .mono { font-family: var(--qbc-font-mono); }
+    .status-bar .engine { display: inline-flex; gap: 6px; align-items: center; }
+    .status-bar .engine::before { width: 6px; height: 6px; border-radius: var(--qbc-r-round); background: var(--qbc-accent); content: ""; }
+    .status-bar .engine.is-fallback::before { background: var(--qbc-amber); }
+
+    /* ---- Rendered markdown ---------------------------------------------------- */
+    .preview-scroll { overflow-y: auto; min-height: 0; flex: 1; }
+    .prose { max-width: 72ch; margin: 0 auto; padding: var(--qbc-s-7) var(--qbc-s-6) var(--qbc-s-8); }
+    .prose > :first-child { margin-top: 0; }
+    .prose h1, .prose h2, .prose h3, .prose h4 { margin: var(--qbc-s-6) 0 var(--qbc-s-3); letter-spacing: var(--qbc-tracking-heading); line-height: var(--qbc-lh-snug); scroll-margin-top: var(--qbc-s-6); }
+    .prose h1 { font-size: var(--qbc-fs-4xl); }
+    .prose h2 { padding-bottom: 7px; border-bottom: 1px solid var(--qbc-line); font-size: var(--qbc-fs-2xl); }
+    .prose h3 { font-size: var(--qbc-fs-lg); }
+    .prose h4 { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+    .prose p, .prose ul, .prose ol, .prose table, .prose pre, .prose blockquote { margin: 0 0 var(--qbc-s-4); }
+    .prose ul, .prose ol { padding-left: var(--qbc-s-6); }
+    .prose li { margin-bottom: 6px; }
+    .prose li > ul, .prose li > ol { margin: 6px 0 0; }
+    .prose a { color: var(--qbc-accent-dark); text-underline-offset: 2px; }
+    .prose strong { font-weight: var(--qbc-fw-semibold); }
+    .prose hr { height: 1px; margin: var(--qbc-s-6) 0; border: 0; background: var(--qbc-line); }
+    .prose blockquote {
+      padding: var(--qbc-s-1) var(--qbc-s-4);
+      border-left: 3px solid var(--qbc-accent-soft);
+      color: var(--qbc-ink-soft);
+    }
+    .prose code {
+      padding: 2px 5px;
+      border-radius: var(--qbc-r-2xs);
+      background: var(--qbc-soft);
+      font-family: var(--qbc-font-mono);
+      font-size: .88em;
+    }
+    .prose pre {
+      overflow-x: auto;
+      padding: var(--qbc-s-4);
+      border: 1px solid var(--qbc-line);
+      border-radius: var(--qbc-r-lg);
+      background: var(--qbc-soft);
+    }
+    .prose pre code { padding: 0; background: none; font-size: var(--qbc-fs-xs); }
+    .prose table { width: 100%; border-collapse: collapse; font-size: var(--qbc-fs-sm); }
+    .prose th, .prose td { padding: 9px var(--qbc-s-3); border-bottom: 1px solid var(--qbc-line); text-align: left; }
+    .prose th { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-heavy); letter-spacing: var(--qbc-tracking-eyebrow); text-transform: uppercase; }
+    .prose .task-list { padding-left: var(--qbc-s-1); list-style: none; }
+    .prose .task-list li { display: flex; gap: var(--qbc-s-2); align-items: baseline; }
+    .prose .task-box { color: var(--qbc-ink-faint); font-family: var(--qbc-font-mono); }
+    .prose .task-box.is-done { color: var(--qbc-accent); }
+    .prose .is-done-text { color: var(--qbc-ink-soft); text-decoration: line-through; }
+
+    .preview-empty { padding: var(--qbc-s-8) var(--qbc-s-6); color: var(--qbc-ink-soft); text-align: center; }
+
+    /* ---- Outline and details rail ----------------------------------------------- */
+    .outline-list { display: grid; gap: 1px; margin: 0 0 var(--qbc-s-5); padding: 0; list-style: none; }
+    .outline-list button {
+      display: block;
+      width: 100%;
+      padding: 6px var(--qbc-s-3);
+      border: 0;
+      border-left: 2px solid transparent;
+      border-radius: 0 var(--qbc-r-2xs) var(--qbc-r-2xs) 0;
+      background: transparent;
+      color: var(--qbc-ink-soft);
+      font: inherit;
+      font-size: var(--qbc-fs-sm);
+      text-align: left;
+      cursor: pointer;
+    }
+    .outline-list button:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
+    .outline-list .level-1 button { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+    .outline-list .level-2 button { padding-left: var(--qbc-s-5); }
+    .outline-list .level-3 button { padding-left: var(--qbc-s-7); font-size: var(--qbc-fs-xs); }
+    .outline-list .level-4 button, .outline-list .level-5 button, .outline-list .level-6 button { padding-left: var(--qbc-s-8); font-size: var(--qbc-fs-xs); }
+    .outline-list li.is-current button { border-left-color: var(--qbc-accent); color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+
+    .rail-empty { margin: 0 0 var(--qbc-s-5); padding: 0 var(--qbc-s-3); color: var(--qbc-ink-faint); font-size: var(--qbc-fs-xs); }
+
+    .detail-list { display: grid; gap: var(--qbc-s-3); margin: 0 0 var(--qbc-s-5); padding: 0 var(--qbc-s-3); }
+    .detail-list div { display: flex; gap: var(--qbc-s-3); align-items: center; justify-content: space-between; }
+    .detail-list dt { color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+    .detail-list dd { margin: 0; font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); }
+
+    .cheatsheet { margin: 0 var(--qbc-s-3); }
+    .cheatsheet summary { padding: var(--qbc-s-2) 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); font-weight: var(--qbc-fw-semibold); cursor: pointer; }
+    .cheatsheet dl { display: grid; gap: 7px; margin: var(--qbc-s-2) 0 0; grid-template-columns: auto 1fr; }
+    .cheatsheet dt { color: var(--qbc-ink-soft); font-family: var(--qbc-font-mono); font-size: var(--qbc-fs-2xs); }
+    .cheatsheet dd { margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); }
+
+    /* ---- Confirm dialog and toast ---------------------------------------------- */
+    dialog { padding: 0; border: 0; border-radius: var(--qbc-r-2xl); box-shadow: var(--qbc-shadow-overlay); }
+    dialog::backdrop { background: var(--qbc-scrim); }
+    .confirm-card { width: min(520px, calc(100vw - 32px)); padding: var(--qbc-s-7) var(--qbc-s-7) var(--qbc-s-6); }
+    .dialog-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      margin-bottom: var(--qbc-s-4);
+      place-items: center;
+      border-radius: var(--qbc-r-round);
+      color: var(--qbc-amber);
+      background: var(--qbc-amber-soft);
+      font-size: var(--qbc-fs-2xl);
+      font-weight: var(--qbc-fw-bold);
+    }
+    .confirm-card h2 { margin: 0 0 6px; font-size: var(--qbc-fs-3xl); letter-spacing: var(--qbc-tracking-heading); }
+    .confirm-card p { margin: 0 0 var(--qbc-s-6); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); }
+    .dialog-actions { display: flex; flex-wrap: wrap; gap: 9px; justify-content: flex-end; }
+
+    .toast-region { position: fixed; z-index: var(--qbc-z-toast); right: var(--qbc-s-6); bottom: var(--qbc-s-6); display: grid; gap: var(--qbc-s-2); }
+    .toast {
+      padding: 11px var(--qbc-s-4);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-panel);
+      background: var(--qbc-ink);
+      box-shadow: var(--qbc-shadow-overlay);
+      font-size: var(--qbc-fs-sm);
+      animation: toast-enter var(--qbc-dur-base) var(--qbc-ease);
+    }
+    @keyframes toast-enter { from { opacity: 0; transform: translateY(6px); } }
+
+    .mock-note {
+      padding: var(--qbc-s-3) var(--qbc-s-6);
+      border-top: 1px solid var(--qbc-line);
+      margin: 0;
+      color: var(--qbc-ink-faint);
+      background: var(--qbc-surface-raised);
+      font-size: var(--qbc-fs-2xs);
+    }
+
+    /* ---- Responsive ---------------------------------------------------------- */
+    @media (max-width: 1180px) {
+      .editor-layout { grid-template-columns: var(--qbc-rail-w) minmax(0, 1fr); }
+      .rail.outline { display: none; }
+    }
+    @media (max-width: 1000px) {
+      .app-shell { display: block; height: auto; }
+      .sidebar { flex-direction: row; width: auto; align-items: center; gap: var(--qbc-s-6); border-right: 0; border-bottom: 1px solid var(--qbc-line); }
+      .sidebar .brand { margin-bottom: 0; }
+      .nav-list { display: flex; flex-wrap: wrap; gap: 2px; }
+      .sidebar-foot { display: none; }
+      .editor-layout { grid-template-columns: minmax(0, 1fr); }
+      .rail.initiatives { max-height: 240px; border-right: 0; border-bottom: 1px solid var(--qbc-line); }
+      .panes.is-split { grid-template-columns: minmax(0, 1fr); }
+      .panes.is-split .pane.preview-pane { border-top: 1px solid var(--qbc-line); border-left: 0; }
+      #editor-host, .fallback-editor { min-height: 420px; }
+      .preview-scroll { min-height: 320px; }
+    }
+    @media (max-width: 760px) {
+      .topbar { height: auto; flex-wrap: wrap; gap: var(--qbc-s-2); padding: var(--qbc-s-3) var(--qbc-s-4); }
+      .breadcrumb { flex: 1 0 100%; }
+      .topbar-actions { flex: 1 0 100%; justify-content: space-between; }
+      .toolbar { padding: var(--qbc-s-2) var(--qbc-s-4); }
+      .brief-head, .prose, .status-bar { padding-right: var(--qbc-s-4); padding-left: var(--qbc-s-4); }
+      .segmented { flex: 1; }
+      .segmented button { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#editor-host">Skip to the brief</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="QBC Workboard home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span><strong>QBC</strong><small>Workboard</small></span>
+      </a>
+
+      <nav class="nav-list" aria-label="Workspace">
+        <a href="#"><span aria-hidden="true">▦</span> Board</a>
+        <a href="#"><span aria-hidden="true">≡</span> Backlog</a>
+        <a href="#" class="active" aria-current="page"><span aria-hidden="true">⌘</span> Initiatives</a>
+        <a href="#"><span aria-hidden="true">◎</span> Assistants</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p>Quinntyne Brown<br>Consulting Inc.</p>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <p class="breadcrumb">Workspace / Initiatives / <b id="breadcrumb-name">Zero-friction sprint planning</b></p>
+
+        <div class="topbar-actions">
+          <div class="segmented" role="group" aria-label="Editor view">
+            <button type="button" data-view="write" aria-pressed="true" title="Write only (Alt+1)">Write</button>
+            <button type="button" data-view="split" aria-pressed="false" title="Split (Alt+2)">Split</button>
+            <button type="button" data-view="preview" aria-pressed="false" title="Preview only (Alt+3)">Preview</button>
+          </div>
+
+          <span class="save-state" id="save-state" role="status">Saved 4 minutes ago</span>
+
+          <button class="secondary-button" type="button" id="discard" disabled>Discard</button>
+          <button class="primary-button" type="button" id="save" disabled title="Save (Ctrl+S)">Save brief</button>
+        </div>
+      </header>
+
+      <div class="editor-layout" id="layout">
+        <!-- ---- Initiative rail ------------------------------------------- -->
+        <aside class="rail initiatives" aria-label="Initiatives">
+          <div class="rail-head">
+            <h2 class="section-label">Initiatives</h2>
+            <button class="quiet-button" type="button" id="new-initiative">＋ New</button>
+          </div>
+          <div class="rail-body">
+            <ul class="initiative-list" id="initiative-list"></ul>
+          </div>
+        </aside>
+
+        <!-- ---- Writing column -------------------------------------------- -->
+        <section class="editor-column" aria-label="Initiative brief">
+          <div class="brief-head">
+            <p class="eyebrow">Outcome brief</p>
+            <label class="visually-hidden" for="title">Initiative name</label>
+            <input class="title-input" id="title" type="text" placeholder="Name the outcome" autocomplete="off" spellcheck="false">
+            <p class="field-error" id="title-error" hidden>An initiative needs a name before its brief can be saved.</p>
+            <p class="brief-meta" id="brief-meta"></p>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-side formatting">
+              <div class="tool-group">
+                <button class="tool" type="button" data-command="h2" title="Heading (Ctrl+Alt+2)" aria-label="Heading">H2</button>
+                <button class="tool bold" type="button" data-command="bold" title="Bold (Ctrl+B)" aria-label="Bold">B</button>
+                <button class="tool italic" type="button" data-command="italic" title="Italic (Ctrl+I)" aria-label="Italic">I</button>
+                <button class="tool strike" type="button" data-command="strike" title="Strikethrough" aria-label="Strikethrough">S</button>
+                <button class="tool mono" type="button" data-command="code" title="Inline code" aria-label="Inline code">&lt;/&gt;</button>
+                <button class="tool" type="button" data-command="link" title="Link (Ctrl+K)" aria-label="Link">↗</button>
+              </div>
+
+              <div class="tool-group">
+                <button class="tool" type="button" data-command="bullet" title="Bulleted list" aria-label="Bulleted list">•—</button>
+                <button class="tool" type="button" data-command="ordered" title="Numbered list" aria-label="Numbered list">1.</button>
+                <button class="tool" type="button" data-command="task" title="Task list" aria-label="Task list">☑</button>
+                <button class="tool" type="button" data-command="quote" title="Quote" aria-label="Quote">❞</button>
+              </div>
+
+              <div class="tool-group">
+                <button class="tool" type="button" data-command="fence" title="Code block" aria-label="Code block">▤</button>
+                <button class="tool" type="button" data-command="table" title="Table" aria-label="Table">▦</button>
+                <button class="tool" type="button" data-command="rule" title="Divider" aria-label="Divider">—</button>
+              </div>
+
+              <div class="tool-group">
+                <div class="menu-wrap">
+                  <button class="tool" type="button" id="snippet-trigger" aria-expanded="false" aria-haspopup="true" aria-controls="snippet-menu">Insert ▾</button>
+                  <div class="menu" id="snippet-menu" hidden role="menu" aria-labelledby="snippet-trigger">
+                    <p class="section-label menu-label">Brief building blocks</p>
+                    <button type="button" role="menuitem" data-snippet="template">Outcome brief template<small>Outcome, signals, guardrails, epics</small></button>
+                    <button type="button" role="menuitem" data-snippet="outcome">Outcome statement<small>Who, what changes, why now</small></button>
+                    <button type="button" role="menuitem" data-snippet="signals">Success signals table<small>Signal, baseline, target</small></button>
+                    <button type="button" role="menuitem" data-snippet="epics">Epic checklist<small>Task list of planned epics</small></button>
+                    <button type="button" role="menuitem" data-snippet="risk">Risk callout<small>Blockquote with an owner</small></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="toolbar-side">
+              <div class="tool-group">
+                <div class="menu-wrap">
+                  <button class="tool" type="button" id="view-trigger" aria-expanded="false" aria-haspopup="true" aria-controls="view-menu" title="Editor settings" aria-label="Editor settings">⋯</button>
+                  <div class="menu to-right" id="view-menu" hidden role="menu" aria-labelledby="view-trigger">
+                    <p class="section-label menu-label">Editor</p>
+                    <button type="button" role="menuitemcheckbox" id="toggle-wrap" aria-checked="true">Soft-wrap long lines<small>Keep every line inside the column</small></button>
+                    <button type="button" role="menuitemcheckbox" id="toggle-numbers" aria-checked="false">Show line numbers<small>Useful when reviewing a change</small></button>
+                    <button type="button" role="menuitemcheckbox" id="toggle-focus" aria-checked="false">Focus mode<small>Hide both rails; Escape returns</small></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panes" id="panes">
+            <div class="pane">
+              <div class="pane-label"><span>Markdown</span><span id="editor-engine-label">Monaco</span></div>
+              <div id="editor-host">
+                <div class="editor-loading" id="editor-loading">Loading the markdown editor…</div>
+                <div class="empty-hint" id="empty-hint" hidden>
+                  <h2>This brief is empty</h2>
+                  <p>Start from the outcome template, or write the outcome in your own words.</p>
+                  <button class="primary-button" type="button" data-snippet="template">Insert the outcome brief template</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="pane preview-pane" id="preview-pane" hidden>
+              <div class="pane-label"><span>Preview</span><span id="preview-hint">Updates as you type</span></div>
+              <div class="preview-scroll">
+                <article class="prose" id="preview" aria-live="off"></article>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-bar">
+            <div class="status-group">
+              <span class="mono" id="cursor-position">Ln 1, Col 1</span>
+              <span id="word-count">0 words</span>
+              <span id="char-count">0 characters</span>
+              <span id="read-time">under a minute to read</span>
+            </div>
+            <div class="status-group">
+              <span id="autosave-note">Local draft up to date</span>
+              <span class="engine" id="engine-note">Monaco 0.56.0 · markdown</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---- Outline and details rail ------------------------------------ -->
+        <aside class="rail outline" aria-label="Brief outline and details">
+          <div class="rail-head"><h2 class="section-label">Outline</h2></div>
+          <div class="rail-body">
+            <ul class="outline-list" id="outline"></ul>
+            <p class="rail-empty" id="outline-empty" hidden>Headings appear here as you write them.</p>
+
+            <h2 class="section-label" style="padding: 0 var(--qbc-s-3) var(--qbc-s-2);">Details</h2>
+            <dl class="detail-list" id="details"></dl>
+
+            <details class="cheatsheet">
+              <summary>Markdown and shortcuts</summary>
+              <dl>
+                <dt>Ctrl/⌘ B</dt><dd>Bold</dd>
+                <dt>Ctrl/⌘ I</dt><dd>Italic</dd>
+                <dt>Ctrl/⌘ K</dt><dd>Link</dd>
+                <dt>Ctrl/⌘ S</dt><dd>Save the brief</dd>
+                <dt>Ctrl/⌘ F</dt><dd>Find in the brief</dd>
+                <dt>Alt 1/2/3</dt><dd>Write, split, preview</dd>
+                <dt>## text</dt><dd>Heading</dd>
+                <dt>- [ ]</dt><dd>Task</dd>
+                <dt>| a | b |</dt><dd>Table row</dd>
+                <dt>/</dt><dd>Snippet suggestions</dd>
+              </dl>
+            </details>
+          </div>
+        </aside>
+      </div>
+
+      <p class="mock-note">
+        Interaction study. Nothing is persisted: edits live in this tab only, and
+        reloading restores the sample briefs. The editor is Monaco, loaded from a
+        CDN; offline it falls back to a plain markdown text area with the same
+        toolbar, shortcuts, and preview.
+      </p>
+    </div>
+  </div>
+
+  <dialog id="guard-dialog" aria-labelledby="guard-title">
+    <div class="confirm-card">
+      <div class="dialog-icon" aria-hidden="true">!</div>
+      <h2 id="guard-title">Keep your unsaved changes?</h2>
+      <p id="guard-copy">This brief has changes that have not been saved.</p>
+      <div class="dialog-actions">
+        <button class="quiet-button" type="button" id="guard-cancel">Keep editing</button>
+        <button class="secondary-button" type="button" id="guard-discard">Discard changes</button>
+        <button class="primary-button" type="button" id="guard-save">Save and continue</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    /* Sample content only. The three briefs below stand in for what the API
+       returns for `Initiative.description`, which this study treats as markdown
+       rather than the single-line text the current form saves. */
+    const INITIATIVES = [
+      {
+        id: "init-planning",
+        name: "Zero-friction sprint planning",
+        status: "active",
+        owner: "Quinntyne Brown",
+        epicCount: 4,
+        storyCount: 18,
+        savedAgo: "4 minutes ago",
+        body: [
+          "# Zero-friction sprint planning",
+          "",
+          "Planning a two-week sprint should take one focused conversation, not an",
+          "afternoon of spreadsheet archaeology. This initiative removes the manual",
+          "steps between a groomed backlog and a committed sprint.",
+          "",
+          "## Outcome",
+          "",
+          "A delivery lead opens the backlog, sees what is ready, and commits a",
+          "two-week sprint in **under ten minutes**, with every story traceable to",
+          "the epic and initiative it serves.",
+          "",
+          "## Success signals",
+          "",
+          "| Signal | Baseline | Target |",
+          "| --- | --- | --- |",
+          "| Time to commit a sprint | 46 min | under 10 min |",
+          "| Stories re-planned mid-sprint | 5.2 | fewer than 2 |",
+          "| Sprints closed with a written outcome | 40% | every sprint |",
+          "",
+          "## Guardrails",
+          "",
+          "> Planning changes must never lose an in-flight story. Any migration runs",
+          "> behind a reversible script owned by delivery.",
+          "",
+          "- Keep the workspace usable on a phone; the board is read on the move.",
+          "  - Committing a sprint stays a desktop action for now.",
+          "- No new third-party services. One host, one database.",
+          "- Every change ships with acceptance criteria a browser test can prove.",
+          "",
+          "## Epics",
+          "",
+          "- [x] Groom the backlog into a ready queue",
+          "- [x] Plan two-week sprints from ready stories",
+          "- [ ] Roll sprint scope up to the initiative",
+          "- [ ] Report the sprint outcome without a status meeting",
+          "",
+          "## Open questions",
+          "",
+          "1. Does a sprint need its own goal, or is the initiative outcome enough?",
+          "2. What happens to a ready story still uncommitted after three sprints?",
+          "3. Who owns the ~~weekly~~ fortnightly delivery note?",
+          "",
+          "## Notes for implementers",
+          "",
+          "The roll-up is the one query with real cost. Keep it to a single",
+          "statement and read it through `HierarchyService`, never from the board:",
+          "",
+          "```sql",
+          "SELECT i.Id, COUNT(DISTINCT e.Id) AS EpicCount, COUNT(s.Id) AS StoryCount",
+          "FROM Initiatives i",
+          "LEFT JOIN Epics e ON e.InitiativeId = i.Id",
+          "LEFT JOIN Stories s ON s.EpicId = e.Id",
+          "GROUP BY i.Id;",
+          "```",
+          "",
+          "---",
+          "",
+          "Related: [Plan two-week sprints](../detailed-designs/planning/plan-two-week-sprints/)",
+          "and [Groom the backlog](../detailed-designs/planning/groom-backlog/)."
+        ].join("\n")
+      },
+      {
+        id: "init-explains",
+        name: "A workspace that explains itself",
+        status: "planned",
+        owner: "Maya Chen",
+        epicCount: 2,
+        storyCount: 7,
+        savedAgo: "yesterday",
+        body: [
+          "# A workspace that explains itself",
+          "",
+          "A new contributor should understand the board, the backlog, and the",
+          "hierarchy *without a walkthrough*. Every empty state should teach the",
+          "next action rather than apologise for having nothing to show.",
+          "",
+          "## Outcome",
+          "",
+          "Someone who has never seen QBC Workboard can create an initiative, an",
+          "epic, and a ready story in their first ten minutes, guided only by the",
+          "screens themselves.",
+          "",
+          "## Scope",
+          "",
+          "- Empty states that offer the action that fills them",
+          "- Field hints written as sentences, not labels",
+          "- One worked example seeded into a new workspace",
+          "",
+          "## Out of scope",
+          "",
+          "- A product tour overlay",
+          "- Video or animated guidance",
+          "",
+          "> Decision, 12 March: no modal tours. The screens carry the teaching or",
+          "> the screens are wrong.",
+          "",
+          "## Epics",
+          "",
+          "- [x] Teach from the empty state",
+          "- [ ] Seed a worked example workspace"
+        ].join("\n")
+      },
+      {
+        id: "init-signals",
+        name: "Trustworthy delivery signals",
+        status: "draft",
+        owner: "Unassigned",
+        epicCount: 0,
+        storyCount: 0,
+        savedAgo: "never",
+        body: ""
+      }
+    ];
+
+    /* Insertable blocks. Each is written as it would land in the document, so a
+       reviewer can see the house shape of a brief without typing it. */
+    const SNIPPETS = {
+      template: [
+        "# <Initiative name>",
+        "",
+        "One paragraph on the change this initiative makes, and why it is worth",
+        "the next quarter of delivery.",
+        "",
+        "## Outcome",
+        "",
+        "The observable result, written from the point of view of the person who",
+        "benefits from it.",
+        "",
+        "## Success signals",
+        "",
+        "| Signal | Baseline | Target |",
+        "| --- | --- | --- |",
+        "| <what is measured> | <today> | <after> |",
+        "",
+        "## Guardrails",
+        "",
+        "- <a constraint delivery must respect>",
+        "",
+        "## Epics",
+        "",
+        "- [ ] <epic name>",
+        "",
+        "## Open questions",
+        "",
+        "1. <question that still needs an owner>",
+        ""
+      ].join("\n"),
+      outcome: [
+        "## Outcome",
+        "",
+        "A <role> can <do the thing> in <constraint>, so that <benefit>.",
+        ""
+      ].join("\n"),
+      signals: [
+        "## Success signals",
+        "",
+        "| Signal | Baseline | Target |",
+        "| --- | --- | --- |",
+        "| <what is measured> | <today> | <after> |",
+        "| <what is measured> | <today> | <after> |",
+        ""
+      ].join("\n"),
+      epics: [
+        "## Epics",
+        "",
+        "- [ ] <epic name>",
+        "- [ ] <epic name>",
+        ""
+      ].join("\n"),
+      risk: [
+        "> **Risk** — <what could go wrong>.",
+        "> Owner: <name>. Reviewed: <date>.",
+        ""
+      ].join("\n")
+    };
+
+    /* ------------------------------------------------------------------ *
+     * Markdown rendering
+     *
+     * A small block-and-inline renderer, written here so the mock stays one
+     * self-contained file with no second dependency beside Monaco. It covers
+     * the subset a brief uses: headings, paragraphs, emphasis, links, inline
+     * and fenced code, bulleted, numbered and task lists with nesting,
+     * blockquotes, tables, and dividers. The application would use a hardened
+     * library instead; every value here is escaped before it reaches the
+     * document and link targets are restricted, so the study is safe to paste
+     * real content into.
+     * ------------------------------------------------------------------ */
+    const HTML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" };
+    const escapeHtml = (text) => String(text).replace(/[&<>"]/g, (character) => HTML_ESCAPES[character]);
+
+    /* Only the link targets a brief legitimately needs: absolute http(s), mail,
+       in-page anchors, and repository-relative paths. Anything else is left as
+       written rather than turned into a link. */
+    const safeHref = (raw) => {
+      const href = raw.trim();
+      return /^(https?:\/\/|mailto:|#|\.{0,2}\/)/i.test(href) ? href : null;
+    };
+
+    /* Emphasis, links, and strikethrough. The caller has already escaped the
+       text and has already lifted out inline code, so nothing here can be
+       confused by a backtick span. */
+    const renderEmphasis = (escaped) => escaped
+      .replace(/!?\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;[^&]*&quot;)?\)/g, (match, label, target) => {
+        const href = safeHref(target);
+        return href ? '<a href="' + escapeHtml(href) + '">' + label + "</a>" : match;
+      })
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+      .replace(/(^|[^\w\\])_([^_\n]+)_/g, "$1<em>$2</em>")
+      .replace(/~~([^~]+)~~/g, "<del>$1</del>");
+
+    const renderInline = (text) => escapeHtml(text)
+      .split(/(`[^`]+`)/)
+      .map((part) => (part.length > 1 && part.startsWith("`") && part.endsWith("`")
+        ? "<code>" + part.slice(1, -1) + "</code>"
+        : renderEmphasis(part)))
+      .join("");
+
+    const LIST_ITEM = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
+    const TABLE_DIVIDER = /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+    const BLOCK_START = /^(#{1,6}\s|\s*>|\s*(```|~~~))/;
+    const DIVIDER = /^\s*(-{3,}|\*{3,}|_{3,})\s*$/;
+
+    const splitRow = (line) => line.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map((cell) => cell.trim());
+
+    const renderListItem = (content) => {
+      const task = content.match(/^\[([ xX])\]\s+(.*)$/);
+      if (!task) {
+        return "<li>" + renderInline(content) + "</li>";
+      }
+      const done = task[1].toLowerCase() === "x";
+      return '<li><span class="task-box' + (done ? " is-done" : "") + '" aria-hidden="true">' +
+        (done ? "[x]" : "[ ]") + "</span><span" + (done ? ' class="is-done-text"' : "") + ">" +
+        renderInline(task[2]) + "</span></li>";
+    };
+
+    const renderMarkdown = (source) => {
+      const lines = source.replace(/\r\n?/g, "\n").split("\n");
+      const out = [];
+      let index = 0;
+
+      while (index < lines.length) {
+        const line = lines[index];
+
+        if (!line.trim()) { index += 1; continue; }
+
+        /* Fenced code */
+        const fence = line.match(/^\s*(```|~~~)\s*[\w-]*\s*$/);
+        if (fence) {
+          const marker = fence[1];
+          const body = [];
+          index += 1;
+          while (index < lines.length && !lines[index].trim().startsWith(marker)) {
+            body.push(lines[index]);
+            index += 1;
+          }
+          index += 1;
+          out.push("<pre><code>" + escapeHtml(body.join("\n")) + "</code></pre>");
+          continue;
+        }
+
+        /* Divider */
+        if (DIVIDER.test(line)) {
+          out.push("<hr>");
+          index += 1;
+          continue;
+        }
+
+        /* Heading. The id carries the source line, so the outline can scroll
+           the preview to the same place it scrolls the editor. */
+        const heading = line.match(/^(#{1,6})\s+(.*)$/);
+        if (heading) {
+          const level = heading[1].length;
+          out.push("<h" + level + ' id="heading-' + index + '">' +
+            renderInline(heading[2].replace(/\s+#+\s*$/, "")) + "</h" + level + ">");
+          index += 1;
+          continue;
+        }
+
+        /* Blockquote. The body renders recursively, so a quote can hold
+           emphasis, a list, or more than one paragraph. */
+        if (/^\s*>/.test(line)) {
+          const quoted = [];
+          while (index < lines.length && /^\s*>/.test(lines[index])) {
+            quoted.push(lines[index].replace(/^\s*>\s?/, ""));
+            index += 1;
+          }
+          out.push("<blockquote>" + renderMarkdown(quoted.join("\n")) + "</blockquote>");
+          continue;
+        }
+
+        /* Table: a header row followed by a divider row */
+        if (line.trim().startsWith("|") && index + 1 < lines.length && TABLE_DIVIDER.test(lines[index + 1])) {
+          const head = splitRow(line);
+          index += 2;
+          const rows = [];
+          while (index < lines.length && lines[index].trim().startsWith("|")) {
+            rows.push(splitRow(lines[index]));
+            index += 1;
+          }
+          out.push(
+            "<table><thead><tr>" + head.map((cell) => "<th>" + renderInline(cell) + "</th>").join("") +
+            "</tr></thead><tbody>" +
+            rows.map((row) => "<tr>" + row.map((cell) => "<td>" + renderInline(cell) + "</td>").join("") + "</tr>").join("") +
+            "</tbody></table>"
+          );
+          continue;
+        }
+
+        /* Lists. Every two leading spaces open one nesting level. */
+        if (LIST_ITEM.test(line)) {
+          const stack = [];
+          while (index < lines.length && LIST_ITEM.test(lines[index])) {
+            const item = lines[index].match(LIST_ITEM);
+            const depth = Math.min(Math.floor(item[1].replace(/\t/g, "  ").length / 2), 3);
+            const tag = /\d/.test(item[2]) ? "ol" : "ul";
+            const isTask = /^\[[ xX]\]\s+/.test(item[3]);
+
+            while (stack.length > depth + 1) { out.push("</" + stack.pop() + ">"); }
+            if (stack.length === depth + 1 && stack[depth] !== tag) { out.push("</" + stack.pop() + ">"); }
+            while (stack.length < depth + 1) {
+              out.push("<" + tag + (isTask ? ' class="task-list"' : "") + ">");
+              stack.push(tag);
+            }
+
+            out.push(renderListItem(item[3]));
+            index += 1;
+          }
+          while (stack.length) { out.push("</" + stack.pop() + ">"); }
+          continue;
+        }
+
+        /* Paragraph: runs until a blank line or the start of another block */
+        const paragraph = [];
+        while (
+          index < lines.length &&
+          lines[index].trim() &&
+          !BLOCK_START.test(lines[index]) &&
+          !LIST_ITEM.test(lines[index]) &&
+          !DIVIDER.test(lines[index])
+        ) {
+          paragraph.push(lines[index]);
+          index += 1;
+        }
+        if (paragraph.length) {
+          /* A single newline inside a paragraph is a soft wrap, as in every
+             other markdown reader. Only a line ending in two spaces breaks. */
+          const flowed = paragraph.map((entry, position) => {
+            if (position === paragraph.length - 1) { return entry.replace(/\s+$/, ""); }
+            return / {2,}$/.test(entry) ? entry.replace(/\s+$/, "") + "\n" : entry.replace(/\s+$/, "") + " ";
+          }).join("");
+          out.push("<p>" + renderInline(flowed).replace(/\n/g, "<br>") + "</p>");
+        } else {
+          index += 1;
+        }
+      }
+
+      return out.join("\n");
+    };
+
+    /* Headings in document order, for the outline rail. */
+    const readOutline = (source) => {
+      const headings = [];
+      source.split("\n").forEach((line, position) => {
+        const match = line.match(/^(#{1,6})\s+(.*)$/);
+        if (match && match[2].trim()) {
+          headings.push({
+            level: match[1].length,
+            text: match[2].replace(/[*_`~]/g, "").trim(),
+            line: position + 1,
+            id: "heading-" + position
+          });
+        }
+      });
+      return headings;
+    };
+
+    /* ------------------------------------------------------------------ *
+     * Editing primitives
+     *
+     * Every toolbar command is a pure transform over (text, selection start,
+     * selection end). Monaco and the offline text area both express their
+     * state that way, so one implementation drives both.
+     * ------------------------------------------------------------------ */
+    const wrapSelection = (text, start, end, before, after, placeholder) => {
+      const hasSelection = end > start;
+      const selected = hasSelection ? text.slice(start, end) : placeholder;
+
+      /* Pressing the same button twice removes the marks it added. */
+      if (text.slice(start - before.length, start) === before && text.slice(end, end + after.length) === after) {
+        return {
+          text: text.slice(0, start - before.length) + selected + text.slice(end + after.length),
+          start: start - before.length,
+          end: start - before.length + selected.length
+        };
+      }
+      if (selected.startsWith(before) && selected.endsWith(after) && selected.length > before.length + after.length) {
+        const inner = selected.slice(before.length, selected.length - after.length);
+        return { text: text.slice(0, start) + inner + text.slice(end), start: start, end: start + inner.length };
+      }
+
+      return {
+        text: text.slice(0, start) + before + selected + after + text.slice(end),
+        start: start + before.length,
+        end: start + before.length + selected.length
+      };
+    };
+
+    const lineBounds = (text, start, end) => {
+      const from = text.lastIndexOf("\n", start - 1) + 1;
+      const lineEnd = text.indexOf("\n", end);
+      return { from: from, to: lineEnd === -1 ? text.length : lineEnd };
+    };
+
+    /* Adds a line prefix to every selected line, or removes it when every
+       non-blank line already carries one. `prefixFor` receives the position of
+       the line in the block, so numbered lists can count. */
+    const togglePrefix = (text, start, end, pattern, prefixFor) => {
+      const bounds = lineBounds(text, start, end);
+      const block = text.slice(bounds.from, bounds.to);
+      const lines = block.split("\n");
+      const meaningful = lines.filter((line) => line.trim());
+      const allPrefixed = meaningful.length > 0 && meaningful.every((line) => pattern.test(line));
+
+      const next = lines.map((line, position) => {
+        if (allPrefixed) { return line.replace(pattern, ""); }
+        if (!line.trim() && lines.length > 1) { return line; }
+        return prefixFor(position) + line;
+      }).join("\n");
+
+      return { text: text.slice(0, bounds.from) + next + text.slice(bounds.to), start: bounds.from, end: bounds.from + next.length };
+    };
+
+    /* Drops a block at the cursor, on its own line, with one blank line of air
+       above and below it. */
+    const insertBlock = (text, start, end, block) => {
+      const bounds = lineBounds(text, start, end);
+      const before = text.slice(0, bounds.from).replace(/\n*$/, "");
+      const after = text.slice(bounds.to).replace(/^\n*/, "");
+      const current = text.slice(bounds.from, bounds.to).trim();
+
+      const head = before ? before + "\n\n" : "";
+      const body = (current ? current + "\n\n" : "") + block.replace(/\n+$/, "");
+      const tail = after ? "\n\n" + after : "\n";
+
+      return { text: head + body + tail, start: head.length + body.length, end: head.length + body.length };
+    };
+
+    const COMMANDS = {
+      bold: (state) => wrapSelection(state.text, state.start, state.end, "**", "**", "bold text"),
+      italic: (state) => wrapSelection(state.text, state.start, state.end, "*", "*", "emphasised text"),
+      strike: (state) => wrapSelection(state.text, state.start, state.end, "~~", "~~", "struck text"),
+      code: (state) => wrapSelection(state.text, state.start, state.end, "`", "`", "code"),
+      link: (state) => {
+        const hasSelection = state.end > state.start;
+        const label = hasSelection ? state.text.slice(state.start, state.end) : "link text";
+        const inserted = "[" + label + "](https://)";
+        return {
+          text: state.text.slice(0, state.start) + inserted + state.text.slice(state.end),
+          /* Leave the caret inside the parentheses, where the URL goes. */
+          start: state.start + inserted.length - 1,
+          end: state.start + inserted.length - 1
+        };
+      },
+      h2: (state) => togglePrefix(state.text, state.start, state.end, /^#{1,6}\s+/, () => "## "),
+      bullet: (state) => togglePrefix(state.text, state.start, state.end, /^\s*[-*+]\s+/, () => "- "),
+      ordered: (state) => togglePrefix(state.text, state.start, state.end, /^\s*\d+[.)]\s+/, (position) => (position + 1) + ". "),
+      task: (state) => togglePrefix(state.text, state.start, state.end, /^\s*[-*+]\s+\[[ xX]\]\s+/, () => "- [ ] "),
+      quote: (state) => togglePrefix(state.text, state.start, state.end, /^\s*>\s?/, () => "> "),
+      fence: (state) => {
+        const selected = state.text.slice(state.start, state.end) || "code";
+        return insertBlock(state.text, state.start, state.end, "```text\n" + selected + "\n```");
+      },
+      table: (state) => insertBlock(state.text, state.start, state.end,
+        "| Signal | Baseline | Target |\n| --- | --- | --- |\n| <what is measured> | <today> | <after> |"),
+      rule: (state) => insertBlock(state.text, state.start, state.end, "---")
+    };
+
+    /* ------------------------------------------------------------------ *
+     * Editor adapters
+     *
+     * Both expose the same surface: read and write text with a selection,
+     * report changes and cursor moves, and reveal a line.
+     * ------------------------------------------------------------------ */
+    const createFallbackAdapter = (host) => {
+      const area = document.createElement("textarea");
+      area.className = "fallback-editor";
+      area.setAttribute("aria-label", "Initiative brief, markdown source");
+      area.spellcheck = true;
+      host.appendChild(area);
+
+      let onChange = () => {};
+      let onCursor = () => {};
+
+      const report = () => onCursor(area.selectionStart);
+      area.addEventListener("input", () => { onChange(); report(); });
+      area.addEventListener("keyup", report);
+      area.addEventListener("click", report);
+      area.addEventListener("select", report);
+
+      return {
+        kind: "textarea",
+        label: "Text area (offline fallback)",
+        getState: () => ({ text: area.value, start: area.selectionStart, end: area.selectionEnd }),
+        apply: (next) => {
+          area.value = next.text;
+          area.setSelectionRange(next.start, next.end);
+          area.focus();
+          onChange();
+          report();
+        },
+        getValue: () => area.value,
+        setValue: (text) => { area.value = text; area.setSelectionRange(0, 0); report(); },
+        focus: () => area.focus(),
+        revealLine: (line) => {
+          const offset = area.value.split("\n").slice(0, line - 1).join("\n").length + (line > 1 ? 1 : 0);
+          area.focus();
+          area.setSelectionRange(offset, offset);
+          /* No line metrics are available here, so scroll proportionally. */
+          const total = Math.max(area.value.split("\n").length, 1);
+          area.scrollTop = Math.max(0, ((line - 1) / total) * area.scrollHeight - 40);
+          report();
+        },
+        positionAt: (offset) => {
+          const before = area.value.slice(0, offset).split("\n");
+          return { line: before.length, column: before[before.length - 1].length + 1 };
+        },
+        setWordWrap: () => {},
+        setLineNumbers: () => {},
+        supportsLineNumbers: false,
+        onChange: (handler) => { onChange = handler; },
+        onCursor: (handler) => { onCursor = handler; },
+        layout: () => {}
+      };
+    };
+
+    const createMonacoAdapter = (host, monaco, initialText) => {
+      monaco.editor.defineTheme("qbc-light", {
+        base: "vs",
+        inherit: true,
+        rules: [
+          { token: "keyword", foreground: "276749", fontStyle: "bold" },
+          { token: "keyword.md", foreground: "276749", fontStyle: "bold" },
+          { token: "strong", foreground: "18201d", fontStyle: "bold" },
+          { token: "emphasis", foreground: "18201d", fontStyle: "italic" },
+          { token: "string.link", foreground: "315f88" },
+          { token: "string", foreground: "315f88" },
+          { token: "variable", foreground: "8a6100" },
+          { token: "comment", foreground: "87918c" }
+        ],
+        colors: {
+          "editor.background": "#ffffff",
+          "editor.foreground": "#18201d",
+          "editorLineNumber.foreground": "#a0a9a4",
+          "editorLineNumber.activeForeground": "#276749",
+          "editor.lineHighlightBackground": "#fbfcfb",
+          "editor.selectionBackground": "#e8f3ed",
+          "editor.inactiveSelectionBackground": "#f5f7f5",
+          "editorIndentGuide.background1": "#eef1ef",
+          "editorCursor.foreground": "#276749",
+          "editorWidget.background": "#ffffff",
+          "editorWidget.border": "#e4e9e6",
+          "editorSuggestWidget.background": "#ffffff",
+          "editorSuggestWidget.border": "#e4e9e6",
+          "editorSuggestWidget.foreground": "#18201d",
+          "editorSuggestWidget.selectedBackground": "#e8f3ed",
+          "editorSuggestWidget.selectedForeground": "#184c35",
+          "editorSuggestWidget.highlightForeground": "#276749",
+          "editorSuggestWidget.focusHighlightForeground": "#184c35"
+        }
+      });
+
+      const editor = monaco.editor.create(host, {
+        value: initialText,
+        language: "markdown",
+        theme: "qbc-light",
+        automaticLayout: true,
+        wordWrap: "on",
+        wrappingIndent: "same",
+        lineNumbers: "off",
+        minimap: { enabled: false },
+        renderLineHighlight: "line",
+        scrollBeyondLastLine: false,
+        smoothScrolling: true,
+        fontFamily: getComputedStyle(document.body).getPropertyValue("--qbc-font-mono").trim(),
+        fontSize: 14,
+        lineHeight: 23,
+        padding: { top: 18, bottom: 32 },
+        glyphMargin: false,
+        folding: true,
+        overviewRulerLanes: 0,
+        scrollbar: { verticalScrollbarSize: 10, horizontalScrollbarSize: 10, useShadows: false },
+        quickSuggestions: false,
+        suggestOnTriggerCharacters: true,
+        /* The panes clip their overflow, so the suggestion and find widgets are
+           attached to the page instead of to the pane. */
+        fixedOverflowWidgets: true,
+        tabSize: 2,
+        unicodeHighlight: { ambiguousCharacters: false }
+      });
+
+      const model = editor.getModel();
+      let onChange = () => {};
+      let onCursor = () => {};
+
+      model.onDidChangeContent(() => onChange());
+      editor.onDidChangeCursorPosition((event) => onCursor(model.getOffsetAt(event.position)));
+
+      return {
+        kind: "monaco",
+        label: "Monaco",
+        editor: editor,
+        monaco: monaco,
+        getState: () => {
+          const selection = editor.getSelection();
+          return {
+            text: model.getValue(),
+            start: model.getOffsetAt(selection.getStartPosition()),
+            end: model.getOffsetAt(selection.getEndPosition())
+          };
+        },
+        apply: (next) => {
+          /* One edit over the whole model keeps undo working as a single step. */
+          editor.executeEdits("toolbar", [{ range: model.getFullModelRange(), text: next.text }]);
+          const from = model.getPositionAt(next.start);
+          const to = model.getPositionAt(next.end);
+          editor.setSelection(new monaco.Selection(from.lineNumber, from.column, to.lineNumber, to.column));
+          editor.focus();
+        },
+        getValue: () => model.getValue(),
+        setValue: (text) => {
+          model.setValue(text);
+          editor.setPosition({ lineNumber: 1, column: 1 });
+          editor.setScrollPosition({ scrollTop: 0 });
+        },
+        focus: () => editor.focus(),
+        revealLine: (line) => {
+          editor.revealLineInCenter(line);
+          editor.setPosition({ lineNumber: line, column: 1 });
+          editor.focus();
+        },
+        positionAt: (offset) => {
+          const position = model.getPositionAt(offset);
+          return { line: position.lineNumber, column: position.column };
+        },
+        setWordWrap: (on) => editor.updateOptions({ wordWrap: on ? "on" : "off" }),
+        setLineNumbers: (on) => editor.updateOptions({ lineNumbers: on ? "on" : "off" }),
+        supportsLineNumbers: true,
+        onChange: (handler) => { onChange = handler; },
+        onCursor: (handler) => { onCursor = handler; },
+        layout: () => editor.layout()
+      };
+    };
+
+    /* ------------------------------------------------------------------ *
+     * Application wiring
+     * ------------------------------------------------------------------ */
+    const MONACO_VERSION = "0.56.0";
+    const MONACO_BASE = "https://cdn.jsdelivr.net/npm/monaco-editor@" + MONACO_VERSION + "/min";
+
+    const el = (id) => document.getElementById(id);
+    const host = el("editor-host");
+    const titleInput = el("title");
+    const titleError = el("title-error");
+    const previewPane = el("preview-pane");
+    const preview = el("preview");
+    const panes = el("panes");
+    const writePane = document.querySelector(".panes .pane:not(.preview-pane)");
+    const layout = el("layout");
+    const saveButton = el("save");
+    const discardButton = el("discard");
+    const saveState = el("save-state");
+    const outlineList = el("outline");
+    const outlineEmpty = el("outline-empty");
+    const emptyHint = el("empty-hint");
+    const guardDialog = el("guard-dialog");
+
+    const state = {
+      currentId: INITIATIVES[0].id,
+      view: "write",
+      dirty: false,
+      wordWrap: true,
+      lineNumbers: false,
+      focusMode: false,
+      pendingAction: null,
+      autosaveTimer: 0,
+      previewTimer: 0
+    };
+
+    let adapter = null;
+    const current = () => INITIATIVES.find((initiative) => initiative.id === state.currentId);
+
+    const STATUS_LABELS = { active: "Active", planned: "Planned", draft: "Draft" };
+
+    const toast = (message) => {
+      const node = document.createElement("p");
+      node.className = "toast";
+      node.textContent = message;
+      el("toast-region").appendChild(node);
+      window.setTimeout(() => node.remove(), 3200);
+    };
+
+    /* ---- Rendering ---------------------------------------------------- */
+    const renderRail = () => {
+      const list = el("initiative-list");
+      list.textContent = "";
+
+      INITIATIVES.forEach((initiative) => {
+        const item = document.createElement("li");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "initiative-button";
+        button.setAttribute("aria-current", initiative.id === state.currentId ? "true" : "false");
+
+        const name = document.createElement("strong");
+        name.textContent = initiative.name || "Untitled initiative";
+
+        const summary = document.createElement("small");
+        const firstProse = initiative.body
+          .split("\n")
+          .find((line) => line.trim() && !line.startsWith("#") && !line.startsWith(">") && !line.startsWith("|"));
+        summary.textContent = firstProse ? firstProse.replace(/[*_`]/g, "") : "No brief written yet.";
+
+        const meta = document.createElement("span");
+        meta.className = "initiative-meta";
+        const pill = document.createElement("span");
+        pill.className = "pill " + initiative.status;
+        pill.textContent = STATUS_LABELS[initiative.status];
+        const counts = document.createElement("span");
+        counts.className = "dot";
+        counts.textContent = initiative.epicCount + " epics · " + initiative.storyCount + " stories";
+        meta.append(pill, counts);
+
+        button.append(name, summary, meta);
+        button.addEventListener("click", () => selectInitiative(initiative.id));
+        item.appendChild(button);
+        list.appendChild(item);
+      });
+    };
+
+    const renderBriefMeta = () => {
+      const initiative = current();
+      const meta = el("brief-meta");
+      meta.textContent = "";
+
+      const pill = document.createElement("span");
+      pill.className = "pill " + initiative.status;
+      pill.textContent = STATUS_LABELS[initiative.status];
+
+      const counts = document.createElement("span");
+      counts.textContent = initiative.epicCount + " epics · " + initiative.storyCount + " stories";
+
+      const owner = document.createElement("span");
+      owner.textContent = "Owner: " + initiative.owner;
+
+      const separator = () => {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        dot.textContent = "·";
+        return dot;
+      };
+
+      meta.append(pill, counts, separator(), owner);
+
+      el("details").textContent = "";
+      [
+        ["Status", STATUS_LABELS[initiative.status]],
+        ["Owner", initiative.owner],
+        ["Epics", String(initiative.epicCount)],
+        ["Stories", String(initiative.storyCount)],
+        ["Last saved", initiative.savedAgo]
+      ].forEach((pair) => {
+        const row = document.createElement("div");
+        const term = document.createElement("dt");
+        term.textContent = pair[0];
+        const value = document.createElement("dd");
+        value.textContent = pair[1];
+        row.append(term, value);
+        el("details").appendChild(row);
+      });
+    };
+
+    const renderOutline = (source) => {
+      const headings = readOutline(source);
+      outlineList.textContent = "";
+      outlineEmpty.hidden = headings.length > 0;
+
+      headings.forEach((heading) => {
+        const item = document.createElement("li");
+        item.className = "level-" + heading.level;
+        item.dataset.line = String(heading.line);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = heading.text;
+        button.addEventListener("click", () => {
+          if (state.view === "preview") {
+            const target = preview.querySelector("#" + heading.id);
+            if (target) { target.scrollIntoView({ behavior: "smooth", block: "start" }); }
+            return;
+          }
+          adapter.revealLine(heading.line);
+        });
+
+        item.appendChild(button);
+        outlineList.appendChild(item);
+      });
+    };
+
+    const markCurrentHeading = (line) => {
+      let currentItem = null;
+      Array.prototype.forEach.call(outlineList.children, (item) => {
+        item.classList.remove("is-current");
+        if (Number(item.dataset.line) <= line) { currentItem = item; }
+      });
+      if (currentItem) { currentItem.classList.add("is-current"); }
+    };
+
+    const renderPreview = (source) => {
+      if (!source.trim()) {
+        preview.innerHTML = '<p class="preview-empty">Nothing to preview yet. The brief is empty.</p>';
+        return;
+      }
+      preview.innerHTML = renderMarkdown(source);
+    };
+
+    const renderCounts = (source) => {
+      const words = source.trim() ? source.trim().split(/\s+/).length : 0;
+      const minutes = Math.ceil(words / 200);
+      el("word-count").textContent = words.toLocaleString() + (words === 1 ? " word" : " words");
+      el("char-count").textContent = source.length.toLocaleString() + " characters";
+      el("read-time").textContent = words < 60 ? "under a minute to read" : "about " + minutes + " min to read";
+    };
+
+    const renderSaveState = () => {
+      const initiative = current();
+      saveState.classList.toggle("is-dirty", state.dirty);
+      saveState.classList.toggle("is-saved", !state.dirty);
+      saveState.textContent = state.dirty
+        ? "Unsaved changes"
+        : (initiative.savedAgo === "never" ? "Never saved" : "Saved " + initiative.savedAgo);
+      saveButton.disabled = !state.dirty;
+      discardButton.disabled = !state.dirty;
+    };
+
+    /* ---- Change handling ------------------------------------------------ */
+    const setDirty = (dirty) => {
+      state.dirty = dirty;
+      renderSaveState();
+    };
+
+    const isChanged = () => {
+      const initiative = current();
+      return titleInput.value !== initiative.name || adapter.getValue() !== initiative.body;
+    };
+
+    const onContentChanged = () => {
+      const source = adapter.getValue();
+
+      emptyHint.hidden = source.trim().length > 0;
+      renderCounts(source);
+      renderOutline(source);
+      setDirty(isChanged());
+
+      window.clearTimeout(state.previewTimer);
+      state.previewTimer = window.setTimeout(() => renderPreview(source), 120);
+
+      window.clearTimeout(state.autosaveTimer);
+      el("autosave-note").textContent = state.dirty ? "Draft not yet saved" : "Local draft up to date";
+      if (state.dirty) {
+        state.autosaveTimer = window.setTimeout(() => {
+          el("autosave-note").textContent = "Local draft kept in this tab";
+        }, 1400);
+      }
+    };
+
+    const onCursorMoved = (offset) => {
+      const position = adapter.positionAt(offset);
+      el("cursor-position").textContent = "Ln " + position.line + ", Col " + position.column;
+      markCurrentHeading(position.line);
+    };
+
+    /* ---- Commands -------------------------------------------------------- */
+    const runCommand = (name) => {
+      const command = COMMANDS[name];
+      if (!command || !adapter) { return; }
+      adapter.apply(command(adapter.getState()));
+    };
+
+    const insertSnippet = (name) => {
+      const block = SNIPPETS[name];
+      if (!block || !adapter) { return; }
+      const editorState = adapter.getState();
+      adapter.apply(insertBlock(editorState.text, editorState.start, editorState.end, block));
+      toast("Inserted the " + name + " block");
+    };
+
+    /* ---- Views ------------------------------------------------------------ */
+    const setView = (view) => {
+      state.view = view;
+      panes.classList.toggle("is-split", view === "split");
+      document.querySelector(".toolbar").classList.toggle("is-preview", view === "preview");
+      writePane.hidden = view === "preview";
+      previewPane.hidden = view === "write";
+
+      document.querySelectorAll(".segmented button").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.view === view));
+      });
+
+      if (view !== "write") { renderPreview(adapter ? adapter.getValue() : ""); }
+      if (view !== "preview" && adapter) { window.setTimeout(() => adapter.layout(), 0); }
+    };
+
+    const setFocusMode = (on) => {
+      state.focusMode = on;
+      layout.classList.toggle("is-focus-mode", on);
+      el("toggle-focus").setAttribute("aria-checked", String(on));
+      if (adapter) { window.setTimeout(() => adapter.layout(), 0); }
+    };
+
+    /* ---- Saving ------------------------------------------------------------ */
+    const validate = () => {
+      const valid = titleInput.value.trim().length > 0;
+      titleError.hidden = valid;
+      titleInput.setAttribute("aria-invalid", String(!valid));
+      return valid;
+    };
+
+    const save = () => {
+      if (!validate()) {
+        titleInput.focus();
+        toast("Give the initiative a name before saving");
+        return false;
+      }
+
+      const initiative = current();
+      initiative.name = titleInput.value.trim();
+      initiative.body = adapter.getValue();
+      initiative.savedAgo = "just now";
+
+      titleInput.value = initiative.name;
+      el("breadcrumb-name").textContent = initiative.name;
+      setDirty(false);
+      el("autosave-note").textContent = "Local draft up to date";
+      renderRail();
+      renderBriefMeta();
+      toast("Initiative brief saved");
+      return true;
+    };
+
+    const discard = () => {
+      const initiative = current();
+      titleInput.value = initiative.name;
+      adapter.setValue(initiative.body);
+      validate();
+      onContentChanged();
+      setDirty(false);
+      toast("Changes discarded");
+    };
+
+    /* Any navigation that would lose edits goes through here first. */
+    const guard = (action) => {
+      if (!state.dirty) {
+        action();
+        return;
+      }
+      state.pendingAction = action;
+      guardDialog.showModal();
+    };
+
+    const closeGuard = () => {
+      guardDialog.close();
+      state.pendingAction = null;
+    };
+
+    el("guard-cancel").addEventListener("click", closeGuard);
+    el("guard-discard").addEventListener("click", () => {
+      const action = state.pendingAction;
+      guardDialog.close();
+      state.pendingAction = null;
+      discard();
+      if (action) { action(); }
+    });
+    el("guard-save").addEventListener("click", () => {
+      const action = state.pendingAction;
+      guardDialog.close();
+      state.pendingAction = null;
+      if (save() && action) { action(); }
+    });
+
+    /* ---- Initiative selection ----------------------------------------------- */
+    const loadInitiative = (id) => {
+      state.currentId = id;
+      const initiative = current();
+
+      titleInput.value = initiative.name;
+      el("breadcrumb-name").textContent = initiative.name || "Untitled initiative";
+      adapter.setValue(initiative.body);
+
+      validate();
+      renderRail();
+      renderBriefMeta();
+      onContentChanged();
+      setDirty(false);
+      onCursorMoved(0);
+    };
+
+    const selectInitiative = (id) => {
+      if (id === state.currentId) { return; }
+      guard(() => loadInitiative(id));
+    };
+
+    el("new-initiative").addEventListener("click", () => {
+      guard(() => {
+        const initiative = {
+          id: "init-" + Date.now(),
+          name: "",
+          status: "draft",
+          owner: "Unassigned",
+          epicCount: 0,
+          storyCount: 0,
+          savedAgo: "never",
+          body: ""
+        };
+        INITIATIVES.push(initiative);
+        loadInitiative(initiative.id);
+        titleInput.focus();
+        setView("write");
+      });
+    });
+
+    /* ---- Toolbar, title, and menus -------------------------------------------- */
+    document.querySelectorAll("[data-command]").forEach((button) => {
+      button.addEventListener("click", () => runCommand(button.dataset.command));
+    });
+
+    document.querySelectorAll("[data-snippet]").forEach((button) => {
+      button.addEventListener("click", () => {
+        insertSnippet(button.dataset.snippet);
+        closeMenus();
+      });
+    });
+
+    /* Both toolbar menus share one discipline: at most one open, closed by a
+       click anywhere else or by Escape. */
+    const MENUS = [];
+
+    const closeMenus = () => {
+      MENUS.forEach((menu) => {
+        menu.panel.hidden = true;
+        menu.trigger.setAttribute("aria-expanded", "false");
+      });
+    };
+
+    const anyMenuOpen = () => MENUS.some((menu) => !menu.panel.hidden);
+
+    const registerMenu = (triggerId, panelId) => {
+      const trigger = el(triggerId);
+      const panel = el(panelId);
+      MENUS.push({ trigger: trigger, panel: panel });
+
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const willOpen = panel.hidden;
+        closeMenus();
+        panel.hidden = !willOpen;
+        trigger.setAttribute("aria-expanded", String(willOpen));
+      });
+      panel.addEventListener("click", (event) => event.stopPropagation());
+    };
+
+    registerMenu("snippet-trigger", "snippet-menu");
+    registerMenu("view-trigger", "view-menu");
+    document.addEventListener("click", closeMenus);
+
+    titleInput.addEventListener("input", () => {
+      el("breadcrumb-name").textContent = titleInput.value.trim() || "Untitled initiative";
+      if (titleInput.value.trim()) { validate(); }
+      setDirty(isChanged());
+    });
+
+    saveButton.addEventListener("click", save);
+    discardButton.addEventListener("click", discard);
+
+    document.querySelectorAll(".segmented button").forEach((button) => {
+      button.addEventListener("click", () => setView(button.dataset.view));
+    });
+
+    el("toggle-wrap").addEventListener("click", () => {
+      state.wordWrap = !state.wordWrap;
+      el("toggle-wrap").setAttribute("aria-checked", String(state.wordWrap));
+      adapter.setWordWrap(state.wordWrap);
+    });
+
+    el("toggle-numbers").addEventListener("click", () => {
+      state.lineNumbers = !state.lineNumbers;
+      el("toggle-numbers").setAttribute("aria-checked", String(state.lineNumbers));
+      adapter.setLineNumbers(state.lineNumbers);
+    });
+
+    /* Focus mode changes the whole layout, so the menu it was chosen from
+       gets out of the way. The two display toggles above leave it open, so a
+       reviewer can flip both without reopening it. */
+    el("toggle-focus").addEventListener("click", () => {
+      closeMenus();
+      setFocusMode(!state.focusMode);
+    });
+
+    /* Shortcuts that must work from anywhere on the page. Monaco owns the same
+       bindings inside the editor; these cover the rest, and stop the browser
+       from opening its own save dialog. */
+    document.addEventListener("keydown", (event) => {
+      const meta = event.ctrlKey || event.metaKey;
+
+      if (meta && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        save();
+        return;
+      }
+      if (event.altKey && ["1", "2", "3"].includes(event.key)) {
+        event.preventDefault();
+        setView({ 1: "write", 2: "split", 3: "preview" }[Number(event.key)]);
+        return;
+      }
+      if (event.key === "Escape") {
+        if (anyMenuOpen()) { closeMenus(); }
+        else if (state.focusMode) { setFocusMode(false); }
+      }
+    });
+
+    /* ---- Editor bootstrap ------------------------------------------------------ */
+    const finishBootstrap = (created) => {
+      adapter = created;
+      el("editor-loading").remove();
+
+      el("editor-engine-label").textContent = adapter.kind === "monaco" ? "Monaco" : "Text area";
+      el("engine-note").textContent = adapter.kind === "monaco"
+        ? "Monaco " + MONACO_VERSION + " · markdown"
+        : "Offline fallback · markdown";
+      el("engine-note").classList.toggle("is-fallback", adapter.kind !== "monaco");
+
+      if (!adapter.supportsLineNumbers) {
+        const numbers = el("toggle-numbers");
+        numbers.disabled = true;
+        numbers.title = "Line numbers need the Monaco editor";
+      }
+
+      adapter.onChange(onContentChanged);
+      adapter.onCursor(onCursorMoved);
+
+      loadInitiative(state.currentId);
+      setView("write");
+    };
+
+    const startFallback = (reason) => {
+      if (adapter) { return; }
+      finishBootstrap(createFallbackAdapter(host));
+      if (reason) {
+        toast("Monaco could not load; using the offline markdown editor");
+      }
+    };
+
+    const startMonaco = () => {
+      /* Monaco's workers are same-origin only, so the cross-origin CDN copy is
+         reached through a tiny blob worker that imports it. */
+      const workerSource = "self.MonacoEnvironment={baseUrl:'" + MONACO_BASE + "/'};" +
+        "importScripts('" + MONACO_BASE + "/vs/base/worker/workerMain.js');";
+
+      window.MonacoEnvironment = {
+        getWorkerUrl: () => URL.createObjectURL(new Blob([workerSource], { type: "text/javascript" }))
+      };
+
+      const loader = document.createElement("script");
+      loader.src = MONACO_BASE + "/vs/loader.js";
+      loader.addEventListener("error", () => startFallback("network"));
+      loader.addEventListener("load", () => {
+        window.require.config({ paths: { vs: MONACO_BASE + "/vs" } });
+        window.require(["vs/editor/editor.main"], (monaco) => {
+          if (adapter) { return; }
+          finishBootstrap(createMonacoAdapter(host, monaco, current().body));
+          registerMonacoExtras(monaco, adapter.editor);
+        }, () => startFallback("network"));
+      });
+
+      document.head.appendChild(loader);
+      /* If the CDN is unreachable the load event never fires, so the study
+         falls back on its own rather than sitting on a spinner. */
+      window.setTimeout(() => startFallback("timeout"), 9000);
+    };
+
+    /* Editor-local actions and the snippet completions that make the markdown
+       experience feel native rather than bolted on. */
+    const registerMonacoExtras = (monaco, editor) => {
+      const action = (id, label, keybinding, run) => editor.addAction({
+        id: id,
+        label: label,
+        keybindings: keybinding ? [keybinding] : [],
+        contextMenuGroupId: "markdown",
+        run: run
+      });
+
+      action("qbc.bold", "Markdown: Bold", monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB, () => runCommand("bold"));
+      action("qbc.italic", "Markdown: Italic", monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI, () => runCommand("italic"));
+      action("qbc.link", "Markdown: Link", monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK, () => runCommand("link"));
+      action("qbc.heading", "Markdown: Heading", monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.Digit2, () => runCommand("h2"));
+      action("qbc.task", "Markdown: Task item", null, () => runCommand("task"));
+      action("qbc.table", "Markdown: Signals table", null, () => runCommand("table"));
+      action("qbc.save", "Save the initiative brief", monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => { save(); });
+
+      monaco.languages.registerCompletionItemProvider("markdown", {
+        triggerCharacters: ["/"],
+        provideCompletionItems: (model, position) => {
+          const word = model.getWordUntilPosition(position);
+          const line = model.getValueInRange({
+            startLineNumber: position.lineNumber,
+            startColumn: 1,
+            endLineNumber: position.lineNumber,
+            endColumn: position.column
+          });
+          const slash = line.lastIndexOf("/");
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: slash >= 0 ? slash + 1 : word.startColumn,
+            endColumn: position.column
+          };
+
+          const snippet = (label, detail, text) => ({
+            label: label,
+            detail: detail,
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            insertText: text,
+            range: range
+          });
+
+          return {
+            suggestions: [
+              snippet("/outcome", "Outcome statement", "## Outcome\n\nA ${1:role} can ${2:do the thing} in ${3:constraint}, so that ${4:benefit}.\n"),
+              snippet("/signals", "Success signals table", "## Success signals\n\n| Signal | Baseline | Target |\n| --- | --- | --- |\n| ${1:what is measured} | ${2:today} | ${3:after} |\n"),
+              snippet("/epic", "Epic checklist item", "- [ ] ${1:epic name}"),
+              snippet("/risk", "Risk callout", "> **Risk** — ${1:what could go wrong}.\n> Owner: ${2:name}. Reviewed: ${3:date}.\n"),
+              snippet("/question", "Open question", "1. ${1:question that still needs an owner}"),
+              snippet("/guardrail", "Guardrail", "## Guardrails\n\n- ${1:a constraint delivery must respect}\n")
+            ]
+          };
+        }
+      });
+    };
+
+    renderRail();
+    renderBriefMeta();
+    startMonaco();
+  </script>
+</body>
+</html>
