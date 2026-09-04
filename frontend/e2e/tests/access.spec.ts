@@ -21,6 +21,12 @@ test.describe('workspace passcode gate', () => {
     await unlock.expectRejection();
   });
 
+  test('the deployed build is named before the passcode is entered', async ({ page }) => {
+    const unlock = new UnlockPage(page);
+    await unlock.open();
+    await unlock.expectDeployedVersion('Version 1.4.2 · a1b2c3d');
+  });
+
   test('the correct passcode opens the workspace from the root route', async ({ page }) => {
     const unlock = new UnlockPage(page);
     await unlock.open();

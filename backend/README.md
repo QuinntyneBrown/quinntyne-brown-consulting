@@ -72,10 +72,19 @@ only when representative records are wanted in an empty database.
 | Stories and backlog | `/api/stories` |
 | Assistants | `/api/assistants` |
 | Sprints and active board | `/api/sprints` |
+| Deployed build | `/api/version` |
 | OpenAPI | `/openapi/v1.json` |
 
 Known failures are returned as RFC Problem Details with validation, not-found,
 or conflict status codes.
+
+`/api/version` reports the version and source revision compiled into the running
+assembly, and is the one work-adjacent resource outside the passcode gate: it
+holds no workspace data, and confirming a deployment must not require the shared
+passcode. The version comes from `Directory.Build.props`; the commit comes from
+the `SourceRevisionId` the build was stamped with, which the deployment pipeline
+supplies explicitly and which the SDK otherwise takes from the checkout's
+`HEAD`. A build with neither reports no commit.
 
 ## Maintain a database
 

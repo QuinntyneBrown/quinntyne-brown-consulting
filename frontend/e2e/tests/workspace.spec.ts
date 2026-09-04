@@ -90,6 +90,12 @@ test('deliver a story from hierarchy through a completed sprint', async ({ page,
   await board.completeActiveSprintIfPresent();
 });
 
+test('names the deployed build in the workspace', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  await workboard.navigateTo('board');
+  await workboard.expectDeployedVersion('Version 1.4.2 · a1b2c3d');
+});
+
 test('shows actionable feedback when an API save fails', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'The failure behavior is browser-independent.');
   await new WorkboardPage(page).navigateTo('assistants');

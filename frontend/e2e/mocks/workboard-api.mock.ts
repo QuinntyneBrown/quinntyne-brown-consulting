@@ -47,6 +47,10 @@ export class WorkboardApiMock {
         });
       }
 
+      if (method === 'GET' && path === '/api/version') {
+        return this.json(route, 200, this.state.deployment);
+      }
+
       if (method === 'GET' && path === '/api/workspace') {
         return this.json(route, 200, {
           route: url.searchParams.get('route') ?? 'board',

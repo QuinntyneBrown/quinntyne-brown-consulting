@@ -35,6 +35,8 @@ releases. Requirements and data migrations may change before the first release.
   and responsive product patterns.
 - Keep the public deployment private behind a shared passcode that issues a
   seven-day session credential.
+- Report the deployed build in the workspace, so the version and commit being
+  served are readable from the sidebar and from the passcode screen.
 
 ## Architecture
 
@@ -122,6 +124,7 @@ The launcher waits for both servers, opens the application, writes logs under
 | Web application | `http://localhost:4200` |
 | API | `http://localhost:5050/api/workspace?route=board` |
 | OpenAPI document | `http://localhost:5050/openapi/v1.json` |
+| Deployed build | `http://localhost:5050/api/version` |
 
 ### Run the servers manually
 
@@ -278,6 +281,26 @@ On pushes to `main`, CI deploys the verified combined artifact to the free-tier
 Azure environment after both application and design-system jobs pass. See the
 [Azure deployment plan](docs/azure-deployment-plan.md) for resource names,
 identity configuration, cost controls, and operational limits.
+
+### Deployed build identification
+
+`backend/Directory.Build.props` carries the product version. The .NET SDK
+records the source revision in the assembly's informational version, taking it
+from the checkout's `HEAD`, and CI publishes with
+`-p:SourceRevisionId=<commit>` so the artifact names the exact commit that run
+built. The publish builds the Angular bundle into the same output, so one
+version identifies both halves of the deployment.
+
+`GET /api/version` reports that identity as `{ "version", "commit" }` and needs
+no passcode. The workspace shows it in the sidebar footer and on the passcode
+screen, so a deployment can be confirmed from a browser or from a shell:
+
+```powershell
+curl https://<workboard-host>/api/version
+```
+
+A build made where no revision is available reports `commit` as `null`, and then
+only the version is shown.
 
 ## Design system
 

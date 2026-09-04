@@ -48,5 +48,11 @@
         >Unlock</qbc-button
       >
     }
+
+    <!-- The build is readable before the passcode is, so a deployment can be confirmed
+         without opening the workspace. -->
+    @if (version.label(); as build) {
+      <p class="build">{{ build }}</p>
+    }
   </div>
 </div>

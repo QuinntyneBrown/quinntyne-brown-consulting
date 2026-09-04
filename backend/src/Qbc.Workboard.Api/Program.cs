@@ -24,6 +24,7 @@ public sealed class Program
         builder.Services.AddExceptionHandler<ProblemDetailsExceptionHandler>();
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddDeploymentInformation(typeof(Program).Assembly);
         builder.Services.AddWorkspaceGate();
 
         var origins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];

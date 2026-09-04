@@ -29,6 +29,10 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   hash and signing key are created with the database rather than configured.
 - An interaction study for the passcode screen at `docs/mocks/pin-auth.html`,
   showing the entry, error, lockout, and unlocked states offline.
+- A deployed-build report. `GET /api/version` names the version and the commit
+  the running application was built from, the deployment pipeline stamps that
+  commit into the published assembly, and the workspace shows it in the sidebar
+  footer and on the passcode screen.
 
 ### Changed
 

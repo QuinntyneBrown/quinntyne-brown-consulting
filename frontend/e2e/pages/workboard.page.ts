@@ -55,6 +55,14 @@ export class WorkboardPage {
     await this.page.evaluate(() => window.scrollTo(0, 0));
   }
 
+  /**
+   * The rail's footer names the build the workspace is served from, so an operator can tell
+   * which code is deployed from any page without leaving the workspace.
+   */
+  async expectDeployedVersion(label: string): Promise<void> {
+    await expect(this.page.locator('qbc-sidebar')).toContainText(label);
+  }
+
   async expectNoHorizontalOverflow(): Promise<void> {
     const overflow = await this.page
       .locator('html')

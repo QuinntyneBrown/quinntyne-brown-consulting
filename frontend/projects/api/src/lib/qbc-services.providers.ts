@@ -7,6 +7,8 @@ import { ACCESS_TOKEN_STORE } from './access/access-token-store.token';
 import { accessTokenInterceptor } from './access/access-token.interceptor';
 import { AssistantService } from './assistants/assistant.service';
 import { ASSISTANT_SERVICE } from './assistants/assistant.service.token';
+import { VersionService } from './deployment/version.service';
+import { VERSION_SERVICE } from './deployment/version.service.token';
 import { HierarchyService } from './hierarchy/hierarchy.service';
 import { HIERARCHY_SERVICE } from './hierarchy/hierarchy.service.token';
 import { SprintService } from './sprints/sprint.service';
@@ -25,6 +27,7 @@ export function provideQbcServices(): EnvironmentProviders {
     HierarchyService,
     SprintService,
     StoryService,
+    VersionService,
     WorkspaceService,
     { provide: ACCESS_SERVICE, useExisting: AccessService },
     { provide: ACCESS_TOKEN_STORE, useExisting: AccessTokenStore },
@@ -32,6 +35,7 @@ export function provideQbcServices(): EnvironmentProviders {
     { provide: HIERARCHY_SERVICE, useExisting: HierarchyService },
     { provide: SPRINT_SERVICE, useExisting: SprintService },
     { provide: STORY_SERVICE, useExisting: StoryService },
+    { provide: VERSION_SERVICE, useExisting: VersionService },
     { provide: WORKSPACE_SERVICE, useExisting: WorkspaceService },
   ]);
 }
