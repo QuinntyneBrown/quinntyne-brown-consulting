@@ -11,6 +11,7 @@ import {
   LoadingStateComponent,
   PageComponent,
   PageHeaderComponent,
+  pluralize,
 } from '@qbc/components';
 import { summariseMarkdown } from '../markdown-document/markdown/summarise-markdown';
 import { HIERARCHY_SERVICE } from './hierarchy.service.contract';
@@ -68,6 +69,11 @@ export class HierarchyPageComponent implements OnInit {
 
   summariseSummary(summary: string): string {
     return summariseMarkdown(summary, 'No summary written yet.');
+  }
+
+  /** What an initiative rolls up to, counted in words so a single epic or story reads as one. */
+  rollUp(initiative: InitiativeHierarchy): string {
+    return `${pluralize(initiative.epicCount, 'epic')} · ${pluralize(initiative.storyCount, 'story', 'stories')}`;
   }
 
   async deleteInitiative(initiative: InitiativeHierarchy): Promise<void> {

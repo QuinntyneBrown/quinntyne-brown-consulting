@@ -174,6 +174,43 @@ export const epicWithoutStories: WorkspaceScenario = {
 };
 
 /** An assistant nobody is relying on, so the directory allows deletion. */
+/**
+ * An initiative holding exactly one epic and exactly one story. Every other roll-up scenario counts
+ * two or more, which is how a plural that reads "1 epics" reached production unnoticed.
+ */
+export const initiativeCountingOne: WorkspaceScenario = {
+  name: 'an initiative with a single epic and a single story',
+  apply: (state) => {
+    const initiativeId = '20000000-0000-4000-8000-00000000000a';
+    const epicId = '30000000-0000-4000-8000-00000000000a';
+    state.initiatives.push({
+      id: initiativeId,
+      name: 'Single-count outcome',
+      description: 'An outcome holding one of everything.',
+    });
+    state.epics.push({
+      id: epicId,
+      initiativeId,
+      name: 'Single-count capability',
+      summary: 'A capability holding one story.',
+    });
+    state.stories.push({
+      ...state.stories[0],
+      id: '50000000-0000-4000-8000-00000000010a',
+      key: 'QBC-201',
+      epicId,
+      epicName: 'Single-count capability',
+      initiativeName: 'Single-count outcome',
+      title: 'The only story beneath the only epic',
+      sprintId: null,
+      sprintName: null,
+      sprintStatus: null,
+      boardStatus: 'todo',
+      tasks: [],
+    });
+  },
+};
+
 export const unassignedAssistant: WorkspaceScenario = {
   name: 'an assistant nobody is relying on',
   apply: (state) => {

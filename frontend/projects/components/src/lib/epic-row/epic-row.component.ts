@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { ProgressComponent } from '../progress/progress.component';
+import { pluralize } from '../text/pluralize';
 @Component({
   selector: 'qbc-epic-row',
   imports: [ProgressComponent],
@@ -12,4 +13,5 @@ export class EpicRowComponent {
   readonly summary = input('');
   readonly storyCount = input(0);
   readonly progress = input(0);
+  readonly storyLabel = computed(() => pluralize(this.storyCount(), 'story', 'stories'));
 }

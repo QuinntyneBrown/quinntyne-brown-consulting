@@ -48,6 +48,7 @@ export * from './lib/status-pill/status-pill.component';
 export * from './lib/story-card/story-card.component';
 export * from './lib/tag/tag.component';
 export * from './lib/task-item/task-item.component';
+export * from './lib/text/pluralize';
 export * from './lib/text-input/text-input.component';
 export * from './lib/textarea/textarea.component';
 export * from './lib/toast/toast.component';

@@ -1,5 +1,13 @@
 import { expect, Locator, Page } from '@playwright/test';
 
+/**
+ * Spelled out here rather than imported from the application, so that a regression in the
+ * application's wording cannot travel into the assertion meant to catch it.
+ */
+function countOf(count: number, singular: string, plural = `${singular}s`): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
 export class HierarchyPage {
   constructor(private readonly page: Page) {}
 
@@ -81,12 +89,23 @@ export class HierarchyPage {
   }
 
   async expectInitiativeRollUp(name: string, epics: number, stories: number): Promise<void> {
-    await expect(this.initiative(name)).toContainText(`${epics} epics · ${stories} stories`);
+    await expect(this.initiative(name)).toContainText(
+      `${countOf(epics, 'epic')} · ${countOf(stories, 'story', 'stories')}`,
+    );
+  }
+
+  /** Asserts the roll-up verbatim, so the wording itself is under test rather than recomputed. */
+  async expectInitiativeRollUpText(name: string, text: string): Promise<void> {
+    await expect(this.initiative(name)).toContainText(text);
+  }
+
+  async expectEpicRollUpText(name: string, text: string): Promise<void> {
+    await expect(this.epic(name)).toContainText(text);
   }
 
   async expectEpicRollUp(name: string, stories: number, percentage: number): Promise<void> {
     const row = this.epic(name);
-    await expect(row).toContainText(`${stories} stories`);
+    await expect(row).toContainText(countOf(stories, 'story', 'stories'));
     await expect(row.getByRole('progressbar', { name: 'Epic completion' })).toHaveAttribute(
       'aria-valuenow',
       String(percentage),

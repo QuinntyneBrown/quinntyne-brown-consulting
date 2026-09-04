@@ -1,5 +1,9 @@
 import { test } from '../fixtures/workboard.fixture';
-import { epicWithoutStories, initiativeWithoutEpics } from '../mocks/workspace-scenarios';
+import {
+  epicWithoutStories,
+  initiativeCountingOne,
+  initiativeWithoutEpics,
+} from '../mocks/workspace-scenarios';
 import { BacklogPage } from '../pages/backlog.page';
 import { EpicSummaryPage } from '../pages/epic-summary.page';
 import { HierarchyPage } from '../pages/hierarchy.page';
@@ -197,6 +201,17 @@ test('L2-004 · View hierarchy roll-ups', async ({ page }) => {
   await hierarchy.expectEpicRollUp('Client delivery portal', 3, 0);
   await hierarchy.expectEpicRollUp('Delivery playbook', 2, 100);
   await hierarchy.expectEpicRollUp('Engagement copilot', 2, 0);
+});
+
+test.describe(initiativeCountingOne.name, () => {
+  test.use({ seed: initiativeCountingOne });
+
+  /** A roll-up is read as a sentence, so a count of one takes the singular noun. */
+  test('L2-004 · Count a single epic and story in the singular', async ({ page }) => {
+    const hierarchy = new HierarchyPage(page);
+    await hierarchy.expectInitiativeRollUpText('Single-count outcome', '1 epic · 1 story');
+    await hierarchy.expectEpicRollUpText('Single-count capability', '1 story');
+  });
 });
 
 test('L2-004 · Add nested work in context', async ({ page }) => {
