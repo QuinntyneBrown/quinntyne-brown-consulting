@@ -14,10 +14,12 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
   `/assistants/{assistantId}` reports one assistant's totals, the share of their
   logged time that sits on stories which are now done, and every story they
   worked on, filtered to completed or in-flight work and expandable to the
-  individual entries. An assistant has worked on a story when they have hours
-  logged against it, so the record survives the story being reassigned. Deleting
-  an assistant is refused while any of their hours remain, listing the stories
-  holding them.
+  individual entries. **Edit** on a disclosed entry reopens the same form on what
+  was recorded, so the story, the date, the hours, or the note can be corrected in
+  place; **Delete** removes the entry outright. An assistant has worked on a story
+  when they have hours logged against it, so the record survives the story being
+  reassigned. Deleting an assistant is refused while any of their hours remain,
+  listing the stories holding them.
 - Project-level contribution, security, support, governance, and conduct
   policies.
 - GitHub issue and pull-request templates.

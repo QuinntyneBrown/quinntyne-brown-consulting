@@ -2,7 +2,8 @@ using MediatR;
 
 namespace Qbc.Workboard.Application.Features.TimeEntries.Commands;
 
-public sealed record LogTimeCommand(
+public sealed record SaveTimeEntryCommand(
+    Guid? Id,
     Guid StoryId,
     Guid AssistantId,
     DateOnly? WorkedOn,

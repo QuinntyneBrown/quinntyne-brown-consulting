@@ -141,12 +141,54 @@ export class AssistantHoursPage {
     await dialog.getByRole('button', { name: 'Cancel' }).click();
   }
 
+  /** Corrects a recorded entry through the same form that logged it. */
+  async editEntry(title: string, hours: string, changes: Partial<LoggedEntry>): Promise<void> {
+    await this.entry(title, hours).getByRole('button', { name: 'Edit', exact: true }).click();
+    const dialog = this.page.getByRole('dialog', { name: 'Edit hours' });
+    if (changes.story !== undefined)
+      await dialog.getByLabel('Story *').selectOption({ label: changes.story });
+    if (changes.workedOn !== undefined)
+      await dialog.getByLabel('Date worked *').fill(changes.workedOn);
+    if (changes.hours !== undefined) await dialog.getByLabel('Hours *').fill(changes.hours);
+    if (changes.note !== undefined) await dialog.getByLabel('Note').fill(changes.note);
+    await dialog.getByRole('button', { name: 'Save changes' }).click();
+    await expect(dialog).toBeHidden();
+  }
+
+  /** The form opens on what was recorded, so a correction starts from the entry rather than blank. */
+  async expectEditFormShows(
+    title: string,
+    hours: string,
+    expected: Omit<LoggedEntry, 'note'> & { note: string },
+  ): Promise<void> {
+    await this.entry(title, hours).getByRole('button', { name: 'Edit', exact: true }).click();
+    const dialog = this.page.getByRole('dialog', { name: 'Edit hours' });
+    await expect(dialog.locator('option:checked')).toHaveText(expected.story);
+    await expect(dialog.getByLabel('Date worked *')).toHaveValue(expected.workedOn);
+    await expect(dialog.getByLabel('Hours *')).toHaveValue(expected.hours);
+    await expect(dialog.getByLabel('Note')).toHaveValue(expected.note);
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(dialog).toBeHidden();
+  }
+
+  /** A refused correction keeps the dialog open and names the field, as logging does. */
+  async expectAmendmentRejected(
+    title: string,
+    hours: string,
+    amount: string,
+    message: string | RegExp,
+  ): Promise<void> {
+    await this.entry(title, hours).getByRole('button', { name: 'Edit', exact: true }).click();
+    const dialog = this.page.getByRole('dialog', { name: 'Edit hours' });
+    await dialog.getByLabel('Hours *').fill(amount);
+    await dialog.getByRole('button', { name: 'Save changes' }).click();
+    await expect(this.page.getByRole('alert').first()).toContainText(message);
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+  }
+
   async deleteEntry(title: string, hours: string): Promise<void> {
-    await this.row(title)
-      .locator('.entry')
-      .filter({ hasText: hours })
-      .getByRole('button', { name: 'Delete', exact: true })
-      .click();
+    await this.entry(title, hours).getByRole('button', { name: 'Delete', exact: true }).click();
     const confirmation = this.page.getByRole('dialog', { name: new RegExp(`^Delete ${hours} on`) });
     await expect(confirmation).toContainText('permanently removed');
     await confirmation.getByRole('button', { name: 'Delete entry' }).click();
@@ -169,6 +211,10 @@ export class AssistantHoursPage {
 
   private row(title: string): Locator {
     return this.page.locator('.hours-row').filter({ hasText: title });
+  }
+
+  private entry(title: string, hours: string): Locator {
+    return this.row(title).locator('.entry').filter({ hasText: hours });
   }
 
   private async expectTotal(label: string, value: string): Promise<void> {

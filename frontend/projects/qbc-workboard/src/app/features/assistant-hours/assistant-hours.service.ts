@@ -53,6 +53,14 @@ export class AssistantHoursService implements IAssistantHoursService {
     return this.mutate(this.timeEntryService.log(draft), draft.assistantId, 'Hours logged.');
   }
 
+  async update(entryId: string, draft: TimeEntryDraft): Promise<boolean> {
+    return this.mutate(
+      this.timeEntryService.update(entryId, draft),
+      draft.assistantId,
+      'Entry updated.',
+    );
+  }
+
   async delete(entryId: string, assistantId: string): Promise<boolean> {
     return this.mutate(this.timeEntryService.delete(entryId), assistantId, 'Entry deleted.');
   }

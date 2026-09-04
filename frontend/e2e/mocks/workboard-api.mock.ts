@@ -304,6 +304,31 @@ export class WorkboardApiMock {
       }
 
       const timeEntryMatch = path.match(/^\/api\/time-entries\/([^/]+)$/);
+      if (timeEntryMatch && method === 'PUT') {
+        const existing = this.state.timeEntries.find((item) => item.id === timeEntryMatch[1]);
+        if (!existing) return this.notFound(route, 'Time entry');
+        const draft = this.body<TimeEntryDraft>(route);
+        const story = this.state.stories.find((item) => item.id === draft.storyId);
+        if (!story) return this.notFound(route, 'Story');
+        const assistant = this.state.assistants.find((item) => item.id === draft.assistantId);
+        if (!assistant) return this.notFound(route, 'Assistant');
+        const errors = this.timeEntryErrors(draft);
+        if (errors) return this.invalid(route, errors);
+        // An amendment restates the entry in place, so its identity and its order survive.
+        const amended: TimeEntry = {
+          ...existing,
+          storyId: story.id,
+          storyKey: story.key,
+          assistantId: assistant.id,
+          assistantName: assistant.fullName,
+          workedOn: draft.workedOn,
+          hours: draft.hours,
+          note: draft.note.trim(),
+        };
+        this.state.timeEntries[this.state.timeEntries.indexOf(existing)] = amended;
+        return this.json(route, 200, amended);
+      }
+
       if (timeEntryMatch && method === 'DELETE') {
         const id = timeEntryMatch[1];
         if (!this.state.timeEntries.some((item) => item.id === id))

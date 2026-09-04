@@ -162,6 +162,11 @@ qbc-back-link {
   overflow-wrap: anywhere;
   font-size: 13px;
 }
+.entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
 @media (max-width: 1180px) {
   .row-main {

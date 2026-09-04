@@ -205,7 +205,7 @@ export const initiativeCountingOne: WorkspaceScenario = {
       sprintId: null,
       sprintName: null,
       sprintStatus: null,
-      boardStatus: 'todo',
+      boardStatus: 'toDo',
       tasks: [],
     });
   },
