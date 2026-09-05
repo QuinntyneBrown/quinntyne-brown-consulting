@@ -65,6 +65,14 @@ export class AttachmentsPage {
     return download.suggestedFilename();
   }
 
+  /** The file name itself is the shortest route to the file; this takes it. */
+  async downloadByName(fileName: string): Promise<string> {
+    const saving = this.page.waitForEvent('download');
+    await this.row(fileName).getByRole('button', { name: fileName, exact: true }).click();
+    const download = await saving;
+    return download.suggestedFilename();
+  }
+
   async remove(fileName: string, options: { confirm?: boolean } = {}): Promise<void> {
     await this.row(fileName)
       .getByRole('button', { name: `Remove ${fileName}` })
@@ -85,5 +93,22 @@ export class AttachmentsPage {
   /** A refusal is announced, and the panel is left holding exactly what it held before. */
   async expectRefused(detail: string | RegExp): Promise<void> {
     await expect(this.page.locator('qbc-toast')).toContainText(detail);
+  }
+
+  private failedRow(fileName: string): Locator {
+    return this.panel().locator(`.upload-row.is-failed[data-upload-name="${fileName}"]`);
+  }
+
+  /** The refused file stays in the list with its reason, until the reader lets it go. */
+  async expectFailedUpload(fileName: string, detail: string | RegExp): Promise<void> {
+    await expect(this.failedRow(fileName)).toBeVisible();
+    await expect(this.failedRow(fileName)).toContainText(detail);
+  }
+
+  async dismissFailedUpload(fileName: string): Promise<void> {
+    await this.failedRow(fileName)
+      .getByRole('button', { name: `Dismiss ${fileName}` })
+      .click();
+    await expect(this.failedRow(fileName)).toHaveCount(0);
   }
 }

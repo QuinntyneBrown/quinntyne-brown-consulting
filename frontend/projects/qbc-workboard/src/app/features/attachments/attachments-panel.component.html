@@ -4,63 +4,138 @@
 >
   <qbc-section-label
     heading="Attached files"
-    [hint]="attachments().length ? attachments().length + ' attached' : ''"
+    [hint]="summary()"
   />
 
-  <qbc-file-drop
-    heading="Drop files here"
-    [hint]="hint"
-    chooseLabel="Choose files"
-    (filesSelected)="attach($event)"
-  />
-
-  @if (loadingState() === 'loading') {
-    <qbc-loading-state>Reading the attached files…</qbc-loading-state>
-  } @else if (attachments().length === 0) {
-    <qbc-empty-state
-      title="No files attached yet"
-      subtitle="Drop the brief, the diagram, or the export that explains this work, and whoever picks it up next will find it here."
+  @if (isEmpty()) {
+    <qbc-file-drop
+      heading="No files attached yet"
+      [hint]="emptySubtitle"
+      chooseLabel="Choose files"
+      (filesSelected)="attach($event)"
     />
   } @else {
+    <qbc-file-drop
+      variant="compact"
+      heading="Drop files here"
+      chooseLabel="browse"
+      [hint]="hint"
+      (filesSelected)="attach($event)"
+    />
+  }
+
+  @if (loadingState() === 'loading' && isEmpty()) {
+    <qbc-loading-state>Reading the attached files…</qbc-loading-state>
+  }
+
+  @if (!isEmpty()) {
     <ul
       class="file-list"
       data-testid="attachment-list"
     >
+      @for (upload of uploads(); track upload.id) {
+        <li
+          class="upload-row"
+          [class.is-uploading]="upload.status === 'uploading'"
+          [class.is-failed]="upload.status === 'failed'"
+          [attr.data-upload-name]="upload.file.name"
+          [attr.aria-busy]="upload.status === 'uploading' ? 'true' : null"
+        >
+          <span
+            class="type-badge"
+            [attr.data-kind]="upload.status === 'failed' ? 'failed' : 'uploading'"
+            aria-hidden="true"
+          >
+            <qbc-icon
+              [name]="upload.status === 'failed' ? 'alert' : 'pending'"
+              [size]="upload.status === 'failed' ? 16 : 18"
+            />
+          </span>
+          <div class="file-main">
+            <span
+              class="file-name"
+              [title]="upload.file.name"
+              >{{ upload.file.name }}</span
+            >
+            @if (upload.status === 'uploading') {
+              <p
+                class="file-meta"
+                role="status"
+              >
+                <span class="file-size">{{ size(upload.file.size) }}</span>
+                <span>· Uploading…</span>
+              </p>
+              <span class="upload-track"><span class="upload-bar"></span></span>
+            } @else {
+              <p
+                class="file-meta upload-error"
+                role="alert"
+              >
+                {{ upload.error }}
+              </p>
+            }
+          </div>
+          @if (upload.status === 'failed') {
+            <div class="row-actions is-static">
+              <qbc-button
+                variant="quiet"
+                size="xs"
+                [ariaLabel]="'Retry ' + upload.file.name"
+                (click)="retry(upload)"
+                >Retry</qbc-button
+              >
+              <qbc-icon-button
+                variant="bare"
+                icon="close"
+                [label]="'Dismiss ' + upload.file.name"
+                (click)="dismiss(upload)"
+              />
+            </div>
+          }
+        </li>
+      }
+
       @for (attachment of attachments(); track attachment.id) {
         <li
           class="file-row"
           [attr.data-file-name]="attachment.fileName"
         >
-          <qbc-pill
-            class="mark"
-            tone="muted"
-            [label]="extension(attachment.fileName)"
-          />
+          <span
+            class="type-badge"
+            [attr.data-kind]="kind(attachment.fileName, attachment.contentType)"
+            aria-hidden="true"
+            >{{ badge(attachment.fileName, attachment.contentType) }}</span
+          >
           <div class="file-main">
-            <strong class="file-name">{{ attachment.fileName }}</strong>
+            <button
+              class="file-name"
+              type="button"
+              [title]="attachment.fileName"
+              (click)="download(attachment)"
+            >
+              {{ attachment.fileName }}
+            </button>
             <p class="file-meta">
               <span class="file-size">{{ size(attachment.sizeInBytes) }}</span>
-              @if (attachment.uploadedBy) {
-                <span>· {{ attachment.uploadedBy }}</span>
-              }
               <span>· {{ attachedOn(attachment.uploadedOn) }}</span>
+              @if (attachment.uploadedBy) {
+                <span class="file-by">· {{ attachment.uploadedBy }}</span>
+              }
             </p>
           </div>
           <div class="row-actions">
-            <qbc-button
-              variant="quiet"
-              size="xs"
-              [ariaLabel]="'Download ' + attachment.fileName"
+            <qbc-icon-button
+              variant="bare"
+              icon="download"
+              [label]="'Download ' + attachment.fileName"
               (click)="download(attachment)"
-              >Download</qbc-button
-            >
-            <qbc-button
-              variant="quiet"
-              size="xs"
-              [ariaLabel]="'Remove ' + attachment.fileName"
+            />
+            <qbc-icon-button
+              variant="bare"
+              icon="trash"
+              [label]="'Remove ' + attachment.fileName"
               (click)="remove(attachment)"
-              >Remove</qbc-button
-            >
+            />
           </div>
         </li>
       }

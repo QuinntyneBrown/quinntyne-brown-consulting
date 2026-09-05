@@ -7,14 +7,21 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { IconComponent } from '../icon/icon.component';
+
+export type FileDropVariant = 'full' | 'compact';
 
 /**
  * The dropzone and the file picker behind it. A native file input cannot live in an application
  * template, so it lives here, hidden but real: the keyboard, the file dialog, and Playwright's
  * `setInputFiles` all address the element the browser already knows how to drive.
+ *
+ * The full variant is a tall, centred zone for a list with nothing in it yet. The compact variant
+ * is a single-line bar for a list that already has files, where the zone should not outweigh them.
  */
 @Component({
   selector: 'qbc-file-drop',
+  imports: [IconComponent],
   templateUrl: './file-drop.component.html',
   styleUrl: './file-drop.component.scss',
 })
@@ -29,6 +36,7 @@ export class FileDropComponent {
    */
   private depth = 0;
 
+  readonly variant = input<FileDropVariant>('full');
   readonly heading = input('Drop files here');
   readonly hint = input<string | null>(null);
   readonly chooseLabel = input('Choose files');

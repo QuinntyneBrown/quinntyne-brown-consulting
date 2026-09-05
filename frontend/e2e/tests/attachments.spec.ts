@@ -51,6 +51,18 @@ test('L2-053 · Download an attached file', async ({ page }) => {
   await test.expect(savedAs).toBe(BRIEF);
 });
 
+test('L2-053 · Download an attached file from its name', async ({ page }) => {
+  await new WorkboardPage(page).navigateTo('initiatives');
+  await new InitiativeBriefPage(page).openFrom(INITIATIVE);
+
+  const attachments = new AttachmentsPage(page);
+  await attachments.attach({ name: BRIEF });
+
+  // The name is the file's own link, so it does not need the button beside it.
+  const savedAs = await attachments.downloadByName(BRIEF);
+  await test.expect(savedAs).toBe(BRIEF);
+});
+
 test('L2-053 · Remove an attached file', async ({ page }) => {
   await new WorkboardPage(page).navigateTo('initiatives');
   await new InitiativeBriefPage(page).openFrom(INITIATIVE);
@@ -84,6 +96,11 @@ test('L2-053 · Report a refused file', async ({ page }) => {
   // A program is turned away, and the reason is announced rather than silently swallowed.
   await attachments.attach({ name: 'setup.exe', contentType: 'application/octet-stream' });
   await attachments.expectRefused(/Programs and scripts cannot be attached/);
+  await attachments.expectFiles(BRIEF);
+
+  // The refusal also stays beside the file it concerns, and can be put away once it is read.
+  await attachments.expectFailedUpload('setup.exe', /Programs and scripts cannot be attached/);
+  await attachments.dismissFailedUpload('setup.exe');
   await attachments.expectFiles(BRIEF);
 });
 

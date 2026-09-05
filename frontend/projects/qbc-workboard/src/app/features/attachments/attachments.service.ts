@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { ATTACHMENT_SERVICE, Attachment, WorkItemKind, presentApiError } from '@qbc/api';
 import { FEEDBACK_SERVICE } from '../../core/feedback.service.contract';
 import { LoadingState } from '../../models/loading-state';
-import { IAttachmentsService } from './attachments.service.contract';
+import { IAttachmentsService, UploadResult } from './attachments.service.contract';
 
 /**
  * Reads and writes the files on one work item. Every write is followed by a fresh read, so the list
@@ -35,7 +35,7 @@ export class AttachmentsService implements IAttachmentsService {
     workItemId: string,
     file: File,
     assistantId: string | null,
-  ): Promise<boolean> {
+  ): Promise<UploadResult> {
     this.errorValue.set(null);
     try {
       await this.attachmentService.upload({
@@ -46,11 +46,11 @@ export class AttachmentsService implements IAttachmentsService {
       });
       await this.load(kind, workItemId);
       this.feedback.show(`${file.name} attached.`);
-      return true;
+      return { ok: true };
     } catch (error) {
-      // A refusal leaves the existing list exactly as it was; only the reason is new.
-      this.announce(error);
-      return false;
+      // A refusal leaves the existing list exactly as it was; only the reason is new, and it is
+      // handed back so the panel can show it beside the file that was turned away.
+      return { ok: false, message: this.announce(error) };
     }
   }
 
@@ -84,10 +84,11 @@ export class AttachmentsService implements IAttachmentsService {
     }
   }
 
-  private announce(error: unknown): void {
+  private announce(error: unknown): string {
     const message = presentApiError(error);
     this.errorValue.set(message);
     this.feedback.show(message, 'error');
+    return message;
   }
 
   private fail(error: unknown): void {

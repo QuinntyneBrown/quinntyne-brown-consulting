@@ -1,52 +1,156 @@
+/* Inside the story editor's two-column form grid the panel takes the whole row; on a page it is
+   simply a block, and the rule does nothing. */
+:host {
+  display: block;
+  grid-column: 1 / -1;
+}
+
 .attachments {
   display: grid;
-  gap: var(--qbc-s-3);
+  gap: 10px;
 }
 
 .file-list {
   display: grid;
-  gap: var(--qbc-s-2);
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.file-row {
+.file-row,
+.upload-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: var(--qbc-s-3);
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap: 12px;
   align-items: center;
-  padding: var(--qbc-s-3) var(--qbc-s-4);
+  min-height: 56px;
+  padding: 8px 8px 8px 10px;
   border: 1px solid var(--qbc-line-card);
-  border-radius: var(--qbc-r-xl);
+  border-radius: var(--qbc-r-lg);
   background: var(--qbc-panel);
-  box-shadow: var(--qbc-shadow-card);
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
 }
 
-.file-row:hover {
-  background: var(--qbc-surface-hover);
+.file-row:hover,
+.file-row:focus-within {
+  border-color: var(--qbc-line-strong);
+  background: var(--qbc-soft);
+}
+
+.upload-row.is-failed {
+  border-color: color-mix(in srgb, var(--qbc-danger) 30%, var(--qbc-line-card));
+  background: var(--qbc-danger-soft);
+}
+
+/* The badge names the file's family before the name is read, so its colour does the first work. */
+.type-badge {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--qbc-ink-soft);
+  background: var(--qbc-soft);
+  font-family: var(--qbc-font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.type-badge[data-kind='pdf'] {
+  color: var(--qbc-danger);
+  background: var(--qbc-danger-soft);
+}
+
+.type-badge[data-kind='doc'],
+.type-badge[data-kind='code'] {
+  color: var(--qbc-blue);
+  background: var(--qbc-blue-soft);
+}
+
+.type-badge[data-kind='sheet'] {
+  color: var(--qbc-accent-dark);
+  background: var(--qbc-accent-soft);
+}
+
+.type-badge[data-kind='slides'],
+.type-badge[data-kind='archive'] {
+  color: var(--qbc-amber);
+  background: var(--qbc-amber-soft);
+}
+
+.type-badge[data-kind='image'] {
+  color: #6b4b8a;
+  background: #f1ebf7;
+}
+
+.type-badge[data-kind='uploading'] {
+  color: var(--qbc-accent);
+  background: var(--qbc-accent-soft);
+}
+
+.type-badge[data-kind='uploading'] qbc-icon {
+  animation: spin 900ms linear infinite;
+}
+
+.type-badge[data-kind='failed'] {
+  color: var(--qbc-danger);
+  background: var(--qbc-panel);
 }
 
 .file-main {
+  display: grid;
   min-width: 0;
+  gap: 1px;
 }
 
 .file-name {
   display: block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
-  font-size: var(--qbc-fs-md);
-  font-weight: var(--qbc-fw-medium);
+  border: 0;
+  border-radius: 3px;
+  color: var(--qbc-ink);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+button.file-name {
+  cursor: pointer;
+}
+
+button.file-name:hover {
+  color: var(--qbc-accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .file-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--qbc-s-1);
-  margin: 2px 0 0;
+  gap: 0 4px;
+  margin: 0;
+  overflow: hidden;
   color: var(--qbc-ink-soft);
-  font-size: var(--qbc-fs-xs);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.file-meta > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* A size has to line up digit under digit to be compared down the column. */
@@ -55,18 +159,86 @@
   font-variant-numeric: tabular-nums;
 }
 
-.row-actions {
-  display: flex;
-  gap: var(--qbc-s-1);
+.upload-error {
+  color: var(--qbc-danger);
+  white-space: normal;
 }
 
-@media (max-width: 760px) {
+.upload-track {
+  display: block;
+  height: 3px;
+  margin-top: 5px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--qbc-accent-soft);
+}
+
+.upload-bar {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--qbc-accent);
+  animation: slide 1.2s ease-in-out infinite;
+}
+
+/* Actions wait until the row is pointed at or reached by keyboard, so the list reads as a list. */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.row-actions.is-static,
+.file-row:hover .row-actions,
+.file-row:focus-within .row-actions {
+  opacity: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@media (hover: none), (max-width: 760px) {
+  .row-actions {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .type-badge[data-kind='uploading'] qbc-icon,
+  .upload-bar {
+    animation: none;
+  }
+
+  .upload-bar {
+    width: 100%;
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 480px) {
   /* The badge and the name keep the top line, so a long file name gets the full width. */
-  .file-row {
-    grid-template-columns: auto minmax(0, 1fr);
+  .file-row,
+  .upload-row {
+    grid-template-columns: 40px minmax(0, 1fr);
   }
 
   .row-actions {
-    grid-column: 1 / -1;
+    grid-column: 2;
+    justify-content: flex-end;
   }
 }

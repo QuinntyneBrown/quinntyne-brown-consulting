@@ -103,6 +103,19 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- The attached-files panel on an initiative, an epic, and a story was reworked.
+  In the story editor it now spans the full width of the dialog instead of one
+  column. The dropzone is tall only while the list is empty and shrinks to a
+  one-line **Drop files here or browse** bar once files are attached, so the
+  files themselves come first. Each row shows a coloured badge for the kind of
+  file, the full name (which downloads the file when clicked), and its size and
+  date on one line, with download and remove as icon buttons that appear when
+  the row is pointed at or reached by keyboard. Files are uploaded together
+  rather than one after another, each with its own in-progress row, and a file
+  the server turns away stays in the list with the reason beside it, with
+  **Retry** and a dismiss control. A program, a folder, or a file over 25 MB is
+  now refused at once in the browser with the same wording the server uses,
+  before any upload is attempted.
 - The workspace header bar now stays at the top of the viewport at every width.
   It carried the breadcrumb and **New story** out of reach on a desktop window
   whenever the page ran longer than the screen; it was already pinned on tablets

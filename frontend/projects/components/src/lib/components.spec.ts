@@ -103,6 +103,29 @@ describe('QBC component contracts', () => {
     expect(element.querySelector('label')?.textContent?.trim()).toBe('Attach files');
   });
 
+  it('collapses to one line in the compact variant and still opens the same input', () => {
+    const fixture = TestBed.createComponent(FileDropComponent);
+    fixture.componentRef.setInput('variant', 'compact');
+    fixture.componentRef.setInput('chooseLabel', 'browse');
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('.zone')?.classList).toContain('compact');
+    expect(element.querySelector('h3')).toBeNull();
+    expect(element.querySelector('button.choose')?.textContent?.trim()).toBe('browse');
+
+    // The hidden input is the element Playwright and the keyboard drive, whatever the size.
+    const field = element.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(field.getAttribute('data-testid')).toBe('file-drop-input');
+    let clicks = 0;
+    field.addEventListener('click', (event) => {
+      clicks += 1;
+      event.preventDefault();
+    });
+    (element.querySelector('button.choose') as HTMLButtonElement).click();
+    expect(clicks).toBe(1);
+  });
+
   it('opens and closes dialogs through the imperative API', () => {
     const fixture: ComponentFixture<DialogComponent> = TestBed.createComponent(DialogComponent);
     fixture.detectChanges();

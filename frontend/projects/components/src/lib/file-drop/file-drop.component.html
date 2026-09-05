@@ -1,5 +1,6 @@
 <div
   class="zone"
+  [class.compact]="variant() === 'compact'"
   [class.is-dragging]="isDragging()"
   [class.is-disabled]="disabled()"
   (dragenter)="dragEnter($event)"
@@ -7,28 +8,57 @@
   (dragleave)="dragLeave($event)"
   (drop)="drop($event)"
 >
-  <span
-    class="mark"
-    aria-hidden="true"
-    >&#8681;</span
-  >
-  <h3 class="heading">{{ heading() }}</h3>
-  <button
-    class="choose"
-    type="button"
-    [disabled]="disabled()"
-    [attr.aria-describedby]="hint() ? controlId + '-hint' : null"
-    (click)="choose()"
-  >
-    {{ chooseLabel() }}
-  </button>
-  @if (hint()) {
-    <p
-      class="hint"
-      [id]="controlId + '-hint'"
-    >
-      {{ hint() }}
+  @if (variant() === 'compact') {
+    <qbc-icon
+      class="mark"
+      name="upload"
+      [size]="16"
+    />
+    <p class="line">
+      <span class="heading">{{ heading() }}</span>
+      <span class="or">or</span>
+      <button
+        class="choose"
+        type="button"
+        [disabled]="disabled()"
+        [attr.aria-describedby]="hint() ? controlId + '-hint' : null"
+        (click)="choose()"
+      >
+        {{ chooseLabel() }}
+      </button>
     </p>
+    @if (hint()) {
+      <p
+        class="hint"
+        [id]="controlId + '-hint'"
+      >
+        {{ hint() }}
+      </p>
+    }
+  } @else {
+    <qbc-icon
+      class="mark"
+      name="upload"
+      [size]="22"
+    />
+    <h3 class="heading">{{ heading() }}</h3>
+    <button
+      class="choose"
+      type="button"
+      [disabled]="disabled()"
+      [attr.aria-describedby]="hint() ? controlId + '-hint' : null"
+      (click)="choose()"
+    >
+      {{ chooseLabel() }}
+    </button>
+    @if (hint()) {
+      <p
+        class="hint"
+        [id]="controlId + '-hint'"
+      >
+        {{ hint() }}
+      </p>
+    }
   }
   <label
     class="visually-hidden"

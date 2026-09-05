@@ -29,4 +29,9 @@ const GLYPHS: Readonly<Record<IconName, string>> = {
   alert: '!',
   empty: '◇',
   initiative: '↗',
+  upload: '⇪',
+  download: '⤓',
+  trash: '✕',
+  retry: '↻',
+  pending: '◌',
 };

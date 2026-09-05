@@ -12,4 +12,9 @@ export type IconName =
   | 'more'
   | 'alert'
   | 'empty'
-  | 'initiative';
+  | 'initiative'
+  | 'upload'
+  | 'download'
+  | 'trash'
+  | 'retry'
+  | 'pending';
