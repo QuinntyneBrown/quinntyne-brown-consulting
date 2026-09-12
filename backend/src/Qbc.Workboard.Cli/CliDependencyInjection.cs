@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Qbc.Workboard.Cli.Commands;
+using Qbc.Workboard.Cli.Commands.WorkItems;
 using Qbc.Workboard.Cli.Console;
 using Qbc.Workboard.Cli.Options;
 using Qbc.Workboard.Cli.Services;
@@ -21,6 +22,14 @@ public static class CliDependencyInjection
         services.AddSingleton<InitializeDatabaseCommand>();
         services.AddSingleton<ResetDatabaseCommand>();
         services.AddSingleton<DatabaseCommand>();
+        services.AddHttpClient(nameof(WorkboardApiClient));
+        services.AddSingleton<WorkboardApiClientFactory>();
+        services.AddSingleton<CreateInitiativeCommand>();
+        services.AddSingleton<CreateEpicCommand>();
+        services.AddSingleton<CreateStoryCommand>();
+        services.AddSingleton<UpdateStoryCommand>();
+        services.AddSingleton<AssignSprintCommand>();
+        services.AddSingleton<WorkItemCommand>();
         services.AddSingleton<CliApplication>();
         return services;
     }
