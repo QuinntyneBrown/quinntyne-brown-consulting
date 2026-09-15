@@ -29,6 +29,7 @@ public static class CliDependencyInjection
         services.AddSingleton<CreateStoryCommand>();
         services.AddSingleton<UpdateStoryCommand>();
         services.AddSingleton<AssignSprintCommand>();
+        services.AddSingleton<AttachFileCommand>();
         services.AddSingleton<WorkItemCommand>();
         services.AddSingleton<CliApplication>();
         return services;

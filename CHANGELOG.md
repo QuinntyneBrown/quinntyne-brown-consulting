@@ -9,6 +9,14 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- A `workitem` command group in the Workboard CLI that authors work items through
+  the API rather than the database: `create-initiative`, `create-epic`,
+  `create-story`, `update-story`, `assign-sprint`, and `attach-file`, which
+  attaches one or more local files to a story, optionally attributed to a named
+  assistant. A missing, empty, oversized, or program file is refused before any
+  request is made, with the same wording the workspace uses. Each command takes
+  `--target local|azure` and the workspace passcode from `--passcode` or
+  `Api__Passcode`.
 - Work item attachments. An initiative, an epic, and a story each carry their
   own list of files, attached by dropping them on the work item or choosing
   them from the computer, downloaded under the name they arrived with, and

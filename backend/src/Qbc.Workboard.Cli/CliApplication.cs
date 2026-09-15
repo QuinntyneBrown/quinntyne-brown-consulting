@@ -11,7 +11,7 @@ public sealed class CliApplication
 
     public CliApplication(DatabaseCommand databaseCommand, WorkItemCommand workItemCommand)
     {
-        _rootCommand = new RootCommand("Maintain local and deployed QBC Workboard databases.");
+        _rootCommand = new RootCommand("Maintain local and deployed QBC Workboard databases and author work items against the Workboard API.");
         _rootCommand.Subcommands.Add(databaseCommand.Command);
         _rootCommand.Subcommands.Add(workItemCommand.Command);
     }

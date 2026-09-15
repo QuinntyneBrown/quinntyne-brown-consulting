@@ -81,6 +81,14 @@ the workspace passcode above all — is the production path unchanged.
 and resetting a real database is the behaviour it exists to prove. It creates
 uniquely named databases and deletes them during fixture disposal.
 
+The `workitem` commands in the same project (`WorkItemCommandIntegrationTests`)
+run the CLI over a fake HTTP handler instead, so they need neither SQL Server nor
+a running API and can be run alone:
+
+```powershell
+dotnet test backend/tests/Qbc.Workboard.Cli.IntegrationTests/Qbc.Workboard.Cli.IntegrationTests.csproj --configuration Release --filter "FullyQualifiedName~WorkItemCommandIntegrationTests"
+```
+
 ## Run the API
 
 ```powershell
@@ -142,6 +150,28 @@ dotnet tool install --global Qbc.Workboard.Cli --add-source artifacts/packages
 ```
 
 The installed command is `qbc-workboard`.
+
+## Author work items
+
+The `workitem` group goes through the API, so it needs the workspace passcode
+(`--passcode` or `Api__Passcode`) and takes `--target local|azure`.
+
+```powershell
+$env:Api__Passcode = "<workspace passcode>"
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem create-initiative --name "Client portal" --description "Self-service portal for clients."
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem create-epic --initiative-name "Client portal" --name "Onboarding" --summary "First-run experience."
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem create-story --epic-name "Onboarding" --title "Invite a client" --points 3 --assignee "Maya Chen"
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem update-story --story-key QBC-106 --points 5
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem assign-sprint --story-key QBC-106 --sprint-name "Sprint 12"
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem attach-file --story-key QBC-106 --file ./docs/onboarding-brief.pdf
+```
+
+Names are matched exactly and case-insensitively. `--assignee` and
+`--sprint-name` create a missing assistant or sprint; `--uploaded-by` on
+`attach-file` refuses an unknown assistant. `attach-file` takes `--file` more
+than once and applies the workspace's own rules before sending anything: a
+missing, empty, oversized (over 25 MB), or program file is refused with the same
+wording the dropzone uses, and a duplicate name is refused by the API.
 
 ## Publish the product
 

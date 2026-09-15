@@ -270,6 +270,33 @@ be present in the Azure SQL firewall. Override either target with
 > data; it requires both `--force` and the exact database confirmation:
 > `database reset --target azure --force --confirm-database QbcWorkboard`.
 
+### Work item commands
+
+The `workitem` group authors work items through the running API rather than the
+database, so it needs the workspace passcode: pass `--passcode` or set
+`Api__Passcode`. `--target azure` points at the deployment; `local` is the
+default and expects the API at the `Api:Local` address in the CLI's
+`appsettings.json`.
+
+```powershell
+$env:Api__Passcode = "<workspace passcode>"
+$cli = "backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj"
+dotnet run --project $cli -- workitem create-initiative --name "Client portal" --description "Self-service portal for clients."
+dotnet run --project $cli -- workitem create-epic --initiative-name "Client portal" --name "Onboarding" --summary "First-run experience."
+dotnet run --project $cli -- workitem create-story --epic-name "Onboarding" --title "Invite a client" --points 3 --assignee "Maya Chen"
+dotnet run --project $cli -- workitem update-story --story-key QBC-106 --points 5
+dotnet run --project $cli -- workitem assign-sprint --story-key QBC-106 --sprint-name "Sprint 12"
+dotnet run --project $cli -- workitem attach-file --story-key QBC-106 --file ./docs/onboarding-brief.pdf --uploaded-by "Maya Chen"
+```
+
+Parents are looked up by exact, case-insensitive name. `--assignee` and
+`--sprint-name` create the assistant or sprint when no match exists;
+`--uploaded-by` does not, and refuses an unknown name. `assign-sprint` grooms
+the story first when it is not yet ready. `attach-file` accepts `--file` more
+than once and refuses, before any request is made, a file that is missing,
+empty, over 25 MB, or a program or script; a name already attached to the story
+is refused by the API.
+
 Package and install the CLI as a global .NET tool when repeated use is needed:
 
 ```powershell

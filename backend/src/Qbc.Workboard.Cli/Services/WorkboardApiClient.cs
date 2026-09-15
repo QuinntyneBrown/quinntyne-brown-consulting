@@ -1,5 +1,6 @@
 using Qbc.Workboard.Application.Features.Access.Dtos;
 using Qbc.Workboard.Application.Features.Assistants.Dtos;
+using Qbc.Workboard.Application.Features.Attachments.Dtos;
 using Qbc.Workboard.Application.Features.Hierarchy.Dtos;
 using Qbc.Workboard.Application.Features.Sprints.Dtos;
 using Qbc.Workboard.Application.Features.Stories.Dtos;
@@ -155,6 +156,36 @@ public sealed class WorkboardApiClient
         await EnsureSuccessAsync(response, cancellationToken);
         return await response.Content.ReadFromJsonAsync<StoryDto>(JsonOptions, cancellationToken)
             ?? throw new InvalidOperationException("The assign-sprint response body was empty.");
+    }
+
+    public async Task<AttachmentDto> UploadAttachmentAsync(
+        WorkItemKind workItemKind,
+        Guid workItemId,
+        string fileName,
+        string contentType,
+        Stream content,
+        Guid? uploadedByAssistantId,
+        CancellationToken cancellationToken)
+    {
+        var file = new StreamContent(content);
+        file.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+        using var form = new MultipartFormDataContent
+        {
+            { file, "file", fileName },
+            { new StringContent(workItemKind.ToString()), "workItemKind" },
+            { new StringContent(workItemId.ToString()), "workItemId" }
+        };
+
+        if (uploadedByAssistantId is not null)
+        {
+            form.Add(new StringContent(uploadedByAssistantId.Value.ToString()), "uploadedByAssistantId");
+        }
+
+        using var response = await _httpClient.PostAsync("api/attachments", form, cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<AttachmentDto>(JsonOptions, cancellationToken)
+            ?? throw new InvalidOperationException("The attach-file response body was empty.");
     }
 
     private static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken cancellationToken)
