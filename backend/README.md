@@ -153,8 +153,10 @@ The installed command is `qbc-workboard`.
 
 ## Author work items
 
-The `workitem` group goes through the API, so it needs the workspace passcode
-(`--passcode` or `Api__Passcode`) and takes `--target local|azure`.
+The `workitem` group goes through the API, so it needs a workspace session: the
+passcode (`--passcode` or `Api__Passcode`), or for a batch the token captured by
+`workitem login --json` in `Api__AccessToken` (see "Inspect and replace
+attachments"). Every command takes `--target local|azure`.
 
 ```powershell
 $env:Api__Passcode = "<workspace passcode>"
@@ -210,10 +212,12 @@ qbc-workboard workitem download-attachment --story-key QBC-108 --attachment-id <
 qbc-workboard workitem replace-attachment --story-key QBC-108 --attachment-id <attachment-guid> --file ./validated.docx --expected-revision 0 --target azure --json
 ```
 
-Login requires the existing passcode configuration. The other inspection commands prefer
-`Api__AccessToken` and otherwise use the passcode. Expired tokens fail normally; log in
+Login requires the existing passcode configuration. Every other `workitem` command, the
+authoring commands included, prefers `Api__AccessToken` and otherwise unlocks with the
+passcode, so a batch of attachments or story updates spends one unlock against the
+workspace's sign-in limit rather than one per command. Expired tokens fail normally; log in
 again rather than automatically retrying authentication. Never print tokens or store them
-in the repository. Existing authoring commands retain their passcode behavior.
+in the repository.
 
 Story selectors accept exactly one of `--story-key` and `--story-id`. Unfinished means
 neither Archived nor Done, including stories in a sprint. Assignee filtering uses an

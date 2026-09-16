@@ -68,17 +68,15 @@ public sealed class AttachFileCommand
                 }
             }
 
-            var passcode = PasscodeOption.Resolve(parseResult.GetValue(passcodeOption), configuration);
-            if (string.IsNullOrWhiteSpace(passcode))
-            {
-                console.WriteError("No passcode provided. Pass --passcode or set the Api:Passcode configuration value.");
-                return 1;
-            }
-
             try
             {
                 var client = clientFactory.Create(parseResult.GetValue(targetOption));
-                await client.UnlockAsync(passcode, cancellationToken);
+                var refusal = await ApiSession.AuthenticateAsync(client, configuration, parseResult.GetValue(passcodeOption), cancellationToken);
+                if (refusal is not null)
+                {
+                    console.WriteError(refusal);
+                    return 1;
+                }
 
                 var story = storyId is not null
                     ? await client.GetStoryAsync(storyId.Value, cancellationToken)

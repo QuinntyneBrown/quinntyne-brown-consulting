@@ -9,6 +9,13 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Inspection and maintenance commands in the Workboard CLI's `workitem` group:
+  `login`, `list-assistants`, `list-stories`, `get-story`, `list-attachments`,
+  `download-attachment`, and `replace-attachment`, which swaps an attachment's
+  content in place against its expected revision. One `login --json` token in
+  `Api__AccessToken` now authorizes every `workitem` command, the authoring
+  commands included, so a batch of attachments or story updates spends one
+  unlock against the workspace's sign-in limit rather than one per command.
 - A `workitem` command group in the Workboard CLI that authors work items through
   the API rather than the database: `create-initiative`, `create-epic`,
   `create-story`, `update-story`, `assign-sprint`, and `attach-file`, which
