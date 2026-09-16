@@ -48,6 +48,14 @@ public sealed class AttachmentsController : ControllerBase
         return Created($"/api/attachments/{result.Id}/content", result);
     }
 
+    [HttpPut("{id:guid}/content")]
+    [RequestSizeLimit(MaximumRequestBytes)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaximumRequestBytes)]
+    public async Task<ActionResult<AttachmentDto>> Replace(Guid id, [FromForm] IFormFile? file,
+        [FromForm] int? expectedRevision, CancellationToken cancellationToken) =>
+        Ok(await _sender.Send(new ReplaceAttachmentCommand(id, file?.FileName ?? string.Empty,
+            file?.ContentType ?? string.Empty, await ReadAsync(file, cancellationToken), expectedRevision), cancellationToken));
+
     [HttpGet("{id:guid}/content")]
     public async Task<IActionResult> GetContent(Guid id, CancellationToken cancellationToken)
     {

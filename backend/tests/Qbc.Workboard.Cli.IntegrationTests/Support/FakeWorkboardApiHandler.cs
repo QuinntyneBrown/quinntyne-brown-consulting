@@ -19,6 +19,13 @@ public sealed class FakeWorkboardApiHandler : HttpMessageHandler
 
     private readonly Dictionary<(string Method, string PathAndQuery), (HttpStatusCode Status, string? Body)> _routes = [];
     private readonly List<CapturedRequest> _requests = [];
+    private readonly Dictionary<string, byte[]> _downloads = [];
+
+    public FakeWorkboardApiHandler WhenBytes(string path, byte[] bytes)
+    {
+        _downloads[path] = bytes;
+        return this;
+    }
 
     public IReadOnlyList<CapturedRequest> Requests => _requests;
 
@@ -48,6 +55,9 @@ public sealed class FakeWorkboardApiHandler : HttpMessageHandler
             request.Headers.Authorization?.ToString(),
             request.Content?.Headers.ContentType?.ToString(),
             body));
+
+        if (request.Method == HttpMethod.Get && _downloads.TryGetValue(pathAndQuery, out var bytes))
+            return new HttpResponseMessage(HttpStatusCode.OK) { RequestMessage = request, Content = new ByteArrayContent(bytes) };
 
         if (!_routes.TryGetValue((request.Method.Method, pathAndQuery), out var route))
         {

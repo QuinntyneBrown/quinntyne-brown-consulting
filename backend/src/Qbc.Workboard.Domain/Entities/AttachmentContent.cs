@@ -19,4 +19,6 @@ public sealed class AttachmentContent
 
     public Guid AttachmentId { get; private set; }
     public byte[] Bytes { get; private set; } = [];
+
+    public void Replace(byte[] bytes) => Bytes = bytes;
 }

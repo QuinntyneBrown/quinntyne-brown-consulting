@@ -10,7 +10,8 @@ public sealed class WorkItemCommand
         CreateStoryCommand createStoryCommand,
         UpdateStoryCommand updateStoryCommand,
         AssignSprintCommand assignSprintCommand,
-        AttachFileCommand attachFileCommand)
+        AttachFileCommand attachFileCommand,
+        InspectionCommands inspectionCommands)
     {
         Command = new Command(
             "workitem",
@@ -21,6 +22,7 @@ public sealed class WorkItemCommand
         Command.Subcommands.Add(updateStoryCommand.Command);
         Command.Subcommands.Add(assignSprintCommand.Command);
         Command.Subcommands.Add(attachFileCommand.Command);
+        foreach (var command in inspectionCommands.Commands) Command.Subcommands.Add(command);
     }
 
     public Command Command { get; }

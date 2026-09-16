@@ -11,4 +11,5 @@ public sealed record AttachmentDto(
     long SizeInBytes,
     Guid? UploadedByAssistantId,
     string? UploadedBy,
-    DateTimeOffset UploadedOn);
+    DateTimeOffset UploadedOn,
+    int Revision = 0);

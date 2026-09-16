@@ -19,6 +19,7 @@ public static class AttachmentProjection
             attachment.SizeInBytes,
             uploader?.Id,
             uploader?.FullName,
-            attachment.UploadedOn);
+            attachment.UploadedOn,
+            attachment.Revision);
     }
 }

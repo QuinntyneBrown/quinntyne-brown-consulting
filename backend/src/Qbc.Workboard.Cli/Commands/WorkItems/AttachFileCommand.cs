@@ -135,7 +135,7 @@ public sealed class AttachFileCommand
     /// Applies the workspace's own rules, in its order and words, so the reason arrives without a
     /// request. Returns <see langword="null"/> when the file may be sent.
     /// </summary>
-    private static string? Refuse(FileInfo file)
+    internal static string? Refuse(FileInfo file)
     {
         if (Directory.Exists(file.FullName))
         {
@@ -165,7 +165,7 @@ public sealed class AttachFileCommand
         return null;
     }
 
-    private static string ContentTypeFor(FileInfo file) => file.Extension.ToLowerInvariant() switch
+    internal static string ContentTypeFor(FileInfo file) => file.Extension.ToLowerInvariant() switch
     {
         ".pdf" => "application/pdf",
         ".png" => "image/png",

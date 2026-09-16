@@ -30,6 +30,7 @@ public static class CliDependencyInjection
         services.AddSingleton<UpdateStoryCommand>();
         services.AddSingleton<AssignSprintCommand>();
         services.AddSingleton<AttachFileCommand>();
+        services.AddSingleton<InspectionCommands>();
         services.AddSingleton<WorkItemCommand>();
         services.AddSingleton<CliApplication>();
         return services;

@@ -29,7 +29,7 @@ public sealed class WorkboardApiCliTestHost : IDisposable
 
     public FakeWorkboardApiHandler Api { get; }
 
-    public static WorkboardApiCliTestHost Create()
+    public static WorkboardApiCliTestHost Create(string? accessToken = null)
     {
         var console = new TestConsoleWriter();
         var api = new FakeWorkboardApiHandler()
@@ -38,6 +38,7 @@ public sealed class WorkboardApiCliTestHost : IDisposable
         {
             builder.Configuration["Api:Local"] = "https://workboard.test";
             builder.Configuration["Api:Passcode"] = Passcode;
+            builder.Configuration["Api:AccessToken"] = accessToken;
             builder.Services.AddSingleton<IConsoleWriter>(console);
             builder.Services.AddHttpClient(nameof(WorkboardApiClient)).ConfigurePrimaryHttpMessageHandler(() => api);
         });

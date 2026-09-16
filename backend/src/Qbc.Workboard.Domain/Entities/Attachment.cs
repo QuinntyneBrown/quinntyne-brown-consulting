@@ -57,6 +57,16 @@ public sealed class Attachment
 
     public DateTimeOffset UploadedOn { get; private set; }
 
+    public int Revision { get; private set; }
+
+    public void ReplaceContent(string contentType, long sizeInBytes)
+    {
+        if (sizeInBytes <= 0) throw new DomainRuleException("An attachment must have content.");
+        ContentType = contentType.Trim();
+        SizeInBytes = sizeInBytes;
+        Revision = checked(Revision + 1);
+    }
+
     /// <summary>Read back over the three keys. Expression-bodied, so EF Core does not map it.</summary>
     public WorkItemKind Kind =>
         InitiativeId is not null ? WorkItemKind.Initiative

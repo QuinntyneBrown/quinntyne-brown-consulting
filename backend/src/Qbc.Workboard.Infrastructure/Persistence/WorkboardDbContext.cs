@@ -23,6 +23,16 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
     public new void Add<T>(T entity) where T : class => Set<T>().Add(entity);
     public new void Remove<T>(T entity) where T : class => Set<T>().Remove(entity);
 
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        try { return await base.SaveChangesAsync(cancellationToken); }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new Qbc.Workboard.Application.Common.Exceptions.ConflictException(
+                "The record changed during this operation. Read its current state before retrying.");
+        }
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Initiative>(entity =>
@@ -132,6 +142,7 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
             entity.Property(item => item.Bytes).IsRequired();
             entity.HasOne<Attachment>().WithOne().HasForeignKey<AttachmentContent>(item => item.AttachmentId).OnDelete(DeleteBehavior.Cascade);
         });
+        modelBuilder.Entity<Attachment>().Property(item => item.Revision).IsConcurrencyToken();
         modelBuilder.Entity<StoryKeySequence>(entity =>
         {
             entity.HasKey(item => item.Id);

@@ -23,14 +23,17 @@ public sealed class WorkboardApiClient
 
     public WorkboardApiClient(HttpClient httpClient) => _httpClient = httpClient;
 
-    public async Task UnlockAsync(string passcode, CancellationToken cancellationToken)
+    public async Task<AccessTokenDto> UnlockAsync(string passcode, CancellationToken cancellationToken)
     {
         using var response = await _httpClient.PostAsJsonAsync("api/access/unlock", new UnlockRequest(passcode), JsonOptions, cancellationToken);
         await EnsureSuccessAsync(response, cancellationToken);
         var token = await response.Content.ReadFromJsonAsync<AccessTokenDto>(JsonOptions, cancellationToken)
             ?? throw new InvalidOperationException("The unlock response did not include an access token.");
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+        return token;
     }
+
+    public void UseAccessToken(string token) => _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
     public async Task<InitiativeDto?> FindInitiativeByNameAsync(string name, CancellationToken cancellationToken)
     {
@@ -186,6 +189,54 @@ public sealed class WorkboardApiClient
         await EnsureSuccessAsync(response, cancellationToken);
         return await response.Content.ReadFromJsonAsync<AttachmentDto>(JsonOptions, cancellationToken)
             ?? throw new InvalidOperationException("The attach-file response body was empty.");
+    }
+
+    public async Task<IReadOnlyList<AssistantDto>> ListAssistantsAsync(CancellationToken cancellationToken) =>
+        await ReadAsync<IReadOnlyList<AssistantDto>>("api/assistants", cancellationToken);
+
+    public async Task<IReadOnlyList<StoryDto>> ListStoriesAsync(CancellationToken cancellationToken) =>
+        await ReadAsync<IReadOnlyList<StoryDto>>("api/stories/backlog", cancellationToken);
+
+    public async Task<IReadOnlyList<AttachmentDto>> ListAttachmentsAsync(Guid storyId, CancellationToken cancellationToken) =>
+        await ReadAsync<IReadOnlyList<AttachmentDto>>($"api/attachments?workItemKind=Story&workItemId={storyId}", cancellationToken);
+
+    private async Task<T> ReadAsync<T>(string uri, CancellationToken cancellationToken)
+    {
+        using var response = await _httpClient.GetAsync(uri, cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
+            ?? throw new InvalidOperationException("The API response was empty.");
+    }
+
+    public async Task DownloadAttachmentAsync(Guid id, string outputPath, CancellationToken cancellationToken)
+    {
+        // Refuse overwrites and avoid leaving a partial file at the requested path.
+        if (File.Exists(outputPath)) throw new IOException($"Output already exists: {outputPath}");
+        var fullPath = Path.GetFullPath(outputPath);
+        var temporary = fullPath + "." + Guid.NewGuid().ToString("N") + ".partial";
+        try
+        {
+            using var response = await _httpClient.GetAsync($"api/attachments/{id}/content", HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            await EnsureSuccessAsync(response, cancellationToken);
+            await using (var output = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write))
+                await response.Content.CopyToAsync(output, cancellationToken);
+            File.Move(temporary, fullPath);
+        }
+        finally { if (File.Exists(temporary)) File.Delete(temporary); }
+    }
+
+    public async Task<AttachmentDto> ReplaceAttachmentAsync(Guid id, FileInfo file, string contentType,
+        int expectedRevision, CancellationToken cancellationToken)
+    {
+        await using var stream = file.OpenRead();
+        var content = new StreamContent(stream);
+        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        using var form = new MultipartFormDataContent { { content, "file", file.Name },
+            { new StringContent(expectedRevision.ToString(System.Globalization.CultureInfo.InvariantCulture)), "expectedRevision" } };
+        using var response = await _httpClient.PutAsync($"api/attachments/{id}/content", form, cancellationToken);
+        await EnsureSuccessAsync(response, cancellationToken);
+        return await response.Content.ReadFromJsonAsync<AttachmentDto>(JsonOptions, cancellationToken)
+            ?? throw new InvalidOperationException("The replacement response was empty.");
     }
 
     private static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken cancellationToken)

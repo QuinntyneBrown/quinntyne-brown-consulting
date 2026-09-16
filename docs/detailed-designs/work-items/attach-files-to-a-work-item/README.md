@@ -133,3 +133,23 @@ retrieval that returns the stored bytes, and the confirmed removal. Alternate
 branches carry each of the four refusals and the unknown work item.
 
 ![Sequence diagram for attaching files to a work item](diagrams/sequence-attach-file.png)
+
+## Atomic replacement and CLI maintenance
+
+`L1-017`, `L2-054` and `L2-055` extend the attachment feature with authenticated CLI
+inspection/downloads and `PUT /api/attachments/{id}/content`. The multipart request contains
+`file` and `expectedRevision`; the response is the existing AttachmentDto with an additive
+integer `revision`. The file extension must match the stored filename. The operation retains
+identity, relationships, filename and original attribution while updating the content, MIME
+type and size together. UploadedOn remains the time the attachment was originally added.
+
+Attachment.Revision is an EF concurrency token, incremented for each replacement. A migration
+adds the non-null integer column with zero for existing records. Metadata and content are
+saved in one SaveChanges transaction; a concurrency exception maps to HTTP 409, so a failed
+write cannot replace only the bytes or only the metadata. Revision detects conflicting writes;
+it is not a content-version archive. Existing duplicate-name upload rejection stays unchanged.
+
+The CLI verifies story ownership before download/replacement. Its discovery commands emit
+JSON, filter unfinished stories without losing sprint assignments, and never create records.
+An explicit login command supplies a reusable bearer token through Api__AccessToken to avoid
+repeated sign-ins during batches. Tokens and backup files stay outside source control.

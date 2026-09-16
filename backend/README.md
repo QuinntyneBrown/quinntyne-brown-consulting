@@ -189,3 +189,39 @@ already being supplied by the publishing workflow.
 Backend changes follow the architecture and ATDD rules in
 [`docs/specs/L2.md`](../docs/specs/L2.md). See the repository
 [contribution guide](../CONTRIBUTING.md) before opening a pull request.
+
+## Inspect and replace attachments
+
+The inspection and replacement commands use the API exclusively. Pass `--target azure`
+for the deployed workspace; otherwise the target is local. All support `--json` for
+machine-readable stdout and report failures to stderr with a nonzero exit code.
+
+For a batch, sign in once and reuse the token to respect the workspace's sign-in limit.
+Capture the login output rather than printing or committing it:
+
+```powershell
+$session = qbc-workboard workitem login --target azure --json | ConvertFrom-Json
+$env:Api__AccessToken = $session.token
+qbc-workboard workitem list-assistants --target azure --json
+qbc-workboard workitem list-stories --assignee-id <assistant-guid> --unfinished --target azure --json
+qbc-workboard workitem get-story --story-key QBC-108 --target azure --json
+qbc-workboard workitem list-attachments --story-key QBC-108 --target azure --json
+qbc-workboard workitem download-attachment --story-key QBC-108 --attachment-id <attachment-guid> --output ./original.docx --target azure
+qbc-workboard workitem replace-attachment --story-key QBC-108 --attachment-id <attachment-guid> --file ./validated.docx --expected-revision 0 --target azure --json
+```
+
+Login requires the existing passcode configuration. The other inspection commands prefer
+`Api__AccessToken` and otherwise use the passcode. Expired tokens fail normally; log in
+again rather than automatically retrying authentication. Never print tokens or store them
+in the repository. Existing authoring commands retain their passcode behavior.
+
+Story selectors accept exactly one of `--story-key` and `--story-id`. Unfinished means
+neither Archived nor Done, including stories in a sprint. Assignee filtering uses an
+existing exact assistant ID and never creates an assistant. Downloads refuse existing
+paths and remove temporary files on failure. Parent folders must already exist.
+
+Replacement retains attachment ID, parent, filename, original uploader, and original upload
+time. It requires the same file extension, applies upload size/content restrictions, and
+increments `revision`. A stale revision returns a conflict. The additive migration sets
+existing revisions to zero. Download the original before replacement and verify the new
+remote bytes against the local file hash afterward. No historical versions are stored.
