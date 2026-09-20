@@ -19,8 +19,10 @@ public static class CliDependencyInjection
         services.Replace(ServiceDescriptor.Scoped<IWorkboardConnectionStringProvider>(provider =>
             provider.GetRequiredService<DatabaseTargetConnectionStringProvider>()));
         services.AddScoped<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
+        services.AddScoped<IDatabaseQueryService, DatabaseQueryService>();
         services.AddSingleton<InitializeDatabaseCommand>();
         services.AddSingleton<ResetDatabaseCommand>();
+        services.AddSingleton<QueryDatabaseCommand>();
         services.AddSingleton<DatabaseCommand>();
         services.AddHttpClient(nameof(WorkboardApiClient));
         services.AddSingleton<WorkboardApiClientFactory>();

@@ -257,7 +257,15 @@ dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- d
 # Use the deployed Azure database after signing in with Azure CLI
 az login --tenant c68758f6-70fb-41fe-8fb3-b3e35624a2a3
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database initialize --target azure
+
+# Read from either database without changing it
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- database query --target azure "SELECT COUNT(*) AS Stories FROM Story"
 ```
+
+`database query` prints the first result set as aligned columns with a row
+count. It runs the statement inside a transaction that is always rolled back,
+so it cannot change either database. Table names are singular (`Initiative`,
+`Epic`, `Story`, `Sprint`, `Assistant`, `TimeEntry`, `Attachment`).
 
 The Azure connection is passwordless and uses the current Azure CLI, Visual
 Studio, or managed identity credential. The operator's current public IP must
@@ -303,7 +311,13 @@ Package and install the CLI as a global .NET tool when repeated use is needed:
 dotnet pack backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj --configuration Release --output artifacts/packages
 dotnet tool install --global Qbc.Workboard.Cli --add-source artifacts/packages
 qbc-workboard --help
+qbc-workboard database query --target azure "SELECT name FROM sys.tables"
 ```
+
+The installed tool carries its own `appsettings.json`, so it reaches the
+deployed database from any directory once `az login` has run. After changing
+the CLI, repack and run `dotnet tool update --global Qbc.Workboard.Cli
+--add-source artifacts/packages` to replace the installed version.
 
 ## Build and test
 
