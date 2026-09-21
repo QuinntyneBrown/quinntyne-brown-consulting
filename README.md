@@ -27,8 +27,9 @@ releases. Requirements and data migrations may change before the first release.
 - Manage initiatives, epics, stories, checklist tasks, and assistant assignments.
 - Write every initiative and every epic as a name and a markdown document, on one
   page, with a formatting toolbar and a live preview.
-- Record the hours an assistant spent on a story, and read back what they
-  worked on and how much of that time is on work that is now done.
+- Record the hours an assistant spent on a story, or one total across several
+  stories divided in quarter hours, and read back what they worked on and how
+  much of that time is on work that is now done.
 - Attach files to an initiative, an epic, or a story, and download or remove
   them from the work item they belong to.
 - Groom, estimate, and prioritize stories before assigning them to a 14-day

@@ -207,7 +207,12 @@ rather than overloading it: `LogTimeEntryBatchCommand` validates the group,
 story before a single `SaveChangesAsync`, so the group lands whole or not at
 all. Each entry is an ordinary `L2-050` record afterwards — the group has no
 identity of its own, and the assistant's hours page reads it as separate
-entries.
+entries. The [group design](detailed-designs/work-items/log-hours-across-stories/README.md)
+was written alongside the implementation and names the types that exist. Its
+`splitHours` preview is computed in whole quarter hours rather than by dividing
+a float, so the share the dialog shows is the share the API records. The
+assistant's story picker lists stories by key, which is also the order the
+remainder favours, and the same ordering applies to the single-entry select.
 
 ### Work items — attach files to a work item
 

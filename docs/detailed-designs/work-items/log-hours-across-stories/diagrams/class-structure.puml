@@ -1,0 +1,77 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Log hours across stories
+
+class TimeEntryBatchRequest {
+  +IReadOnlyList<Guid> StoryIds
+  +Guid AssistantId
+  +DateOnly? WorkedOn
+  +decimal TotalHours
+  +string Note
+}
+
+class LogTimeEntryBatchCommand {
+  +IReadOnlyList<Guid> StoryIds
+  +Guid AssistantId
+  +DateOnly? WorkedOn
+  +decimal TotalHours
+  +string Note
+  +Validate(): IReadOnlyDictionary<string, string[]>
+}
+
+class LogTimeEntryBatchCommandHandler {
+  +Handle(command: LogTimeEntryBatchCommand): Task<IReadOnlyList<TimeEntryDto>>
+}
+
+class HoursSplitter <<static>> {
+  +{static} Increment: decimal = 0.25
+  +{static} Split(total: decimal, count: int): IReadOnlyList<decimal>
+}
+
+class TimeEntry {
+  +Guid Id
+  +Guid StoryId
+  +Guid AssistantId
+  +DateOnly WorkedOn
+  +decimal Hours
+  +string Note
+}
+
+class TimeEntryDto {
+  +Guid Id
+  +Guid StoryId
+  +string StoryKey
+  +decimal Hours
+}
+
+class TimeEntryBatchDraft <<TypeScript>> {
+  +storyIds: readonly string[]
+  +assistantId: string
+  +workedOn: string
+  +totalHours: number
+  +note: string
+}
+
+class splitHours <<TypeScript>> {
+  +(total: number, count: number): number[]
+}
+
+TimeEntriesController ..> TimeEntryBatchRequest : binds
+TimeEntriesController --> LogTimeEntryBatchCommand : sends
+LogTimeEntryBatchCommandHandler ..> LogTimeEntryBatchCommand : handles
+LogTimeEntryBatchCommandHandler --> HoursSplitter : divides with
+LogTimeEntryBatchCommandHandler --> "1..*" TimeEntry : creates, saves once
+LogTimeEntryBatchCommandHandler --> "1..*" TimeEntryDto : returns in submitted order
+AssistantHoursPageComponent --> TimeEntryBatchDraft : builds
+AssistantHoursPageComponent --> splitHours : previews with
+splitHours .. HoursSplitter : same rule
+@enduml

@@ -16,6 +16,12 @@ export interface LoggedEntry {
 
 export type HoursFilter = 'All' | 'Completed' | 'In flight';
 
+export interface GroupEntry {
+  readonly workedOn?: string;
+  readonly total?: string;
+  readonly note?: string;
+}
+
 /**
  * One assistant's logged hours. Every selector on the hours page lives here, so a specification
  * says what the reader is doing and this says where the page keeps it.
@@ -115,6 +121,69 @@ export class AssistantHoursPage {
     if (entry.note !== undefined) await dialog.getByLabel('Note').fill(entry.note);
     await dialog.getByRole('button', { name: 'Log hours', exact: true }).click();
     await expect(dialog).toBeHidden();
+  }
+
+  /** Opens the dialog that records one total across several stories. */
+  async openGroupLog(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Log across stories', exact: true }).click();
+    await expect(this.groupDialog()).toBeVisible();
+  }
+
+  /** Ticks a story by its `KEY · title` label. */
+  async pickStory(label: string): Promise<void> {
+    await this.groupDialog().getByRole('checkbox', { name: label }).check();
+  }
+
+  async unpickStory(label: string): Promise<void> {
+    await this.groupDialog().getByRole('checkbox', { name: label }).uncheck();
+  }
+
+  async fillGroupLog(entry: GroupEntry): Promise<void> {
+    const dialog = this.groupDialog();
+    if (entry.workedOn !== undefined) await dialog.getByLabel('Date worked *').fill(entry.workedOn);
+    if (entry.total !== undefined) await dialog.getByLabel('Total hours *').fill(entry.total);
+    if (entry.note !== undefined) await dialog.getByLabel('Note', { exact: true }).fill(entry.note);
+  }
+
+  /** Each chosen story shows the share it will receive, top to bottom, before anything is sent. */
+  async expectSplitPreview(...shares: { story: string; hours: string }[]): Promise<void> {
+    const rows = this.groupDialog()
+      .locator('.pick-row')
+      .filter({ has: this.page.locator('.share') });
+    await expect(rows).toHaveCount(shares.length);
+    for (const [index, share] of shares.entries()) {
+      await expect(rows.nth(index)).toContainText(share.story);
+      await expect(rows.nth(index).locator('.share')).toHaveText(share.hours);
+    }
+  }
+
+  /** The dialog states the division in words, so it is announced as it changes. */
+  async expectSplitSummary(text: string | RegExp): Promise<void> {
+    await expect(this.groupDialog().getByRole('status')).toContainText(text);
+  }
+
+  async submitGroupLog(): Promise<void> {
+    const dialog = this.groupDialog();
+    await dialog.getByRole('button', { name: 'Log across stories', exact: true }).click();
+    await expect(dialog).toBeHidden();
+  }
+
+  /** A refusal keeps the dialog open and names what stopped it. */
+  async expectGroupLogRejected(message: string | RegExp): Promise<void> {
+    const dialog = this.groupDialog();
+    await dialog.getByRole('button', { name: 'Log across stories', exact: true }).click();
+    await expect(this.page.getByRole('alert').first()).toContainText(message);
+    await expect(dialog).toBeVisible();
+  }
+
+  async cancelGroupLog(): Promise<void> {
+    const dialog = this.groupDialog();
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
+    await expect(dialog).toBeHidden();
+  }
+
+  private groupDialog(): Locator {
+    return this.page.getByRole('dialog', { name: 'Log hours across stories' });
   }
 
   /** Half hours are ordinary. A number field that kept the browser default step would refuse them. */

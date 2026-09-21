@@ -15,6 +15,11 @@
       [description]="summary.role"
       ><qbc-button
         actions
+        variant="secondary"
+        (click)="openGroupLog()"
+        >Log across stories</qbc-button
+      ><qbc-button
+        actions
         (click)="openLog()"
         >Log hours</qbc-button
       ></qbc-page-header
@@ -221,6 +226,81 @@
       type="submit"
       [disabled]="pending()"
       >{{ entryId() ? 'Save changes' : 'Log hours' }}</qbc-button
+    >
+  </qbc-dialog>
+</form>
+<form
+  [formGroup]="groupForm"
+  (ngSubmit)="saveGroup()"
+>
+  <qbc-dialog
+    #groupDialog
+    title="Log hours across stories"
+    subtitle="One total, divided in quarter hours across the stories you choose. Whatever is left over lands on the first story."
+  >
+    @if (groupError()) {
+      <qbc-form-error body>{{ groupError() }}</qbc-form-error>
+    }
+    <fieldset
+      body
+      class="story-picker"
+    >
+      <legend>Stories</legend>
+      @for (story of service.stories(); track story.id) {
+        <div class="pick-row">
+          <qbc-checkbox
+            [label]="story.key + ' · ' + story.title"
+            [value]="isPicked(story.id)"
+            (valueChange)="pick(story.id, $event)"
+          />
+          @if (shareFor(story); as share) {
+            <span class="share">{{ formatHours(share) }}</span>
+          }
+        </div>
+      }
+    </fieldset>
+    <qbc-form-grid body>
+      <qbc-text-input
+        label="Date worked"
+        type="date"
+        [required]="true"
+        formControlName="workedOn"
+      />
+      <qbc-text-input
+        label="Total hours"
+        type="number"
+        [required]="true"
+        [min]="0.25"
+        [step]="0.25"
+        hint="Quarter hours, divided across the chosen stories."
+        [value]="groupTotal()"
+        (valueChange)="groupTotal.set($event)"
+      />
+      <qbc-text-input
+        label="Note"
+        [full]="true"
+        hint="Recorded on every entry. Optional."
+        formControlName="note"
+      />
+    </qbc-form-grid>
+    <p
+      body
+      class="split-summary"
+      role="status"
+    >
+      {{ groupSummary() }}
+    </p>
+    <qbc-button
+      actions
+      variant="secondary"
+      (click)="groupDialog.close()"
+      >Cancel</qbc-button
+    >
+    <qbc-button
+      actions
+      type="submit"
+      [disabled]="pending()"
+      >Log across stories</qbc-button
     >
   </qbc-dialog>
 </form>

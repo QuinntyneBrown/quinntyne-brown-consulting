@@ -20,7 +20,9 @@ This feature owns the entry record, the rules that accept or refuse one, the
 amendment and the removal that correct a mistake, and the per-assistant report
 that reads them back. It does not introduce identity: the assistant an entry is
 attributed to is chosen on the form, because `L1-013` establishes no individual
-identity to infer.
+identity to infer. [Log hours across stories](../log-hours-across-stories/README.md)
+records one total across several stories as a group of these entries; once
+persisted they are indistinguishable from entries logged one at a time.
 
 ## Description
 

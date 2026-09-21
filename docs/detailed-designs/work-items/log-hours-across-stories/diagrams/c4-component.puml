@@ -1,0 +1,32 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Log hours across stories
+
+Person(consultant, "QBC consultant", "Records one total across several stories")
+Container_Boundary(spa, "Angular web application") {
+  Component(page, "AssistantHoursPageComponent", "Angular component", "Hosts the group dialog: story picker, total, and division preview")
+  Component(split, "splitHours", "Pure function", "Previews the division in whole quarter hours")
+  Component(hours, "IAssistantHoursService", "Injection-token contract", "Writes the group and re-reads the report")
+  Component(entries, "ITimeEntryService", "Injection-token contract", "Posts the group to the batch route")
+}
+Container_Boundary(api, "Workboard API") {
+  Component(controller, "TimeEntriesController.LogBatch", "ASP.NET Core action", "POST /api/time-entries/batch")
+  Component(command, "LogTimeEntryBatchCommand", "MediatR request", "Names every invalid field at once")
+  Component(handler, "LogTimeEntryBatchCommandHandler", "MediatR handler", "Checks every story, divides, adds, saves once")
+  Component(splitter, "HoursSplitter", "Pure rule", "Largest quarter-hour share each; remainder on the first")
+  Component(domain, "TimeEntry", "Domain entity", "One ordinary entry per story")
+  ComponentDb(db, "Workspace database", "SQL Server Express", "Stores time entries")
+}
+
+Rel(consultant, page, "Uses")
+Rel(page, split, "Previews with")
+Rel(page, hours, "Writes through")
+Rel(hours, entries, "Posts the group through")
+Rel(entries, controller, "Calls", "JSON/HTTPS")
+Rel(controller, command, "Builds and sends")
+Rel(command, handler, "Handled by")
+Rel(handler, splitter, "Divides with")
+Rel(handler, domain, "Creates one per story")
+Rel(handler, db, "Saves once", "EF Core")
+@enduml

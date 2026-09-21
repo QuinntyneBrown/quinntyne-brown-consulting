@@ -1,0 +1,74 @@
+@startuml
+title UML sequence behaviour — Preview, submit, and read back a group of hours
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "AssistantHoursPageComponent" as page
+  participant "splitHours" as preview
+  participant "IAssistantHoursService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "TimeEntriesController" as entries
+  participant "AssistantsController" as assistants
+end box
+box "Backend — Workboard Application and Domain" #ECFDF3
+  participant "LogTimeEntryBatchCommandHandler" as handler
+  participant "HoursSplitter" as splitter
+  participant "TimeEntry" as entry
+end box
+box "Backend — Workboard Infrastructure" #FFF4E5
+  database "Workspace database" as db
+end box
+
+actor -> page : Open Log across stories, tick stories, enter a total
+loop every tick and every change to the total
+  page -> preview : splitHours(total, count)
+  preview --> page : Shares in list order
+  page --> actor : Show each share and state the division
+end
+
+actor -> page : Submit the L2-058 group
+alt no story ticked, or no total
+  page --> actor : Name what is missing; nothing is sent
+else group is complete
+  page -> service : logBatch(draft)
+  service -> entries : POST /api/time-entries/batch
+  entries -> handler : Send LogTimeEntryBatchCommand
+  alt duplicated story, missing date, or a total outside the rules
+    handler --> entries : Validation failure by field
+    entries --> service : 400 Problem Details
+    service --> page : Present the invalid fields, dialog kept open
+  else a story or the assistant does not exist
+    handler --> entries : Not found, before anything is added
+    entries --> service : 404 Problem Details
+    service --> page : Present the missing record, nothing recorded
+  else group is acceptable
+    handler -> splitter : Split(total, count)
+    splitter --> handler : Shares, remainder on the first
+    loop one per story, in submitted order
+      handler -> entry : Create with its share and the trimmed note
+    end
+    handler -> db : Commit every entry at once
+    db --> handler : Commit result
+    handler --> entries : TimeEntryDto list
+    entries --> service : 201 JSON
+    service -> assistants : GET L2-051 /api/assistants/{id}/hours
+    assistants --> service : Totals carrying the whole total
+    service --> page : Update the hours Signal
+    page --> actor : Close the dialog; each story lists its share
+  end
+end
+@enduml
