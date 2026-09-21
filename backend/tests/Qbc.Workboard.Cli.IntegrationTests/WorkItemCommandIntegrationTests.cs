@@ -192,6 +192,7 @@ public sealed class WorkItemCommandIntegrationTests
         string.Empty,
         string.Empty,
         null,
+        StoryPriority.None,
         null,
         null,
         StoryLifecycle.Draft,

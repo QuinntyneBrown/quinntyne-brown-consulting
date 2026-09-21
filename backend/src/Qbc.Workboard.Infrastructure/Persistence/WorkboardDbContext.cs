@@ -85,6 +85,8 @@ public sealed class WorkboardDbContext : DbContext, IWorkboardDbContext
             entity.Property(item => item.AcceptanceCriteria).IsRequired();
             entity.Property(item => item.Lifecycle).HasConversion<string>();
             entity.Property(item => item.BoardStatus).HasConversion<string>();
+            // Rows written before priority existed carry no value, so the store supplies None.
+            entity.Property(item => item.Priority).HasConversion<string>().HasDefaultValue(StoryPriority.None);
             entity.HasIndex(item => item.Number).IsUnique();
             entity.HasOne<Epic>().WithMany().HasForeignKey(item => item.EpicId).OnDelete(DeleteBehavior.Restrict);
             entity.HasOne<Assistant>().WithMany().HasForeignKey(item => item.AssistantId).OnDelete(DeleteBehavior.Restrict);

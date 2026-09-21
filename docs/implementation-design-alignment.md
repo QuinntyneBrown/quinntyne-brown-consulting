@@ -142,6 +142,10 @@ The following details differ:
   `StoryTask.Update` replaces the diagram's `Rename`, `SetCompletion`, and
   `Assign` operations.
 - Backend response types are `StoryDto`, not `StoryDetails` or `Result`.
+- `Story.Priority` (`L2-056`) is an ordered enum persisted as a string with a
+  store default of `None`, so rows written before the column existed read as
+  None without a data migration. It travels through `StoryRequest`,
+  `SaveStoryCommand`, and `StoryDto` beside `Points`.
 - The hierarchy does not currently provide the designed story-detail entry
   point described by gap `A2`.
 

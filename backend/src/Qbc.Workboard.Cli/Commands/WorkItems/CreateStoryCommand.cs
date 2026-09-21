@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Qbc.Workboard.Cli.Console;
 using Qbc.Workboard.Cli.Services;
+using Qbc.Workboard.Domain.Enums;
 using System.CommandLine;
 
 namespace Qbc.Workboard.Cli.Commands.WorkItems;
@@ -26,6 +27,8 @@ public sealed class CreateStoryCommand
         var descriptionOption = new Option<string?>("--description") { Description = "Story description." };
         var acceptanceCriteriaOption = new Option<string?>("--acceptance-criteria") { Description = "Story acceptance criteria." };
         var pointsOption = new Option<int?>("--points") { Description = "Story points (1, 2, 3, 5, 8, or 13)." };
+        var priorityOption = new Option<StoryPriority?>("--priority") { Description = "Story priority (none, very-low, low, medium, high, very-high, or critical). Defaults to none." };
+        priorityOption.CustomParser = StoryPriorityOption.Parse;
         var assigneeOption = new Option<string?>("--assignee")
         {
             Description = "Full name of the assistant to assign. Created automatically if no matching assistant exists."
@@ -42,6 +45,7 @@ public sealed class CreateStoryCommand
         Command.Options.Add(descriptionOption);
         Command.Options.Add(acceptanceCriteriaOption);
         Command.Options.Add(pointsOption);
+        Command.Options.Add(priorityOption);
         Command.Options.Add(assigneeOption);
         Command.Options.Add(targetOption);
         Command.Options.Add(passcodeOption);
@@ -107,6 +111,7 @@ public sealed class CreateStoryCommand
                     parseResult.GetValue(acceptanceCriteriaOption) ?? string.Empty,
                     parseResult.GetValue(pointsOption),
                     assistantId,
+                    parseResult.GetValue(priorityOption) ?? StoryPriority.None,
                     cancellationToken);
 
                 console.WriteLine($"Created story '{story.Key}: {story.Title}' ({story.Id}) under epic {story.EpicName}.");

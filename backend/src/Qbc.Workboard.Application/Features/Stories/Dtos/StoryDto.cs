@@ -11,6 +11,7 @@ public sealed record StoryDto(
     string Description,
     string AcceptanceCriteria,
     int? Points,
+    StoryPriority Priority,
     Guid? AssistantId,
     string? AssistantName,
     StoryLifecycle Lifecycle,

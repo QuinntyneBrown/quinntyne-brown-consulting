@@ -13,7 +13,7 @@ public sealed class AttachmentMaintenanceCommandTests
     private static readonly Guid StoryId = Guid.NewGuid();
     private static readonly Guid AttachmentId = Guid.NewGuid();
     private static readonly byte[] Bytes = [0, 255, 13, 10, 128, 1];
-    private static StoryDto Story() => new(StoryId, "QBC-101", Guid.NewGuid(), "Jobs", "Applications", "Apply", "Description", "Criteria", 1, null, null, StoryLifecycle.Active, true, null, null, null, BoardStatus.ToDo, []);
+    private static StoryDto Story() => new(StoryId, "QBC-101", Guid.NewGuid(), "Jobs", "Applications", "Apply", "Description", "Criteria", 1, StoryPriority.None, null, null, StoryLifecycle.Active, true, null, null, null, BoardStatus.ToDo, []);
     private static AttachmentDto Attachment() => new(AttachmentId, WorkItemKind.Story, StoryId, "resume.pdf", "application/pdf", Bytes.Length, null, null, DateTimeOffset.UtcNow, 3);
     private static WorkboardApiCliTestHost Host()
     {

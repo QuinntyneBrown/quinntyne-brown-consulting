@@ -27,7 +27,7 @@ public sealed class InspectionCommandTests
         var assignee = Guid.NewGuid();
         cli.Api.When(HttpMethod.Get, "/api/assistants", HttpStatusCode.OK,
             new[] { new Qbc.Workboard.Application.Features.Assistants.Dtos.AssistantDto(assignee, "Vanessa", "Applications", [], Availability.Available, 0, 0, []) });
-        var story = new StoryDto(Guid.NewGuid(), "QBC-101", Guid.NewGuid(), "Jobs", "Applications", "Apply", "Description", "Criteria", 1, assignee, "Vanessa", StoryLifecycle.Active, true, Guid.NewGuid(), "Sprint", SprintStatus.Active, BoardStatus.InProgress, []);
+        var story = new StoryDto(Guid.NewGuid(), "QBC-101", Guid.NewGuid(), "Jobs", "Applications", "Apply", "Description", "Criteria", 1, StoryPriority.None, assignee, "Vanessa", StoryLifecycle.Active, true, Guid.NewGuid(), "Sprint", SprintStatus.Active, BoardStatus.InProgress, []);
         cli.Api.When(HttpMethod.Get, "/api/stories/backlog", HttpStatusCode.OK, new[] {
             story, story with { Key = "QBC-102", BoardStatus = BoardStatus.Done },
             story with { Key = "QBC-103", Lifecycle = StoryLifecycle.Archived },

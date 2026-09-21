@@ -89,11 +89,12 @@ public sealed class WorkboardApiClient
         string acceptanceCriteria,
         int? points,
         Guid? assistantId,
+        StoryPriority priority,
         CancellationToken cancellationToken)
     {
         using var response = await _httpClient.PostAsJsonAsync(
             "api/stories",
-            new StoryRequest(epicId, title, description, acceptanceCriteria, points, assistantId, []),
+            new StoryRequest(epicId, title, description, acceptanceCriteria, points, assistantId, [], priority),
             JsonOptions,
             cancellationToken);
         await EnsureSuccessAsync(response, cancellationToken);
@@ -119,11 +120,12 @@ public sealed class WorkboardApiClient
         string acceptanceCriteria,
         int? points,
         Guid? assistantId,
+        StoryPriority priority,
         CancellationToken cancellationToken)
     {
         using var response = await _httpClient.PutAsJsonAsync(
             $"api/stories/{id}",
-            new StoryRequest(epicId, title, description, acceptanceCriteria, points, assistantId, []),
+            new StoryRequest(epicId, title, description, acceptanceCriteria, points, assistantId, [], priority),
             JsonOptions,
             cancellationToken);
         await EnsureSuccessAsync(response, cancellationToken);
@@ -266,7 +268,8 @@ public sealed class WorkboardApiClient
         string AcceptanceCriteria,
         int? Points,
         Guid? AssistantId,
-        IReadOnlyList<object> Tasks);
+        IReadOnlyList<object> Tasks,
+        StoryPriority Priority);
 
     private sealed record SprintRequest(string Name, string Goal, DateOnly StartDate);
 }

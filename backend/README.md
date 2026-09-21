@@ -163,12 +163,15 @@ $env:Api__Passcode = "<workspace passcode>"
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem create-initiative --name "Client portal" --description "Self-service portal for clients."
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem create-epic --initiative-name "Client portal" --name "Onboarding" --summary "First-run experience."
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem create-story --epic-name "Onboarding" --title "Invite a client" --points 3 --assignee "Maya Chen"
-dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem update-story --story-key QBC-106 --points 5
+dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem update-story --story-key QBC-106 --points 5 --priority high
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem assign-sprint --story-key QBC-106 --sprint-name "Sprint 12"
 dotnet run --project backend/src/Qbc.Workboard.Cli/Qbc.Workboard.Cli.csproj -- workitem attach-file --story-key QBC-106 --file ./docs/onboarding-brief.pdf
 ```
 
-Names are matched exactly and case-insensitively. `--assignee` and
+Names are matched exactly and case-insensitively. `--priority` takes `none`,
+`very-low`, `low`, `medium`, `high`, `very-high`, or `critical`; a story created
+without one has the priority `none`, and `update-story` keeps the current
+priority unless one is given. `--assignee` and
 `--sprint-name` create a missing assistant or sprint; `--uploaded-by` on
 `attach-file` refuses an unknown assistant. `attach-file` takes `--file` more
 than once and applies the workspace's own rules before sending anything: a

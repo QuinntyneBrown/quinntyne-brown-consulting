@@ -95,7 +95,7 @@ public sealed class InspectionCommands
                         var stories = (await client.ListStoriesAsync(cancellationToken))
                             .Where(item => owner is null || item.AssistantId == owner)
                             .Where(item => !parse.GetValue(unfinished) || (item.Lifecycle != StoryLifecycle.Archived && item.BoardStatus != BoardStatus.Done)).ToArray();
-                        Write(stories, string.Join(Environment.NewLine, stories.Select(item => $"{item.Key}  {item.Title}  {item.AssistantName}  {item.Lifecycle}/{item.BoardStatus}")));
+                        Write(stories, string.Join(Environment.NewLine, stories.Select(item => $"{item.Key}  {item.Title}  {item.AssistantName}  {item.Lifecycle}/{item.BoardStatus}  {item.Priority}")));
                         return 0;
                     }
 
