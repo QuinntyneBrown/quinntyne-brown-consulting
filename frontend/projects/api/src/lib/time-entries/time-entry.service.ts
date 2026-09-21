@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { TimeEntry } from '../models/time-entry';
+import { TimeEntryBatchDraft } from '../models/time-entry-batch-draft';
 import { TimeEntryDraft } from '../models/time-entry-draft';
 import { ITimeEntryService } from './time-entry.service.interface';
 
@@ -11,6 +12,10 @@ export class TimeEntryService implements ITimeEntryService {
 
   log(draft: TimeEntryDraft): Promise<TimeEntry> {
     return firstValueFrom(this.http.post<TimeEntry>('/api/time-entries', draft));
+  }
+
+  logBatch(draft: TimeEntryBatchDraft): Promise<readonly TimeEntry[]> {
+    return firstValueFrom(this.http.post<readonly TimeEntry[]>('/api/time-entries/batch', draft));
   }
 
   update(id: string, draft: TimeEntryDraft): Promise<TimeEntry> {

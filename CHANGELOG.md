@@ -9,6 +9,15 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Hours logged across a group of stories. `POST /api/time-entries/batch` takes
+  an assistant, a date, an ordered list of stories, one total, and an optional
+  note, and records one ordinary time entry per story: every story receives the
+  largest quarter-hour share that fits and the remainder lands on the first,
+  so the entries add up to exactly the total entered. The group is persisted
+  together or not at all, and a total that cannot give every story a quarter
+  hour is refused. On an assistant's hours page, **Log across stories** opens a
+  dialog that lists every story to tick, shows the share each ticked story will
+  receive as the total is typed, and states the division in words.
 - Story priority. Every story carries a priority from a fixed scale — None,
   Very low, Low, Medium, High, Very high, or Critical — read back with the
   story and set through `POST`/`PUT /api/stories`. Stories that existed before

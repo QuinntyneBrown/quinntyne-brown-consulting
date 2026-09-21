@@ -5,6 +5,7 @@ import {
   STORY_SERVICE,
   Story,
   TIME_ENTRY_SERVICE,
+  TimeEntryBatchDraft,
   TimeEntryDraft,
   presentApiError,
 } from '@qbc/api';
@@ -42,7 +43,12 @@ export class AssistantHoursService implements IAssistantHoursService {
       ]);
       this.hoursValue.set(hours);
       // Archived work is retained for reference, so it is not offered as somewhere to spend time.
-      this.storiesValue.set(stories.filter((story) => story.lifecycle !== 'archived'));
+      // Listed by story key, which is also the order a group's remainder favours.
+      this.storiesValue.set(
+        stories
+          .filter((story) => story.lifecycle !== 'archived')
+          .sort((left, right) => storyNumber(left) - storyNumber(right)),
+      );
       this.loadingValue.set('loaded');
     } catch (error) {
       this.fail(error);
@@ -51,6 +57,14 @@ export class AssistantHoursService implements IAssistantHoursService {
 
   async log(draft: TimeEntryDraft): Promise<boolean> {
     return this.mutate(this.timeEntryService.log(draft), draft.assistantId, 'Hours logged.');
+  }
+
+  async logBatch(draft: TimeEntryBatchDraft): Promise<boolean> {
+    return this.mutate(
+      this.timeEntryService.logBatch(draft),
+      draft.assistantId,
+      `Hours logged across ${draft.storyIds.length} stories.`,
+    );
   }
 
   async update(entryId: string, draft: TimeEntryDraft): Promise<boolean> {
@@ -89,4 +103,9 @@ export class AssistantHoursService implements IAssistantHoursService {
     this.loadingValue.set('failed');
     this.feedback.show(message, 'error');
   }
+}
+
+/** The number behind `QBC-{number}`, so QBC-99 sorts before QBC-101. */
+function storyNumber(story: Story): number {
+  return Number(story.key.slice(story.key.indexOf('-') + 1));
 }

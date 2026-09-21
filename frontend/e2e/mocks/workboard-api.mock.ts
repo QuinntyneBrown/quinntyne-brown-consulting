@@ -12,6 +12,7 @@ import type {
   Story,
   StoryDraft,
   TimeEntry,
+  TimeEntryBatchDraft,
   TimeEntryDraft,
   WorkItemKind,
 } from '@qbc/api';
@@ -361,6 +362,35 @@ export class WorkboardApiMock {
         };
         this.state.timeEntries.push(entry);
         return this.json(route, 201, entry);
+      }
+
+      if (path === '/api/time-entries/batch' && method === 'POST') {
+        const draft = this.body<TimeEntryBatchDraft>(route);
+        const storyIds = draft.storyIds ?? [];
+        // Every story is checked before anything is written, so the group lands whole or not at all.
+        for (const storyId of storyIds)
+          if (!this.state.stories.some((item) => item.id === storyId))
+            return this.notFound(route, 'Story');
+        const assistant = this.state.assistants.find((item) => item.id === draft.assistantId);
+        if (!assistant) return this.notFound(route, 'Assistant');
+        const errors = this.timeEntryBatchErrors(draft);
+        if (errors) return this.invalid(route, errors);
+        const shares = splitQuarterHours(draft.totalHours, storyIds.length);
+        const entries = storyIds.map((storyId, index): TimeEntry => {
+          const story = this.state.stories.find((item) => item.id === storyId)!;
+          return {
+            id: this.newId(),
+            storyId: story.id,
+            storyKey: story.key,
+            assistantId: assistant.id,
+            assistantName: assistant.fullName,
+            workedOn: draft.workedOn,
+            hours: shares[index],
+            note: draft.note.trim(),
+          };
+        });
+        this.state.timeEntries.push(...entries);
+        return this.json(route, 201, entries);
       }
 
       const timeEntryMatch = path.match(/^\/api\/time-entries\/([^/]+)$/);
@@ -1026,6 +1056,26 @@ export class WorkboardApiMock {
     });
   }
 
+  private timeEntryBatchErrors(draft: TimeEntryBatchDraft): FieldErrors | null {
+    const storyIds = draft.storyIds ?? [];
+    const total = draft.totalHours;
+    const wellFormed = total > 0 && total <= MAXIMUM_HOURS && total % HOURS_INCREMENT === 0;
+    return this.errors({
+      storyIds:
+        storyIds.length === 0
+          ? 'Choose at least one story.'
+          : new Set(storyIds).size !== storyIds.length
+            ? 'A story can only be chosen once.'
+            : null,
+      workedOn: this.validDate(draft.workedOn) ? null : 'A date worked is required.',
+      totalHours: !wellFormed
+        ? 'Total hours must be greater than zero, no more than 24, and in quarter-hour increments.'
+        : storyIds.length > 0 && total < HOURS_INCREMENT * storyIds.length
+          ? `Total hours must give each of the ${storyIds.length} stories at least a quarter hour.`
+          : null,
+    });
+  }
+
   private blank(value: string | null | undefined): boolean {
     return (value ?? '').trim().length === 0;
   }
@@ -1219,4 +1269,17 @@ export class WorkboardApiMock {
       }),
     });
   }
+}
+
+/**
+ * The API's division rule (`L2-058`): the largest quarter-hour share that fits on every story, and
+ * the remainder on the first. Kept here rather than imported, because the mock only takes types
+ * from `@qbc/api`.
+ */
+function splitQuarterHours(total: number, count: number): number[] {
+  const quarters = Math.round(total * 4);
+  const base = Math.floor(quarters / count);
+  const shares = new Array<number>(count).fill(base / 4);
+  shares[0] = (quarters - base * (count - 1)) / 4;
+  return shares;
 }

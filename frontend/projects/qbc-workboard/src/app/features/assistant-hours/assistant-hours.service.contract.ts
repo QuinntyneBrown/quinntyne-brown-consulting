@@ -1,5 +1,5 @@
 import { InjectionToken, Signal } from '@angular/core';
-import { AssistantHours, Story, TimeEntryDraft } from '@qbc/api';
+import { AssistantHours, Story, TimeEntryBatchDraft, TimeEntryDraft } from '@qbc/api';
 import { LoadingState } from '../../models/loading-state';
 
 export interface IAssistantHoursService {
@@ -11,6 +11,8 @@ export interface IAssistantHoursService {
   readonly error: Signal<string | null>;
   load(assistantId: string): Promise<void>;
   log(draft: TimeEntryDraft): Promise<boolean>;
+  /** One total across several stories, recorded as one entry per story. */
+  logBatch(draft: TimeEntryBatchDraft): Promise<boolean>;
   update(entryId: string, draft: TimeEntryDraft): Promise<boolean>;
   delete(entryId: string, assistantId: string): Promise<boolean>;
 }

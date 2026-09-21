@@ -24,13 +24,14 @@ instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
 | --- | --- | --- |
 | Workspace | [Navigate the workspace](detailed-designs/workspace/navigate-workspace/) | `L2-001`, `L2-024`–`L2-026` |
 | Work items | [Manage the work hierarchy](detailed-designs/work-items/manage-work-hierarchy/) | `L2-002`–`L2-004` |
-| Work items | [Manage stories and tasks](detailed-designs/work-items/manage-stories-and-tasks/) | `L2-005`–`L2-008` |
+| Work items | [Manage stories and tasks](detailed-designs/work-items/manage-stories-and-tasks/) | `L2-005`–`L2-008`, `L2-056` |
 | Work items | [Manage assistants and assignments](detailed-designs/work-items/manage-assistants-and-assignments/) | `L2-009`–`L2-010` |
 | Work items | [Edit the initiative brief](detailed-designs/work-items/edit-initiative-brief/) | `L2-046`–`L2-048` |
 | Work items | [Write an epic summary](detailed-designs/work-items/edit-epic-summary/) | `L2-003`, `L2-049` |
 | Work items | [Log hours against a story](detailed-designs/work-items/log-hours-against-a-story/) | `L2-050`–`L2-051` |
+| Work items | [Log hours across stories](detailed-designs/work-items/log-hours-across-stories/) | `L2-058` |
 | Work items | [Attach files to a work item](detailed-designs/work-items/attach-files-to-a-work-item/) | `L2-052`–`L2-053` |
-| Planning | [Groom the backlog](detailed-designs/planning/groom-backlog/) | `L2-011`–`L2-012` |
+| Planning | [Groom the backlog](detailed-designs/planning/groom-backlog/) | `L2-011`–`L2-012`, `L2-057` |
 | Planning | [Plan two-week sprints](detailed-designs/planning/plan-two-week-sprints/) | `L2-013`–`L2-016` |
 | Delivery | [Execute the active sprint](detailed-designs/delivery/execute-active-sprint/) | `L2-017`–`L2-020` |
 | Platform | [Serve the persistent workspace](detailed-designs/platform/serve-persistent-workspace/) | `L2-021`–`L2-023`, `L2-027`–`L2-030` |

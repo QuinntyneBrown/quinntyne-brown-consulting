@@ -174,6 +174,20 @@ public sealed class Workspace
         return await ReadAsync<TimeEntryDto>(response);
     }
 
+    /// <summary>One total across several stories, divided by the rule `L2-058` states.</summary>
+    public async Task<IReadOnlyList<TimeEntryDto>> LogTimeBatchAsync(
+        IReadOnlyList<Guid> storyIds,
+        Guid assistantId,
+        decimal totalHours,
+        DateOnly? workedOn = null,
+        string note = "")
+    {
+        var response = await _client.PostAsJsonAsync(
+            "/api/time-entries/batch",
+            new TimeEntryBatchRequest(storyIds, assistantId, workedOn ?? new DateOnly(2026, 8, 31), totalHours, note));
+        return await ReadAsync<IReadOnlyList<TimeEntryDto>>(response);
+    }
+
     public async Task<TimeEntryDto> AmendTimeAsync(
         Guid entryId,
         Guid storyId,

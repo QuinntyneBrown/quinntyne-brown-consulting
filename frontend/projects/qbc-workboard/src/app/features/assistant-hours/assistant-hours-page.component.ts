@@ -1,12 +1,13 @@
 import { Component, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
-import { AssistantHoursStory, TimeEntry } from '@qbc/api';
+import { AssistantHoursStory, Story, TimeEntry, splitHours } from '@qbc/api';
 import {
   AvailabilityComponent,
   AvatarComponent,
   BackLinkComponent,
   ButtonComponent,
   CardComponent,
+  CheckboxComponent,
   ConfirmDialogComponent,
   CountComponent,
   DialogComponent,
@@ -50,6 +51,7 @@ const STATUS_LABELS: Record<string, string> = {
     BackLinkComponent,
     ButtonComponent,
     CardComponent,
+    CheckboxComponent,
     ConfirmDialogComponent,
     CountComponent,
     DialogComponent,
@@ -72,6 +74,7 @@ const STATUS_LABELS: Record<string, string> = {
 })
 export class AssistantHoursPageComponent {
   private readonly logDialog = viewChild.required<DialogComponent>('logDialog');
+  private readonly groupDialog = viewChild.required<DialogComponent>('groupDialog');
   private readonly confirm = viewChild.required(ConfirmDialogComponent);
   private readonly fb = inject(UntypedFormBuilder);
   readonly service = inject(ASSISTANT_HOURS_SERVICE);
@@ -83,6 +86,11 @@ export class AssistantHoursPageComponent {
   readonly expanded = signal<readonly string[]>([]);
   readonly pending = signal(false);
   readonly formError = signal('');
+  /** The stories ticked in the group dialog, kept in list order because the first one takes the remainder. */
+  readonly pickedStoryIds = signal<readonly string[]>([]);
+  /** The group total as typed, mirrored into a Signal so the preview follows every keystroke. */
+  readonly groupTotal = signal('1');
+  readonly groupError = signal('');
 
   readonly filterOptions: readonly SegmentedOption[] = [
     { value: 'all', label: 'All' },
@@ -97,7 +105,19 @@ export class AssistantHoursPageComponent {
     note: [''],
   });
 
+  readonly groupForm = this.fb.group({
+    workedOn: [today(), Validators.required],
+    note: [''],
+  });
+
   readonly hours = this.service.hours;
+
+  /** What each ticked story will receive, in list order, before anything is sent. */
+  readonly groupShares = computed<ReadonlyMap<string, number>>(() => {
+    const picked = this.pickedStoryIds();
+    const shares = splitHours(Number(this.groupTotal()) || 0, picked.length);
+    return new Map(picked.map((id, index) => [id, shares[index]]));
+  });
 
   readonly storyOptions = computed<readonly SelectOption<string>[]>(() =>
     this.service
@@ -160,6 +180,77 @@ export class AssistantHoursPageComponent {
       note: '',
     });
     this.logDialog().open();
+  }
+
+  openGroupLog(): void {
+    this.groupError.set('');
+    this.pickedStoryIds.set([]);
+    this.groupTotal.set('1');
+    this.groupForm.reset({ workedOn: today(), note: '' });
+    this.groupDialog().open();
+  }
+
+  isPicked(storyId: string): boolean {
+    return this.pickedStoryIds().includes(storyId);
+  }
+
+  /** Keeps the picks in the order the list shows them, which is the order the remainder favours. */
+  pick(storyId: string, picked: boolean): void {
+    const ordered = this.service
+      .stories()
+      .map((story) => story.id)
+      .filter((id) => (id === storyId ? picked : this.isPicked(id)));
+    this.pickedStoryIds.set(ordered);
+  }
+
+  shareFor(story: Story): number | null {
+    return this.groupShares().get(story.id) ?? null;
+  }
+
+  /** The division in words: "5 h across 3 stories: 2 h on the first, then 1.5 h each." */
+  groupSummary(): string {
+    const picked = this.pickedStoryIds();
+    const total = Number(this.groupTotal()) || 0;
+    if (picked.length === 0) return 'Choose the stories the time was spent on.';
+    const shares = splitHours(total, picked.length);
+    const each = this.formatHours(shares[shares.length - 1]);
+    const first = this.formatHours(shares[0]);
+    const detail =
+      picked.length === 1
+        ? `${first} on it`
+        : shares[0] === shares[1]
+          ? `${each} each`
+          : `${first} on the first, then ${each} each`;
+    return `${this.formatHours(total)} across ${picked.length} ${picked.length === 1 ? 'story' : 'stories'}: ${detail}.`;
+  }
+
+  async saveGroup(): Promise<void> {
+    const picked = this.pickedStoryIds();
+    const total = Number(this.groupTotal());
+    const problems: string[] = [];
+    if (picked.length === 0) problems.push('Choose at least one story.');
+    if (this.groupForm.invalid) {
+      this.groupForm.markAllAsTouched();
+      problems.push(describeInvalidFields(this.groupForm, { workedOn: 'Date worked' }));
+    }
+    if (!this.groupTotal().trim() || Number.isNaN(total))
+      problems.push('Total hours needs a value.');
+    if (problems.length > 0) {
+      this.groupError.set(problems.join(' '));
+      return;
+    }
+    this.groupError.set('');
+    this.pending.set(true);
+    const value = this.groupForm.getRawValue();
+    const saved = await this.service.logBatch({
+      storyIds: picked,
+      assistantId: this.assistantId(),
+      workedOn: value.workedOn,
+      totalHours: total,
+      note: value.note,
+    });
+    this.pending.set(false);
+    if (saved) this.groupDialog().close();
   }
 
   /** The same form corrects an entry, because an amendment restates what was recorded. */

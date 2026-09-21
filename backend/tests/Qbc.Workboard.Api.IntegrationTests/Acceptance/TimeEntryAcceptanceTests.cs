@@ -216,6 +216,113 @@ public sealed class TimeEntryAcceptanceTests : AcceptanceTest
     }
 
     [Fact]
+    public async Task L2_058_Divide_a_total_evenly()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var assistant = await Given.AddAssistantAsync();
+        var first = await Given.AddGroomableStoryAsync(epic.Id, "Sketch the summary card");
+        var second = await Given.AddGroomableStoryAsync(epic.Id, "Wire the health signals");
+
+        var response = await Client.PostAsJsonAsync(
+            "/api/time-entries/batch",
+            new TimeEntryBatchRequest([first.Id, second.Id], assistant.Id, Worked, 3m, "  Paired on the portal  "));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var entries = await response.Content.ReadFromJsonAsync<IReadOnlyList<TimeEntryDto>>(Workspace.Json);
+        Assert.NotNull(entries);
+        Assert.Equal([first.Id, second.Id], entries.Select(entry => entry.StoryId));
+        Assert.All(entries, entry =>
+        {
+            Assert.NotEqual(Guid.Empty, entry.Id);
+            Assert.Equal(assistant.Id, entry.AssistantId);
+            Assert.Equal(Worked, entry.WorkedOn);
+            Assert.Equal(1.5m, entry.Hours);
+            Assert.Equal("Paired on the portal", entry.Note);
+        });
+
+        var hours = await Given.ReadAssistantHoursAsync(assistant.Id);
+        Assert.Equal(3m, hours.HoursLogged);
+        Assert.Equal(2, hours.StoriesWorkedOn);
+    }
+
+    [Fact]
+    public async Task L2_058_Place_the_remainder_on_the_first_story()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var assistant = await Given.AddAssistantAsync();
+        var a = await Given.AddGroomableStoryAsync(epic.Id, "A");
+        var b = await Given.AddGroomableStoryAsync(epic.Id, "B");
+        var c = await Given.AddGroomableStoryAsync(epic.Id, "C");
+
+        var entries = await Given.LogTimeBatchAsync([a.Id, b.Id, c.Id], assistant.Id, 5m);
+
+        Assert.Equal([2m, 1.5m, 1.5m], entries.Select(entry => entry.Hours));
+        Assert.Equal([a.Id, b.Id, c.Id], entries.Select(entry => entry.StoryId));
+        Assert.Equal(5m, (await Given.ReadAssistantHoursAsync(assistant.Id)).HoursLogged);
+    }
+
+    [Fact]
+    public async Task L2_058_Reject_an_invalid_group_entry()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var assistant = await Given.AddAssistantAsync();
+        var story = await Given.AddGroomableStoryAsync(epic.Id);
+        var other = await Given.AddGroomableStoryAsync(epic.Id, "Other");
+
+        // Every invalid field is named at once.
+        await ExpectInvalidFieldsAsync(
+            await Client.PostAsJsonAsync(
+                "/api/time-entries/batch",
+                new TimeEntryBatchRequest([], Guid.Empty, null, 0m, string.Empty)),
+            "storyIds", "assistantId", "workedOn", "totalHours");
+
+        // A story chosen twice.
+        await ExpectInvalidFieldsAsync(
+            await Client.PostAsJsonAsync(
+                "/api/time-entries/batch",
+                new TimeEntryBatchRequest([story.Id, story.Id], assistant.Id, Worked, 1m, string.Empty)),
+            "storyIds");
+
+        // Negative, over 24, off the quarter-hour, and too little to give every story a quarter hour.
+        foreach (var total in new[] { -1m, 24.25m, 1.1m, 0.25m })
+        {
+            await ExpectInvalidFieldsAsync(
+                await Client.PostAsJsonAsync(
+                    "/api/time-entries/batch",
+                    new TimeEntryBatchRequest([story.Id, other.Id], assistant.Id, Worked, total, string.Empty)),
+                "totalHours");
+        }
+
+        Assert.Equal(0m, (await Given.ReadAssistantHoursAsync(assistant.Id)).HoursLogged);
+    }
+
+    [Fact]
+    public async Task L2_058_Reject_a_group_naming_an_unknown_story()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var assistant = await Given.AddAssistantAsync();
+        var story = await Given.AddGroomableStoryAsync(epic.Id);
+
+        await ExpectProblemAsync(
+            await Client.PostAsJsonAsync(
+                "/api/time-entries/batch",
+                new TimeEntryBatchRequest([story.Id, Guid.NewGuid()], assistant.Id, Worked, 2m, string.Empty)),
+            HttpStatusCode.NotFound,
+            "not-found");
+        await ExpectProblemAsync(
+            await Client.PostAsJsonAsync(
+                "/api/time-entries/batch",
+                new TimeEntryBatchRequest([story.Id], Guid.NewGuid(), Worked, 2m, string.Empty)),
+            HttpStatusCode.NotFound,
+            "not-found");
+
+        // The known story in the group got nothing either: the group is recorded whole or not at all.
+        var hours = await Given.ReadAssistantHoursAsync(assistant.Id);
+        Assert.Equal(0m, hours.HoursLogged);
+        Assert.Empty(hours.Stories);
+    }
+
+    [Fact]
     public async Task L2_051_Open_an_assistants_hours()
     {
         var epic = await Given.AddEpicWithInitiativeAsync();
