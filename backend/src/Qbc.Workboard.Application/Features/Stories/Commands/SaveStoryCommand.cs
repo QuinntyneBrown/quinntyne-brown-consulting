@@ -10,6 +10,7 @@ public sealed record SaveStoryCommand(
     string AcceptanceCriteria,
     int? Points,
     Guid? AssistantId,
+    StoryPriority Priority,
     IReadOnlyList<StoryTaskDraft> Tasks) : IRequest<StoryDto>, IValidatableRequest
 {
     private static readonly HashSet<int> AllowedPoints = [1, 2, 3, 5, 8, 13];
@@ -20,6 +21,7 @@ public sealed record SaveStoryCommand(
         if (EpicId == Guid.Empty) errors["epicId"] = ["Epic is required."];
         if (string.IsNullOrWhiteSpace(Title)) errors["title"] = ["Title is required."];
         if (Points is not null && !AllowedPoints.Contains(Points.Value)) errors["points"] = ["Story points must be 1, 2, 3, 5, 8, or 13."];
+        if (!Enum.IsDefined(Priority)) errors["priority"] = ["Priority must be None, VeryLow, Low, Medium, High, VeryHigh, or Critical."];
         if (Tasks.Any(task => string.IsNullOrWhiteSpace(task.Title))) errors["tasks"] = ["Every task requires a title."];
         return errors;
     }

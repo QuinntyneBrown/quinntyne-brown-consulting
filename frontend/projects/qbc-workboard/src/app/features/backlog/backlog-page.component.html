@@ -21,6 +21,20 @@
       [options]="filterOptions"
       (valueChange)="filter($any($event))"
     />
+    <qbc-select
+      ariaLabel="Filter by priority"
+      [labelHidden]="true"
+      [value]="service.priority()"
+      [options]="priorityOptions"
+      (valueChange)="filterPriority($any($event))"
+    />
+    <qbc-select
+      ariaLabel="Order backlog"
+      [labelHidden]="true"
+      [value]="service.sort()"
+      [options]="sortOptions"
+      (valueChange)="sort($any($event))"
+    />
   </div>
   @if (service.error()) {
     <qbc-form-error>{{ service.error() }}</qbc-form-error>
@@ -50,6 +64,13 @@
             [tone]="badge(story)"
             [label]="badge(story)"
           />
+          @if (story.priority !== 'none') {
+            <qbc-tag
+              state
+              class="priority"
+              >{{ priorityLabel(story) }}</qbc-tag
+            >
+          }
           <qbc-points
             estimate
             [value]="story.points"

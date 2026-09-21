@@ -114,11 +114,11 @@ the suite. Specifications are grouped by requirement:
 | `navigation.spec.ts`       | `L2-001`                            |
 | `hierarchy.spec.ts`        | `L2-002`, `L2-003`, `L2-004`        |
 | `initiative-brief.spec.ts` | `L2-046` – `L2-048`                 |
-| `stories.spec.ts`          | `L2-005` – `L2-008`                 |
+| `stories.spec.ts`          | `L2-005` – `L2-008`, `L2-056`       |
 | `assistants.spec.ts`       | `L2-009`, `L2-010`                  |
 | `assistant-hours.spec.ts`  | `L2-050`, `L2-051`                  |
 | `attachments.spec.ts`      | `L2-053`                            |
-| `backlog.spec.ts`          | `L2-011`, `L2-012`                  |
+| `backlog.spec.ts`          | `L2-011`, `L2-012`, `L2-057`        |
 | `sprint-planning.spec.ts`  | `L2-013` – `L2-016`                 |
 | `board.spec.ts`            | `L2-017` – `L2-020`                 |
 | `persistence.spec.ts`      | `L2-021`, `L2-032`                  |

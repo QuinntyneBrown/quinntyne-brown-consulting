@@ -142,6 +142,10 @@ The following details differ:
   `StoryTask.Update` replaces the diagram's `Rename`, `SetCompletion`, and
   `Assign` operations.
 - Backend response types are `StoryDto`, not `StoryDetails` or `Result`.
+- `Story.Priority` (`L2-056`) is an ordered enum persisted as a string with a
+  store default of `None`, so rows written before the column existed read as
+  None without a data migration. It travels through `StoryRequest`,
+  `SaveStoryCommand`, and `StoryDto` beside `Points`.
 - The hierarchy does not currently provide the designed story-detail entry
   point described by gap `A2`.
 
@@ -238,6 +242,11 @@ The following details differ:
 - `BacklogPageComponent` owns the search and filter controls.
 - `BacklogService` owns source, criteria, loading, error, and computed result
   Signals. A separate `BacklogStore` does not exist.
+- `BacklogService` also carries the ordering and priority narrowing `L2-057`
+  adds (`sort` and `priority` Signals beside `filter`), applied in the same
+  `visibleStories` computation as search and the lifecycle filter. The default
+  view is ordered by story key on the client rather than trusting the API's
+  order, which is what lets the Playwright mock and the API agree.
 - The application service delegates HTTP work to the `@qbc/api` story service.
   The feature diagrams omit this boundary.
 - Grooming and readiness reversal refetch the complete backlog after the

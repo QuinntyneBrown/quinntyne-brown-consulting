@@ -7,5 +7,6 @@ public sealed record StoryRequest(
     string AcceptanceCriteria,
     int? Points,
     Guid? AssistantId,
-    IReadOnlyList<StoryTaskRequest> Tasks);
+    IReadOnlyList<StoryTaskRequest> Tasks,
+    StoryPriority Priority = StoryPriority.None);
 

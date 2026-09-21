@@ -12,7 +12,7 @@ public sealed class AuthoringAccessTokenTests
     private static readonly Guid StoryId = Guid.NewGuid();
     private static readonly byte[] Bytes = [1, 2, 3];
 
-    private static StoryDto Story() => new(StoryId, "QBC-101", Guid.NewGuid(), "Jobs", "Applications", "Apply", "Description", "Criteria", 2, null, null, StoryLifecycle.Active, true, null, null, null, BoardStatus.ToDo, []);
+    private static StoryDto Story() => new(StoryId, "QBC-101", Guid.NewGuid(), "Jobs", "Applications", "Apply", "Description", "Criteria", 2, StoryPriority.None, null, null, StoryLifecycle.Active, true, null, null, null, BoardStatus.ToDo, []);
 
     private static AttachmentDto Attachment() => new(Guid.NewGuid(), WorkItemKind.Story, StoryId, "resume.docx",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document", Bytes.Length, null, null, DateTimeOffset.UtcNow);
@@ -44,6 +44,33 @@ public sealed class AuthoringAccessTokenTests
         Assert.DoesNotContain(cli.Api.Requests, request => request.PathAndQuery == "/api/access/unlock");
         var update = Assert.Single(cli.Api.Requests, request => request.Method == "PUT");
         Assert.Equal("Bearer existing-token", update.Authorization);
+    }
+
+    [Fact]
+    public async Task L2_056_Update_story_sends_the_chosen_priority_and_keeps_the_rest()
+    {
+        using var cli = WorkboardApiCliTestHost.Create("existing-token");
+        cli.Api.When(HttpMethod.Get, "/api/stories/backlog", HttpStatusCode.OK, new[] { Story() })
+            .When(HttpMethod.Put, $"/api/stories/{StoryId}", HttpStatusCode.OK, Story() with { Priority = StoryPriority.High });
+
+        Assert.Equal(0, await cli.InvokeAsync("workitem", "update-story", "--story-key", "QBC-101", "--priority", "high"));
+
+        var update = Assert.Single(cli.Api.Requests, request => request.Method == "PUT");
+        Assert.Contains("\"priority\":\"high\"", update.Body);
+        Assert.Contains("\"points\":2", update.Body);
+    }
+
+    [Fact]
+    public async Task L2_056_Update_story_keeps_the_current_priority_when_none_is_given()
+    {
+        using var cli = WorkboardApiCliTestHost.Create("existing-token");
+        cli.Api.When(HttpMethod.Get, "/api/stories/backlog", HttpStatusCode.OK, new[] { Story() with { Priority = StoryPriority.Critical } })
+            .When(HttpMethod.Put, $"/api/stories/{StoryId}", HttpStatusCode.OK, Story() with { Priority = StoryPriority.Critical, Points = 5 });
+
+        Assert.Equal(0, await cli.InvokeAsync("workitem", "update-story", "--story-key", "QBC-101", "--points", "5"));
+
+        var update = Assert.Single(cli.Api.Requests, request => request.Method == "PUT");
+        Assert.Contains("\"priority\":\"critical\"", update.Body);
     }
 
     [Theory]

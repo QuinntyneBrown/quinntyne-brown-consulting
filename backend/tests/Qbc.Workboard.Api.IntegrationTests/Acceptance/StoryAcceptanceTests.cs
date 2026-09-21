@@ -1,5 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Qbc.Workboard.Infrastructure.Persistence;
 using Xunit;
 
 namespace Qbc.Workboard.Api.IntegrationTests.Acceptance;
@@ -125,6 +129,75 @@ public sealed class StoryAcceptanceTests : AcceptanceTest
         }
 
         Assert.Equal(6, (await Given.ReadBacklogAsync()).Count);
+    }
+
+    [Fact]
+    public async Task L2_056_Default_priority()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+
+        var response = await Client.PostAsJsonAsync(
+            "/api/stories",
+            new StoryRequest(epic.Id, "Draft a delivery risk register", string.Empty, string.Empty, null, null, []));
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var story = await response.Content.ReadFromJsonAsync<StoryDto>(Workspace.Json);
+        Assert.NotNull(story);
+        Assert.Equal(StoryPriority.None, story.Priority);
+        Assert.Equal(StoryPriority.None, (await Given.ReadStoryAsync(story.Id)).Priority);
+    }
+
+    [Fact]
+    public async Task L2_056_Set_a_priority()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+        var story = await Given.AddDraftStoryAsync(epic.Id);
+
+        var response = await Client.PutAsJsonAsync(
+            $"/api/stories/{story.Id}",
+            new StoryRequest(epic.Id, story.Title, string.Empty, string.Empty, null, null, [], StoryPriority.Critical));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(StoryPriority.Critical, (await Given.ReadStoryAsync(story.Id)).Priority);
+        Assert.Equal(StoryPriority.Critical, Assert.Single(await Given.ReadBacklogAsync()).Priority);
+    }
+
+    [Fact]
+    public async Task L2_056_Reject_an_unknown_priority()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+
+        // A name outside the scale never reaches the command: it fails to bind as a priority at all.
+        var response = await Client.PostAsJsonAsync(
+            "/api/stories",
+            new { epicId = epic.Id, title = "Urgent", description = "", acceptanceCriteria = "", tasks = Array.Empty<object>(), priority = "urgent" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+        var fields = body.GetProperty("errors").EnumerateObject().Select(item => item.Name).ToList();
+        Assert.Contains(fields, field => field.EndsWith("priority", StringComparison.OrdinalIgnoreCase));
+        Assert.Empty(await Given.ReadBacklogAsync());
+    }
+
+    [Fact]
+    public async Task L2_056_Existing_stories_keep_working()
+    {
+        var epic = await Given.AddEpicWithInitiativeAsync();
+
+        // A row written before priority existed carries no priority column value at all.
+        using (var scope = Factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<WorkboardDbContext>();
+            await db.Database.ExecuteSqlAsync(
+                $"""
+                INSERT INTO Story (Id, Number, EpicId, Title, Description, AcceptanceCriteria, Lifecycle, IsReady, BoardStatus)
+                VALUES ({Guid.NewGuid()}, 101, {epic.Id}, 'Legacy story', '', '', 'Draft', 0, 'ToDo')
+                """);
+        }
+
+        var story = Assert.Single(await Given.ReadBacklogAsync());
+        Assert.Equal("Legacy story", story.Title);
+        Assert.Equal(StoryPriority.None, story.Priority);
     }
 
     [Fact]

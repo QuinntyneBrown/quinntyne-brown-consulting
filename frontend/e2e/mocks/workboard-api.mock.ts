@@ -19,6 +19,17 @@ import type { Page, Route } from '@playwright/test';
 import { createWorkboardApiState } from './workboard-api-state.factory';
 import type { WorkboardApiState } from './workboard-api-state';
 
+/** The priority scale the API accepts; the mock only imports types from `@qbc/api`. */
+const STORY_PRIORITIES: readonly string[] = [
+  'none',
+  'veryLow',
+  'low',
+  'medium',
+  'high',
+  'veryHigh',
+  'critical',
+];
+
 type AssistantDraft = Pick<Assistant, 'fullName' | 'role' | 'specialties' | 'availability'>;
 type EpicDraft = Pick<Epic, 'initiativeId' | 'name' | 'summary'>;
 type InitiativeDraft = Pick<Initiative, 'name' | 'description'>;
@@ -409,6 +420,7 @@ export class WorkboardApiMock {
           description: draft.description,
           acceptanceCriteria: draft.acceptanceCriteria,
           points: draft.points,
+          priority: draft.priority ?? 'none',
           assistantId: draft.assistantId,
           assistantName: null,
           lifecycle: 'draft',
@@ -517,6 +529,7 @@ export class WorkboardApiMock {
           description: draft.description,
           acceptanceCriteria: draft.acceptanceCriteria,
           points: draft.points,
+          priority: draft.priority ?? 'none',
           assistantId: draft.assistantId,
           tasks: draft.tasks.map((task) => ({
             id: task.id ?? this.newId(),
@@ -733,6 +746,10 @@ export class WorkboardApiMock {
     const fields: Record<string, string | null> = {
       title: this.blank(draft.title) ? 'Enter a title.' : null,
       points: this.validEstimate(draft.points) ? null : 'Estimate in 1, 2, 3, 5, 8, or 13 points.',
+      priority:
+        draft.priority === undefined || STORY_PRIORITIES.includes(draft.priority)
+          ? null
+          : 'Choose a priority from None to Critical.',
     };
     draft.tasks.forEach((task, index) => {
       fields[`tasks[${index}].title`] = this.blank(task.title) ? 'Enter a task title.' : null;

@@ -95,6 +95,73 @@ test('L2-011 · Filter stories', async ({ page }) => {
   await backlog.expectStoryCount(8);
 });
 
+test('L2-057 · Order by priority', async ({ page }) => {
+  const backlog = new BacklogPage(page);
+
+  await backlog.orderBy('Priority');
+
+  // Critical first, the two High stories in key order, then everything at None by key.
+  await backlog.expectRowOrder(
+    EVIDENCE,
+    HEALTH_SUMMARY,
+    CHECKLIST,
+    LEGACY_WORKSHEET,
+    KICKOFF_AGENDA,
+    DECISION,
+    RISK_CANVAS,
+    MILESTONE_NOTES,
+  );
+  await backlog.expectPriority(EVIDENCE, 'Critical');
+  await backlog.expectPriority(HEALTH_SUMMARY, 'High');
+  await backlog.expectPriority(DECISION, null);
+});
+
+test('L2-057 · Default ordering is unchanged', async ({ page }) => {
+  const backlog = new BacklogPage(page);
+
+  await backlog.expectRowOrder(
+    LEGACY_WORKSHEET,
+    KICKOFF_AGENDA,
+    HEALTH_SUMMARY,
+    DECISION,
+    EVIDENCE,
+    CHECKLIST,
+    RISK_CANVAS,
+    MILESTONE_NOTES,
+  );
+
+  await backlog.orderBy('Priority');
+  await backlog.orderBy('Story key');
+  await backlog.expectRowOrder(
+    LEGACY_WORKSHEET,
+    KICKOFF_AGENDA,
+    HEALTH_SUMMARY,
+    DECISION,
+    EVIDENCE,
+    CHECKLIST,
+    RISK_CANVAS,
+    MILESTONE_NOTES,
+  );
+});
+
+test('L2-057 · Narrow to one priority', async ({ page }) => {
+  const backlog = new BacklogPage(page);
+
+  await backlog.filterByPriority('High');
+  await backlog.expectOnlyStories(HEALTH_SUMMARY, CHECKLIST);
+
+  // The search and the lifecycle filter still apply to the narrowed list.
+  await backlog.search('checklist');
+  await backlog.expectOnlyStories(CHECKLIST);
+  await backlog.clearSearch();
+  await backlog.filterBy('Unscheduled');
+  await backlog.expectStoryCount(0);
+
+  await backlog.filterBy('All stories');
+  await backlog.filterByPriority('Any priority');
+  await backlog.expectStoryCount(8);
+});
+
 test('L2-011 · Empty result', async ({ page }) => {
   const backlog = new BacklogPage(page);
   await backlog.search('nothing matches this');

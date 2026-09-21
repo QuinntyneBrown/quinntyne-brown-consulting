@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Qbc.Workboard.Cli.Console;
 using Qbc.Workboard.Cli.Services;
+using Qbc.Workboard.Domain.Enums;
 using System.CommandLine;
 
 namespace Qbc.Workboard.Cli.Commands.WorkItems;
@@ -15,6 +16,8 @@ public sealed class UpdateStoryCommand
         var descriptionOption = new Option<string?>("--description") { Description = "New description. Leave unset to keep the current value." };
         var acceptanceCriteriaOption = new Option<string?>("--acceptance-criteria") { Description = "New acceptance criteria. Leave unset to keep the current value." };
         var pointsOption = new Option<int?>("--points") { Description = "New story points (1, 2, 3, 5, 8, or 13). Leave unset to keep the current value." };
+        var priorityOption = new Option<StoryPriority?>("--priority") { Description = "New priority (none, very-low, low, medium, high, very-high, or critical). Leave unset to keep the current value." };
+        priorityOption.CustomParser = StoryPriorityOption.Parse;
         var assigneeOption = new Option<string?>("--assignee")
         {
             Description = "Full name of the assistant to assign. Created automatically if no matching assistant exists. Leave unset to keep the current value."
@@ -29,6 +32,7 @@ public sealed class UpdateStoryCommand
         Command.Options.Add(descriptionOption);
         Command.Options.Add(acceptanceCriteriaOption);
         Command.Options.Add(pointsOption);
+        Command.Options.Add(priorityOption);
         Command.Options.Add(assigneeOption);
         Command.Options.Add(targetOption);
         Command.Options.Add(passcodeOption);
@@ -78,6 +82,7 @@ public sealed class UpdateStoryCommand
                     parseResult.GetValue(acceptanceCriteriaOption) ?? story.AcceptanceCriteria,
                     parseResult.GetValue(pointsOption) ?? story.Points,
                     assistantId,
+                    parseResult.GetValue(priorityOption) ?? story.Priority,
                     cancellationToken);
 
                 console.WriteLine($"Updated story '{updated.Key}: {updated.Title}' ({updated.Id}).");

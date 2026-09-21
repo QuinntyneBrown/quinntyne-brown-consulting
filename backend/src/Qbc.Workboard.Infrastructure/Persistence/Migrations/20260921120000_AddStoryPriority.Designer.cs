@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Qbc.Workboard.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using Qbc.Workboard.Infrastructure.Persistence;
 namespace Qbc.Workboard.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WorkboardDbContext))]
-    partial class WorkboardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260921120000_AddStoryPriority")]
+    partial class AddStoryPriority
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

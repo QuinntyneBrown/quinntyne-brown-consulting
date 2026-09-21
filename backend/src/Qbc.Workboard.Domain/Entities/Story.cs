@@ -16,6 +16,7 @@ public sealed class Story
         Title = title.Trim();
         Lifecycle = StoryLifecycle.Draft;
         BoardStatus = BoardStatus.ToDo;
+        Priority = StoryPriority.None;
     }
 
     public Guid Id { get; private set; }
@@ -26,6 +27,7 @@ public sealed class Story
     public string Description { get; private set; } = string.Empty;
     public string AcceptanceCriteria { get; private set; } = string.Empty;
     public int? Points { get; private set; }
+    public StoryPriority Priority { get; private set; }
     public Guid? AssistantId { get; private set; }
     public StoryLifecycle Lifecycle { get; private set; }
     public bool IsReady { get; private set; }
@@ -33,7 +35,7 @@ public sealed class Story
     public BoardStatus BoardStatus { get; private set; }
     public IReadOnlyCollection<StoryTask> Tasks => _tasks.AsReadOnly();
 
-    public void Update(Guid epicId, string title, string description, string acceptanceCriteria, int? points, Guid? assistantId)
+    public void Update(Guid epicId, string title, string description, string acceptanceCriteria, int? points, Guid? assistantId, StoryPriority priority)
     {
         EpicId = epicId;
         Title = title.Trim();
@@ -41,6 +43,7 @@ public sealed class Story
         AcceptanceCriteria = acceptanceCriteria.Trim();
         Points = points;
         AssistantId = assistantId;
+        Priority = priority;
     }
 
     public void ReplaceTasks(IEnumerable<StoryTask> tasks)

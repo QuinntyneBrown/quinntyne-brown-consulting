@@ -56,7 +56,8 @@ requirement refines one level-1 (L1) requirement.
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-005` | `L1-003` | A story shall contain an ID, story key, epic reference, title, description or user-story statement, acceptance criteria, story-point estimate, optional assistant owner, lifecycle state, readiness, optional sprint reference, board status, and zero or more tasks. |
+| `L2-005` | `L1-003` | A story shall contain an ID, story key, epic reference, title, description or user-story statement, acceptance criteria, story-point estimate, priority, optional assistant owner, lifecycle state, readiness, optional sprint reference, board status, and zero or more tasks. |
+| `L2-056` | `L1-018` | A story's priority shall be one of None, Very low, Low, Medium, High, Very high, or Critical, in that ascending order of urgency. A story created without a priority, and every story that existed before priority was introduced, shall have the priority None. The story editor shall offer the priority as a single choice beside the story-point estimate. |
 | `L2-006` | `L1-003` | Story lifecycle states shall be Draft, Active, and Archived. Readiness shall be maintained independently for non-archived stories. |
 | `L2-007` | `L1-003` | A story may contain checklist tasks. Each task shall contain an ID, non-blank title, completion state, and optional assistant assignee. |
 | `L2-008` | `L1-003` | The user shall be able to archive active work, restore archived work as a draft, and permanently delete a story after confirmation. |

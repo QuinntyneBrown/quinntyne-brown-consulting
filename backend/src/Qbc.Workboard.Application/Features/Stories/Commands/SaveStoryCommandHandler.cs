@@ -35,7 +35,7 @@ public sealed class SaveStoryCommandHandler : IRequestHandler<SaveStoryCommand, 
             foreach (var oldTask in _db.StoryTasks.Where(item => item.StoryId == story.Id).ToList()) _db.Remove(oldTask);
         }
 
-        story.Update(request.EpicId, request.Title, request.Description, request.AcceptanceCriteria, request.Points, request.AssistantId);
+        story.Update(request.EpicId, request.Title, request.Description, request.AcceptanceCriteria, request.Points, request.AssistantId, request.Priority);
         story.ReplaceTasks(request.Tasks.Select(task => new StoryTask(task.Id ?? Guid.NewGuid(), story.Id, task.Title, task.IsComplete, task.AssistantId)));
         await _db.SaveChangesAsync(cancellationToken);
         return StoryProjection.Create(story, _db.Epics.ToList(), _db.Initiatives.ToList(), _db.Assistants.ToList(), _db.Sprints.ToList(), story.Tasks.ToList());

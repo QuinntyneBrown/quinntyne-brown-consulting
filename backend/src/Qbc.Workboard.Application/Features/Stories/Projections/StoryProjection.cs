@@ -30,6 +30,7 @@ public static class StoryProjection
             story.Description,
             story.AcceptanceCriteria,
             story.Points,
+            story.Priority,
             story.AssistantId,
             owner?.FullName,
             story.Lifecycle,

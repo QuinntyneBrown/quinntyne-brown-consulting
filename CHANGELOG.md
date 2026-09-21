@@ -9,6 +9,16 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Story priority. Every story carries a priority from a fixed scale — None,
+  Very low, Low, Medium, High, Very high, or Critical — read back with the
+  story and set through `POST`/`PUT /api/stories`. Stories that existed before
+  the scale, and stories saved without choosing one, have the priority None.
+  `create-story` and `update-story` in the Workboard CLI take `--priority`, and
+  `list-stories` prints it. The story editor offers the priority beside the
+  estimate, a backlog row states any priority other than None in words, and
+  the backlog can be ordered by priority — Critical first, story key breaking
+  ties — or narrowed to one priority, alongside its search and lifecycle
+  filter.
 - Inspection and maintenance commands in the Workboard CLI's `workitem` group:
   `login`, `list-assistants`, `list-stories`, `get-story`, `list-attachments`,
   `download-attachment`, and `replace-attachment`, which swaps an attachment's

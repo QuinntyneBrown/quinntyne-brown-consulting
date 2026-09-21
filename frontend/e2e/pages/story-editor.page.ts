@@ -7,6 +7,8 @@ export interface StoryDetail {
   readonly description?: string;
   readonly acceptanceCriteria?: string;
   readonly points?: string;
+  /** The priority's label, such as `Critical` or `Very low`. */
+  readonly priority?: string;
 }
 
 export interface TaskDetail {
@@ -35,6 +37,8 @@ export class StoryEditorPage {
       await dialog.getByLabel('Acceptance criteria').fill(detail.acceptanceCriteria);
     if (detail.points)
       await dialog.getByLabel('Story points').selectOption({ label: detail.points });
+    if (detail.priority)
+      await dialog.getByLabel('Priority').selectOption({ label: detail.priority });
   }
 
   async addTask(task: TaskDetail): Promise<void> {
@@ -130,6 +134,15 @@ export class StoryEditorPage {
       await expect(dialog.getByLabel('Story points').locator('option:checked')).toHaveText(
         detail.points,
       );
+    if (detail.priority)
+      await expect(dialog.getByLabel('Priority').locator('option:checked')).toHaveText(
+        detail.priority,
+      );
+  }
+
+  /** The priority control offers the product's scale in ascending order and nothing else. */
+  async expectPriorityOptions(...labels: string[]): Promise<void> {
+    await expect(this.dialog().getByLabel('Priority').locator('option')).toHaveText(labels);
   }
 
   async expectStoryKey(key: string): Promise<void> {

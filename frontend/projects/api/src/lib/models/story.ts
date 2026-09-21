@@ -1,3 +1,4 @@
+import { StoryPriority } from './story-priority';
 import { StoryTask } from './story-task';
 
 export interface Story {
@@ -10,6 +11,7 @@ export interface Story {
   readonly description: string;
   readonly acceptanceCriteria: string;
   readonly points: number | null;
+  readonly priority: StoryPriority;
   readonly assistantId: string | null;
   readonly assistantName: string | null;
   readonly lifecycle: 'draft' | 'active' | 'archived';

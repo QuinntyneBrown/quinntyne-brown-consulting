@@ -31,7 +31,8 @@ releases. Requirements and data migrations may change before the first release.
   worked on and how much of that time is on work that is now done.
 - Attach files to an initiative, an epic, or a story, and download or remove
   them from the work item they belong to.
-- Groom and estimate stories before assigning them to a 14-day sprint.
+- Groom, estimate, and prioritize stories before assigning them to a 14-day
+  sprint, and read the backlog most urgent first or narrowed to one priority.
 - Move active work through To do, In progress, and Done with pointer, keyboard,
   and touch-friendly controls.
 - Persist workspace state in SQL Server and protect hierarchy, assignment, and

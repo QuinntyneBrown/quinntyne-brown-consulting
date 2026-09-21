@@ -65,6 +65,7 @@ public sealed class StoriesController : ControllerBase
         request.AcceptanceCriteria,
         request.Points,
         request.AssistantId,
+        request.Priority,
         request.Tasks.Select(task => new StoryTaskDraft(task.Id, task.Title, task.IsComplete, task.AssistantId)).ToList());
 }
 
