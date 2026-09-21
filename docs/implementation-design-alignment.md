@@ -201,6 +201,14 @@ deleting an assistant must be refused while any of their hours remain. Without
 it the delete meets the foreign key and answers `500` where `L2-050` requires
 `409`.
 
+`L2-058` adds `POST /api/time-entries/batch` beside the single-entry route
+rather than overloading it: `LogTimeEntryBatchCommand` validates the group,
+`HoursSplitter` divides the total, and the handler adds one `TimeEntry` per
+story before a single `SaveChangesAsync`, so the group lands whole or not at
+all. Each entry is an ordinary `L2-050` record afterwards — the group has no
+identity of its own, and the assistant's hours page reads it as separate
+entries.
+
 ### Work items — attach files to a work item
 
 The [attachments design](detailed-designs/work-items/attach-files-to-a-work-item/README.md)

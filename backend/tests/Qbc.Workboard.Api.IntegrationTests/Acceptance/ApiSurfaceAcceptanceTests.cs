@@ -119,6 +119,7 @@ public sealed class ApiSurfaceAcceptanceTests : AcceptanceTest
                      "/api/attachments/{id}/content",
                      "/api/time-entries",
                      "/api/time-entries/{id}",
+                     "/api/time-entries/batch",
                      "/api/stories",
                      "/api/stories/backlog",
                      "/api/stories/{id}",

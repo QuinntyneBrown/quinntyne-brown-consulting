@@ -21,6 +21,16 @@ public sealed class TimeEntriesController : ControllerBase
         return Created($"/api/assistants/{result.AssistantId}/hours", result);
     }
 
+    /// <summary>One total across several stories, divided by the rule `L2-058` states.</summary>
+    [HttpPost("batch")]
+    public async Task<ActionResult<IReadOnlyList<TimeEntryDto>>> LogBatch(TimeEntryBatchRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(
+            new LogTimeEntryBatchCommand(request.StoryIds ?? [], request.AssistantId, request.WorkedOn, request.TotalHours, request.Note ?? string.Empty),
+            cancellationToken);
+        return Created($"/api/assistants/{request.AssistantId}/hours", result);
+    }
+
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TimeEntryDto>> Amend(Guid id, TimeEntryRequest request, CancellationToken cancellationToken) =>
         Ok(await _sender.Send(
