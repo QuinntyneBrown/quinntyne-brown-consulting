@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quinntyne Brown Consulting business card</title>
+  <meta name="description" content="Front and back of the Quinntyne Brown Consulting business card at 3.5 × 2 in with 0.125 in bleed. Print this page to PDF for one page per side.">
+  <meta name="theme-color" content="#0f2b5b">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- The same Archivo request quinntynebrown.com makes: variable width 62–125 and weight 100–900. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap">
+  <style>
+    /* ---- Brand tokens, copied from quinntynebrown.com so the card matches the site ---- */
+    :root {
+      --ink:    #0f2b5b;                 /* navy: hero background on the site */
+      --paper:  #ffffff;
+      --tint:   #e6edf8;                 /* pale blue section background */
+      --accent: #9cc0ff;                 /* light blue accent */
+      --link:   #1e4aa8;                 /* link blue */
+      --live:   #30c67c;                 /* green status hue; reserved, not used on the card */
+      --muted:  rgba(15, 43, 91, 0.78);  /* secondary navy text on light surfaces */
+
+      --font: Archivo, "Segoe UI", Arial, sans-serif;
+
+      /* ---- Card geometry: North American trim, 1/8 in bleed, 1/8 in safe margin ---- */
+      --trim-w: 3.5in;
+      --trim-h: 2in;
+      --bleed:  0.125in;
+      --safe:   0.125in;
+      --inset:  0.28in;                  /* text margin, measured from the trim edge */
+      --bleed-w: calc(var(--trim-w) + 2 * var(--bleed));
+      --bleed-h: calc(var(--trim-h) + 2 * var(--bleed));
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--tint);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    /* ---- Screen chrome: a toolbar and a sheet holding both sides ---- */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1.5rem;
+      padding: 1rem 16px;
+      background: var(--paper);
+      border-bottom: 1px solid rgba(15, 43, 91, 0.12);
+      font-size: 0.9rem;
+    }
+    .toolbar strong { font-weight: 600; font-stretch: 110%; letter-spacing: -0.01em; }
+    .toolbar label { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
+    .toolbar .hint { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+    .legend { display: inline-block; width: 1.4em; height: 0; vertical-align: middle; margin-right: 0.25rem; border-top: 2px dashed; }
+    .legend.trim { border-color: #e0218a; }
+    .legend.safe { border-color: #1e4aa8; }
+
+    .sheet {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem 3rem;
+      padding: 2rem 16px 3rem;
+      overflow-x: auto;
+    }
+    .side h2 {
+      margin: 0 0 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ---- The card itself, at true physical size (1 in = 96 CSS px) ---- */
+    .card {
+      position: relative;
+      width: var(--bleed-w);
+      height: var(--bleed-h);
+      overflow: hidden;
+      font-kerning: normal;
+    }
+    @media screen {
+      .card { zoom: 2; box-shadow: 0 18px 50px rgba(15, 43, 91, 0.18); }
+      @media (max-width: 900px) { .card { zoom: 1.5; } }
+      @media (max-width: 600px) { .card { zoom: 1; } }
+    }
+
+    .card .content {
+      position: absolute;
+      inset: calc(var(--bleed) + var(--inset));
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    .card p { margin: 0; }
+
+    /* Front: navy, like the site's hero. */
+    .front { background: var(--ink); color: var(--paper); }
+
+    .wordmark {
+      font-size: 8pt;
+      font-weight: 500;
+      font-stretch: 110%;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .identity { align-self: center; }
+    .name {
+      margin: 0;
+      font-size: 22pt;
+      font-weight: 600;
+      font-stretch: 118%;
+      letter-spacing: -0.03em;
+      line-height: 0.94;
+    }
+    .role {
+      margin-top: 0.12in;
+      color: var(--accent);
+      font-size: 9.5pt;
+      font-weight: 500;
+      font-stretch: 110%;
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .contact {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0.2in;
+      font-size: 7.5pt;
+      font-weight: 500;
+      font-stretch: 105%;
+      line-height: 1.45;
+      font-variant-numeric: tabular-nums;
+    }
+    .contact .lines span { display: block; white-space: nowrap; }
+
+    /* Back: pale blue, like the site's tinted sections. */
+    .back { background: var(--tint); color: var(--ink); }
+    .back .content { grid-template-rows: 1fr auto; }
+    .brand-large {
+      align-self: center;
+    }
+    .brand-large .company {
+      font-size: 20pt;
+      font-weight: 600;
+      font-stretch: 118%;
+      letter-spacing: -0.03em;
+      line-height: 0.94;
+    }
+    .tagline {
+      max-width: 2.3in;
+      margin-top: 0.1in;
+      color: var(--muted);
+      font-size: 8.5pt;
+      font-weight: 400;
+      line-height: 1.35;
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.2in;
+      font-size: 7.5pt;
+      font-weight: 500;
+      font-stretch: 105%;
+      line-height: 1;
+    }
+    .footer .site { color: var(--link); }
+    .footer .place { color: var(--muted); }
+
+    /* ---- Guides: trim (magenta) and safe area (blue), screen only ---- */
+    .guide {
+      position: absolute;
+      display: none;
+      pointer-events: none;
+      border: 1px dashed;
+    }
+    .guides .guide { display: block; }
+    .guide.trim { inset: var(--bleed); border-color: #e0218a; }
+    .guide.safe { inset: calc(var(--bleed) + var(--safe)); border-color: #1e4aa8; }
+
+    /* ---- One side only (?side=front or ?side=back), used by render.mjs ---- */
+    body.isolated { background: none; min-height: 0; }
+    body.isolated .toolbar,
+    body.isolated .side h2,
+    body.isolated .side { display: none; }
+    body.isolated .sheet { display: block; padding: 0; overflow: visible; }
+    body.isolated .side.shown { display: block; }
+    body.isolated .card { zoom: 1; box-shadow: none; }
+
+    /* ---- Print: one page per side at bleed size, no chrome, no guides ---- */
+    @page { size: 3.75in 2.25in; margin: 0; }
+    @media print {
+      html, body { margin: 0; min-height: 0; background: none; }
+      .toolbar, .side h2, .guide { display: none !important; }
+      .sheet { display: block; padding: 0; overflow: visible; }
+      .side { display: block; width: var(--bleed-w); height: var(--bleed-h); overflow: hidden; }
+      .side + .side { break-before: page; }
+      .card { zoom: 1; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="toolbar">
+    <div><strong>Quinntyne Brown Consulting</strong> business card · 3.5 × 2 in trim · 0.125 in bleed</div>
+    <label><input type="checkbox" id="guides"> Show guides <span class="legend trim" aria-hidden="true"></span>trim <span class="legend safe" aria-hidden="true"></span>safe area</label>
+    <p class="hint">Print this page (Ctrl+P), destination “Save as PDF”, scale 100 %, margins “None”, “Background graphics” on. The result is one page per side at 3.75 × 2.25 in, which is trim plus bleed. Alternatively run <code>node render.mjs</code> in this folder.</p>
+  </header>
+
+  <main class="sheet">
+    <section class="side" data-side="front">
+      <h2>Front</h2>
+      <article class="card front" aria-label="Business card, front">
+        <div class="content">
+          <p class="wordmark">Quinntyne Brown Consulting</p>
+          <div class="identity">
+            <h1 class="name">Quinntyne<br>Brown</h1>
+            <p class="role">Principal</p>
+          </div>
+          <div class="contact">
+            <p class="lines"><span>647 290 6346</span><span>quinntynebrown@gmail.com</span></p>
+            <p class="site">quinntynebrown.com</p>
+          </div>
+        </div>
+        <div class="guide trim" aria-hidden="true"></div>
+        <div class="guide safe" aria-hidden="true"></div>
+      </article>
+    </section>
+
+    <section class="side" data-side="back">
+      <h2>Back</h2>
+      <article class="card back" aria-label="Business card, back">
+        <div class="content">
+          <div class="brand-large">
+            <p class="company">Quinntyne Brown<br>Consulting</p>
+            <p class="tagline">Architecture and delivery for .NET and Angular teams.</p>
+          </div>
+          <div class="footer">
+            <p class="site">quinntynebrown.com</p>
+            <p class="place">Mississauga, Ontario</p>
+          </div>
+        </div>
+        <div class="guide trim" aria-hidden="true"></div>
+        <div class="guide safe" aria-hidden="true"></div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      const box = document.getElementById('guides');
+      const setGuides = on => {
+        document.body.classList.toggle('guides', on);
+        box.checked = on;
+      };
+      box.addEventListener('change', () => setGuides(box.checked));
+      setGuides(params.has('guides'));
+
+      const side = params.get('side');
+      const section = document.querySelector(`.side[data-side="${side}"]`);
+      if (section) {
+        document.body.classList.add('isolated');
+        section.classList.add('shown');
+      }
+
+      // render.mjs waits for this before capturing, so the type is Archivo and not the fallback.
+      document.fonts.ready.then(() => { document.documentElement.dataset.fontsReady = 'true'; });
+    })();
+  </script>
+</body>
+</html>

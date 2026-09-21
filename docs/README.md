@@ -112,6 +112,11 @@ and five rendered PNG diagrams.
   and the study's standalone page with its work-item picker became one panel shown
   on the initiative, the epic, and the story themselves.
 
+- [`business-card/`](business-card/) holds the print design for the Quinntyne
+  Brown Consulting business card: the HTML source, a print-ready PDF at bleed
+  size, a 300 dpi preview of each side, and the script that regenerates them.
+  The card takes its colours and its Archivo type from quinntynebrown.com
+  rather than from the workboard's design tokens.
 - The standalone [design-system guide](../design-system/README.md) documents the
   native Web Component catalog derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and
