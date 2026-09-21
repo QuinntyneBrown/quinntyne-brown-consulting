@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Story } from '@qbc/api';
+import { STORY_PRIORITY_LABELS, STORY_PRIORITY_ORDER, Story, StoryPriority } from '@qbc/api';
 import {
   ButtonComponent,
   DataRowComponent,
@@ -14,11 +14,13 @@ import {
   SelectValue,
   StatusPillComponent,
   StatusPillTone,
+  TagComponent,
   TextInputComponent,
 } from '@qbc/components';
 import { SPRINT_PLANNING_SERVICE } from '../sprints/sprint-planning.service.contract';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { BacklogFilter } from './backlog-filter';
+import { BacklogSort } from './backlog-sort';
 import { BACKLOG_SERVICE } from './backlog.service.contract';
 
 @Component({
@@ -34,6 +36,7 @@ import { BACKLOG_SERVICE } from './backlog.service.contract';
     PointsComponent,
     SelectComponent,
     StatusPillComponent,
+    TagComponent,
     TextInputComponent,
   ],
   templateUrl: './backlog-page.component.html',
@@ -51,6 +54,14 @@ export class BacklogPageComponent implements OnInit {
     { value: 'draft', label: 'Draft' },
     { value: 'archived', label: 'Archived' },
   ];
+  readonly sortOptions: readonly SelectOption<string>[] = [
+    { value: 'key', label: 'Story key' },
+    { value: 'priority', label: 'Priority' },
+  ];
+  readonly priorityOptions: readonly SelectOption<string>[] = [
+    { value: 'all', label: 'Any priority' },
+    ...STORY_PRIORITY_ORDER.map((value) => ({ value, label: STORY_PRIORITY_LABELS[value] })),
+  ];
 
   ngOnInit(): void {
     void Promise.all([this.service.load(), this.planning.load()]);
@@ -66,6 +77,15 @@ export class BacklogPageComponent implements OnInit {
   }
   filter(value: string): void {
     this.service.setFilter(value as BacklogFilter);
+  }
+  sort(value: string): void {
+    this.service.setSort(value as BacklogSort);
+  }
+  filterPriority(value: string): void {
+    this.service.setPriority(value as StoryPriority | 'all');
+  }
+  priorityLabel(story: Story): string {
+    return STORY_PRIORITY_LABELS[story.priority];
   }
 
   async groom(story: Story): Promise<void> {

@@ -5,6 +5,7 @@ import {
   UntypedFormBuilder,
   Validators,
 } from '@angular/forms';
+import { STORY_PRIORITY_LABELS, STORY_PRIORITY_ORDER, StoryPriority } from '@qbc/api';
 import {
   ActionGroupComponent,
   ButtonComponent,
@@ -67,12 +68,16 @@ export class StoryEditorComponent {
     { value: null, label: 'Not estimated' },
     ...[1, 2, 3, 5, 8, 13].map((value) => ({ value, label: String(value) })),
   ];
+  readonly priorityOptions: readonly SelectOption<StoryPriority>[] = STORY_PRIORITY_ORDER.map(
+    (value) => ({ value, label: STORY_PRIORITY_LABELS[value] }),
+  );
   readonly form = this.fb.group({
     epicId: ['', Validators.required],
     title: ['', Validators.required],
     description: [''],
     acceptanceCriteria: [''],
     points: [null],
+    priority: ['none'],
     assistantId: [null],
     tasks: this.fb.array([]),
   });
@@ -145,6 +150,7 @@ export class StoryEditorComponent {
       description: value.description,
       acceptanceCriteria: value.acceptanceCriteria,
       points: value.points === null || value.points === '' ? null : Number(value.points),
+      priority: value.priority as StoryPriority,
       assistantId: value.assistantId || null,
       tasks: value.tasks.map((task: Record<string, unknown>) => ({
         id: (task['id'] as string | null) ?? null,
@@ -217,6 +223,7 @@ export class StoryEditorComponent {
       description: '',
       acceptanceCriteria: '',
       points: null,
+      priority: 'none',
       assistantId: null,
     });
     this.tasks.clear();
@@ -229,6 +236,7 @@ export class StoryEditorComponent {
         description: story.description,
         acceptanceCriteria: story.acceptanceCriteria,
         points: story.points,
+        priority: story.priority,
         assistantId: story.assistantId,
       });
       for (const task of story.tasks) {

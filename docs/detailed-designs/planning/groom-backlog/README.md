@@ -13,6 +13,9 @@ acceptance criteria, and accepted estimate
 *sprint disposition* — unscheduled, planned, active, or historically completed
 placement of a story
 
+*priority ordering* — the backlog read most urgent first, with stories of equal
+priority in story-key order
+
 This feature combines rapid client-side discovery with server-enforced readiness.
 Search and filters do not change persisted data. Grooming is a domain transition
 that succeeds only when the backend validates every readiness field.
@@ -27,7 +30,7 @@ grooming endpoints, domain validation, and persistence.
 - **`BacklogFilterComponent`** — accessible search and filter controls whose
   values update Signals.
 - **`BacklogStore`** — Signal state for the loaded stories, query text, selected
-  filter, and computed visible results.
+  filter, ordering, priority narrowing, and computed visible results.
 - **`IBacklogService`** — token-backed contract for backlog retrieval, grooming,
   and readiness reversal.
 - **`BacklogService`** — HTTP implementation that applies server results to the
@@ -44,7 +47,10 @@ grooming endpoints, domain validation, and persistence.
 
 The store applies case-insensitive matching to story key, title, and epic name.
 It computes All, Unscheduled, Ready, Draft, and Archived result sets from one
-server-authoritative collection.
+server-authoritative collection, narrows them to one priority when asked, and
+orders the result by story key or, on request, by priority with Critical first
+and story key breaking ties. A row states a priority other than None in words
+beside its lifecycle, so the ordering is legible without colour.
 
 ## Requirements
 
@@ -55,6 +61,7 @@ requirement refines one level-1 (L1) requirement.
 |-------|--------------|-------------|
 | `L2-011` | `L1-005` | The backlog shall show stories with their key, title, hierarchy context, lifecycle or readiness, estimate, and sprint disposition. |
 | `L2-012` | `L1-005` | A story shall become Ready only when it has a title, valid epic, non-blank description or user story, non-blank acceptance criteria, and valid story-point estimate. |
+| `L2-057` | `L1-018` | The backlog shall let the user order stories by priority, most urgent first, with stories of equal priority ordered by story key ascending, and shall let the user narrow the backlog to stories of one priority. Ordering and narrowing shall combine with the existing search and lifecycle filter. |
 
 ## Diagrams
 

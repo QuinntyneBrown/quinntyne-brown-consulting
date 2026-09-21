@@ -109,6 +109,56 @@ test('L2-005 · Update a story', async ({ page }) => {
   });
 });
 
+test('L2-056 · Default priority', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  const editor = new StoryEditorPage(page);
+  const backlog = new BacklogPage(page);
+  await workboard.navigateTo('backlog');
+
+  await editor.openNewStory();
+  await editor.expectPriorityOptions(
+    'None',
+    'Very low',
+    'Low',
+    'Medium',
+    'High',
+    'Very high',
+    'Critical',
+  );
+  await editor.fill({ title: 'Draft a delivery risk register', epic: 'Delivery playbook' });
+  await editor.save();
+
+  await backlog.expectPriority('Draft a delivery risk register', null);
+  await backlog.openStory('Draft a delivery risk register');
+  await editor.expectStoryDetail({
+    title: 'Draft a delivery risk register',
+    epic: 'Delivery playbook',
+    priority: 'None',
+  });
+});
+
+test('L2-056 · Set a priority', async ({ page }) => {
+  const workboard = new WorkboardPage(page);
+  const editor = new StoryEditorPage(page);
+  const backlog = new BacklogPage(page);
+  await workboard.navigateTo('backlog');
+
+  await backlog.openStory(RISK_CANVAS);
+  await editor.fill({ title: RISK_CANVAS, epic: 'Engagement copilot', priority: 'Critical' });
+  await editor.save();
+
+  await backlog.expectPriority(RISK_CANVAS, 'Critical');
+
+  // The priority survives a reload, because the backend keeps it rather than the browser.
+  await workboard.reload();
+  await backlog.openStory(RISK_CANVAS);
+  await editor.expectStoryDetail({
+    title: RISK_CANVAS,
+    epic: 'Engagement copilot',
+    priority: 'Critical',
+  });
+});
+
 test('L2-005 · Validate story points', async ({ page }) => {
   // The UI can only offer the product's scale; the backend integration suite owns the refusal
   // of a value submitted outside it.

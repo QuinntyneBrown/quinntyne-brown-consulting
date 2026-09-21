@@ -23,6 +23,16 @@ enum BoardStatus {
   Done
 }
 
+enum StoryPriority {
+  None
+  VeryLow
+  Low
+  Medium
+  High
+  VeryHigh
+  Critical
+}
+
 class Story {
   +Guid Id
   +string Key
@@ -31,6 +41,7 @@ class Story {
   +string Description
   +string AcceptanceCriteria
   +int? Points
+  +StoryPriority Priority
   +Guid? AssistantId
   +StoryLifecycle Lifecycle
   +bool IsReady
@@ -75,4 +86,5 @@ SaveStoryCommandHandler ..> SaveStoryCommand : handles
 SaveStoryCommandHandler --> Story : creates / updates
 ArchiveStoryCommandHandler --> Story : archives
 DeleteStoryCommandHandler --> Story : deletes when historical rules allow
+Story --> StoryPriority
 @enduml

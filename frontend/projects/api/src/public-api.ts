@@ -30,6 +30,7 @@ export * from './lib/models/sprint';
 export * from './lib/models/sprint-story-card';
 export * from './lib/models/story';
 export * from './lib/models/story-draft';
+export * from './lib/models/story-priority';
 export * from './lib/models/story-task';
 export * from './lib/models/time-entry';
 export * from './lib/models/time-entry-draft';

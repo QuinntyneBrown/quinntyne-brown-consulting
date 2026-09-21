@@ -2,6 +2,7 @@ import { expect, Locator, Page } from '@playwright/test';
 
 export type BacklogFilterName = 'All stories' | 'Unscheduled' | 'Ready' | 'Draft' | 'Archived';
 export type BacklogState = 'archived' | 'draft' | 'ready' | 'active';
+export type BacklogOrderName = 'Story key' | 'Priority';
 
 export class BacklogPage {
   constructor(private readonly page: Page) {}
@@ -16,6 +17,27 @@ export class BacklogPage {
 
   async filterBy(name: BacklogFilterName): Promise<void> {
     await this.page.getByRole('combobox', { name: 'Filter backlog' }).selectOption({ label: name });
+  }
+
+  async orderBy(name: BacklogOrderName): Promise<void> {
+    await this.page.getByRole('combobox', { name: 'Order backlog' }).selectOption({ label: name });
+  }
+
+  /** `Any priority` or one label from the scale, such as `High`. */
+  async filterByPriority(label: string): Promise<void> {
+    await this.page.getByRole('combobox', { name: 'Filter by priority' }).selectOption({ label });
+  }
+
+  /** Exactly these stories are listed, top to bottom. */
+  async expectRowOrder(...titles: string[]): Promise<void> {
+    await expect(this.rows().locator('.identity strong')).toHaveText(titles);
+  }
+
+  /** The row states the priority in words, or carries no priority at all when it is None. */
+  async expectPriority(title: string, label: string | null): Promise<void> {
+    const tag = this.story(title).locator('.priority');
+    if (label === null) await expect(tag).toHaveCount(0);
+    else await expect(tag).toHaveText(label);
   }
 
   async expectStory(title: string): Promise<void> {

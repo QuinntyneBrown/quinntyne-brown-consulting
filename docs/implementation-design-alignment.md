@@ -242,6 +242,11 @@ The following details differ:
 - `BacklogPageComponent` owns the search and filter controls.
 - `BacklogService` owns source, criteria, loading, error, and computed result
   Signals. A separate `BacklogStore` does not exist.
+- `BacklogService` also carries the ordering and priority narrowing `L2-057`
+  adds (`sort` and `priority` Signals beside `filter`), applied in the same
+  `visibleStories` computation as search and the lifecycle filter. The default
+  view is ordered by story key on the client rather than trusting the API's
+  order, which is what lets the Playwright mock and the API agree.
 - The application service delegates HTTP work to the `@qbc/api` story service.
   The feature diagrams omit this boundary.
 - Grooming and readiness reversal refetch the complete backlog after the
