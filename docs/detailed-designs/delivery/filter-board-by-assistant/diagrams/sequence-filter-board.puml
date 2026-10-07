@@ -1,0 +1,43 @@
+@startuml
+title UML sequence behaviour — Filter the board by assistant
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "QBC consultant" as actor
+box "Frontend — Angular web application" #E0F2FE
+  participant "Router (/board?assistant=…)" as router
+  participant "BoardPageComponent" as page
+  participant "ISprintExecutionService" as service
+end box
+box "Backend — Workboard API application" #D1FADF
+  participant "SprintsController / StoriesController" as controller
+end box
+
+actor -> router : Open /board?assistant={id}
+router -> page : assistant query parameter
+page -> service : load()
+service -> controller : GET /api/sprints/active/board
+controller --> service : 200 ActiveSprintBoard (every sprint story)
+service --> page : board Signal
+page -> page : Compute assistantOptions from the board's owners
+alt the address names an owner on the board
+  page -> page : selectedAssistant = id
+else unknown or absent
+  page -> page : selectedAssistant = all
+end
+page --> actor : L2-059 columns, counts and "Showing n of m" for the choice;\nsprint summary for every story
+actor -> page : Choose another assistant, Unassigned, or Show all stories
+page -> router : navigate([], { queryParams: { assistant } }) — replaceUrl
+router -> page : new query parameter
+page --> actor : Columns and counts narrowed without a reload
+actor -> page : Move a narrowed story
+page -> service : moveStory(storyId, status)
+service -> controller : POST story move action
+controller --> service : 200
+service -> controller : GET /api/sprints/active/board
+controller --> service : 200 ActiveSprintBoard
+service --> page : board Signal replaced
+page --> actor : Same filter, updated columns
+@enduml
