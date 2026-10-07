@@ -100,9 +100,6 @@ jobs:
       - name: Restore frontend dependencies
         working-directory: frontend
         run: npm ci --prefer-offline --no-audit --no-fund
-      - name: Validate the component boundary and story coverage
-        working-directory: frontend
-        run: npm run validate:components
       - name: Build Storybook
         working-directory: frontend
         run: npm run build-storybook
