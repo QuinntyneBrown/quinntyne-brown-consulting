@@ -1,0 +1,24 @@
+{
+  "name": "qbc-workboard-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "Browser acceptance suite for the QBC Workboard frontend.",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "playwright test",
+    "test:storybook": "playwright test --config=playwright.storybook.config.ts"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.1",
+    "@playwright/test": "1.55.1",
+    "@types/node": "22.18.0",
+    "prettier": "3.9.6",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "playwright-core": "1.55.1"
+  }
+}

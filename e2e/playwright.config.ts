@@ -4,10 +4,11 @@ import { defineConfig, devices } from '@playwright/test';
  * The acceptance suite runs against the built application and a per-test mock of the `/api`
  * contract, so no backend process or database takes part. Every scenario owns its workspace state,
  * which lets the suite run in parallel. The suite reads the bundle that gets deployed rather than
- * the development server, so what it proves is what ships; `npm run build` produces it first.
+ * the development server, so what it proves is what ships; `npm run build` in `frontend` produces it
+ * first.
  */
 export default defineConfig({
-  testDir: './e2e/tests',
+  testDir: './tests',
   timeout: 45_000,
   expect: { timeout: 8_000 },
   fullyParallel: true,
@@ -22,6 +23,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run serve:dist',
+    cwd: '../frontend',
     url: 'http://127.0.0.1:4200/board',
     reuseExistingServer: false,
     timeout: 30_000,

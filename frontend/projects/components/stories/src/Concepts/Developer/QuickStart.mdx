@@ -12,12 +12,18 @@ From `frontend/`:
 npm ci
 npm run storybook        # ng run components:storybook → http://localhost:6006
 npm run build-storybook  # static build → frontend/dist/storybook
-npm run test:storybook   # Playwright: visits every page and story in dist/storybook
+```
+
+Then, from `e2e/`:
+
+```sh
+npm ci
+npm run test:storybook   # Playwright: visits every page and story in frontend/dist/storybook
 ```
 
 Storybook is an Angular builder target on the `components` project (`angular.json` → `storybook` / `build-storybook`).
 It loads the same global stylesheet as the app and generates the API tables with compodoc on every start.
-`test:storybook` runs `e2e/storybook/catalog.spec.ts` against the static build: it fails on any console error, and on any
+`test:storybook` runs `e2e/storybook/catalog.spec.ts` (at the repository root) against the static build: it fails on any console error, and on any
 public component without a `Default` story and a docs page.
 
 ## Use a component

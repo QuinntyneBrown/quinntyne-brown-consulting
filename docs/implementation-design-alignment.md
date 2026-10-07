@@ -365,7 +365,7 @@ The following concrete structure differs:
   Express database per xUnit test class. `IntegrationDatabase` and `ApiAcceptanceTest` do not
   exist.
 - Four xUnit acceptance classes use `HttpClient` directly through the factory.
-- [`workspace.spec.ts`](../frontend/e2e/tests/workspace.spec.ts) contains the
+- [`workspace.spec.ts`](../e2e/tests/workspace.spec.ts) contains the
   Playwright scenarios. `AcceptanceSpec` and a common `FeaturePage` base class do
   not exist.
 - `AccessibilityPage` owns axe and keyboard checks. Responsive verification is
@@ -454,7 +454,8 @@ Run the complete verification set after code and design alignment:
 dotnet test backend/Qbc.Workboard.slnx --configuration Release
 Set-Location frontend
 npm run build
-npm run test:e2e
+Set-Location ../e2e
+npm test
 ```
 
 The acceptance evidence should record each new red state and final green result.

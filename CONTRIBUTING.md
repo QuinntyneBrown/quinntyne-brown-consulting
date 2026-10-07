@@ -145,8 +145,10 @@ the test hosts supply their own unique database names.
 Set-Location frontend
 npm run format:check
 npm run build
+Set-Location ../e2e
+npm ci
 npx playwright install
-npm run test:e2e
+npm test
 ```
 
 The format check enforces the committed Prettier configuration. The Playwright
@@ -159,6 +161,7 @@ stateful API mocks in Chromium, so `npm run build` comes first.
 Set-Location frontend
 npm run validate:components
 npm run build-storybook
+Set-Location ../e2e
 npm run test:storybook
 ```
 
