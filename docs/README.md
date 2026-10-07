@@ -53,6 +53,10 @@ and five rendered PNG diagrams.
   for the first-entry state. The product mock carries the surfaces that feed it — a
   **Time logged** panel in the story editor, a quick **Log hours** action on a board card,
   and an hours total on each assistant card.
+- [`mocks/board-assistant-filter.html`](mocks/board-assistant-filter.html) is the
+  self-contained interaction study for narrowing the sprint board to one assistant's
+  stories, or to unassigned stories, while the sprint summary keeps describing the whole
+  sprint. Open it with `?assistant=Ava%20Chen` or `?assistant=unassigned` to start narrowed.
 
   The study proposed behavior the baseline then excluded, and the product has since taken
   it up: `L1-015` brings recorded hours inside the scope `L1.md` §4 defines, `L2-050` and

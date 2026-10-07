@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaction study for narrowing the QBC Workboard sprint board to the stories one assistant owns, or to unassigned stories.">
+  <title>Board by assistant &middot; QBC Workboard</title>
+  <style>
+    /* Design tokens copied verbatim from design-system/assets/tokens.css. Only the
+       subset this page uses is repeated here, so the mock stays one self-contained
+       file and never touches the visual baseline in docs/mocks/styles.css. The
+       --qbc-* names are used rather than the older --ink/--accent names in
+       styles.css, so this mock matches the design system and the Angular app. */
+    :root {
+      color-scheme: light;
+
+      --qbc-ink:        #18201d;
+      --qbc-ink-soft:   #68726d;
+      --qbc-ink-faint:  #87918c;
+
+      --qbc-line:        #e4e9e6;
+      --qbc-line-strong: #d8dfdb;
+      --qbc-line-card:   #e8ece9;
+
+      --qbc-panel:          #ffffff;
+      --qbc-soft:           #f5f7f5;
+      --qbc-surface-raised: #fbfcfb;
+      --qbc-surface-hover:  #fcfdfc;
+
+      --qbc-accent:      #276749;
+      --qbc-accent-dark: #184c35;
+      --qbc-accent-soft: #e8f3ed;
+
+      --qbc-blue:   #315f88;  --qbc-blue-soft:   #eaf1f8;
+      --qbc-amber:  #8a6100;  --qbc-amber-soft:  #fff4d9;
+      --qbc-danger: #a33a37;  --qbc-danger-soft: #faeceb;
+
+      --qbc-nav-ink:          #5e6863;
+      --qbc-nav-icon:         #83908a;
+      --qbc-placeholder:      #a0a9a4;
+      --qbc-focus-ring:       rgba(39, 103, 73, .25);
+      --qbc-focus-ring-field: rgba(39, 103, 73, .1);
+      --qbc-scrim:            rgba(18, 25, 22, .4);
+
+      --qbc-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      /* An hours column has to line up digit under digit to be read down. The value is
+         copied verbatim from design-system/assets/tokens.css, which already declares this
+         token; the claim that it did not was wrong when this study was written. */
+      --qbc-font-mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+      --qbc-fs-2xs:  11px;
+      --qbc-fs-xs:   12px;
+      --qbc-fs-sm:   13px;
+      --qbc-fs-md:   14px;
+      --qbc-fs-base: 15px;
+      --qbc-fs-lg:   16px;
+      --qbc-fs-2xl:  18px;
+      --qbc-fs-3xl:  21px;
+      --qbc-fs-4xl:  22px;
+
+      --qbc-lh-snug: 1.4;
+      --qbc-lh-base: 1.5;
+
+      --qbc-fw-medium:   600;
+      --qbc-fw-nav:      620;
+      --qbc-fw-button:   680;
+      --qbc-fw-semibold: 700;
+      --qbc-fw-bold:     750;
+      --qbc-fw-heavy:    800;
+
+      --qbc-tracking-heading: -.02em;
+      --qbc-tracking-key:     .04em;
+      --qbc-tracking-brand:   .06em;
+      --qbc-tracking-eyebrow: .1em;
+
+      --qbc-s-1: 4px;   --qbc-s-2: 8px;   --qbc-s-3: 12px;  --qbc-s-4: 16px;
+      --qbc-s-5: 20px;  --qbc-s-6: 24px;  --qbc-s-7: 32px;  --qbc-s-8: 40px;
+
+      --qbc-r-2xs:     6px;
+      --qbc-r-sm:      8px;
+      --qbc-r-control: 9px;
+      --qbc-r-md:      10px;
+      --qbc-r-lg:      11px;
+      --qbc-r-xl:      14px;
+      --qbc-r-2xl:     16px;
+      --qbc-r-pill:    20px;
+      --qbc-r-round:   50%;
+
+      --qbc-shadow-card:    0 2px 3px rgba(24, 32, 29, .025);
+      --qbc-shadow-overlay: 0 18px 50px rgba(24, 32, 29, .12);
+
+      --qbc-dur-fast: 180ms;
+      --qbc-dur-base: 200ms;
+      --qbc-ease: ease-out;
+
+      --qbc-sidebar-w: 224px;
+      --qbc-topbar-h:  82px;
+      --qbc-control-h: 42px;
+      --qbc-button-h:  40px;
+
+      --qbc-z-sidebar: 20;
+      --qbc-z-toast:   90;
+      --qbc-z-skip:    100;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :root { --qbc-dur-fast: 1ms; --qbc-dur-base: 1ms; }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* The class rules below set display, which would otherwise beat the user
+       agent's [hidden] rule and leave hidden rows on screen. */
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font-family: var(--qbc-font-sans);
+      font-size: var(--qbc-fs-base);
+      line-height: var(--qbc-lh-base);
+    }
+
+    h1, h2, h3 { margin: 0; letter-spacing: var(--qbc-tracking-heading); }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .skip-link {
+      position: absolute;
+      z-index: var(--qbc-z-skip);
+      top: var(--qbc-s-2); left: var(--qbc-s-2);
+      padding: var(--qbc-s-2) var(--qbc-s-3);
+      transform: translateY(-200%);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-panel);
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-sm);
+      font-weight: var(--qbc-fw-button);
+      text-decoration: none;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* ---- Buttons, copied in behaviour from docs/mocks/styles.css --------- */
+    .primary-button, .secondary-button, .quiet-button {
+      display: inline-flex;
+      min-height: var(--qbc-button-h);
+      align-items: center;
+      justify-content: center;
+      padding: 0 var(--qbc-s-4);
+      border: 1px solid transparent;
+      border-radius: var(--qbc-r-control);
+      font: inherit;
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-button);
+      cursor: pointer;
+      transition: background var(--qbc-dur-fast) var(--qbc-ease), color var(--qbc-dur-fast) var(--qbc-ease);
+    }
+    .primary-button { color: var(--qbc-panel); background: var(--qbc-accent); }
+    .primary-button:hover { background: var(--qbc-accent-dark); }
+    .secondary-button { border-color: var(--qbc-line-strong); color: var(--qbc-ink); background: var(--qbc-panel); }
+    .secondary-button:hover { background: var(--qbc-soft); }
+    .quiet-button { padding: 0 var(--qbc-s-3); color: var(--qbc-ink-soft); background: none; }
+    .quiet-button:hover { color: var(--qbc-ink); background: var(--qbc-soft); }
+    .icon-button {
+      display: inline-grid;
+      width: 34px; height: 34px;
+      border: 0;
+      border-radius: var(--qbc-r-sm);
+      background: none;
+      color: var(--qbc-ink-soft);
+      font-size: var(--qbc-fs-2xl);
+      place-items: center;
+      cursor: pointer;
+    }
+    .icon-button:hover { background: var(--qbc-soft); }
+    :focus-visible { outline: 2px solid var(--qbc-accent); outline-offset: 2px; }
+
+    input, select {
+      width: 100%;
+      min-height: var(--qbc-control-h);
+      padding: 0 var(--qbc-s-3);
+      border: 1px solid var(--qbc-line-strong);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-ink);
+      background: var(--qbc-panel);
+      font: inherit;
+      font-size: var(--qbc-fs-md);
+    }
+    input::placeholder { color: var(--qbc-placeholder); }
+    input:focus, select:focus { outline: 0; border-color: var(--qbc-accent); box-shadow: 0 0 0 3px var(--qbc-focus-ring-field); }
+
+    /* ---- Shell ----------------------------------------------------------- */
+    .app-shell { display: flex; min-height: 100dvh; }
+
+    .sidebar {
+      display: flex;
+      width: var(--qbc-sidebar-w);
+      flex-direction: column;
+      flex-shrink: 0;
+      padding: var(--qbc-s-5) var(--qbc-s-4);
+      border-right: 1px solid var(--qbc-line);
+      background: var(--qbc-surface-raised);
+    }
+
+    .brand { display: flex; gap: var(--qbc-s-3); align-items: center; margin-bottom: var(--qbc-s-7); color: inherit; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      width: 32px; height: 32px;
+      border-radius: var(--qbc-r-md);
+      color: var(--qbc-panel);
+      background: var(--qbc-accent);
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-bold);
+      place-items: center;
+    }
+    .brand strong { display: block; font-size: var(--qbc-fs-lg); line-height: 1.1; }
+    .brand small { display: block; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-2xs); letter-spacing: var(--qbc-tracking-brand); text-transform: uppercase; }
+
+    .nav-list { display: grid; gap: 2px; }
+    .nav-list a {
+      display: flex;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      padding: var(--qbc-s-2) var(--qbc-s-3);
+      border-radius: var(--qbc-r-control);
+      color: var(--qbc-nav-ink);
+      font-size: var(--qbc-fs-md);
+      font-weight: var(--qbc-fw-nav);
+      text-decoration: none;
+    }
+    .nav-list a span { color: var(--qbc-nav-icon); }
+    .nav-list a:hover { background: var(--qbc-soft); }
+    .nav-list a.active { color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); }
+    .nav-list a.active span { color: var(--qbc-accent); }
+
+    .sidebar-foot { margin-top: auto; color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); }
+    .sidebar-foot p { margin: 0; }
+
+    .workspace { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+
+    .topbar {
+      display: flex;
+      min-height: var(--qbc-topbar-h);
+      gap: var(--qbc-s-4);
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7));
+      border-bottom: 1px solid var(--qbc-line);
+    }
+    .breadcrumb { overflow: hidden; margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); font-weight: var(--qbc-fw-medium); text-overflow: ellipsis; white-space: nowrap; }
+    .breadcrumb b { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+    .breadcrumb a { color: inherit; text-decoration: none; }
+    .breadcrumb a:hover { color: var(--qbc-accent-dark); text-decoration: underline; }
+    .topbar-actions { display: flex; gap: var(--qbc-s-2); align-items: center; }
+
+    main { flex: 1; padding: var(--qbc-s-6) clamp(var(--qbc-s-4), 2vw, var(--qbc-s-7)); }
+    .page { max-width: 1180px; margin-inline: auto; }
+
+    /* ---- Page header ----------------------------------------------------- */
+    .page-head { display: flex; gap: var(--qbc-s-4); align-items: flex-start; justify-content: space-between; margin-bottom: var(--qbc-s-6); }
+    .page-head h1 { font-size: var(--qbc-fs-4xl); }
+    .page-head p { margin: var(--qbc-s-1) 0 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-md); }
+
+    /* ---- Sprint hero: unchanged, it always summarises the whole sprint ---- */
+    .sprint-hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--qbc-s-7);
+      align-items: end;
+      margin-bottom: var(--qbc-s-5);
+      padding: 27px 30px;
+      border: 1px solid var(--qbc-line);
+      border-radius: var(--qbc-r-xl);
+      background: linear-gradient(110deg, #f8fbf9, var(--qbc-panel));
+    }
+    .eyebrow { margin: 0 0 6px; color: var(--qbc-accent); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-heavy); letter-spacing: var(--qbc-tracking-eyebrow); text-transform: uppercase; }
+    .sprint-hero h2 { font-size: var(--qbc-fs-4xl); }
+    .goal { margin: 7px 0 0; color: var(--qbc-ink-soft); }
+    .sprint-meta { min-width: 230px; }
+    .sprint-meta-line { display: flex; justify-content: space-between; margin-bottom: 9px; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); }
+    .progress-track { overflow: hidden; height: 7px; border-radius: 10px; background: var(--qbc-line); }
+    .progress-bar { height: 100%; border-radius: inherit; background: var(--qbc-accent); }
+
+    /* ---- New: the board filter bar --------------------------------------- */
+    .board-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--qbc-s-3);
+      align-items: center;
+      margin-bottom: var(--qbc-s-5);
+    }
+    .board-filter select { width: auto; min-width: 240px; }
+    .filter-summary { margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); }
+    .filter-summary b { color: var(--qbc-ink); font-weight: var(--qbc-fw-semibold); }
+
+    /* ---- Board ----------------------------------------------------------- */
+    .board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--qbc-s-5); }
+    .board-column { min-height: 420px; padding: 18px; border-radius: var(--qbc-r-xl); background: var(--qbc-soft); }
+    .column-head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px var(--qbc-s-4); }
+    .column-head h2 { font-size: var(--qbc-fs-md); }
+    .count { display: grid; min-width: 26px; height: 26px; padding: 0 7px; border-radius: var(--qbc-r-pill); place-items: center; color: var(--qbc-ink-soft); background: var(--qbc-panel); font-size: var(--qbc-fs-xs); }
+    .card-stack { display: grid; gap: 11px; }
+    .story-card { padding: 18px; border: 1px solid var(--qbc-line-card); border-radius: var(--qbc-r-lg); background: var(--qbc-panel); box-shadow: var(--qbc-shadow-card); }
+    .card-top { display: flex; align-items: center; justify-content: space-between; }
+    .story-key { color: var(--qbc-ink-faint); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-bold); letter-spacing: var(--qbc-tracking-key); }
+    .points { display: inline-grid; min-width: 27px; height: 27px; padding: 0 6px; border-radius: 7px; place-items: center; color: var(--qbc-ink-soft); background: var(--qbc-soft); font-size: var(--qbc-fs-2xs); font-weight: var(--qbc-fw-bold); }
+    .story-card h3 { margin: 14px 0 8px; font-size: var(--qbc-fs-base); line-height: var(--qbc-lh-snug); }
+    .card-context { overflow: hidden; margin: 0; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-xs); text-overflow: ellipsis; white-space: nowrap; }
+    .card-foot { display: flex; gap: var(--qbc-s-2); align-items: center; margin-top: 18px; font-size: var(--qbc-fs-xs); }
+    .avatar { display: inline-grid; width: 29px; height: 29px; border-radius: var(--qbc-r-round); place-items: center; color: var(--qbc-accent-dark); background: var(--qbc-accent-soft); font-size: 10px; font-weight: var(--qbc-fw-heavy); }
+    .avatar.unassigned { color: var(--qbc-ink-faint); background: var(--qbc-soft); }
+    .column-empty { padding: 35px 12px; color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); text-align: center; }
+
+    /* ---- Notes for the implementer ---------------------------------------- */
+    .notes { margin-top: var(--qbc-s-8); padding: var(--qbc-s-5); border: 1px dashed var(--qbc-line-strong); border-radius: var(--qbc-r-xl); color: var(--qbc-ink-soft); font-size: var(--qbc-fs-sm); }
+    .notes h2 { margin-bottom: var(--qbc-s-2); color: var(--qbc-ink); font-size: var(--qbc-fs-lg); }
+    .notes ul { margin: 0; padding-left: var(--qbc-s-5); }
+
+    @media (max-width: 1000px) {
+      .board { grid-template-columns: 1fr; }
+      .board-column { min-height: 0; }
+    }
+    @media (max-width: 760px) {
+      .sidebar { display: none; }
+      .sprint-hero { grid-template-columns: 1fr; gap: var(--qbc-s-4); padding: var(--qbc-s-5); }
+      .board-filter select { width: 100%; min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to the board</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="index.html#board" aria-label="QBC Workboard home">
+        <span class="brand-mark" aria-hidden="true">Q</span>
+        <span><strong>QBC</strong><small>Workboard</small></span>
+      </a>
+      <nav class="nav-list" aria-label="Workspace">
+        <a href="index.html#board" class="active" aria-current="page"><span aria-hidden="true">&#9638;</span> Board</a>
+        <a href="index.html#backlog"><span aria-hidden="true">&#8801;</span> Backlog</a>
+        <a href="index.html#hierarchy"><span aria-hidden="true">&#8984;</span> Initiatives</a>
+        <a href="index.html#assistants"><span aria-hidden="true">&#9678;</span> Assistants</a>
+      </nav>
+      <div class="sidebar-foot"><p>Quinntyne Brown<br>Consulting Inc.</p></div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <p class="breadcrumb"><a href="index.html#board">Workspace</a> / <b>Board</b></p>
+        <div class="topbar-actions"><button class="primary-button" type="button">New story</button></div>
+      </header>
+
+      <main id="main-content" tabindex="-1">
+        <section class="page">
+          <div class="page-head">
+            <div>
+              <h1>Sprint board</h1>
+              <p>A quiet view of the team&rsquo;s current commitment.</p>
+            </div>
+            <button class="secondary-button" type="button">Manage sprints</button>
+          </div>
+
+          <div class="sprint-hero">
+            <div>
+              <p class="eyebrow">Current sprint &middot; Sprint 14</p>
+              <h2>Launch the client onboarding workspace</h2>
+              <p class="goal">Oct 5, 2026 &ndash; Oct 18, 2026</p>
+            </div>
+            <div class="sprint-meta">
+              <div class="sprint-meta-line"><span id="hero-count"></span><span id="hero-percent"></span></div>
+              <div class="progress-track"><div class="progress-bar" id="hero-bar"></div></div>
+            </div>
+          </div>
+
+          <div class="board-filter">
+            <label class="visually-hidden" for="assistant-filter">Filter board by assistant</label>
+            <select id="assistant-filter"></select>
+            <p class="filter-summary" id="filter-summary" aria-live="polite" hidden></p>
+            <button class="quiet-button" type="button" id="clear-filter" hidden>Show all stories</button>
+          </div>
+
+          <div class="board" id="board"></div>
+
+          <aside class="notes" aria-label="Notes for the implementer">
+            <h2>What this study settles</h2>
+            <ul>
+              <li>The filter sits between the sprint summary and the columns. The summary keeps describing the whole sprint; only the columns narrow.</li>
+              <li>The choices are <i>All assistants</i>, then every assistant who owns a story on this board in name order, then <i>Unassigned</i> when any story has no owner. Each choice shows how many stories it would leave.</li>
+              <li>Column counts and empty states follow the filter. A narrowed board says how many of the sprint&rsquo;s stories it is showing and offers one action to show them all again.</li>
+              <li>The choice is held in the address (<code>/board?assistant={assistant id}</code>, or <code>?assistant=unassigned</code>; this study uses names for readability) so a refresh or a shared link keeps it. An unknown assistant in the address falls back to all stories.</li>
+              <li>Moving a story, or editing it, keeps the current filter.</li>
+            </ul>
+          </aside>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const stories = [
+      { key: 'QBC-41', title: 'Draft the onboarding checklist', epic: 'Client onboarding', points: 3, owner: 'Ava Chen', status: 'toDo' },
+      { key: 'QBC-42', title: 'Collect the intake questionnaire answers', epic: 'Client onboarding', points: 5, owner: 'Noah Williams', status: 'toDo' },
+      { key: 'QBC-43', title: 'Name the shared workspace folders', epic: 'Client onboarding', points: 1, owner: null, status: 'toDo' },
+      { key: 'QBC-44', title: 'Wire the welcome email', epic: 'Client communications', points: 3, owner: 'Ava Chen', status: 'inProgress' },
+      { key: 'QBC-45', title: 'Model the engagement calendar', epic: 'Delivery planning', points: 8, owner: 'Noah Williams', status: 'inProgress' },
+      { key: 'QBC-46', title: 'Agree the kickoff agenda', epic: 'Client communications', points: 2, owner: 'Maya Patel', status: 'done' },
+      { key: 'QBC-47', title: 'Publish the statement of work', epic: 'Delivery planning', points: 5, owner: 'Ava Chen', status: 'done' },
+    ];
+    const columns = [['toDo', 'To do'], ['inProgress', 'In progress'], ['done', 'Done']];
+    const select = document.getElementById('assistant-filter');
+    const summary = document.getElementById('filter-summary');
+    const clear = document.getElementById('clear-filter');
+    const initials = (name) => name.split(' ').map((part) => part[0]).join('').slice(0, 2);
+    const plural = (n) => `${n} ${n === 1 ? 'story' : 'stories'}`;
+    const matches = (story, choice) => choice === 'all' || (choice === 'unassigned' ? story.owner === null : story.owner === choice);
+    const label = (choice) => choice === 'all' ? 'all assistants' : choice === 'unassigned' ? 'unassigned stories' : choice;
+
+    function renderHero() {
+      const done = stories.filter((s) => s.status === 'done').length;
+      document.getElementById('hero-count').textContent = `${done} of ${stories.length} stories done`;
+      const percent = Math.round((done / stories.length) * 100);
+      document.getElementById('hero-percent').textContent = `${percent}%`;
+      document.getElementById('hero-bar').style.width = `${percent}%`;
+    }
+
+    function renderOptions(choice) {
+      const owners = [...new Set(stories.map((s) => s.owner).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      const options = [['all', `All assistants (${stories.length})`]]
+        .concat(owners.map((o) => [o, `${o} (${stories.filter((s) => s.owner === o).length})`]));
+      const unassigned = stories.filter((s) => s.owner === null).length;
+      if (unassigned) options.push(['unassigned', `Unassigned (${unassigned})`]);
+      select.innerHTML = options.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+      select.value = options.some(([v]) => v === choice) ? choice : 'all';
+      return select.value;
+    }
+
+    function render(requested) {
+      const choice = renderOptions(requested);
+      const visible = stories.filter((s) => matches(s, choice));
+      document.getElementById('board').innerHTML = columns.map(([status, name]) => {
+        const cards = visible.filter((s) => s.status === status);
+        return `<section class="board-column" aria-label="${name}">
+          <div class="column-head"><h2>${name}</h2><span class="count">${cards.length}</span></div>
+          <div class="card-stack">${cards.map((s) => `
+            <article class="story-card">
+              <div class="card-top"><span class="story-key">${s.key}</span><span class="points">${s.points}</span></div>
+              <h3>${s.title}</h3>
+              <p class="card-context">${s.epic}</p>
+              <div class="card-foot">
+                <span class="avatar${s.owner ? '' : ' unassigned'}" aria-hidden="true">${s.owner ? initials(s.owner) : '?'}</span>
+                <strong>${s.owner ?? 'Unassigned'}</strong>
+              </div>
+            </article>`).join('')}
+          </div>
+          ${cards.length ? '' : '<p class="column-empty">No stories here</p>'}
+        </section>`;
+      }).join('');
+      const narrowed = choice !== 'all';
+      summary.hidden = clear.hidden = !narrowed;
+      summary.innerHTML = narrowed ? `Showing <b>${plural(visible.length)}</b> of ${stories.length} for ${label(choice)}` : '';
+      const url = new URL(location.href);
+      if (narrowed) url.searchParams.set('assistant', choice); else url.searchParams.delete('assistant');
+      history.replaceState(null, '', url);
+    }
+
+    select.addEventListener('change', () => render(select.value));
+    clear.addEventListener('click', () => { render('all'); select.focus(); });
+    renderHero();
+    render(new URL(location.href).searchParams.get('assistant') ?? 'all');
+  </script>
+</body>
+</html>
