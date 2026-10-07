@@ -1,0 +1,127 @@
+{
+  "voice": "Microsoft Zira Desktop",
+  "speechRate": 1,
+  "sourceSha256": "425ab614c0a98f8bbde77d70df071e1cc0ef734bf68ae76596dce8d638ab18c2",
+  "duration": 98.68,
+  "segments": [
+    {
+      "start": 0.9,
+      "end": 7.6,
+      "text": "Record hours across several stories in one step. Preview each share, then save the whole group.",
+      "spokenDuration": 5.533,
+      "spokenEnd": 6.433
+    },
+    {
+      "start": 8.45,
+      "end": 15.1,
+      "text": "Start on Noah's hours page. He has eight and a half hours logged across two stories.",
+      "spokenDuration": 4.809,
+      "spokenEnd": 13.259
+    },
+    {
+      "start": 15.8,
+      "end": 22.5,
+      "text": "Choose Log across stories, then select the work you want to include. Here, we'll select three stories.",
+      "spokenDuration": 6.152,
+      "spokenEnd": 21.952
+    },
+    {
+      "start": 27,
+      "end": 32.6,
+      "text": "Enter three hours. The preview divides that total equally, giving each story one hour.",
+      "spokenDuration": 5.106,
+      "spokenEnd": 32.106
+    },
+    {
+      "start": 33.4,
+      "end": 41.1,
+      "text": "Five hours becomes two, one and a half, and one and a half. The first story receives the remainder.",
+      "spokenDuration": 6.013,
+      "spokenEnd": 39.413
+    },
+    {
+      "start": 42,
+      "end": 47.7,
+      "text": "Add a note. The same date and note will appear on all three entries.",
+      "spokenDuration": 3.756,
+      "spokenEnd": 45.756
+    },
+    {
+      "start": 48.45,
+      "end": 55.1,
+      "text": "Save the group. Noah now has thirteen and a half hours logged, including three and a half on completed work.",
+      "spokenDuration": 6.087,
+      "spokenEnd": 54.537
+    },
+    {
+      "start": 56,
+      "end": 61.6,
+      "text": "The health summary received two hours, with the date and shared note.",
+      "spokenDuration": 3.291,
+      "spokenEnd": 59.291
+    },
+    {
+      "start": 62.65,
+      "end": 68.3,
+      "text": "The client decision received one and a half hours as a separate entry.",
+      "spokenDuration": 3.111,
+      "spokenEnd": 65.761
+    },
+    {
+      "start": 69.35,
+      "end": 75,
+      "text": "The completed checklist also received one and a half hours.",
+      "spokenDuration": 2.767,
+      "spokenEnd": 72.117
+    },
+    {
+      "start": 76.2,
+      "end": 82.8,
+      "text": "Reload the page. The entries and totals are still here, confirming that the group was saved.",
+      "spokenDuration": 5.124,
+      "spokenEnd": 81.324
+    },
+    {
+      "start": 83.5,
+      "end": 89.1,
+      "text": "Filter to completed work to see the finished story. The overall totals stay visible.",
+      "spokenDuration": 4.669,
+      "spokenEnd": 88.169
+    },
+    {
+      "start": 89.8,
+      "end": 96.5,
+      "text": "One total, three stories. Five hours recorded together, with every quarter hour accounted for.",
+      "spokenDuration": 6.068,
+      "spokenEnd": 95.868
+    }
+  ],
+  "peakDbfs": -3,
+  "clippedSamples": 0,
+  "videoStreamHash": "SHA256=b720261966731ffa86a8d4374d2a1b6271003db08905ed1af46a1bd0f86ef9a5",
+  "videoStreamUnchanged": true,
+  "outputBytes": 5884960,
+  "fullDecodePassed": true,
+  "browserPlayback": {
+    "duration": 98.688,
+    "width": 1280,
+    "height": 720,
+    "ended": true,
+    "segmentRmsPeaks": [
+      0.17048859129124017,
+      0.1763135853613596,
+      0.22193455676509996,
+      0.2172272716931106,
+      0.18944369194977415,
+      0.22394793840030444,
+      0.2382183614309963,
+      0.18542639290496937,
+      0.19113244437827273,
+      0.20847256337872452,
+      0.19830997292841018,
+      0.23782963196663512,
+      0.22722147019955477
+    ],
+    "decodedAudioBytes": 934687
+  }
+}

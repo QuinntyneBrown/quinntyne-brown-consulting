@@ -1,0 +1,68 @@
+{
+  "duration": 98.68,
+  "width": 1280,
+  "height": 720,
+  "bytes": 4917396,
+  "posterTime": 36.044,
+  "chapters": [
+    {
+      "seconds": 0.595,
+      "title": "Log hours across stories"
+    },
+    {
+      "seconds": 8.133,
+      "title": "Start with the assistant"
+    },
+    {
+      "seconds": 15.452,
+      "title": "Choose the stories"
+    },
+    {
+      "seconds": 26.665,
+      "title": "Preview equal shares"
+    },
+    {
+      "seconds": 33.044,
+      "title": "Keep the total exact"
+    },
+    {
+      "seconds": 48.124,
+      "title": "All three entries saved"
+    },
+    {
+      "seconds": 75.832,
+      "title": "Still there after reload"
+    },
+    {
+      "seconds": 89.452,
+      "title": "One total. Three stories."
+    }
+  ],
+  "revision": "54a135a286d7af6c36b83e3de2e2f37439dc3f2a",
+  "assertions": {
+    "startingHours": 8.5,
+    "addedHours": 5,
+    "finalHours": 13.5,
+    "hoursOnCompleted": 3.5,
+    "entries": [
+      {
+        "storyKey": "QBC-101",
+        "hours": 2,
+        "workedOn": "2026-09-21",
+        "note": "Shared delivery review and follow-up"
+      },
+      {
+        "storyKey": "QBC-102",
+        "hours": 1.5,
+        "workedOn": "2026-09-21",
+        "note": "Shared delivery review and follow-up"
+      },
+      {
+        "storyKey": "QBC-104",
+        "hours": 1.5,
+        "workedOn": "2026-09-21",
+        "note": "Shared delivery review and follow-up"
+      }
+    ]
+  }
+}

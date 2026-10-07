@@ -1,0 +1,66 @@
+WEBVTT
+
+1
+00:00:00.595 --> 00:00:07.595
+Log hours across stories
+Record one total, preview each share, and save the whole group.
+
+2
+00:00:08.133 --> 00:00:15.133
+Start with the assistant
+Noah has 8.5 hours logged. Add a shared block of work from this page.
+
+3
+00:00:15.452 --> 00:00:22.452
+Choose the stories
+Select the three stories the work covered. The list order controls the remainder.
+
+4
+00:00:26.665 --> 00:00:32.665
+Preview equal shares
+Three hours across three stories gives each story one hour.
+
+5
+00:00:33.044 --> 00:00:41.044
+Keep the total exact
+Five hours becomes 2 + 1.5 + 1.5. The first listed selection receives the remainder.
+
+6
+00:00:41.653 --> 00:00:47.653
+One date and note
+The date and this note will be recorded on all three entries.
+
+7
+00:00:48.124 --> 00:00:55.124
+All three entries saved
+The total is now 13.5 hours. Completed work accounts for 3.5 hours.
+
+8
+00:00:55.652 --> 00:01:01.652
+QBC-101: 2 h
+Each share is an ordinary time entry, with the shared date and note.
+
+9
+00:01:02.318 --> 00:01:08.318
+QBC-102: 1.5 h
+Each share is an ordinary time entry, with the shared date and note.
+
+10
+00:01:09.025 --> 00:01:15.025
+QBC-104: 1.5 h
+Each share is an ordinary time entry, with the shared date and note.
+
+11
+00:01:15.832 --> 00:01:22.832
+Still there after reload
+The saved entries and totals are loaded again from the workspace.
+
+12
+00:01:23.140 --> 00:01:29.140
+Read completed work
+Filter to the completed story while the overall totals remain visible.
+
+13
+00:01:29.452 --> 00:01:36.452
+One total. Three stories.
+Five hours recorded together, with every quarter hour accounted for.

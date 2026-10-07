@@ -1,0 +1,19 @@
+{
+  "voice": "Microsoft Zira Desktop",
+  "language": "en-US",
+  "segments": [
+    { "start": 0.9, "end": 7.6, "text": "Record hours across several stories in one step. Preview each share, then save the whole group." },
+    { "start": 8.45, "end": 15.1, "text": "Start on Noah's hours page. He has eight and a half hours logged across two stories." },
+    { "start": 15.8, "end": 22.5, "text": "Choose Log across stories, then select the work you want to include. Here, we'll select three stories." },
+    { "start": 27.0, "end": 32.6, "text": "Enter three hours. The preview divides that total equally, giving each story one hour." },
+    { "start": 33.4, "end": 41.1, "text": "Five hours becomes two, one and a half, and one and a half. The first story receives the remainder." },
+    { "start": 42.0, "end": 47.7, "text": "Add a note. The same date and note will appear on all three entries." },
+    { "start": 48.45, "end": 55.1, "text": "Save the group. Noah now has thirteen and a half hours logged, including three and a half on completed work." },
+    { "start": 56.0, "end": 61.6, "text": "The health summary received two hours, with the date and shared note." },
+    { "start": 62.65, "end": 68.3, "text": "The client decision received one and a half hours as a separate entry." },
+    { "start": 69.35, "end": 75.0, "text": "The completed checklist also received one and a half hours." },
+    { "start": 76.2, "end": 82.8, "text": "Reload the page. The entries and totals are still here, confirming that the group was saved." },
+    { "start": 83.5, "end": 89.1, "text": "Filter to completed work to see the finished story. The overall totals stay visible." },
+    { "start": 89.8, "end": 96.5, "text": "One total, three stories. Five hours recorded together, with every quarter hour accounted for." }
+  ]
+}
