@@ -218,3 +218,20 @@ test('L2-059 · Offer Unassigned only when a story has no owner', async ({ page 
     'Noah Williams (1)',
   ]);
 });
+
+test('L2-059 · Show every story again', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.filterByAssistant('Amara Okafor');
+  await board.expectShowing(1, 4);
+  await board.showAllStories();
+  await board.expectEveryStoryShown();
+  await board.expectStoryInColumn(DECISION, 'To do');
+  await board.expectStoryInColumn(HEALTH_SUMMARY, 'In progress');
+  await board.expectStoryInColumn(CHECKLIST, 'Done');
+  await board.expectColumnCount('To do', 2);
+
+  await board.filterByAssistant('Noah Williams');
+  await board.filterByAssistant('All assistants');
+  await board.expectEveryStoryShown();
+  await board.expectStoryInColumn(EVIDENCE, 'To do');
+});

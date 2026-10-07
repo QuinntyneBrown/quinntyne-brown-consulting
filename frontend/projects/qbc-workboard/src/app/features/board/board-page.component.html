@@ -41,6 +41,11 @@
         <p class="filter-summary">
           Showing {{ visibleStories().length }} of {{ board.stories.length }} stories
         </p>
+        <qbc-button
+          variant="quiet"
+          (click)="filterByAssistant('all')"
+          >Show all stories</qbc-button
+        >
       }
     </div>
     <div class="board">

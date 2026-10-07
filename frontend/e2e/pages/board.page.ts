@@ -78,6 +78,16 @@ export class BoardPage {
     await expect(this.page.getByText(`Showing ${shown} of ${total} stories`)).toBeVisible();
   }
 
+  async showAllStories(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Show all stories' }).click();
+  }
+
+  /** A board showing every story says nothing about how many it is showing. */
+  async expectEveryStoryShown(): Promise<void> {
+    await expect(this.page.getByText(/^Showing \d+ of \d+ stories$/)).toHaveCount(0);
+    await expect(this.assistantFilter().locator('option:checked')).toHaveText(/^\s*All assistants/);
+  }
+
   async expectStoriesComplete(done: number, total: number): Promise<void> {
     await expect(this.summary()).toContainText(`${done} of ${total} stories complete`);
   }
