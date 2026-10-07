@@ -1,0 +1,1 @@
+A centred, muted message shown while a page or panel fetches its data. `qbc-loading-state` has no inputs: the projected text is wrapped in a paragraph with `role="status"` so assistive technology announces it.
