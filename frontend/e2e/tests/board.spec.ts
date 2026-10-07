@@ -164,3 +164,19 @@ test('L2-020 · Review completed membership', async ({ page }) => {
   await backlog.expectSprintAssignment(CHECKLIST, 'Sprint 14');
   await backlog.expectSprintAssignmentUnavailable(CHECKLIST);
 });
+
+test('L2-059 · Narrow the board to one assistant', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.filterByAssistant('Maya Chen');
+
+  await board.expectStoryInColumn(DECISION, 'To do');
+  await board.expectStoryInColumn(HEALTH_SUMMARY, 'In progress');
+  await board.expectStoryNotOnBoard(EVIDENCE);
+  await board.expectStoryNotOnBoard(CHECKLIST);
+  await board.expectColumnCount('To do', 1);
+  await board.expectColumnCount('In progress', 1);
+  await board.expectEmptyColumn('Done');
+  await board.expectShowing(2, 4);
+  // The sprint summary still describes every story in the sprint.
+  await board.expectStoriesComplete(1, 4);
+});

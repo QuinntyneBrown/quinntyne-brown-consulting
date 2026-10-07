@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, viewChild } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { SprintStoryCard } from '@qbc/api';
 import {
   BoardColumnComponent,
@@ -9,6 +9,8 @@ import {
   LoadingStateComponent,
   PageComponent,
   PageHeaderComponent,
+  SelectComponent,
+  SelectOption,
   SprintHeroComponent,
   StoryCardComponent,
 } from '@qbc/components';
@@ -28,6 +30,7 @@ import { SPRINT_EXECUTION_SERVICE } from './sprint-execution.service.contract';
     LoadingStateComponent,
     PageComponent,
     PageHeaderComponent,
+    SelectComponent,
     SprintHeroComponent,
     StoryCardComponent,
   ],
@@ -45,11 +48,39 @@ export class BoardPageComponent implements OnInit {
     { value: 'done' as const, label: 'Done' },
   ];
 
+  private readonly assistantChoice = signal('all');
+  readonly assistantOptions = computed<readonly SelectOption<string>[]>(() => {
+    const stories = this.service.board()?.stories ?? [];
+    const owners = new Map<string, string>();
+    for (const story of stories)
+      if (story.assistantId) owners.set(story.assistantId, story.assistantName ?? '');
+    const count = (id: string): number =>
+      stories.filter((story) => story.assistantId === id).length;
+    return [
+      { value: 'all', label: `All assistants (${stories.length})` },
+      ...[...owners]
+        .sort(([, a], [, b]) => a.localeCompare(b))
+        .map(([id, name]) => ({ value: id, label: `${name} (${count(id)})` })),
+    ];
+  });
+  readonly selectedAssistant = computed(() => {
+    const choice = this.assistantChoice();
+    return this.assistantOptions().some((option) => option.value === choice) ? choice : 'all';
+  });
+  readonly visibleStories = computed(() => {
+    const choice = this.selectedAssistant();
+    const stories = this.service.board()?.stories ?? [];
+    return choice === 'all' ? stories : stories.filter((story) => story.assistantId === choice);
+  });
+
   ngOnInit(): void {
     void this.service.load();
   }
   stories(status: SprintStoryCard['boardStatus']): readonly SprintStoryCard[] {
-    return this.service.board()?.stories.filter((story) => story.boardStatus === status) ?? [];
+    return this.visibleStories().filter((story) => story.boardStatus === status);
+  }
+  filterByAssistant(choice: string): void {
+    this.assistantChoice.set(choice);
   }
   edit(id: string): void {
     this.editor.open(id);

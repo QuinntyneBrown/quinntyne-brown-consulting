@@ -420,9 +420,7 @@
     const summary = document.getElementById('filter-summary');
     const clear = document.getElementById('clear-filter');
     const initials = (name) => name.split(' ').map((part) => part[0]).join('').slice(0, 2);
-    const plural = (n) => `${n} ${n === 1 ? 'story' : 'stories'}`;
     const matches = (story, choice) => choice === 'all' || (choice === 'unassigned' ? story.owner === null : story.owner === choice);
-    const label = (choice) => choice === 'all' ? 'all assistants' : choice === 'unassigned' ? 'unassigned stories' : choice;
 
     function renderHero() {
       const done = stories.filter((s) => s.status === 'done').length;
@@ -466,7 +464,7 @@
       }).join('');
       const narrowed = choice !== 'all';
       summary.hidden = clear.hidden = !narrowed;
-      summary.innerHTML = narrowed ? `Showing <b>${plural(visible.length)}</b> of ${stories.length} for ${label(choice)}` : '';
+      summary.innerHTML = narrowed ? `Showing <b>${visible.length}</b> of ${stories.length} stories` : '';
       const url = new URL(location.href);
       if (narrowed) url.searchParams.set('assistant', choice); else url.searchParams.delete('assistant');
       history.replaceState(null, '', url);

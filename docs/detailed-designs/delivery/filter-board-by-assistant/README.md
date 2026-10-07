@@ -49,7 +49,7 @@ The slice lives entirely in the board feature of the Angular application.
 - **`visibleStories`** — computed stories that match the choice. `stories(status)`
   groups these, not the whole board, so each column's cards, count, and empty
   state follow the filter.
-- **Filter summary** — on a narrowed board, the text "Showing *n* stories of *m*"
+- **Filter summary** — on a narrowed board, the text "Showing *n* of *m* stories"
   and a **Show all stories** action that returns to All assistants.
 - **`qbc-select`** — the existing design-system select, labelled
   "Filter board by assistant" for assistive technology.

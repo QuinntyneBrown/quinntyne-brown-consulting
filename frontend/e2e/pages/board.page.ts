@@ -56,6 +56,28 @@ export class BoardPage {
     await expect(this.page.locator('.story-card').filter({ hasText: title })).toHaveCount(1);
   }
 
+  /** Chooses an assistant by name; each choice also states how many stories it leaves. */
+  async filterByAssistant(name: string): Promise<void> {
+    const filter = this.assistantFilter();
+    const value = await filter
+      .locator('option')
+      .filter({ hasText: new RegExp(`^\\s*${name} \\(\\d+\\)\\s*$`) })
+      .getAttribute('value');
+    await filter.selectOption(value!);
+  }
+
+  async expectStoryNotOnBoard(title: string): Promise<void> {
+    await expect(this.card(title)).toHaveCount(0);
+  }
+
+  async expectShowing(shown: number, total: number): Promise<void> {
+    await expect(this.page.getByText(`Showing ${shown} of ${total} stories`)).toBeVisible();
+  }
+
+  async expectStoriesComplete(done: number, total: number): Promise<void> {
+    await expect(this.summary()).toContainText(`${done} of ${total} stories complete`);
+  }
+
   async expectColumnCount(column: BoardColumnName, count: number): Promise<void> {
     await expect(this.column(column).locator('qbc-count')).toHaveText(String(count));
   }
@@ -239,6 +261,10 @@ export class BoardPage {
     return this.page
       .locator('.board-column')
       .filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+  }
+
+  private assistantFilter(): Locator {
+    return this.page.getByRole('combobox', { name: 'Filter board by assistant' });
   }
 
   private summary(): Locator {

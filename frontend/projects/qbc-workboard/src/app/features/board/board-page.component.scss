@@ -1,7 +1,27 @@
+.board-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.board-filter qbc-select {
+  min-width: 240px;
+}
+.filter-summary {
+  margin: 0;
+  color: var(--qbc-ink-soft);
+  font-size: var(--qbc-fs-sm);
+}
 .board {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+}
+@media (max-width: 760px) {
+  .board-filter qbc-select {
+    width: 100%;
+  }
 }
 @media (max-width: 1000px) {
   .board {
