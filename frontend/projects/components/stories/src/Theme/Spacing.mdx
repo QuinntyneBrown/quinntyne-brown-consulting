@@ -1,0 +1,50 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { TokenTable, previews } from './components/TokenBlocks';
+import { pick } from './components/tokens';
+
+<Meta title="Theme/Spacing" />
+
+# Spacing and layout
+
+QBC Workboard tokenises the **sizes that must line up across components** — page gutters, control heights and the shell
+frame. Component-internal padding and gaps (`gap: 18px` in a form grid, `padding: 18px` in a story card) are set literally in
+each component's stylesheet.
+
+## Gutter
+
+The horizontal padding of the top bar and of `<main>` inside `qbc-app-shell`. It is fluid between 28px and 72px, and
+drops to a fixed 18px below 900px.
+
+<TokenTable
+  tokens={pick('gutter')}
+  preview={previews.width}
+/>
+
+## Control heights
+
+Buttons and fields sit on the same rows (toolbars, dialog footers), so their heights are shared. `qbc-button` uses
+`--qbc-button-h` as a minimum height; `qbc-text-input` and `qbc-select` use `--qbc-control-h`.
+
+<TokenTable
+  tokens={pick('button-h', 'control-h')}
+  preview={previews.height}
+/>
+
+## Shell layout
+
+The frame `qbc-app-shell`, `qbc-sidebar`, `qbc-topbar` and `qbc-page` build together. Above 900px the sidebar is fixed at
+`--qbc-sidebar-w` and the workspace is offset by it; below, the sidebar becomes an off-canvas drawer and the top bar
+shrinks.
+
+<TokenTable
+  tokens={pick('sidebar-w', 'page-max')}
+  preview={previews.width}
+/>
+
+<TokenTable
+  tokens={pick('topbar-h')}
+  preview={previews.height}
+/>
+
+See [Patterns / Workspace Shell](?path=/docs/patterns-workspace-shell--docs) for the frame assembled.

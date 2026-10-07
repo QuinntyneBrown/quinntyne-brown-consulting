@@ -1,0 +1,76 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Concepts/Introduction" />
+
+<div
+  className="sb-unstyled"
+  style={{
+    background: 'var(--qbc-sprint-hero-bg)',
+    border: '1px solid var(--qbc-line)',
+    borderRadius: 'var(--qbc-r-xl)',
+    padding: '40px 32px',
+    margin: '0 0 32px',
+  }}
+>
+  <p
+    style={{
+      color: 'var(--qbc-accent)',
+      fontSize: 11,
+      fontWeight: 800,
+      letterSpacing: '0.06em',
+      textTransform: 'uppercase',
+      margin: 0,
+    }}
+  >
+    QBC Workboard Design System
+  </p>
+  <h1
+    style={{
+      color: 'var(--qbc-ink)',
+      fontSize: 'clamp(30px, 3vw, 42px)',
+      letterSpacing: '-0.035em',
+      lineHeight: 1.12,
+      margin: '10px 0 12px',
+    }}
+  >
+    A quiet view of the team's commitment.
+  </h1>
+  <p style={{ color: 'var(--qbc-ink-soft)', maxWidth: 600, margin: 0 }}>
+    Tokens, Angular components and page patterns for QBC Workboard — the sprint, backlog and
+    initiative workspace. Everything here is the real <code>@qbc/components</code> library the app
+    ships, rendered live.
+  </p>
+</div>
+
+## What's here
+
+| Section                                                      | What you'll find                                                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| [Concepts](?path=/docs/concepts-developer-quick-start--docs) | Quick start, how components are styled, accessibility rules and how to write stories.                  |
+| [Theme](?path=/docs/theme-overview--docs)                    | The `--qbc-*` design tokens — colours, type, layout sizes, radii, shadows — parsed from `styles.scss`. |
+| Components                                                   | Every `qbc-*` component with its API table (inputs, outputs, JSDoc), examples and best practices.      |
+| Patterns                                                     | Components composed into whole screens: the workspace shell, the sprint board, the backlog and forms.  |
+
+## Principles
+
+- **Quiet by default.** White panels, hairline borders and near-black ink. Colour carries meaning — the accent green
+  marks the next action and finished work; blue and amber mark workflow state — and nothing else.
+- **One primary action per view.** The accent `qbc-button` is the next step; everything beside it is `secondary` or
+  `quiet`.
+- **The library owns presentation, the app owns behaviour.** `@qbc/components` never imports `@qbc/api`, services or
+  feature state, and application templates never use raw `<button>`, `<input>`, `<select>`, `<textarea>`, `<dialog>`
+  or `<a>` — `npm run validate:components` enforces both.
+- **Native elements underneath.** Every control renders the real HTML element, so keyboard support, forms and assistive
+  technology work without re-implementation.
+- **Tokens, not values.** Every colour, radius, shadow and shell size is a `--qbc-*` custom property.
+
+## Where the code lives
+
+| Path                                             | Purpose                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------- |
+| `frontend/projects/components/src/lib/`          | Component source (`<name>/<name>.component.ts`, `.html`, `.scss`)         |
+| `frontend/projects/components/src/styles.scss`   | Tokens, reset, focus ring and reduced-motion rule                         |
+| `frontend/projects/components/src/public-api.ts` | The public entry point, `@qbc/components`                                 |
+| `frontend/projects/components/stories/src/`      | This Storybook: concept and theme MDX, one folder per component, patterns |
+| `frontend/projects/components/.storybook/`       | Storybook configuration, manager theme and branding                       |
+| `frontend/projects/qbc-workboard/`               | The application that consumes the library                                 |

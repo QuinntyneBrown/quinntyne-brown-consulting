@@ -1,0 +1,14 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { RadiusRow } from './components/TokenBlocks';
+import { byPrefix } from './components/tokens';
+
+<Meta title="Theme/Border Radii" />
+
+# Border radii
+
+Soft, slightly squared corners. Most components use one of two **role** radii — `--qbc-r-control` for anything you click
+or type into, `--qbc-r-pill` for status pills and counts — and containers step up the scale with their size: rows at
+`lg`, cards and columns at `xl`, the dialog at `2xl`.
+
+<RadiusRow tokens={byPrefix('r-')} />

@@ -1,0 +1,65 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { ColorGrid } from './components/TokenBlocks';
+import { byPrefix, pick } from './components/tokens';
+
+<Meta title="Theme/Colors" />
+
+# Colors
+
+A quiet, green-ink workspace: near-black **ink** on white **panels**, hairline **lines**, and one **accent** green for
+the next action and for work that is ready or done. Blue, amber and danger appear only as status tones.
+
+Every swatch is parsed from `src/styles.scss` and painted with its live custom property. Never hard-code a hex value in a
+component stylesheet — if a colour is missing, add a token first (see [Overview](?path=/docs/theme-overview--docs)).
+
+## Ink
+
+Text colours, darkest first. `--qbc-ink-soft` is the floor for readable secondary text on white.
+
+<ColorGrid tokens={byPrefix('ink')} />
+
+## Line
+
+Borders and dividers. `--qbc-line` is the default; `--qbc-line-strong` is for form controls, whose edge must be visible
+without a fill.
+
+<ColorGrid tokens={byPrefix('line')} />
+
+## Surface
+
+<ColorGrid tokens={pick('panel', 'soft', 'surface-raised', 'surface-hover', 'sprint-hero-bg')} />
+
+## Accent
+
+The brand green. `--qbc-accent` fills the primary button and the progress bar — keep it to one primary action per view.
+On an `--qbc-accent-soft` fill, use `--qbc-accent-dark` for text.
+
+<ColorGrid tokens={byPrefix('accent')} />
+
+## Status tones
+
+Each tone is a pair: the `-soft` fill and the base colour as its ink. `qbc-pill` maps workflow states onto them —
+ready / active / done on accent, draft / to-do on blue, in-progress / planned / limited on amber, archived / completed
+on `--qbc-soft`.
+
+<ColorGrid tokens={byPrefix('blue')} />
+
+<ColorGrid tokens={byPrefix('amber')} />
+
+## Danger
+
+Destructive buttons, required-field asterisks and the `qbc-form-error` banner.
+
+<ColorGrid tokens={byPrefix('danger')} />
+
+## Navigation and placeholder
+
+<ColorGrid tokens={pick('nav-ink', 'nav-icon', 'placeholder')} />
+
+## Focus and scrim
+
+Translucent overlays. `--qbc-focus-ring` is the global `:focus-visible` outline; `--qbc-focus-ring-field` is the softer
+halo inside text fields; `--qbc-scrim` dims the page behind `qbc-dialog`.
+
+<ColorGrid tokens={pick('focus-ring', 'focus-ring-field', 'scrim')} />

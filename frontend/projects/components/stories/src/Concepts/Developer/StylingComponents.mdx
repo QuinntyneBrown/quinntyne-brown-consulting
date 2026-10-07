@@ -1,0 +1,64 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Concepts/Developer/Styling Components" />
+
+# Styling components
+
+## Encapsulated SCSS, global tokens
+
+Each component has its own `<name>.component.scss` with Angular's default emulated encapsulation, so selectors can be
+short and element-based (`article`, `header`, `h2`) without leaking. The only global CSS is `src/styles.scss`: tokens on
+`:root`, a minimal reset, body type, the `:focus-visible` outline and the reduced-motion rule.
+
+```scss
+// board-column.component.scss
+section {
+  min-width: 0;
+  padding: 18px;
+  border-radius: var(--qbc-r-xl);
+  background: var(--qbc-soft);
+}
+h2 {
+  margin: 0;
+  font-size: 14px;
+}
+```
+
+Rules of thumb:
+
+- **Use tokens, never hex values.** Missing a colour, radius or shadow? Add a `--qbc-*` token to `styles.scss` first
+  (see [Theme / Overview](?path=/docs/theme-overview--docs)).
+- **Pick the token by role**, not by value — `--qbc-ink-faint` for a story key, `--qbc-ink-soft` for metadata — even
+  where two roles share a hex today.
+- **One breakpoint.** The shell changes at 900px (sidebar becomes a drawer, the gutter and top bar shrink through their
+  tokens). Content components add their own narrower breakpoints only where their layout needs it, such as
+  `qbc-form-grid` collapsing to one column at 760px.
+
+## Hosts and modifiers
+
+The host element is part of the component's styling surface:
+
+- Layout components set `:host { display: block; }` so they behave in grids and flex rows.
+- Modifiers that affect the parent's layout are host classes driven by inputs — `full` sets `.qbc-full` on
+  `qbc-field`, `qbc-text-input`, `qbc-textarea` and `qbc-select`, which spans the whole `qbc-form-grid` row.
+- Row and card components carry a stable host class (`board-column`, `story-card`, `data-row`, `epic-row`,
+  `initiative-card`, `sprint-row`) so the app's end-to-end tests can locate them.
+- Variants on an inner native element are classes from inputs: `qbc-button` renders `<button class="primary md">`.
+
+## State is ARIA, not a class alone
+
+Expose state where assistive technology can read it: `role="progressbar"` with `aria-valuenow` on `qbc-progress`,
+`aria-expanded` on disclosure buttons (`ariaExpanded` on `qbc-button` / `qbc-icon-button`), `role="alert"` on
+`qbc-form-error`, `aria-describedby` from a control to its hint.
+
+## Content projection
+
+Named slots use attribute selectors — `<ng-content select="[actions]" />` — so consumers tag the projected element:
+`<qbc-button actions>`. Declare each slot **once** in a template. On the consumer side, an `@if` that wraps several
+slotted nodes loses the slot (Angular NG8011); put one `@if` around each node instead.
+
+## Styling from the app
+
+Application stylesheets may arrange components (`.board { display: grid; … }`) but must not reach inside them or
+restyle them. If a page needs a variant, add an input to the component. The boundary validator rejects app stylesheets
+that use legacy un-prefixed tokens such as `var(--ink)` or `var(--accent)`.
