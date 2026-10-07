@@ -18,6 +18,9 @@ import { SprintManagerComponent } from '../sprints/sprint-manager.component';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from './sprint-execution.service.contract';
 
+/** The filter value for stories nobody owns; assistant IDs are GUIDs, so it cannot collide. */
+const UNASSIGNED = 'unassigned';
+
 @Component({
   selector: 'app-board-page',
   imports: [
@@ -54,13 +57,15 @@ export class BoardPageComponent implements OnInit {
     const owners = new Map<string, string>();
     for (const story of stories)
       if (story.assistantId) owners.set(story.assistantId, story.assistantName ?? '');
-    const count = (id: string): number =>
+    const count = (id: string | null): number =>
       stories.filter((story) => story.assistantId === id).length;
+    const unassigned = count(null);
     return [
       { value: 'all', label: `All assistants (${stories.length})` },
       ...[...owners]
         .sort(([, a], [, b]) => a.localeCompare(b))
         .map(([id, name]) => ({ value: id, label: `${name} (${count(id)})` })),
+      ...(unassigned ? [{ value: UNASSIGNED, label: `Unassigned (${unassigned})` }] : []),
     ];
   });
   readonly selectedAssistant = computed(() => {
@@ -70,7 +75,9 @@ export class BoardPageComponent implements OnInit {
   readonly visibleStories = computed(() => {
     const choice = this.selectedAssistant();
     const stories = this.service.board()?.stories ?? [];
-    return choice === 'all' ? stories : stories.filter((story) => story.assistantId === choice);
+    if (choice === 'all') return stories;
+    const owner = choice === UNASSIGNED ? null : choice;
+    return stories.filter((story) => story.assistantId === owner);
   });
 
   ngOnInit(): void {

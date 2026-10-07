@@ -66,6 +66,10 @@ export class BoardPage {
     await filter.selectOption(value!);
   }
 
+  async expectAssistantChoices(labels: readonly string[]): Promise<void> {
+    await expect(this.assistantFilter().locator('option')).toHaveText(labels);
+  }
+
   async expectStoryNotOnBoard(title: string): Promise<void> {
     await expect(this.card(title)).toHaveCount(0);
   }
