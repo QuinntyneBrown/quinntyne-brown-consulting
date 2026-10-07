@@ -73,6 +73,7 @@ flowchart LR
 | `frontend/projects/qbc-workboard` | Routes, feature pages, orchestration, and Signal state |
 | `frontend/projects/api` | Typed models, service interfaces, injection tokens, and HTTP clients |
 | `frontend/projects/components` | Versioned Angular UI system and its Storybook design-system catalog |
+| `e2e` | Playwright browser acceptance suite for the built frontend and the Storybook catalog tests |
 | `docs` | Requirements, detailed designs, acceptance evidence, and prototypes |
 
 The [detailed designs](docs/detailed-designs/) describe each vertical feature.
@@ -336,12 +337,16 @@ npm run validate:components
 npm run test:components
 
 # Browser acceptance tests
+Set-Location ../e2e
+npm ci
 npx playwright install
-npm run typecheck:e2e
-npm run test:e2e
+npm run typecheck
+npm test
 
 # Storybook design-system catalog
+Set-Location ../frontend
 npm run build-storybook
+Set-Location ../e2e
 npm run test:storybook
 ```
 
@@ -416,8 +421,8 @@ npm run storybook
 ```
 
 Open `http://localhost:6006/`. `npm run build-storybook` writes the static site to
-`frontend/dist/storybook`, and `npm run test:storybook` visits every story and
-docs page in Chromium. Pushes to `main` that touch the library deploy it from
+`frontend/dist/storybook`, and `npm run test:storybook` in `e2e` visits every
+story and docs page in Chromium. Pushes to `main` that touch the library deploy it from
 `.github/workflows/deploy-storybook.yml`.
 
 ## Documentation

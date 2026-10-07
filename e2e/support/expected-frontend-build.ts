@@ -2,7 +2,9 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
 const commitLength = 7;
-const packageMetadata = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string };
+const packageMetadata = JSON.parse(readFileSync('../frontend/package.json', 'utf8')) as {
+  version: string;
+};
 
 function revision(): string | null {
   const supplied = process.env['QBC_SOURCE_REVISION_ID']?.trim();

@@ -15,7 +15,7 @@ import type {
   TimeEntryDraft,
   WorkItemKind,
 } from '@qbc/api';
-import type { Page, Route } from '@playwright/test';
+import type { BrowserContext, Route } from '@playwright/test';
 import { createWorkboardApiState } from './workboard-api-state.factory';
 import type { WorkboardApiState } from './workboard-api-state';
 
@@ -91,8 +91,25 @@ export class WorkboardApiMock {
     this.state.fault.rejectSession = true;
   }
 
-  async install(page: Page): Promise<void> {
-    await page.route('**/api/**', (route) => this.handle(route));
+  /**
+   * Answer the API for every page in the context and refuse every other server. The browser may
+   * only read the built application from `appOrigin`; a request to any other origin, such as a
+   * locally running API, is aborted and reported, so no scenario can pass by reaching a real
+   * backend.
+   */
+  async install(context: BrowserContext, appOrigin: string): Promise<void> {
+    await context.route(
+      (url) => url.origin !== appOrigin,
+      (route) => {
+        const request = route.request();
+        this.unexpectedRequests.push(`${request.method()} ${request.url()}`);
+        return route.abort('blockedbyclient');
+      },
+    );
+    await context.route(
+      (url) => url.origin === appOrigin && url.pathname.startsWith('/api/'),
+      (route) => this.handle(route),
+    );
   }
 
   private async handle(route: Route): Promise<void> {

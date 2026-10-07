@@ -48,9 +48,14 @@ jobs:
         with:
           node-version: 22.x
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            e2e/package-lock.json
       - name: Restore frontend dependencies
         working-directory: frontend
+        run: npm ci --prefer-offline --no-audit --no-fund
+      - name: Restore acceptance-suite dependencies
+        working-directory: e2e
         run: npm ci --prefer-offline --no-audit --no-fund
       - name: Check frontend formatting
         working-directory: frontend
@@ -66,12 +71,15 @@ jobs:
           QBC_TEST_SQLSERVER_CONNECTION_STRING: >-
             Server=localhost,1433;User ID=sa;Password=Qbc_${{ github.run_id }}!aA;Encrypt=False;TrustServerCertificate=True;Connect Timeout=30
         run: dotnet test backend/Qbc.Workboard.slnx --configuration Release
+      - name: Check acceptance-suite formatting and types
+        working-directory: e2e
+        run: npm run format:check && npm run typecheck
       - name: Install Playwright browsers
-        working-directory: frontend
+        working-directory: e2e
         run: npx playwright install --with-deps chromium
       - name: Run browser acceptance tests
-        working-directory: frontend
-        run: npm run test:e2e
+        working-directory: e2e
+        run: npm test
       # The frontend was stamped and built above, so publishing carries that build into the
       # package rather than making a second one; the backend takes the same revision here.
       - name: Publish single-host application
@@ -96,18 +104,23 @@ jobs:
         with:
           node-version: 22.x
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            e2e/package-lock.json
       - name: Restore frontend dependencies
         working-directory: frontend
+        run: npm ci --prefer-offline --no-audit --no-fund
+      - name: Restore acceptance-suite dependencies
+        working-directory: e2e
         run: npm ci --prefer-offline --no-audit --no-fund
       - name: Build Storybook
         working-directory: frontend
         run: npm run build-storybook
       - name: Install Playwright browsers
-        working-directory: frontend
+        working-directory: e2e
         run: npx playwright install --with-deps chromium
       - name: Run Storybook catalog tests
-        working-directory: frontend
+        working-directory: e2e
         run: npm run test:storybook
 
   deploy-workboard:

@@ -11,6 +11,8 @@ deployment is gated by a single shared passcode, not user accounts.
   `.Infrastructure`, `.Api`, `.Cli`) and its tests
 - `frontend/` — Angular workspace (`qbc-workboard` app, `api` clients,
   `components` UI library)
+- `e2e/` — Playwright browser acceptance suite for the frontend (its own npm
+  package, run with `npm test` after building `frontend/`)
 - `docs/specs/` — L1/L2 requirements; `docs/detailed-designs/` — per-feature
   designs; `docs/mocks/` — static design reference
 
@@ -45,8 +47,8 @@ no tests added afterward, and no weakening tests to manufacture a pass. Keep
 the requirement, detailed design, mock, criteria, tests, and implementation
 aligned until the entire feature or behavior change is complete.
 
-Back end: integration tests against the API. Front end: Playwright, using the
-Page Object Model - one page object per screen, owning the selectors and the
+Back end: integration tests against the API. Front end: Playwright in `e2e/`,
+using the Page Object Model - one page object per screen, owning the selectors and the
 interactions. Tests state intent; page objects know the DOM. Never put a
 selector in a test.
 

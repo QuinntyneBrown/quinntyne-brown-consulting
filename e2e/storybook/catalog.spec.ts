@@ -1,11 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { expect, test } from '@playwright/test';
-import { managerTokens } from '../../projects/components/.storybook/theme';
+import { managerTokens } from '../../frontend/projects/components/.storybook/theme';
 
 type Entry = { id: string; title: string; name: string; type: 'story' | 'docs' };
 
-const workspace = resolve(__dirname, '../..');
+const workspace = resolve(__dirname, '../../frontend');
 const componentSource = resolve(workspace, 'projects/components/src');
 const entries: Entry[] = Object.values(
   JSON.parse(readFileSync(resolve(workspace, 'dist/storybook/index.json'), 'utf8')).entries,

@@ -27,8 +27,11 @@ From `frontend/`:
 ```powershell
 npm run storybook        # http://localhost:6006
 npm run build-storybook  # static site in dist/storybook
-npm run test:storybook   # visits every story and docs page in Chromium
 ```
+
+The catalog test suite lives in the root [`e2e`](../../../e2e/README.md) package. After building
+Storybook, run `npm run test:storybook` there to visit every story and docs page
+in Chromium.
 
 ## Verify
 

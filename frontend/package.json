@@ -18,9 +18,6 @@
     "validate:components": "node scripts/validate-component-boundary.mjs",
     "storybook": "ng run components:storybook",
     "build-storybook": "ng run components:build-storybook",
-    "test:storybook": "playwright test --config=playwright.storybook.config.ts",
-    "typecheck:e2e": "tsc --project tsconfig.e2e.json",
-    "test:e2e": "playwright test",
     "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
@@ -41,7 +38,6 @@
     "@angular/cli": "21.2.23",
     "@angular/compiler-cli": "21.2.22",
     "@angular/platform-browser-dynamic": "21.2.22",
-    "@axe-core/playwright": "4.11.1",
     "@compodoc/compodoc": "2.0.0",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.55.1",

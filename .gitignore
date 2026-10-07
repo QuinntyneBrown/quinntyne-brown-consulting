@@ -3,9 +3,10 @@ backend/**/obj/
 frontend/node_modules/
 frontend/dist/
 frontend/.angular/
-frontend/playwright-report/
-frontend/test-results/
-frontend/.playwright/
+e2e/node_modules/
+e2e/playwright-report/
+e2e/test-results/
+e2e/.playwright/
 artifacts/
 # Storybook (compodoc output + logs)
 frontend/projects/components/documentation.json
