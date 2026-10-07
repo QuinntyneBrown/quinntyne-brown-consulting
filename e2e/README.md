@@ -75,9 +75,12 @@ The suite reads the built application rather than the development server, so
 what it proves is what gets deployed. Run `npm run build` in `frontend` first; the server that
 carries the build refuses to start without one.
 
-Every backend route has an explicit mock handler. An unhandled API request fails
-the test, making contract growth visible instead of silently reaching a developer
-backend. The mock enforces the same relationship, grooming, and lifecycle rules
+The backend is mocked out completely; it never needs to be running. The mock is
+installed on the whole browser context before the application loads. It answers
+every `/api` request from the server that hosts the build. Every other origin,
+including a locally running API, is refused. A refused request or an `/api` route
+without a handler fails the test, so no scenario can pass by reaching a real
+backend, and contract growth shows up instead of silently reaching one. The mock enforces the same relationship, grooming, and lifecycle rules
 the real API exposes, because the specification's rejection scenarios are
 observed through the feedback those rules produce. Mock and fixture files are
 excluded from the application TypeScript configuration and are never included in

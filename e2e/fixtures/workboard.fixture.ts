@@ -16,7 +16,7 @@ export const test = base.extend<WorkboardFixtures>({
   locked: [false, { option: true }],
   seed: [seededWorkspace, { option: true }],
   workboardApi: [
-    async ({ page, locked, seed }, use, testInfo) => {
+    async ({ page, context, baseURL, locked, seed }, use, testInfo) => {
       const workboardApi = new WorkboardApiMock();
       workboardApi.seed(seed.apply);
       const pageErrors: string[] = [];
@@ -32,7 +32,9 @@ export const test = base.extend<WorkboardFixtures>({
           [TOKEN_KEY, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()] as const,
         );
       }
-      await workboardApi.install(page);
+      if (!baseURL)
+        throw new Error('The acceptance suite needs a baseURL to serve the build from.');
+      await workboardApi.install(context, new URL(baseURL).origin);
       await use(workboardApi);
       if (testInfo.status === 'skipped') return;
       if (pageErrors.length > 0)
@@ -41,7 +43,7 @@ export const test = base.extend<WorkboardFixtures>({
         throw new Error('The browser did not exercise the mocked API boundary.');
       if (workboardApi.unexpectedRequests.length > 0) {
         throw new Error(
-          `Unhandled frontend API requests: ${workboardApi.unexpectedRequests.join(', ')}`,
+          `Requests that would have left the mocked backend: ${workboardApi.unexpectedRequests.join(', ')}`,
         );
       }
     },
