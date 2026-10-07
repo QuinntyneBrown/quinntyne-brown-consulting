@@ -25,6 +25,63 @@ site, separate API, VM, and paid network resources are unnecessary.
 > service has an SLA. Re-cost the system before using it for client production
 > data or a business-critical workflow.
 
+## Current deployment state (September 21, 2026)
+
+The running deployment no longer matches the $0 design above. The rest of this
+document is retained as the baseline it was provisioned from; this section
+records the deviations and why they were made.
+
+| Resource | Designed | Current | Why |
+| --- | --- | --- | --- |
+| App Service plan `qbc-workboard-f1-plan` | Linux `F1`, $0 | Linux `B1`, $13.14/month | See the incident below |
+| SQL free-limit behaviour on `QbcWorkboard` | Auto-pause until next month | **Continue using database with additional charges** (`BillOverUsage`) | Selected to resume the paused database on September 21 |
+
+### Incident: free SQL allowance exhausted
+
+On September 21, 2026 the database consumed its 100,000 free vCore-seconds for
+the month and paused. The web app, which applies EF Core migrations on startup,
+failed with SQL error 42119 (*monthly free amount allowance reached*) on every
+start. The Free plan stops a site after 15 worker-process restarts in an hour,
+so the crash loop turned into the App Service **403 Web App – Unavailable** page,
+and the Kudu site was disabled with it, which hid the logs while the site was
+down.
+
+Recovery steps taken:
+
+1. The database was resumed by selecting **Continue using database with
+   additional charges** in the portal. Azure does not allow reverting this to
+   auto-pause, so the database is now billable at the serverless rate whenever
+   the free allowance is exhausted. The allowance renews on the first of each
+   month.
+2. The pending `20260921120000_AddStoryPriority` migration was applied with
+   `qbc-workboard database initialize --target azure`.
+3. The plan was scaled from `F1` to `B1` with
+   `az appservice plan update --sku B1`, which cleared the quota stop
+   immediately, removed the restart, CPU and bandwidth quotas, and keeps Kudu
+   and log streaming available during a future outage.
+
+The deployed commit was verified against `main` through `/api/version`, the
+passcode gate returned 401 for anonymous workspace requests and 200 after unlock,
+and story payloads carried the new `priority` field.
+
+### Cost consequences
+
+- The `B1` plan is billed per hour whenever it exists, about **$13.14 per
+  month**. To return to $0, run
+  `az appservice plan update -g qbc-workboard-rg -n qbc-workboard-f1-plan --sku F1`;
+  the `F1` quota behaviour described below then applies again.
+- The database is now the larger cost risk. After the free allowance is used up
+  in a given month, serverless compute bills at $0.626110 per vCore-hour with a
+  0.5 vCore floor and a 60-minute idle tail before auto-pause, roughly $0.31 per
+  hour awake. Anything that keeps the database awake — an uptime monitor, a
+  query tool left connected, or repeated `--target azure` CLI calls — now costs
+  money instead of pausing the database. The `qbc-workboard-sql-free-remaining`
+  alert is the early warning.
+- Because the migration-on-startup design turns a paused or unreachable
+  database into a crash loop, a future hardening change should make startup
+  tolerate a failed migration (log and keep serving the unlock screen) or move
+  migrations to a deployment step.
+
 ## Target architecture
 
 ```mermaid
@@ -329,9 +386,12 @@ The deployment is ready when all checks pass:
   work survives an app restart and browser refresh.
 - The database contains the EF migrations history and `SeedDevelopmentData`
   remains false unless demo data was intentionally requested.
-- App Service shows F1, SQL shows **Free offer applied**, SQL limit behaviour is
-  **Auto-pause the database until next month**, and Cost Analysis shows no
-  unexpected resources.
+- App Service shows the intended tier (`F1` in the baseline design, `B1` as
+  currently deployed), SQL shows **Free offer applied**, and Cost Analysis shows
+  no unexpected resources. The free-limit behaviour is **Continue using
+  database with additional charges** on the current database and cannot be
+  changed back; a newly created free database should select **Auto-pause the
+  database until next month**.
 - SQL rejects traffic from an IP that is not on its firewall list.
 - A push to `main` deploys only after both CI jobs pass; pull requests,
   non-`main` pushes, and failed builds do not deploy.
@@ -343,7 +403,10 @@ The deployment is ready when all checks pass:
 - The resource group has a USD $1 monthly Cost Management budget named
   `qbc-workboard-monthly-cost`, with an actual-cost notification at 80% and a
   forecast notification at 100%. A budget alerts but does not stop spending;
-  the F1 tier and SQL auto-pause setting are the actual cost guards.
+  the plan tier and the SQL free-limit behaviour are the actual cost guards.
+  With the current `B1` plan and `BillOverUsage` database, neither guard stops
+  spending, so the budget notification and the free-remaining alert are the
+  only signals.
 - The `qbc-workboard-sql-free-remaining` metric alert notifies the
   `qbc-workboard-operator-alerts` action group when fewer than 10,000 free
   vCore-seconds remain. Review App Service CPU, bandwidth, and filesystem
