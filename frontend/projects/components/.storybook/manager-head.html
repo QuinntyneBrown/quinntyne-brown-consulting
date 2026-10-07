@@ -1,0 +1,43 @@
+<!--
+  Override the default favicon used in the Storybook in the browser tab.
+-->
+<link
+  rel="icon"
+  type="image/svg+xml"
+  href="./qbc-logo.svg"
+/>
+
+<!-- Primary meta tags -->
+<meta
+  name="title"
+  content="QBC Workboard Design System"
+/>
+<meta
+  name="description"
+  content="Tokens, Angular components and patterns for QBC Workboard — the @qbc/components library rendered live."
+/>
+
+<!--
+  Sidebar polish. These selectors target Storybook's manager DOM and may
+  change on a Storybook version bump; keep them cosmetic only.
+  @see https://storybook.js.org/docs/configure/user-interface/theming#css-escape-hatches
+-->
+<style>
+  .sidebar-subheading,
+  button[data-action='collapse-ref'] {
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    letter-spacing: 0.02em !important;
+    text-transform: none !important;
+    color: #18201d !important;
+  }
+
+  .sidebar-item {
+    font-size: 14px !important;
+    line-height: 24px !important;
+  }
+
+  .sidebar-item[data-selected='true'] {
+    font-weight: 600 !important;
+  }
+</style>

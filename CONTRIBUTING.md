@@ -34,8 +34,6 @@ Restore the repository from its root:
 dotnet restore backend/Qbc.Workboard.slnx
 Set-Location frontend
 npm ci
-Set-Location ../design-system
-npm ci
 Set-Location ..
 ```
 
@@ -104,12 +102,15 @@ rather than behavior tests.
 
 ### Design-system conventions
 
-- Keep `design-system/` independent from `backend/`, `frontend/`, and `docs/` at
-  runtime and build time.
-- Update `component-manifest.json` whenever a component's public attributes or
-  catalog examples change.
-- Keep `assets/tokens.css` as the sole declaration point for `--qbc-*` tokens.
-- Run the contract validator and browser suite before opening a pull request.
+- Storybook in `frontend/projects/components` is the design-system catalog.
+  Every `@qbc/components` component has a `stories/src/<Name>/` folder whose
+  `index.stories.ts` owns the meta and re-exports a `Default` story plus its
+  variants, with `<Name>Description.md` and `<Name>BestPractices.md` prose.
+- Update `component-manifest.json` whenever a component is added or removed.
+- Keep `projects/components/src/styles.scss` as the sole declaration point for
+  `--qbc-*` tokens.
+- Run the component validator and the Storybook catalog suite before opening a
+  pull request.
 
 ### Documentation and diagrams
 
@@ -155,10 +156,10 @@ stateful API mocks in Chromium, so `npm run build` comes first.
 ### Design-system checks
 
 ```powershell
-Set-Location design-system
-npm run validate
-npx playwright install chromium
-npm test
+Set-Location frontend
+npm run validate:components
+npm run build-storybook
+npm run test:storybook
 ```
 
 ### Production publish

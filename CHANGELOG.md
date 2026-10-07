@@ -9,6 +9,12 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- A Storybook design-system docsite for `@qbc/components`: Concepts and Theme
+  pages, every component with its generated API table, examples and best
+  practices, and Patterns that compose whole Workboard screens. `npm run
+  storybook` serves it, `npm run build-storybook` builds it, and a Playwright
+  catalog suite visits every story and docs page. It deploys to GitHub Pages
+  in place of the standalone catalog.
 - Story priority. Every story carries a priority from a fixed scale — None,
   Very low, Low, Medium, High, Very high, or Critical — read back with the
   story and set through `POST`/`PUT /api/stories`. Stories that existed before
@@ -128,6 +134,9 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- `@qbc/components` 1.6.0: `component-manifest.json` (schema 2) lists the
+  library's components in one `components` inventory, and the boundary
+  validator requires a Storybook entry with a `Default` story for each.
 - The attached-files panel on an initiative, an epic, and a story was reworked.
   In the story editor it now spans the full width of the dialog instead of one
   column. The dropzone is tall only while the list is empty and shrinks to a
@@ -164,6 +173,11 @@ Versioned releases will follow [Semantic Versioning](https://semver.org/).
 - QBC Workboard now composes every button, form control, dialog, navigation
   element, card, and reusable row from `@qbc/components`; feature pages retain
   only application state and workflow orchestration.
+
+### Removed
+
+- The standalone `design-system/` Web Component catalog and its workflow; the
+  Storybook docsite replaces it.
 
 ### Fixed
 

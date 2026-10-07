@@ -25,7 +25,7 @@ that scope. There are no standalone first-party workers.
 | `workboard` | Planning and time recording for consultants and assistants | `frontend/projects/qbc-workboard`; `npm start` in `frontend`, normally port 4200. This recording uses its published bundle at `http://127.0.0.1:5268`. | Angular, real API, shared-passcode session | Recorded: group story hours |
 | `workboard-api` | Persistent workspace service for the browser and CLI | `backend/src/Qbc.Workboard.Api/Program.cs`; `dotnet run --project backend/src/Qbc.Workboard.Api --urls http://127.0.0.1:5050` | .NET 10, SQL Server, workspace session; `/api/version` public | Exercised as the recording's real backend; separate API video excluded by scope |
 | `workboard-cli` | Database maintenance and work-item authoring for operators | `backend/src/Qbc.Workboard.Cli`; `dotnet run --project backend/src/Qbc.Workboard.Cli -- --help` | .NET 10; SQL Server for maintenance, authenticated API for authoring | Excluded by scope |
-| `design-system` | Component and pattern catalog for designers and frontend developers | `design-system`; `npm start` in that directory, `http://127.0.0.1:5175` | Node/npm and Vite; no authentication | Excluded by scope |
+| `storybook` | Component and pattern catalog for designers and frontend developers | `frontend/projects/components/.storybook`; `npm run storybook` in `frontend`, `http://localhost:6006` | Node/npm and Storybook; no authentication | Excluded by scope |
 
 ## Verified story
 

@@ -8,3 +8,4 @@ package-lock.json
 **/*.ico
 **/*.har
 **/*.log
+projects/components/documentation.json

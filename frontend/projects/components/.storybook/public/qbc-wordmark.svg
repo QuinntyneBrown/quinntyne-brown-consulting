@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 38" width="220" height="38" role="img" aria-label="QBC Workboard Design System">
+  <rect width="38" height="38" rx="10" fill="#276749"/>
+  <text x="19" y="26" text-anchor="middle" fill="#ffffff"
+        font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="20" font-weight="750">Q</text>
+  <text x="50" y="17" fill="#18201d"
+        font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="15" font-weight="700">QBC Workboard</text>
+  <text x="50" y="33" fill="#68726d"
+        font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif"
+        font-size="12" font-weight="500">Design System</text>
+</svg>

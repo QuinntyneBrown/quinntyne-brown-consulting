@@ -117,8 +117,8 @@ and five rendered PNG diagrams.
   size, a 300 dpi preview of each side, and the script that regenerates them.
   The card takes its colours and its Archivo type from quinntynebrown.com
   rather than from the workboard's design tokens.
-- The standalone [design-system guide](../design-system/README.md) documents the
-  native Web Component catalog derived from that baseline.
+- The Storybook docsite in `frontend/projects/components` (`npm run storybook`
+  from `frontend/`) documents the design system derived from that baseline.
 - The [backend guide](../backend/README.md) describes the .NET solution and
   database tooling.
 - The [frontend guide](../frontend/README.md) describes the Angular workspace and
