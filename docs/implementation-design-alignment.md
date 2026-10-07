@@ -303,6 +303,14 @@ The following details differ:
 The design should adopt the consolidated board component, Signal service, split
 API clients, and reload behavior.
 
+### Delivery — filter the board by assistant
+
+The [board filter design](detailed-designs/delivery/filter-board-by-assistant/README.md)
+matches the implementation of `L2-059`: `BoardPageComponent` reads the
+`assistant` query parameter through `toSignal`, derives `assistantOptions`,
+`selectedAssistant`, and `visibleStories` with `computed`, and navigates with
+`replaceUrl` when the choice changes. No service, API, or backend type changed.
+
 ### Platform — serve the persistent workspace
 
 The [backend platform design](detailed-designs/platform/serve-persistent-workspace/README.md)
