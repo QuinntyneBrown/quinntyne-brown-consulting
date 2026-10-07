@@ -1,4 +1,7 @@
-import { Component, OnInit, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, OnInit, computed, inject, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs';
 import { SprintStoryCard } from '@qbc/api';
 import {
   BoardColumnComponent,
@@ -51,7 +54,13 @@ export class BoardPageComponent implements OnInit {
     { value: 'done' as const, label: 'Done' },
   ];
 
-  private readonly assistantChoice = signal('all');
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  /** The choice lives in the address, so a refresh or a shared link keeps it. */
+  private readonly assistantChoice = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('assistant') ?? 'all')),
+    { initialValue: 'all' },
+  );
   readonly assistantOptions = computed<readonly SelectOption<string>[]>(() => {
     const stories = this.service.board()?.stories ?? [];
     const owners = new Map<string, string>();
@@ -87,7 +96,11 @@ export class BoardPageComponent implements OnInit {
     return this.visibleStories().filter((story) => story.boardStatus === status);
   }
   filterByAssistant(choice: string): void {
-    this.assistantChoice.set(choice);
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { assistant: choice === 'all' ? null : choice },
+      replaceUrl: true,
+    });
   }
   edit(id: string): void {
     this.editor.open(id);

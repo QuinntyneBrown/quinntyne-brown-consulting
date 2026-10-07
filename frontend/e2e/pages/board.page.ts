@@ -70,6 +70,16 @@ export class BoardPage {
     await expect(this.assistantFilter().locator('option')).toHaveText(labels);
   }
 
+  /** Opens the board from an address that already names an assistant to narrow to. */
+  async openNarrowedTo(assistantId: string): Promise<void> {
+    await this.page.goto(`/board?assistant=${encodeURIComponent(assistantId)}`);
+    await this.expectActiveSprint();
+  }
+
+  async expectStoryOnBoard(title: string): Promise<void> {
+    await expect(this.card(title)).toHaveCount(1);
+  }
+
   async expectStoryNotOnBoard(title: string): Promise<void> {
     await expect(this.card(title)).toHaveCount(0);
   }

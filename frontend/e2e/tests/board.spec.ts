@@ -235,3 +235,28 @@ test('L2-059 · Show every story again', async ({ page }) => {
   await board.expectEveryStoryShown();
   await board.expectStoryInColumn(EVIDENCE, 'To do');
 });
+
+test('L2-059 · Keep the filter across a refresh and a move', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.filterByAssistant('Maya Chen');
+
+  await board.moveStoryForward(DECISION);
+  await board.expectStoryInColumn(DECISION, 'In progress');
+  await board.expectStoryNotOnBoard(EVIDENCE);
+  await board.expectShowing(2, 4);
+
+  await new WorkboardPage(page).reload();
+  await board.expectStoryInColumn(DECISION, 'In progress');
+  await board.expectStoryInColumn(HEALTH_SUMMARY, 'In progress');
+  await board.expectStoryNotOnBoard(EVIDENCE);
+  await board.expectStoryNotOnBoard(CHECKLIST);
+  await board.expectShowing(2, 4);
+});
+
+test('L2-059 · Ignore an unknown assistant in the address', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.openNarrowedTo('10000000-0000-4000-8000-000000000099');
+  await board.expectEveryStoryShown();
+  for (const title of [HEALTH_SUMMARY, DECISION, EVIDENCE]) await board.expectStoryOnBoard(title);
+  await board.expectStoryInColumn(CHECKLIST, 'Done');
+});
