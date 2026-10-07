@@ -23,6 +23,12 @@
             }
           },
           "defaultConfiguration": "production"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/api/**/*.ts", "projects/api/**/*.html"]
+          }
         }
       }
     },
@@ -54,6 +60,12 @@
             "runner": "vitest",
             "runnerConfig": "projects/components/vitest.config.ts",
             "watch": false
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["projects/components/**/*.ts", "projects/components/**/*.html"]
           }
         }
       }
@@ -123,8 +135,20 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/qbc-workboard/**/*.ts",
+              "projects/qbc-workboard/**/*.html"
+            ]
+          }
         }
       }
     }
+  },
+  "cli": {
+    "schematicCollections": ["angular-eslint"]
   }
 }

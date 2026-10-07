@@ -10,12 +10,15 @@
     "build:api": "ng build api",
     "build:components": "ng build components",
     "build:app": "node scripts/build-app.mjs build",
+    "lint": "ng lint",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:components": "ng test components --watch=false",
     "validate:components": "node scripts/validate-component-boundary.mjs",
     "typecheck:e2e": "tsc --project tsconfig.e2e.json",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
     "@angular/common": "21.2.22",
@@ -33,12 +36,19 @@
     "@angular/cli": "21.2.23",
     "@angular/compiler-cli": "21.2.22",
     "@axe-core/playwright": "4.11.1",
+    "@eslint/js": "10.0.1",
     "@playwright/test": "1.55.1",
     "@types/node": "22.18.0",
+    "angular-eslint": "21.4.0",
+    "eslint": "10.12.0",
+    "eslint-config-prettier": "10.1.8",
+    "husky": "9.1.7",
     "jsdom": "27.2.0",
+    "lint-staged": "16.4.0",
     "ng-packagr": "21.2.7",
     "prettier": "3.9.6",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.71.1",
     "vitest": "4.1.11"
   },
   "overrides": {

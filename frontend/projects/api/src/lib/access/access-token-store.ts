@@ -34,7 +34,7 @@ export class AccessTokenStore implements IAccessTokenStore {
 }
 
 function read(): AccessToken | null {
-  let raw: string | null = null;
+  let raw: string | null;
   try {
     raw = localStorage.getItem(STORAGE_KEY);
   } catch {
