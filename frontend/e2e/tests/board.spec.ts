@@ -1,5 +1,9 @@
 import { test } from '../fixtures/workboard.fixture';
-import { activeSprintWithoutDoneWork, onlyCompletedSprint } from '../mocks/workspace-scenarios';
+import {
+  activeSprintWithUnownedStory,
+  activeSprintWithoutDoneWork,
+  onlyCompletedSprint,
+} from '../mocks/workspace-scenarios';
 import { BacklogPage } from '../pages/backlog.page';
 import { BoardPage } from '../pages/board.page';
 import { SprintManagerPage } from '../pages/sprint-manager.page';
@@ -9,6 +13,7 @@ const HEALTH_SUMMARY = 'Publish a concise engagement health summary';
 const DECISION = 'Capture a client decision';
 const EVIDENCE = 'Evaluate answers against engagement evidence';
 const CHECKLIST = 'Create a weekly delivery checklist';
+const MILESTONE_NOTES = 'Share milestone notes with the client';
 
 test.beforeEach(async ({ page }) => {
   await new WorkboardPage(page).navigateTo('board');
@@ -163,4 +168,95 @@ test('L2-020 · Review completed membership', async ({ page }) => {
   await workboard.usePrimaryNavigation('Backlog');
   await backlog.expectSprintAssignment(CHECKLIST, 'Sprint 14');
   await backlog.expectSprintAssignmentUnavailable(CHECKLIST);
+});
+
+test('L2-059 · Narrow the board to one assistant', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.filterByAssistant('Maya Chen');
+
+  await board.expectStoryInColumn(DECISION, 'To do');
+  await board.expectStoryInColumn(HEALTH_SUMMARY, 'In progress');
+  await board.expectStoryNotOnBoard(EVIDENCE);
+  await board.expectStoryNotOnBoard(CHECKLIST);
+  await board.expectColumnCount('To do', 1);
+  await board.expectColumnCount('In progress', 1);
+  await board.expectEmptyColumn('Done');
+  await board.expectShowing(2, 4);
+  // The sprint summary still describes every story in the sprint.
+  await board.expectStoriesComplete(1, 4);
+});
+
+test.describe(activeSprintWithUnownedStory.name, () => {
+  test.use({ seed: activeSprintWithUnownedStory });
+
+  test('L2-059 · Narrow the board to unassigned stories', async ({ page }) => {
+    const board = new BoardPage(page);
+    await board.filterByAssistant('Unassigned');
+    await board.expectStoryInColumn(MILESTONE_NOTES, 'To do');
+    for (const title of [HEALTH_SUMMARY, DECISION, EVIDENCE, CHECKLIST])
+      await board.expectStoryNotOnBoard(title);
+    await board.expectShowing(1, 5);
+  });
+
+  test('L2-059 · Offer only assistants on the board', async ({ page }) => {
+    // Priya Raman owns nothing on the board, so she is not offered.
+    await new BoardPage(page).expectAssistantChoices([
+      'All assistants (5)',
+      'Amara Okafor (1)',
+      'Maya Chen (2)',
+      'Noah Williams (1)',
+      'Unassigned (1)',
+    ]);
+  });
+});
+
+test('L2-059 · Offer Unassigned only when a story has no owner', async ({ page }) => {
+  await new BoardPage(page).expectAssistantChoices([
+    'All assistants (4)',
+    'Amara Okafor (1)',
+    'Maya Chen (2)',
+    'Noah Williams (1)',
+  ]);
+});
+
+test('L2-059 · Show every story again', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.filterByAssistant('Amara Okafor');
+  await board.expectShowing(1, 4);
+  await board.showAllStories();
+  await board.expectEveryStoryShown();
+  await board.expectStoryInColumn(DECISION, 'To do');
+  await board.expectStoryInColumn(HEALTH_SUMMARY, 'In progress');
+  await board.expectStoryInColumn(CHECKLIST, 'Done');
+  await board.expectColumnCount('To do', 2);
+
+  await board.filterByAssistant('Noah Williams');
+  await board.filterByAssistant('All assistants');
+  await board.expectEveryStoryShown();
+  await board.expectStoryInColumn(EVIDENCE, 'To do');
+});
+
+test('L2-059 · Keep the filter across a refresh and a move', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.filterByAssistant('Maya Chen');
+
+  await board.moveStoryForward(DECISION);
+  await board.expectStoryInColumn(DECISION, 'In progress');
+  await board.expectStoryNotOnBoard(EVIDENCE);
+  await board.expectShowing(2, 4);
+
+  await new WorkboardPage(page).reload();
+  await board.expectStoryInColumn(DECISION, 'In progress');
+  await board.expectStoryInColumn(HEALTH_SUMMARY, 'In progress');
+  await board.expectStoryNotOnBoard(EVIDENCE);
+  await board.expectStoryNotOnBoard(CHECKLIST);
+  await board.expectShowing(2, 4);
+});
+
+test('L2-059 · Ignore an unknown assistant in the address', async ({ page }) => {
+  const board = new BoardPage(page);
+  await board.openNarrowedTo('10000000-0000-4000-8000-000000000099');
+  await board.expectEveryStoryShown();
+  for (const title of [HEALTH_SUMMARY, DECISION, EVIDENCE]) await board.expectStoryOnBoard(title);
+  await board.expectStoryInColumn(CHECKLIST, 'Done');
 });

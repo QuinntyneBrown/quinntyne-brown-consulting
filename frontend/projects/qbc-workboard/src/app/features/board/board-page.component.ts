@@ -1,4 +1,7 @@
-import { Component, OnInit, inject, viewChild } from '@angular/core';
+import { Component, OnInit, computed, inject, viewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs';
 import { SprintStoryCard } from '@qbc/api';
 import {
   BoardColumnComponent,
@@ -9,12 +12,17 @@ import {
   LoadingStateComponent,
   PageComponent,
   PageHeaderComponent,
+  SelectComponent,
+  SelectOption,
   SprintHeroComponent,
   StoryCardComponent,
 } from '@qbc/components';
 import { SprintManagerComponent } from '../sprints/sprint-manager.component';
 import { STORY_EDITOR_SERVICE } from '../stories/story-editor.service.contract';
 import { SPRINT_EXECUTION_SERVICE } from './sprint-execution.service.contract';
+
+/** The filter value for stories nobody owns; assistant IDs are GUIDs, so it cannot collide. */
+const UNASSIGNED = 'unassigned';
 
 @Component({
   selector: 'app-board-page',
@@ -28,6 +36,7 @@ import { SPRINT_EXECUTION_SERVICE } from './sprint-execution.service.contract';
     LoadingStateComponent,
     PageComponent,
     PageHeaderComponent,
+    SelectComponent,
     SprintHeroComponent,
     StoryCardComponent,
   ],
@@ -45,11 +54,53 @@ export class BoardPageComponent implements OnInit {
     { value: 'done' as const, label: 'Done' },
   ];
 
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  /** The choice lives in the address, so a refresh or a shared link keeps it. */
+  private readonly assistantChoice = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('assistant') ?? 'all')),
+    { initialValue: 'all' },
+  );
+  readonly assistantOptions = computed<readonly SelectOption<string>[]>(() => {
+    const stories = this.service.board()?.stories ?? [];
+    const owners = new Map<string, string>();
+    for (const story of stories)
+      if (story.assistantId) owners.set(story.assistantId, story.assistantName ?? '');
+    const count = (id: string | null): number =>
+      stories.filter((story) => story.assistantId === id).length;
+    const unassigned = count(null);
+    return [
+      { value: 'all', label: `All assistants (${stories.length})` },
+      ...[...owners]
+        .sort(([, a], [, b]) => a.localeCompare(b))
+        .map(([id, name]) => ({ value: id, label: `${name} (${count(id)})` })),
+      ...(unassigned ? [{ value: UNASSIGNED, label: `Unassigned (${unassigned})` }] : []),
+    ];
+  });
+  readonly selectedAssistant = computed(() => {
+    const choice = this.assistantChoice();
+    return this.assistantOptions().some((option) => option.value === choice) ? choice : 'all';
+  });
+  readonly visibleStories = computed(() => {
+    const choice = this.selectedAssistant();
+    const stories = this.service.board()?.stories ?? [];
+    if (choice === 'all') return stories;
+    const owner = choice === UNASSIGNED ? null : choice;
+    return stories.filter((story) => story.assistantId === owner);
+  });
+
   ngOnInit(): void {
     void this.service.load();
   }
   stories(status: SprintStoryCard['boardStatus']): readonly SprintStoryCard[] {
-    return this.service.board()?.stories.filter((story) => story.boardStatus === status) ?? [];
+    return this.visibleStories().filter((story) => story.boardStatus === status);
+  }
+  filterByAssistant(choice: string): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { assistant: choice === 'all' ? null : choice },
+      replaceUrl: true,
+    });
   }
   edit(id: string): void {
     this.editor.open(id);

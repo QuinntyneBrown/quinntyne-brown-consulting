@@ -228,6 +228,27 @@ export const unassignedAssistant: WorkspaceScenario = {
 };
 
 /**
+ * The active sprint also holds a story nobody owns, and the directory holds an assistant who owns
+ * nothing on the board, so the board's assistant filter has both an Unassigned choice and someone
+ * to leave out.
+ */
+export const activeSprintWithUnownedStory: WorkspaceScenario = {
+  name: 'an active sprint holding a story nobody owns',
+  apply: (state) => {
+    unassignedAssistant.apply(state);
+    const active = state.sprints.find((sprint) => sprint.status === 'active');
+    if (!active) throw new Error('The seeded workspace has no active sprint.');
+    replaceStory(state, {
+      ...byKey(state, 'QBC-106'),
+      lifecycle: 'active',
+      isReady: true,
+      sprintId: active.id,
+      boardStatus: 'toDo',
+    });
+  },
+};
+
+/**
  * An assistant who owns no story and holds no task, and whose only claim on the workspace is the
  * hours they logged against somebody else's story.
  */

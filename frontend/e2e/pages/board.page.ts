@@ -56,6 +56,52 @@ export class BoardPage {
     await expect(this.page.locator('.story-card').filter({ hasText: title })).toHaveCount(1);
   }
 
+  /** Chooses an assistant by name; each choice also states how many stories it leaves. */
+  async filterByAssistant(name: string): Promise<void> {
+    const filter = this.assistantFilter();
+    const value = await filter
+      .locator('option')
+      .filter({ hasText: new RegExp(`^\\s*${name} \\(\\d+\\)\\s*$`) })
+      .getAttribute('value');
+    await filter.selectOption(value!);
+  }
+
+  async expectAssistantChoices(labels: readonly string[]): Promise<void> {
+    await expect(this.assistantFilter().locator('option')).toHaveText(labels);
+  }
+
+  /** Opens the board from an address that already names an assistant to narrow to. */
+  async openNarrowedTo(assistantId: string): Promise<void> {
+    await this.page.goto(`/board?assistant=${encodeURIComponent(assistantId)}`);
+    await this.expectActiveSprint();
+  }
+
+  async expectStoryOnBoard(title: string): Promise<void> {
+    await expect(this.card(title)).toHaveCount(1);
+  }
+
+  async expectStoryNotOnBoard(title: string): Promise<void> {
+    await expect(this.card(title)).toHaveCount(0);
+  }
+
+  async expectShowing(shown: number, total: number): Promise<void> {
+    await expect(this.page.getByText(`Showing ${shown} of ${total} stories`)).toBeVisible();
+  }
+
+  async showAllStories(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Show all stories' }).click();
+  }
+
+  /** A board showing every story says nothing about how many it is showing. */
+  async expectEveryStoryShown(): Promise<void> {
+    await expect(this.page.getByText(/^Showing \d+ of \d+ stories$/)).toHaveCount(0);
+    await expect(this.assistantFilter().locator('option:checked')).toHaveText(/^\s*All assistants/);
+  }
+
+  async expectStoriesComplete(done: number, total: number): Promise<void> {
+    await expect(this.summary()).toContainText(`${done} of ${total} stories complete`);
+  }
+
   async expectColumnCount(column: BoardColumnName, count: number): Promise<void> {
     await expect(this.column(column).locator('qbc-count')).toHaveText(String(count));
   }
@@ -239,6 +285,10 @@ export class BoardPage {
     return this.page
       .locator('.board-column')
       .filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+  }
+
+  private assistantFilter(): Locator {
+    return this.page.getByRole('combobox', { name: 'Filter board by assistant' });
   }
 
   private summary(): Locator {

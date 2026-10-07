@@ -29,6 +29,25 @@
         >Complete sprint</qbc-button
       >
     </qbc-sprint-hero>
+    <div class="board-filter">
+      <qbc-select
+        ariaLabel="Filter board by assistant"
+        [labelHidden]="true"
+        [value]="selectedAssistant()"
+        [options]="assistantOptions()"
+        (valueChange)="filterByAssistant($any($event))"
+      />
+      @if (selectedAssistant() !== 'all') {
+        <p class="filter-summary">
+          Showing {{ visibleStories().length }} of {{ board.stories.length }} stories
+        </p>
+        <qbc-button
+          variant="quiet"
+          (click)="filterByAssistant('all')"
+          >Show all stories</qbc-button
+        >
+      }
+    </div>
     <div class="board">
       @for (status of statuses; track status.value) {
         <qbc-board-column
