@@ -1,0 +1,39 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Concepts/Developer/Accessibility" />
+
+# Accessibility
+
+QBC Workboard targets **WCAG 2.2 AA**. The **Accessibility** addon panel runs axe against every story and is configured
+to report violations as errors (`a11y.test: 'error'` in `.storybook/preview.ts`).
+
+## Rules the components follow
+
+- **Native elements first.** `qbc-button` renders a `<button>`, `qbc-nav-item` an `<a routerLink>`, form controls a real
+  `<input>`, `<select>` or `<textarea>`, and `qbc-dialog` a native `<dialog>` opened with `showModal()`. Keyboard
+  behaviour and form semantics come for free; the app is not allowed to bypass them.
+- **Every control has a name.** Text inputs, textareas and selects render a `<label for>` from `label`; use
+  `labelHidden` to hide it visually when a placeholder or context makes it obvious, or `ariaLabel` when there is no
+  visible label at all (task rows, toolbar filters). `qbc-icon-button` requires `label`.
+- **Hints are announced.** A `hint` is linked to its control with `aria-describedby`.
+- **State is exposed.** `qbc-progress` is a `progressbar` with a value and label; `qbc-points` and `qbc-avatar` are
+  `role="img"` with a spoken label ("3 story points", "Assigned to Quinntyne Brown", "Unassigned"); `qbc-form-error`
+  is `role="alert"`; the top-bar menu button reports `aria-expanded`.
+- **Visible focus.** `styles.scss` draws a 3px `--qbc-focus-ring` outline with a 2px offset on every `:focus-visible`
+  element; text fields add a softer `--qbc-focus-ring-field` halo.
+- **Skip link.** `qbc-app-shell` starts with `qbc-skip-link`, which moves focus to `<main id="main-content">` directly
+  instead of following a hash (which would trigger the router).
+- **Live feedback.** The shell's `[feedback]` slot sits in an `aria-live="polite"` region, so a `qbc-toast` projected
+  there is announced.
+- **Dialogs** trap focus natively, close on `Escape` and on a backdrop click, label themselves from their title via
+  `aria-labelledby`, and return focus to the element that opened them.
+- **Colour pairs pass AA.** Status pills always pair a `-soft` fill with its base colour (`--qbc-blue` on
+  `--qbc-blue-soft`, `--qbc-accent-dark` on `--qbc-accent-soft`); never put soft-on-soft or base-on-base.
+- **Reduced motion.** `prefers-reduced-motion: reduce` collapses transitions and animations globally.
+
+## When you build with them
+
+- Give repeated buttons a specific name: `[ariaLabel]="'Move ' + story.title + ' forward'"` rather than three buttons
+  all called "→".
+- Keep one `<h1>` per page — `qbc-page-header` provides it.
+- Do not rely on drag and drop alone: the board pairs draggable cards with backward / forward buttons.

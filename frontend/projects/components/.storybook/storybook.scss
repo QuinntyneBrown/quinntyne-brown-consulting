@@ -1,0 +1,11 @@
+// Storybook preview entry — the same global stylesheet the app loads through
+// `angular.json` (`projects/components/src/styles.scss`), so a component
+// renders here exactly as it does on a screen.
+
+@use '../src/styles';
+
+// Docs pages render inside the preview iframe; keep the Storybook docs
+// typography on the brand stack.
+.sbdocs-wrapper {
+  font-family: var(--qbc-font-sans);
+}

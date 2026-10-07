@@ -1,0 +1,95 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { TokenTable, TypeSample, previews } from './components/TokenBlocks';
+import { byPrefix } from './components/tokens';
+
+<Meta title="Theme/Typography" />
+
+# Typography
+
+One sans-serif family for everything and a monospace stack for code. The body is set globally in `styles.scss`:
+
+```scss
+body {
+  color: var(--qbc-ink);
+  background: var(--qbc-panel);
+  font: 15px/1.5 var(--qbc-font-sans);
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+```
+
+So **15px with a 1.5 line height** is the base, and native controls inherit it rather than falling back to the
+browser's control font.
+
+## Font families
+
+`--qbc-font-sans` names Inter first, then the platform UI fonts. No webfont is bundled — Inter renders where it is
+installed, and the system stack otherwise.
+
+<TokenTable
+  tokens={byPrefix('font')}
+  preview={previews.fontFamily}
+/>
+
+## Sizes and weights
+
+There is no type-scale token yet: components set sizes and weights literally, on a small, consistent scale. Reuse one of
+these steps rather than inventing a new one.
+
+<TypeSample
+  size="clamp(30px, 3vw, 42px)"
+  weight={700}
+  usage="Page title (qbc-page-header h1, line-height 1.12)"
+>
+  Sprint board
+</TypeSample>
+<TypeSample
+  size="22px"
+  weight={700}
+  usage="Sprint goal (qbc-sprint-hero h2)"
+>
+  Ship backlog grooming end to end
+</TypeSample>
+<TypeSample
+  size="15px"
+  weight={400}
+  usage="Body — the global base"
+>
+  Shape ideas into ready work, then place them into a two-week sprint.
+</TypeSample>
+<TypeSample
+  size="14px"
+  weight={700}
+  usage="Board column heading"
+>
+  In progress
+</TypeSample>
+<TypeSample
+  size="13px"
+  weight={600}
+  usage="Breadcrumb, toast, secondary copy"
+>
+  Workspace / Backlog
+</TypeSample>
+<TypeSample
+  size="12px"
+  weight={700}
+  usage="Field labels"
+>
+  Acceptance criteria
+</TypeSample>
+<TypeSample
+  size="11px"
+  weight={700}
+  usage="Pills, story keys, hints, eyebrows"
+>
+  QBC-142 · In progress
+</TypeSample>
+
+Weights in use run from 400 (body) through 600–700 (labels and headings, which keep the browser's bold) to 750–800 (story keys and eyebrows). Inter's variable axes
+render intermediate weights such as 680 exactly; the system fallbacks round them.

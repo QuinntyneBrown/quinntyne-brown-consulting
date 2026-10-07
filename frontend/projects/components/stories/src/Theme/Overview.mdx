@@ -1,0 +1,74 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { TokenTable } from './components/TokenBlocks';
+import { overrides, tokens } from './components/tokens';
+
+<Meta title="Theme/Overview" />
+
+# Design tokens
+
+QBC Workboard's visual language is a small set of **CSS custom properties** prefixed `--qbc-`. They are declared once,
+on `:root`, in `frontend/projects/components/src/styles.scss` — the global stylesheet `angular.json` loads for the
+application and for this Storybook. There is no TypeScript token module and no build step: the stylesheet _is_ the
+source of truth.
+
+Every page in this section parses that file at build time and paints each swatch with the live `var(--qbc-…)`, so the
+docs cannot drift from what the components render. The library currently declares **{tokens.length}** tokens.
+
+## How tokens work
+
+| Group                                                | Tokens                                                                                   |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [Colors](?path=/docs/theme-colors--docs)             | `ink*`, `line*`, `panel` / `soft` / `surface-*`, `accent*`, `blue*`, `amber*`, `danger*` |
+| [Typography](?path=/docs/theme-typography--docs)     | `font-sans`, `font-mono`                                                                 |
+| [Spacing](?path=/docs/theme-spacing--docs)           | `gutter`, `button-h`, `control-h`, `sidebar-w`, `topbar-h`, `page-max`                   |
+| [Border radii](?path=/docs/theme-border-radii--docs) | `r-xs` … `r-2xl`, `r-control`, `r-pill`                                                  |
+| [Shadows](?path=/docs/theme-shadows--docs)           | `shadow-card`, `shadow-overlay`                                                          |
+| [Motion](?path=/docs/theme-motion--docs)             | No tokens — a global reduced-motion rule                                                 |
+
+The same file also holds the global reset (`box-sizing`, inherited `font` on controls), the body type
+(`15px/1.5 var(--qbc-font-sans)` on `--qbc-panel`), the `:focus-visible` outline and the reduced-motion rule.
+
+## Responsive retunes
+
+Two tokens change below the app's 900px breakpoint — the same width at which the sidebar becomes a drawer. Components
+read the token and pick the change up through the cascade; none of them repeats the media query.
+
+<TokenTable
+  tokens={overrides.map((o) => ({ name: o.name, value: `${o.query} → ${o.value}`, note: '' }))}
+/>
+
+## Using tokens
+
+In a component stylesheet, read the custom property:
+
+```scss
+// story-card.component.scss
+article {
+  padding: 18px;
+  border: 1px solid var(--qbc-line-card);
+  border-radius: var(--qbc-r-lg);
+  background: var(--qbc-panel);
+  box-shadow: var(--qbc-shadow-card);
+}
+```
+
+**Never hard-code a value a token already names.** A hex colour, a `10px` radius or a bespoke shadow in a component
+stylesheet silently forks the theme. If no token fits, add one to the `:root` block in `styles.scss` first, give it a
+role-based name, and it appears on these pages automatically.
+
+Choose by **role**, not by value: `--qbc-ink-soft` and `--qbc-ink-faint` share a hex today, but they mean different
+things and may diverge.
+
+## Naming
+
+- **`--qbc-` prefix** on everything, so library tokens never collide with app or third-party variables.
+- **Role, then variant**: `--qbc-accent`, `--qbc-accent-dark`, `--qbc-accent-soft`; `--qbc-line`, `--qbc-line-strong`.
+  A `-soft` colour is the tinted fill; its base colour is the ink that passes contrast on it.
+- **Radii** are `--qbc-r-*`: a t-shirt scale (`xs` → `2xl`) plus the two roles most components use, `control` and
+  `pill`.
+- **Layout sizes** end in their dimension: `-w`, `-h`, `-max`.
+
+The Storybook manager (the chrome around this page) cannot read custom properties, so `.storybook/theme.ts` mirrors a
+handful of colours as literals. The Storybook catalog test fails if one of those literals stops appearing in
+`styles.scss`.

@@ -17,9 +17,9 @@ of each other.
 
 The application composes all buttons, form controls, dialogs, navigation, and
 reusable work-item surfaces from `@qbc/components`. Feature pages retain forms,
-Signals, service calls, routing, and workflow decisions. The library mirrors all
-35 components in the standalone catalog and adds Angular-specific composition
-helpers; see its [package guide](projects/components/README.md).
+Signals, service calls, routing, and workflow decisions. The library documents
+every component in its Storybook design-system catalog; see its
+[package guide](projects/components/README.md).
 
 Feature components inject application service contracts through typed tokens.
 Signal-backed application services delegate transport operations through a
@@ -70,6 +70,14 @@ Validate and unit-test the reusable component boundary independently:
 ```powershell
 npm run validate:components
 npm run test:components
+```
+
+Browse and verify the Storybook design-system catalog:
+
+```powershell
+npm run storybook        # http://localhost:6006
+npm run build-storybook  # static site in dist/storybook
+npm run test:storybook   # visits every story and docs page in Chromium
 ```
 
 ## Formatting

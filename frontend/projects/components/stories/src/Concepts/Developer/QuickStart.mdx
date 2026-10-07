@@ -1,0 +1,135 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Concepts/Developer/Quick Start" />
+
+# Quick start
+
+## Run Storybook
+
+From `frontend/`:
+
+```sh
+npm ci
+npm run storybook        # ng run components:storybook → http://localhost:6006
+npm run build-storybook  # static build → frontend/dist/storybook
+npm run test:storybook   # Playwright: visits every page and story in dist/storybook
+```
+
+Storybook is an Angular builder target on the `components` project (`angular.json` → `storybook` / `build-storybook`).
+It loads the same global stylesheet as the app and generates the API tables with compodoc on every start.
+`test:storybook` runs `e2e/storybook/catalog.spec.ts` against the static build: it fails on any console error, and on any
+public component without a `Default` story and a docs page.
+
+## Use a component
+
+Components are standalone Angular 21 components. Import the class from `@qbc/components` and use its `qbc-*` selector:
+
+```ts
+import { Component, signal } from '@angular/core';
+import { ButtonComponent, PageComponent, PageHeaderComponent } from '@qbc/components';
+
+@Component({
+  selector: 'app-board-page',
+  imports: [ButtonComponent, PageComponent, PageHeaderComponent],
+  template: `
+    <qbc-page>
+      <qbc-page-header
+        title="Sprint board"
+        description="A quiet view of the team’s current commitment."
+      >
+        <qbc-button
+          actions
+          variant="secondary"
+          (click)="manage()"
+          >Manage sprints</qbc-button
+        >
+      </qbc-page-header>
+    </qbc-page>
+  `,
+})
+export class BoardPage {
+  manage(): void {}
+}
+```
+
+Classes are `<Name>Component` (`ButtonComponent`, `StoryCardComponent`, `TopbarComponent`); selectors are `qbc-<name>`
+(`qbc-button`, `qbc-story-card`, `qbc-topbar`).
+
+Inputs and outputs are **signal APIs** (`input()`, `input.required()`, `output()`), so bind them as usual —
+`[points]="story.points"`, `(valueChange)="search($event)"`. Boolean inputs such as `full`, `required` and `disabled`
+accept a bare attribute.
+
+Named content slots are plain attributes on the projected element: `actions`, `body`, `navigation`, `topbar`,
+`content`, `state`, `estimate` and so on. Each component's docs page lists its slots.
+
+## Forms
+
+`qbc-text-input`, `qbc-textarea`, `qbc-select` and `qbc-checkbox` implement `ControlValueAccessor`, so they work with
+reactive forms and `ngModel`:
+
+```html
+<form
+  [formGroup]="form"
+  (ngSubmit)="save()"
+>
+  <qbc-form-grid>
+    <qbc-text-input
+      label="Title"
+      [required]="true"
+      [full]="true"
+      formControlName="title"
+    />
+    <qbc-select
+      label="Epic"
+      [required]="true"
+      [options]="epicOptions()"
+      formControlName="epicId"
+    />
+  </qbc-form-grid>
+</form>
+```
+
+Outside a form, bind the one-way `value` input and listen to `valueChange`.
+
+## Dialogs
+
+`qbc-dialog` wraps a native `<dialog>`. Grab it with a template reference or `viewChild` and call `open()` / `close()`;
+it restores focus to whatever opened it and emits `closed` with a reason (`close`, `escape`, `backdrop` or
+`programmatic`).
+
+```html
+<qbc-button (click)="dialog.open()">New story</qbc-button>
+<qbc-dialog
+  #dialog
+  title="New story"
+  (closed)="reset()"
+>
+  <p body>…</p>
+  <qbc-action-group actions
+    ><qbc-button (click)="dialog.close()">Done</qbc-button></qbc-action-group
+  >
+</qbc-dialog>
+```
+
+## Load the global styles
+
+Load the library stylesheet once. In this workspace `angular.json` lists it in the app's `styles`:
+
+```json
+"styles": ["projects/components/src/styles.scss", "projects/qbc-workboard/src/styles.scss"]
+```
+
+It declares the `--qbc-*` tokens on `:root`, the reset, the body type, the focus ring and the reduced-motion rule.
+Components need nothing else. Published consumers load `@qbc/components/styles.scss`.
+
+## Verify
+
+```sh
+npm run build:components     # ng-packagr build of @qbc/components
+npm run test:components      # unit tests
+npm run validate:components  # boundary validator
+```
+
+`scripts/validate-component-boundary.mjs` checks that every component in the manifest exists and is exported from
+`public-api.ts`, that the library never imports `@qbc/api` or app code, and that application templates do not bypass the
+library with raw buttons, form controls, dialogs or links, legacy classes or legacy (un-prefixed) tokens.

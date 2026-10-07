@@ -321,7 +321,7 @@ and managed identity still provide independent controls.
 
 The `deploy-workboard` job in `.github/workflows/ci.yml` ZIP-deploys the exact
 artifact produced by the verification job. It runs only for a push to `main`,
-waits for the application and design-system jobs, and authenticates to Azure by
+waits for the application and Storybook jobs, and authenticates to Azure by
 GitHub OpenID Connect. The `workboard-azure` GitHub environment supplies these
 non-secret variables:
 

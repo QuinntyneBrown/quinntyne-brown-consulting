@@ -7,9 +7,7 @@ frontend/playwright-report/
 frontend/test-results/
 frontend/.playwright/
 artifacts/
-design-system/node_modules/
-design-system/dist/
-design-system/test-results/
-design-system/playwright-report/
-design-system/blob-report/
+# Storybook (compodoc output + logs)
+frontend/projects/components/documentation.json
+*storybook.log
 eng/logs/

@@ -1,0 +1,53 @@
+name: Deploy Storybook
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/projects/components/**'
+      - 'frontend/angular.json'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/deploy-storybook.yml'
+
+# Two rapid pushes touching the components library must not race the upload.
+concurrency:
+  group: deploy-storybook-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci --prefer-offline --no-audit --no-fund
+        working-directory: frontend
+
+      - run: npm run build-storybook
+        working-directory: frontend
+
+      # Same GitHub Pages site the retired design-system/ catalog used.
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist/storybook
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

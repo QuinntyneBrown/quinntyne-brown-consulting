@@ -6,8 +6,8 @@ const workspace = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const componentRoot = join(workspace, 'projects', 'components');
 const componentSource = join(componentRoot, 'src');
 const appSource = join(workspace, 'projects', 'qbc-workboard', 'src', 'app');
+const storySource = join(componentRoot, 'stories', 'src');
 const manifest = JSON.parse(readFileSync(join(componentRoot, 'component-manifest.json'), 'utf8'));
-const catalog = JSON.parse(readFileSync(resolve(componentRoot, manifest.catalogSource), 'utf8'));
 const packageMetadata = JSON.parse(readFileSync(join(componentRoot, 'package.json'), 'utf8'));
 const failures = [];
 
@@ -27,21 +27,33 @@ for (const file of componentFiles) {
   if (match) selectorFiles.set(match[1], file);
 }
 
-const expectedCatalog = catalog.components.map((component) => component.selector).sort();
-const declaredCatalog = [...manifest.catalogComponents].sort();
 if (manifest.version !== packageMetadata.version) {
   failures.push(
     `Component manifest version ${manifest.version} does not match package version ${packageMetadata.version}.`,
   );
 }
-if (JSON.stringify(expectedCatalog) !== JSON.stringify(declaredCatalog)) {
-  failures.push(
-    'Angular manifest catalogComponents does not match design-system/component-manifest.json.',
-  );
+const declared = [...manifest.components].sort();
+const discovered = [...selectorFiles.keys()].sort();
+if (JSON.stringify(declared) !== JSON.stringify(discovered)) {
+  failures.push('component-manifest.json components do not match the library selectors.');
 }
 
-for (const selector of [...manifest.catalogComponents, ...manifest.angularExtensions]) {
-  if (!selectorFiles.has(selector)) failures.push(`Missing Angular component for ${selector}.`);
+// Storybook is the catalog: every component documents itself in `stories/src/<Name>/`, whose
+// `index.stories.ts` owns the meta and re-exports a `Default` story.
+for (const file of selectorFiles.values()) {
+  const className = readFileSync(file, 'utf8').match(/export class (\w+)Component\b/)?.[1];
+  const index = join(storySource, className ?? '', 'index.stories.ts');
+  let source = '';
+  try {
+    source = readFileSync(index, 'utf8');
+  } catch {
+    failures.push(`${className}Component has no Storybook entry at ${relative(workspace, index)}.`);
+    continue;
+  }
+  if (!source.includes(`title: 'Components/${className}'`))
+    failures.push(`${relative(workspace, index)} is not titled Components/${className}.`);
+  if (!/export \{ Default \}/.test(source))
+    failures.push(`${relative(workspace, index)} does not export a Default story.`);
 }
 
 const publicApi = readFileSync(join(componentSource, 'public-api.ts'), 'utf8');
@@ -93,6 +105,6 @@ if (failures.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Component boundary valid: ${selectorFiles.size} exported Angular components, including all ${expectedCatalog.length} catalog components.`,
+    `Component boundary valid: ${selectorFiles.size} exported Angular components, each documented in Storybook.`,
   );
 }

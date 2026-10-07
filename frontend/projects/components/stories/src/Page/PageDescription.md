@@ -1,0 +1,1 @@
+The content column for a workboard page. `qbc-page` has no inputs: it wraps its projected content in a `section` that is centred and capped at `--qbc-page-max`, with `min-width: 0` so wide children such as boards scroll instead of stretching the shell.

@@ -54,7 +54,7 @@ names.
 | Implementation surface | Difference | Required disposition |
 |---|---|---|
 | [`Qbc.Workboard.Cli`](../backend/src/Qbc.Workboard.Cli/) | The CLI initializes, seeds, and permanently resets a database. The backend platform design still describes four production projects and no maintenance host. | Classify the CLI as product behavior or engineering operations. A product classification shall add L1 and L2 requirements before a feature design is created. An operations classification shall document the commands outside the requirement-traced design tree and show only their infrastructure integration in the platform design. |
-| [`design-system`](../design-system/) | The root README calls the standalone Web Component catalog a first-class deliverable. The specifications and detailed designs cover the separate Angular `@qbc/components` library only. | Classify the catalog as a product deliverable or reference tooling. A product classification shall add requirements before a detailed design is created. A tooling classification shall remove the first-class product implication and retain its standalone README. |
+| Storybook (`frontend/projects/components/.storybook`) | The standalone Web Component catalog has been removed. Its role is now served by the Storybook docsite for the Angular `@qbc/components` library, which the specifications and detailed designs already cover. | Resolved as engineering tooling: Storybook documents the library and carries no product requirements of its own. |
 | [`eng/scripts/Start-Workboard.ps1`](../eng/scripts/Start-Workboard.ps1) | The development launcher orchestrates the API, Angular server, proxy, browser, logging, and shutdown. No detailed design describes it. | Treat the launcher as engineering tooling unless the requirements baseline expands. Its operational contract should remain in script help and the root README rather than a product feature design. |
 
 No new detailed-design feature should be invented for these surfaces before the
@@ -224,11 +224,9 @@ reasonably expect the opposite:
   provider cannot translate `ORDER BY` over a `DateTimeOffset`, so a
   database-side ordering would be correct in production and a `500` under test.
 
-`qbc-file-drop` is an Angular extension rather than a catalog component. The
-application templates may not declare a native `<input>`, so the file picker had
-to move into `@qbc/components`; registering it outside the catalog keeps the
-design system's native component set and this library in step without adding a
-web component the catalog does not need.
+`qbc-file-drop` lives in `@qbc/components` because application templates may not
+declare a native `<input>`, so the file picker had to move into the library, where
+Storybook documents it alongside every other component.
 
 ### Planning — groom the backlog
 
@@ -379,8 +377,8 @@ release-check counts should be refreshed after the alignment changes pass.
 ### Phase 0 — resolve design coverage
 
 1. Classify `Qbc.Workboard.Cli` as product behavior or engineering operations.
-2. Classify the standalone `design-system` as a product deliverable or reference
-   tooling.
+2. ~~Classify the standalone `design-system`.~~ Resolved: the catalog is replaced
+   by the Storybook docsite, classified as engineering tooling.
 3. Record `eng/scripts/Start-Workboard.ps1` as engineering tooling unless an L1/L2 scope
    change explicitly promotes it.
 4. Add requirement identifiers and acceptance criteria before creating a new

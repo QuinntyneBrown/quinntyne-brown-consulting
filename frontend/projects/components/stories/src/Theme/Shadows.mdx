@@ -1,0 +1,19 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+import { ShadowCard } from './components/TokenBlocks';
+import { byPrefix } from './components/tokens';
+
+<Meta title="Theme/Shadows" />
+
+# Shadows
+
+Two elevations, both tinted with the ink colour rather than pure black. The workspace is mostly flat: borders separate
+surfaces, and shadow is reserved for things that sit on top.
+
+- **`--qbc-shadow-card`** — a barely-there lift for story cards, `qbc-card` and the selected `qbc-segmented` option.
+- **`--qbc-shadow-overlay`** — anything floating over the page: `qbc-dialog`, `qbc-toast` and the sidebar when it opens
+  as a drawer below 900px.
+
+<ShadowCard tokens={byPrefix('shadow')} />
+
+Pair an overlay shadow with `--qbc-scrim` only for modal content; toasts and the drawer float without dimming the page.

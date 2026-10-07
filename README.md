@@ -1,7 +1,7 @@
 # QBC Workboard
 
 [![CI](https://github.com/QuinntyneBrown/quinntyne-brown-consulting/actions/workflows/ci.yml/badge.svg)](https://github.com/QuinntyneBrown/quinntyne-brown-consulting/actions/workflows/ci.yml)
-[![Design system](https://github.com/QuinntyneBrown/quinntyne-brown-consulting/actions/workflows/deploy-design-system.yml/badge.svg)](https://github.com/QuinntyneBrown/quinntyne-brown-consulting/actions/workflows/deploy-design-system.yml)
+[![Storybook](https://github.com/QuinntyneBrown/quinntyne-brown-consulting/actions/workflows/deploy-storybook.yml/badge.svg)](https://github.com/QuinntyneBrown/quinntyne-brown-consulting/actions/workflows/deploy-storybook.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 QBC Workboard is a responsive Scrum workspace for planning and delivering
@@ -38,8 +38,8 @@ releases. Requirements and data migrations may change before the first release.
 - Persist workspace state in SQL Server and protect hierarchy, assignment, and
   completed-sprint history.
 - Publish the Angular application and ASP.NET Core API as one deployable output.
-- Explore a standalone design-system catalog with reusable components, dialogs,
-  and responsive product patterns.
+- Explore the design system in Storybook: tokens, every reusable component with
+  its API and examples, and responsive product patterns.
 - Keep the public deployment private behind a shared passcode that issues a
   seven-day session credential.
 - Report the deployed build in the workspace, so the version and commit being
@@ -72,8 +72,7 @@ flowchart LR
 | `backend/src/Qbc.Workboard.Cli` | Installable .NET tool for database initialization and reset |
 | `frontend/projects/qbc-workboard` | Routes, feature pages, orchestration, and Signal state |
 | `frontend/projects/api` | Typed models, service interfaces, injection tokens, and HTTP clients |
-| `frontend/projects/components` | Versioned Angular UI system aligned with the standalone component catalog |
-| `design-system` | Standalone native Web Component catalog and contract tests |
+| `frontend/projects/components` | Versioned Angular UI system and its Storybook design-system catalog |
 | `docs` | Requirements, detailed designs, acceptance evidence, and prototypes |
 
 The [detailed designs](docs/detailed-designs/) describe each vertical feature.
@@ -341,11 +340,9 @@ npx playwright install
 npm run typecheck:e2e
 npm run test:e2e
 
-# Standalone design system
-Set-Location ../design-system
-npm ci
-npx playwright install chromium
-npm test
+# Storybook design-system catalog
+npm run build-storybook
+npm run test:storybook
 ```
 
 The backend tests create uniquely named SQL Server databases and delete them on
@@ -373,7 +370,7 @@ fallback. A deployment should provide a production SQL Server connection string
 and terminate TLS before exposing the application.
 
 On pushes to `main`, CI deploys the verified combined artifact to the free-tier
-Azure environment after both application and design-system jobs pass. See the
+Azure environment after both application and Storybook jobs pass. See the
 [Azure deployment plan](docs/azure-deployment-plan.md) for resource names,
 identity configuration, cost controls, and operational limits.
 
@@ -401,10 +398,11 @@ visible and the backend line is omitted without blocking the workspace.
 
 ## Design system
 
-The standalone catalog documents 35 native components, seven dialog families,
-and five responsive product patterns. The Angular application uses the matching
-35-component surface from `@qbc/components`; a manifest gate keeps both
-inventories aligned without coupling their runtimes.
+The design system is the Storybook docsite for `@qbc/components`
+(`frontend/projects/components`). It documents the `--qbc-*` tokens, every
+component with its generated API table, examples and best practices, and
+compositions that match whole Workboard screens. Every story renders the real
+Angular components the application ships.
 
 Browse the live catalog on GitHub Pages:
 <https://quinntynebrown.github.io/quinntyne-brown-consulting/>.
@@ -412,14 +410,15 @@ Browse the live catalog on GitHub Pages:
 To run it locally instead:
 
 ```powershell
-Set-Location design-system
+Set-Location frontend
 npm ci
-npm start
+npm run storybook
 ```
 
-Open `http://127.0.0.1:5175/`. See the
-[design-system guide](design-system/README.md) for its architecture, contract
-gate, browser tests, and GitHub Pages deployment.
+Open `http://localhost:6006/`. `npm run build-storybook` writes the static site to
+`frontend/dist/storybook`, and `npm run test:storybook` visits every story and
+docs page in Chromium. Pushes to `main` that touch the library deploy it from
+`.github/workflows/deploy-storybook.yml`.
 
 ## Documentation
 

@@ -1,6 +1,6 @@
 # @qbc/components
 
-Reusable Angular 21 presentation components for QBC Workboard. The package contains the complete Angular counterpart of the 35-component standalone catalog, plus small Angular composition helpers for pages, forms, loading state, and compatibility with earlier app selectors.
+Reusable Angular 21 presentation components for QBC Workboard: tokens, controls, overlays, navigation, cards, rows, work-item views, and small composition helpers for pages, forms, and loading state.
 
 The library owns visual tokens, native-control wrappers, overlays, navigation, cards, rows, and work-item presentation. It does not import `@qbc/api`, application services, feature state, or product workflows.
 
@@ -16,7 +16,19 @@ Load the packaged theme once in the consuming application. Inside this workspace
 
 Controls implement `ControlValueAccessor`, so `qbc-text-input`, `qbc-textarea`, `qbc-select`, and `qbc-checkbox` work with Angular reactive forms. `qbc-dialog` exposes `open()` and `close()` and restores focus to its invoker. Inputs and outputs use Angular signal APIs.
 
-The public inventory is versioned in `component-manifest.json`. The standalone native implementation and interactive documentation remain in [`design-system`](../../../design-system/README.md).
+The public inventory is versioned in `component-manifest.json`.
+
+## Storybook
+
+Storybook is the design-system catalog. `.storybook/` holds the configuration, manager theme and branding; `stories/src/` holds the Concepts and Theme MDX pages, one folder per component (`index.stories.ts` owns the meta and re-exports `<Name><Story>.stories.ts`, with `<Name>Description.md` and `<Name>BestPractices.md` prose for the docs page), and Patterns that compose whole screens. API tables come from compodoc.
+
+From `frontend/`:
+
+```powershell
+npm run storybook        # http://localhost:6006
+npm run build-storybook  # static site in dist/storybook
+npm run test:storybook   # visits every story and docs page in Chromium
+```
 
 ## Verify
 
@@ -28,4 +40,4 @@ npm run test:components
 npm run validate:components
 ```
 
-The boundary validator checks catalog parity, public exports, library independence, and that application templates do not bypass the library with raw buttons, form controls, dialogs, or navigation anchors.
+The boundary validator checks the manifest inventory, that every component has a Storybook entry with a `Default` story, public exports, library independence, and that application templates do not bypass the library with raw buttons, form controls, dialogs, or navigation anchors.

@@ -1,0 +1,1 @@
+A small pill that shows a tally, such as the number of stories in a board column or backlog section. `qbc-count` renders its single `value` input, a number or a pre-formatted string, defaulting to `0`.

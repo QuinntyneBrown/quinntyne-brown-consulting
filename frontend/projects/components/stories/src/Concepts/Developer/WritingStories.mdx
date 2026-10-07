@@ -1,0 +1,86 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Concepts/Developer/Writing Stories" />
+
+# Writing stories
+
+One folder per component under `frontend/projects/components/stories/src/`, with small, copy-pasteable story files. The
+reference example is `stories/src/Avatar/`:
+
+```text
+stories/src/Avatar/
+├── index.stories.ts             # meta (title, component, imports) + re-exports
+├── AvatarDescription.md         # what it is, its inputs and slots
+├── AvatarBestPractices.md       # ## Best practices — Content / Accessibility
+├── AvatarDefault.stories.ts     # `Default` — args wired to inputs for Controls
+├── AvatarSize.stories.ts
+└── AvatarUnassigned.stories.ts
+```
+
+Only `index.stories.ts` (and `*.mdx`) is globbed by `.storybook/main.ts`; it owns the meta and re-exports each story.
+The `.md` files load as strings (an `asset/source` rule in `main.ts`) and become the docs page description:
+
+```ts
+import type { Meta } from '@storybook/angular';
+import { moduleMetadata } from '@storybook/angular';
+
+import { AvatarComponent } from '@qbc/components';
+
+import descriptionMd from './AvatarDescription.md';
+import bestPracticesMd from './AvatarBestPractices.md';
+
+export { Default } from './AvatarDefault.stories';
+export { Size } from './AvatarSize.stories';
+export { Unassigned } from './AvatarUnassigned.stories';
+
+export default {
+  title: 'Components/Avatar',
+  component: AvatarComponent,
+  decorators: [moduleMetadata({ imports: [AvatarComponent] })],
+  parameters: {
+    docs: { description: { component: [descriptionMd, bestPracticesMd].join('\n') } },
+  },
+} as Meta<AvatarComponent>;
+```
+
+Each story file exports one `StoryObj`:
+
+```ts
+import type { StoryObj } from '@storybook/angular';
+import type { AvatarComponent } from '@qbc/components';
+
+export const Default: StoryObj<AvatarComponent> = {
+  args: { name: 'Quinntyne Brown', size: 'sm' },
+  render: (args) => ({
+    props: args,
+    template: `<qbc-avatar [name]="name" [size]="size" />`,
+  }),
+};
+```
+
+## Naming
+
+- The folder and file prefix are the class name without `Component`: `StoryCard/`, `StoryCardDefault.stories.ts`.
+- The title is `Components/<Name>` with the same name — the catalog test matches `Components/StoryCard` to
+  `StoryCardComponent` (spaces are ignored, so `Components/Story Card` also matches).
+- Story files are `<Name><Story>.stories.ts`, exporting a `const` named after the story.
+
+## Checklist
+
+- **Every component needs a `Default` story** and a docs page. `npm run test:storybook` reads `public-api.ts` and fails
+  for any exported component that lacks either.
+- `Default` comes first and binds `args` to inputs so Controls work.
+- Supply every `input.required()` input — a missing one throws at runtime, and the catalog test fails on any console
+  error or page error.
+- Use realistic workboard copy — story keys like `QBC-142`, sprint goals, epics and owners — not "Lorem ipsum".
+- Write a literal `@` in a template as `&#64;` so Angular does not read it as a control-flow block.
+- Shell and pattern stories set `layout: 'fullscreen'`; compositions with a fixed sidebar also render docs examples in an
+  iframe (`docs.story.inline: false`) so the sidebar stays inside the example.
+- Inputs, outputs and their JSDoc come from compodoc — document them on the component, not in the story.
+- New component? Export it from `src/public-api.ts`, add it to `component-manifest.json`, then add its story folder.
+
+## Patterns
+
+Compositions live under `stories/src/Patterns/<Name>/` with the same layout — `index.stories.ts`, one file per story and
+a `<Name>Description.md` — but no `component:` field; the meta imports every component the pattern uses through
+`moduleMetadata`.

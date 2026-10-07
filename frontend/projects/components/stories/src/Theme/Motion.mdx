@@ -1,0 +1,38 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Theme/Motion" />
+
+# Motion
+
+QBC Workboard has **no motion tokens**. Movement is rare and short, and each component that animates declares its own
+timing:
+
+| Component            | Motion                                                         |
+| -------------------- | -------------------------------------------------------------- |
+| `qbc-sidebar`        | `transform 0.2s ease` as the drawer slides in below 900px      |
+| `qbc-toast`          | 200ms `ease-out` entrance                                      |
+| `qbc-file-drop`      | 120ms background change while a file is dragged over           |
+| `qbc-passcode-input` | caret blink, focus transitions and a 460ms shake on a bad code |
+
+If you add motion, keep it under about 200ms, use it to explain a change of state (something opened, arrived or was
+rejected) and never to decorate. If a second component needs the same timing, that is the moment to add a
+`--qbc-duration-*` token to `styles.scss` rather than copying the literal.
+
+## Reduced motion
+
+`styles.scss` honours the operating-system setting globally, so a component cannot forget to:
+
+```scss
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
+```
+
+Durations collapse to 1ms rather than 0 so `transitionend` and `animationend` still fire and any logic waiting on them
+keeps working. `qbc-passcode-input` additionally removes its caret blink and shake outright.
