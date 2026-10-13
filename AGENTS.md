@@ -18,11 +18,8 @@ deployment is gated by a single shared passcode, not user accounts.
 
 See `README.md` for setup and development commands.
 
-## Frontend conventions
 
-- Prettier (`frontend/.prettierrc.json`) owns formatting and angular-eslint (`frontend/eslint.config.js`) owns lint; CI fails on either. Run `npm run lint` and `npm run format:check` in `frontend/`. The husky pre-commit hook fixes staged frontend files.
-
-- ## Scope, Simplicity, and Zero-Waste Engineering (CRITICAL)
+## Scope, Simplicity, and Zero-Waste Engineering (CRITICAL)
 
 This is the absolute highest-priority rule in this repository. AI agents tend to over-engineer, hallucinate future needs, and balloon codebase complexity. This kills project velocity and comprehensibility. You must resist this impulse. Deliver radically simple solutions that fulfill the exact prompt—nothing more.
 
@@ -38,6 +35,11 @@ This is the absolute highest-priority rule in this repository. AI agents tend to
 
 ### 3. Hard Stop & Query Clause
 *   **When in Doubt, Ask:** If a task seems to logically require expanding the scope, introduces a major jump in complexity, or conflicts with the existing architecture, **STOP IMMEDIATELY**. Do not guess. Present the trade-offs to the user and await explicit confirmation before writing a single line of code.
+
+
+## Frontend conventions
+
+- Prettier (`frontend/.prettierrc.json`) owns formatting and angular-eslint (`frontend/eslint.config.js`) owns lint; CI fails on either. Run `npm run lint` and `npm run format:check` in `frontend/`. The husky pre-commit hook fixes staged frontend files.
 
 
 ## Incremental Implementation and ATDD - mandatory
