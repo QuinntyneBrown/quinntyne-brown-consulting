@@ -12,3 +12,5 @@ artifacts/
 frontend/projects/components/documentation.json
 *storybook.log
 eng/logs/
+# Design-system extraction cache (harvest report, generator, screenshots)
+docs/design-system/.cache/

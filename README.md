@@ -74,11 +74,9 @@ flowchart LR
 | `frontend/projects/api` | Typed models, service interfaces, injection tokens, and HTTP clients |
 | `frontend/projects/components` | Versioned Angular UI system and its Storybook design-system catalog |
 | `e2e` | Playwright browser acceptance suite for the built frontend and the Storybook catalog tests |
-| `docs` | Requirements, detailed designs, acceptance evidence, and prototypes |
+| `docs` | Requirements, detailed designs, and prototypes |
 
 The [detailed designs](docs/detailed-designs/) describe each vertical feature.
-The [implementation alignment record](docs/implementation-design-alignment.md)
-tracks known differences between those designs and the current source.
 
 ## Prerequisites
 
@@ -433,8 +431,6 @@ story and docs page in Chromium. Pushes to `main` that touch the library deploy 
 | [L1 requirements](docs/specs/L1.md) | Product goals, architecture constraints, and scope boundaries |
 | [L2 requirements](docs/specs/L2.md) | Detailed requirements and Given/When/Then acceptance criteria |
 | [Detailed designs](docs/detailed-designs/) | Per-feature architecture and behavior diagrams |
-| [Acceptance evidence](docs/acceptance-evidence.md) | Recorded ATDD red and green boundaries |
-| [Implementation alignment](docs/implementation-design-alignment.md) | Known differences and the plan to align code and designs |
 | [Contributing](CONTRIBUTING.md) | Development workflow and pull-request expectations |
 | [Security](SECURITY.md) | Supported versions and private vulnerability reporting |
 | [Support](SUPPORT.md) | Help channels and support boundaries |

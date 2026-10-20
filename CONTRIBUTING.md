@@ -54,8 +54,7 @@ containing data that should be retained.
 3. Select the relevant L2 requirement and Given/When/Then scenario under
    [`docs/specs/L2.md`](docs/specs/L2.md).
 4. Add an acceptance test that fails for the missing or incorrect behavior.
-5. Record the expected red result in
-   [`docs/acceptance-evidence.md`](docs/acceptance-evidence.md).
+5. Confirm the acceptance test fails for the expected reason before writing code.
 6. Add the smallest coherent implementation that satisfies the scenario.
 7. Refactor only after the acceptance test and existing regression suite pass.
 8. Update affected requirements, detailed designs, diagrams, and user

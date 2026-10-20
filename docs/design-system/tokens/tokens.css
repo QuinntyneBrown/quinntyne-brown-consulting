@@ -1,0 +1,431 @@
+/* ==========================================================================
+   QBC Workboard design tokens: the single source of truth for colour, type,
+   space, shape, elevation, motion, layout, z-order and interaction.
+
+   Extracted from docs/mocks (styles.css and the --qbc-* custom properties in
+   every mock page) on 2026-10-16. Off-scale values were normalised; every
+   correction is logged in docs/design-system/README.md under "Drift".
+
+   Three tiers:
+     1. Primitives  (--palette-*, --font-*, --line-height-*, --letter-spacing-*)
+                    raw values; only semantic tokens read them.
+     2. Semantic    (--color-*, --text-*, --space-*, --radius-*, --shadow-*,
+                    --duration-*, --ease-*, --z-*, --layout-*, --control-*,
+                    --target-*, --focus-*, --icon-*) what components consume.
+                    Themes override this tier only.
+     3. Component   (--btn-*, --field-*, --dialog-*, ...) in assets/components.css,
+                    always aliasing a semantic token.
+
+   Themes: light is :root. Dark applies with [data-theme="dark"], or when the
+   OS prefers dark and the page has not forced [data-theme="light"]. The mocks
+   only shipped a light theme; the dark theme is built from the roles.
+   ========================================================================== */
+
+:root {
+  /* ---------- Primitives: colour --------------------------------------- */
+  --palette-white: #ffffff;
+
+  /* Neutral ramp: the green-tinted greys of the mocks (--qbc-ink, -line, -soft). */
+  --palette-gray-25: #fbfcfb;   /* mocks --qbc-surface-raised, sidebar */
+  --palette-gray-50: #f5f7f5;   /* mocks --qbc-soft, board columns */
+  --palette-gray-100: #e8ece9;  /* mocks --qbc-line-card */
+  --palette-gray-200: #e4e9e6;  /* mocks --qbc-line */
+  --palette-gray-300: #d8dfdb;  /* mocks --qbc-line-strong */
+  --palette-gray-400: #a0a9a4;  /* mocks --qbc-placeholder; disabled only */
+  --palette-gray-450: #848e89;  /* new: control edges at 3:1 (drift D3) */
+  --palette-gray-500: #68726d;  /* mocks --qbc-ink-soft */
+  --palette-gray-600: #5e6863;  /* mocks --qbc-nav-ink */
+  --palette-gray-700: #343d39;
+  --palette-gray-800: #242c28;
+  --palette-gray-900: #18201d;  /* mocks --qbc-ink */
+  --palette-gray-950: #0f1412;
+  --palette-gray-975: #0b0f0d;
+
+  /* Brand green: --qbc-accent #276749, -dark #184c35, -soft #e8f3ed. */
+  --palette-green-50: #e8f3ed;
+  --palette-green-100: #cfe7da;
+  --palette-green-200: #a6d3bc;
+  --palette-green-300: #7cc29f;
+  --palette-green-400: #47a175;  /* mocks availability dot */
+  --palette-green-600: #276749;
+  --palette-green-700: #184c35;
+  --palette-green-800: #123a29;
+  --palette-green-900: #0d2a1e;
+  --palette-green-950: #081a12;
+
+  /* Blue: --qbc-blue #315f88 / -soft #eaf1f8 (draft, to-do, logged hours). */
+  --palette-blue-50: #eaf1f8;
+  --palette-blue-100: #d3e2f0;
+  --palette-blue-300: #8db4d8;
+  --palette-blue-600: #315f88;
+  --palette-blue-700: #264b6c;
+  --palette-blue-800: #1d3a54;
+  --palette-blue-950: #0e1d2b;
+
+  /* Amber: --qbc-amber #8a6100 / -soft #fff4d9 (in progress, planned). */
+  --palette-amber-50: #fff4d9;
+  --palette-amber-100: #ffe7ad;
+  --palette-amber-300: #e9bf5a;
+  --palette-amber-500: #a87700;
+  --palette-amber-700: #8a6100;
+  --palette-amber-800: #6b4b00;
+  --palette-amber-950: #2b1f03;
+
+  /* Red: --qbc-danger #a33a37 / -soft #faeceb; #8d2f2c and #f0d5d3 from attachments. */
+  --palette-red-50: #faeceb;
+  --palette-red-100: #f0d5d3;
+  --palette-red-300: #e59a96;
+  --palette-red-600: #a33a37;
+  --palette-red-700: #8d2f2c;
+  --palette-red-800: #6e2421;
+  --palette-red-950: #301110;
+
+  /* ---------- Primitives: typography ----------------------------------- */
+  --font-family-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --font-size-xs: 0.75rem;     /* 12px  keys, pills, hints (11px raised, drift D5) */
+  --font-size-sm: 0.8125rem;   /* 13px  secondary text, breadcrumb, toasts */
+  --font-size-md: 0.9375rem;   /* 15px  body: the workboard's dense default */
+  --font-size-lg: 1rem;        /* 16px  card titles, inputs on touch */
+  --font-size-xl: 1.125rem;    /* 18px  empty-state titles, brand mark */
+  --font-size-2xl: 1.375rem;   /* 22px  section and dialog titles (21px snapped) */
+  --font-size-3xl: 1.875rem;   /* 30px  page title, phone */
+  --font-size-4xl: 2.25rem;    /* 36px  page title, tablet */
+  --font-size-5xl: 2.625rem;   /* 42px  page title, desktop */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 600;   /* nav (620), breadcrumb */
+  --font-weight-semibold: 700; /* buttons (680), labels, pills */
+  --font-weight-bold: 800;     /* keys, eyebrows, avatars (750, 800) */
+
+  --line-height-tight: 1.12;   /* page titles */
+  --line-height-snug: 1.4;     /* card titles, headings */
+  --line-height-normal: 1.5;   /* body */
+  --line-height-relaxed: 1.65; /* long descriptions */
+
+  --letter-spacing-tight: -0.02em;  /* headings (-.035em page title folded in) */
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.06em;    /* brand, keys, eyebrows */
+
+  /* ---------- Semantic: colour (light) --------------------------------- */
+  --color-bg-canvas: var(--palette-white);
+  --color-bg-surface: var(--palette-white);
+  --color-bg-surface-raised: var(--palette-gray-25);
+  --color-bg-surface-sunken: var(--palette-gray-50);
+  --color-bg-subtle: var(--palette-gray-50);
+  --color-bg-subtle-hover: var(--palette-gray-100);
+  --color-bg-inverse: var(--palette-gray-900);
+  --color-bg-backdrop: rgba(18, 25, 22, 0.4);
+
+  --color-fg-default: var(--palette-gray-900);
+  --color-fg-muted: var(--palette-gray-600);
+  --color-fg-subtle: var(--palette-gray-500);
+  --color-fg-disabled: var(--palette-gray-400);
+  --color-fg-inverse: var(--palette-white);
+  --color-fg-link: var(--palette-green-600);
+  --color-fg-link-hover: var(--palette-green-700);
+
+  --color-border-default: var(--palette-gray-200);
+  --color-border-strong: var(--palette-gray-450);
+  --color-border-inverse: var(--palette-gray-700);
+
+  --color-accent: var(--palette-green-600);
+  --color-accent-hover: var(--palette-green-700);
+  --color-accent-active: var(--palette-green-800);
+  --color-accent-subtle: var(--palette-green-50);
+  --color-accent-subtle-hover: var(--palette-green-100);
+  --color-fg-on-accent: var(--palette-white);
+  --color-fg-accent: var(--palette-green-700);
+
+  --color-focus-ring: var(--palette-green-600);
+  --color-focus-ring-offset: var(--color-bg-surface);
+
+  --color-info-bg: var(--palette-blue-50);
+  --color-info-fg: var(--palette-blue-600);
+  --color-info-border: var(--palette-blue-300);
+  --color-info-icon: var(--palette-blue-600);
+  --color-info-solid: var(--palette-blue-600);
+
+  --color-success-bg: var(--palette-green-50);
+  --color-success-fg: var(--palette-green-700);
+  --color-success-border: var(--palette-green-200);
+  --color-success-icon: var(--palette-green-600);
+  --color-success-solid: var(--palette-green-600);
+
+  --color-warning-bg: var(--palette-amber-50);
+  --color-warning-fg: var(--palette-amber-700);
+  --color-warning-border: var(--palette-amber-300);
+  --color-warning-icon: var(--palette-amber-700);
+  --color-warning-solid: var(--palette-amber-700);
+
+  --color-danger-bg: var(--palette-red-50);
+  --color-danger-fg: var(--palette-red-600);
+  --color-danger-border: var(--palette-red-100);
+  --color-danger-icon: var(--palette-red-600);
+  --color-danger-solid: var(--palette-red-600);
+  --color-danger-solid-hover: var(--palette-red-700);
+  --color-fg-on-danger: var(--palette-white);
+
+  /* ---------- Semantic: typography roles ------------------------------- */
+  --text-display: var(--font-weight-bold) var(--font-size-5xl) / var(--line-height-tight) var(--font-family-sans);
+  --text-h1: var(--font-weight-bold) var(--font-size-4xl) / var(--line-height-tight) var(--font-family-sans);
+  --text-h2: var(--font-weight-bold) var(--font-size-2xl) / var(--line-height-snug) var(--font-family-sans);
+  --text-h3: var(--font-weight-semibold) var(--font-size-xl) / var(--line-height-snug) var(--font-family-sans);
+  --text-h4: var(--font-weight-semibold) var(--font-size-lg) / var(--line-height-snug) var(--font-family-sans);
+  --text-body-lg: var(--font-weight-regular) var(--font-size-lg) / var(--line-height-normal) var(--font-family-sans);
+  --text-body: var(--font-weight-regular) var(--font-size-md) / var(--line-height-normal) var(--font-family-sans);
+  --text-body-sm: var(--font-weight-regular) var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
+  --text-caption: var(--font-weight-regular) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
+  --text-label: var(--font-weight-semibold) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
+  --text-overline: var(--font-weight-bold) var(--font-size-xs) / var(--line-height-normal) var(--font-family-sans);
+  --text-code: var(--font-weight-regular) var(--font-size-sm) / var(--line-height-normal) var(--font-family-mono);
+
+  /* ---------- Semantic: spacing (4px base) ----------------------------- */
+  --space-0: 0;
+  --space-0-5: 0.125rem; /* 2px  hairline gaps */
+  --space-1: 0.25rem;    /* 4px  icon to label, pill padding */
+  --space-1-5: 0.375rem; /* 6px  tag gaps, field label gap (mocks 5-7px) */
+  --space-2: 0.5rem;     /* 8px  inline gaps, chip padding (mocks 6-10px) */
+  --space-3: 0.75rem;    /* 12px control padding, card stack gap */
+  --space-4: 1rem;       /* 16px button padding, row padding */
+  --space-5: 1.25rem;    /* 20px board gap, row gap */
+  --space-6: 1.5rem;     /* 24px card and dialog padding (mocks 23-28px) */
+  --space-8: 2rem;       /* 32px hero padding, gaps between page blocks */
+  --space-10: 2.5rem;    /* 40px page-head margin (mocks 42px) */
+  --space-12: 3rem;      /* 48px page top padding (mocks 54px) */
+  --space-16: 4rem;      /* 64px empty-state padding */
+  --space-20: 5rem;      /* 80px page bottom padding */
+  --space-24: 6rem;      /* 96px */
+
+  /* ---------- Semantic: layout ----------------------------------------- */
+  --layout-breakpoint-sm: 40rem;      /* 640px  large phones */
+  --layout-breakpoint-md: 47.5rem;    /* 760px  mocks: sidebar becomes a drawer */
+  --layout-breakpoint-lg: 62.5rem;    /* 1000px mocks: board stacks, rows drop a column */
+  --layout-breakpoint-xl: 73.75rem;   /* 1180px mocks: hours page gains its side panel */
+  --layout-breakpoint-2xl: 90rem;     /* 1440px content stops growing */
+
+  --layout-columns: 4;
+  --layout-gutter: var(--space-4);
+  --layout-margin: var(--space-4);    /* mocks 18px on phones */
+  --layout-container-max: 90rem;      /* mocks .page max-width 1440px */
+  --layout-measure: 72ch;             /* mocks description max 72ch */
+  --layout-sidebar-width: 14rem;      /* 224px */
+  --layout-topbar-height: 5rem;       /* 80px (mocks 82px, drift D7) */
+  --layout-topbar-height-compact: 4.5rem; /* 72px (mocks 70px) */
+
+  /* ---------- Semantic: shape ------------------------------------------ */
+  --radius-xs: 0.25rem;   /* 4px  checkbox, focus outline corners */
+  --radius-sm: 0.375rem;  /* 6px  tags, points chip (mocks 6-7px) */
+  --radius-md: 0.5rem;    /* 8px  buttons, inputs, nav items (mocks 8-10px) */
+  --radius-lg: 0.75rem;   /* 12px story cards, panels, board columns (mocks 11-14px) */
+  --radius-xl: 1rem;      /* 16px dialogs */
+  --radius-full: 9999px;  /* pills, avatars, counts */
+
+  --border-width-hairline: 1px;
+  --border-width-thick: 2px;
+
+  /* ---------- Semantic: elevation -------------------------------------- */
+  --shadow-color: 24 32 29;
+  --shadow-1: 0 2px 3px rgb(var(--shadow-color) / 0.05);
+  --shadow-2: 0 4px 12px rgb(var(--shadow-color) / 0.08);
+  --shadow-3: 0 10px 28px rgb(var(--shadow-color) / 0.10);
+  --shadow-4: 0 18px 50px rgb(var(--shadow-color) / 0.12);
+  --shadow-focus: 0 0 0 2px var(--color-focus-ring-offset), 0 0 0 4px var(--color-focus-ring);
+
+  /* ---------- Semantic: motion ----------------------------------------- */
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;
+  --duration-base: 200ms;       /* mocks 180ms page enter, 200ms toast and drawer */
+  --duration-slow: 320ms;
+  --duration-deliberate: 500ms; /* mocks 460ms passcode shake */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0, 0, 0, 1);   /* mocks ease-out */
+  --ease-exit: cubic-bezier(0.3, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---------- Semantic: z-order ---------------------------------------- */
+  --z-base: 0;
+  --z-raised: 1;       /* mocks 4-5: editor overlays */
+  --z-sticky: 100;     /* mocks 15: top bar */
+  --z-dropdown: 1000;  /* mocks 20: sidebar drawer */
+  --z-overlay: 1200;   /* mocks 80: drag preview */
+  --z-modal: 1300;
+  --z-popover: 1400;
+  --z-toast: 1500;     /* mocks 90 */
+  --z-tooltip: 1600;   /* mocks 100: skip link sits here too */
+
+  /* ---------- Semantic: interaction ------------------------------------ */
+  --target-min: 1.5rem;          /* 24px WCAG 2.2 minimum */
+  --target-comfortable: 2.75rem; /* 44px */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --control-height-sm: 2rem;     /* 32px row and card actions (mocks 30-34px) */
+  --control-height-md: 2.5rem;   /* 40px buttons and inputs (inputs were 42px) */
+  --control-height-lg: 3rem;     /* 48px passcode digits, auth */
+  --icon-size-sm: 1rem;          /* 16px */
+  --icon-size-md: 1.25rem;       /* 20px */
+  --icon-size-lg: 1.5rem;        /* 24px */
+
+  color-scheme: light;
+}
+
+@media (min-width: 47.5rem) {
+  :root {
+    --layout-columns: 8;
+    --layout-gutter: var(--space-5);
+    --layout-margin: var(--space-8);
+  }
+}
+
+@media (min-width: 62.5rem) {
+  :root {
+    --layout-columns: 12;
+    --layout-gutter: var(--space-6);
+    --layout-margin: var(--space-12);
+  }
+}
+
+/* ---------- Dark theme (built from roles; the mocks had none) ------------ */
+[data-theme="dark"] {
+  --color-bg-canvas: var(--palette-gray-950);
+  --color-bg-surface: var(--palette-gray-900);
+  --color-bg-surface-raised: var(--palette-gray-800);
+  --color-bg-surface-sunken: var(--palette-gray-975);
+  --color-bg-subtle: var(--palette-gray-800);
+  --color-bg-subtle-hover: var(--palette-gray-700);
+  --color-bg-inverse: var(--palette-gray-100);
+  --color-bg-backdrop: rgba(0, 0, 0, 0.6);
+  --color-fg-default: var(--palette-gray-100);
+  --color-fg-muted: #b4bdb8;
+  --color-fg-subtle: #98a29d;
+  --color-fg-disabled: var(--palette-gray-600);
+  --color-fg-inverse: var(--palette-gray-900);
+  --color-fg-link: var(--palette-green-300);
+  --color-fg-link-hover: var(--palette-green-200);
+  --color-border-default: #2f3833;
+  --color-border-strong: #7e8883;
+  --color-border-inverse: var(--palette-gray-300);
+  --color-accent: var(--palette-green-300);
+  --color-accent-hover: var(--palette-green-200);
+  --color-accent-active: var(--palette-green-100);
+  --color-accent-subtle: var(--palette-green-900);
+  --color-accent-subtle-hover: var(--palette-green-800);
+  --color-fg-on-accent: var(--palette-green-950);
+  --color-fg-accent: var(--palette-green-300);
+  --color-focus-ring: var(--palette-green-300);
+  --color-info-bg: var(--palette-blue-950);
+  --color-info-fg: var(--palette-blue-300);
+  --color-info-border: var(--palette-blue-700);
+  --color-info-icon: var(--palette-blue-300);
+  --color-info-solid: var(--palette-blue-300);
+  --color-success-bg: var(--palette-green-900);
+  --color-success-fg: var(--palette-green-300);
+  --color-success-border: var(--palette-green-700);
+  --color-success-icon: var(--palette-green-300);
+  --color-success-solid: var(--palette-green-300);
+  --color-warning-bg: var(--palette-amber-950);
+  --color-warning-fg: var(--palette-amber-300);
+  --color-warning-border: var(--palette-amber-800);
+  --color-warning-icon: var(--palette-amber-300);
+  --color-warning-solid: var(--palette-amber-300);
+  --color-danger-bg: var(--palette-red-950);
+  --color-danger-fg: var(--palette-red-300);
+  --color-danger-border: var(--palette-red-800);
+  --color-danger-icon: var(--palette-red-300);
+  --color-danger-solid: var(--palette-red-300);
+  --color-danger-solid-hover: var(--palette-red-100);
+  --color-fg-on-danger: var(--palette-red-950);
+  --shadow-color: 0 0 0;
+  --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.4);
+  --shadow-2: 0 4px 12px rgb(var(--shadow-color) / 0.45);
+  --shadow-3: 0 10px 28px rgb(var(--shadow-color) / 0.5);
+  --shadow-4: 0 18px 50px rgb(var(--shadow-color) / 0.6);
+  color-scheme: dark;
+}
+
+/* Follow the OS preference unless the page has explicitly chosen light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg-canvas: var(--palette-gray-950);
+    --color-bg-surface: var(--palette-gray-900);
+    --color-bg-surface-raised: var(--palette-gray-800);
+    --color-bg-surface-sunken: var(--palette-gray-975);
+    --color-bg-subtle: var(--palette-gray-800);
+    --color-bg-subtle-hover: var(--palette-gray-700);
+    --color-bg-inverse: var(--palette-gray-100);
+    --color-bg-backdrop: rgba(0, 0, 0, 0.6);
+    --color-fg-default: var(--palette-gray-100);
+    --color-fg-muted: #b4bdb8;
+    --color-fg-subtle: #98a29d;
+    --color-fg-disabled: var(--palette-gray-600);
+    --color-fg-inverse: var(--palette-gray-900);
+    --color-fg-link: var(--palette-green-300);
+    --color-fg-link-hover: var(--palette-green-200);
+    --color-border-default: #2f3833;
+    --color-border-strong: #7e8883;
+    --color-border-inverse: var(--palette-gray-300);
+    --color-accent: var(--palette-green-300);
+    --color-accent-hover: var(--palette-green-200);
+    --color-accent-active: var(--palette-green-100);
+    --color-accent-subtle: var(--palette-green-900);
+    --color-accent-subtle-hover: var(--palette-green-800);
+    --color-fg-on-accent: var(--palette-green-950);
+    --color-fg-accent: var(--palette-green-300);
+    --color-focus-ring: var(--palette-green-300);
+    --color-info-bg: var(--palette-blue-950);
+    --color-info-fg: var(--palette-blue-300);
+    --color-info-border: var(--palette-blue-700);
+    --color-info-icon: var(--palette-blue-300);
+    --color-info-solid: var(--palette-blue-300);
+    --color-success-bg: var(--palette-green-900);
+    --color-success-fg: var(--palette-green-300);
+    --color-success-border: var(--palette-green-700);
+    --color-success-icon: var(--palette-green-300);
+    --color-success-solid: var(--palette-green-300);
+    --color-warning-bg: var(--palette-amber-950);
+    --color-warning-fg: var(--palette-amber-300);
+    --color-warning-border: var(--palette-amber-800);
+    --color-warning-icon: var(--palette-amber-300);
+    --color-warning-solid: var(--palette-amber-300);
+    --color-danger-bg: var(--palette-red-950);
+    --color-danger-fg: var(--palette-red-300);
+    --color-danger-border: var(--palette-red-800);
+    --color-danger-icon: var(--palette-red-300);
+    --color-danger-solid: var(--palette-red-300);
+    --color-danger-solid-hover: var(--palette-red-100);
+    --color-fg-on-danger: var(--palette-red-950);
+    --shadow-color: 0 0 0;
+    --shadow-1: 0 1px 2px rgb(var(--shadow-color) / 0.4);
+    --shadow-2: 0 4px 12px rgb(var(--shadow-color) / 0.45);
+    --shadow-3: 0 10px 28px rgb(var(--shadow-color) / 0.5);
+    --shadow-4: 0 18px 50px rgb(var(--shadow-color) / 0.6);
+    color-scheme: dark;
+  }
+}
+
+/* ---------- Preference overrides ------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+    --duration-deliberate: 0.01ms;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-border-default: var(--color-border-strong);
+    --color-fg-muted: var(--color-fg-default);
+    --color-fg-subtle: var(--color-fg-muted);
+  }
+}
+
+@media (forced-colors: active) {
+  :root {
+    --color-focus-ring: Highlight;
+    --color-border-default: CanvasText;
+    --color-border-strong: CanvasText;
+  }
+}

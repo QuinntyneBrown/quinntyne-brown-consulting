@@ -3,44 +3,30 @@
 QBC Workboard is a responsive Scrum workspace for planning and delivering
 software, product, and AI consulting work: initiatives, epics, stories, tasks,
 assistants and their logged hours, backlog grooming, two-week sprint planning,
-and active-sprint execution. The ASP.NET Core API (Clean Architecture, MediatR,
-EF Core on SQL Server) and the Angular app publish as one deployable output. The
-deployment is gated by a single shared passcode, not user accounts.
+and active-sprint execution. An ASP.NET Core API (Clean Architecture, MediatR,
+EF Core on SQL Server) and an Angular app publish as one deployable output,
+gated by a single shared passcode rather than user accounts.
 
-- `backend/` — .NET solution (`Qbc.Workboard.Domain`, `.Application`,
-  `.Infrastructure`, `.Api`, `.Cli`) and its tests
-- `frontend/` — Angular workspace (`qbc-workboard` app, `api` clients,
-  `components` UI library)
-- `e2e/` — Playwright browser acceptance suite for the frontend (its own npm
-  package, run with `npm test` after building `frontend/`)
-- `docs/specs/` — L1/L2 requirements; `docs/detailed-designs/` — per-feature
-  designs; `docs/mocks/` — static design reference
+## Commands
 
-See `README.md` for setup and development commands.
+- Build: `npm run build`
+- Test: `dotnet test backend/Qbc.Workboard.slnx --configuration Release`
+- Lint: `npm run format:check`
 
+## Testing
 
-## Scope, Simplicity, and Zero-Waste Engineering (CRITICAL)
+- Tests use xunit.
+- Run them with `dotnet test backend/Qbc.Workboard.slnx --configuration Release`.
 
-This is the absolute highest-priority rule in this repository. AI agents tend to over-engineer, hallucinate future needs, and balloon codebase complexity. This kills project velocity and comprehensibility. You must resist this impulse. Deliver radically simple solutions that fulfill the exact prompt—nothing more.
+## Git Workflow
 
-### 1. Absolute Scope Lock
-*   **Deliver Only the Explicit Request:** Implement exactly what is asked for in the immediate task. Do not invent features, add unrequested states, create predictive API endpoints, or spin up new UI screens/components unless explicitly ordered.
-*   **Zero Future-Proofing:** Do not write code for "imagined future use cases." Write code strictly for the present moment. If the user didn't ask for it today, it does not exist.
-*   **Ignore Unsent Requirements:** Documents, specs, or mocks may contain broader context or future phases. Do not implement them early. Only implement what is requested in the active prompt.
-
-### 2. Radical Simplicity & Proportionality
-*   **Proportional Diffs:** The size and footprint of your code change must match the size of the request. A small feature or fix must result in a small, clean, readable diff.
-*   **Path of Least Resistance:** Always choose the simplest, most direct code path that solves the problem. Do not introduce new abstractions, architectural layers, design patterns, wrappers, or external libraries unless it is physically impossible to solve the issue without them.
-*   **No Unsolicited Refactoring:** Do not "improve," rewrite, or clean up code adjacent to your task unless it is strictly broken and blocking your implementation. Leave surrounding code alone.
-
-### 3. Hard Stop & Query Clause
-*   **When in Doubt, Ask:** If a task seems to logically require expanding the scope, introduces a major jump in complexity, or conflicts with the existing architecture, **STOP IMMEDIATELY**. Do not guess. Present the trade-offs to the user and await explicit confirmation before writing a single line of code.
-
+- Every change is checked by continuous integration:
+  - `.github/workflows/ci.yml`
+  - `.github/workflows/deploy-storybook.yml`
 
 ## Frontend conventions
 
 - Prettier (`frontend/.prettierrc.json`) owns formatting and angular-eslint (`frontend/eslint.config.js`) owns lint; CI fails on either. Run `npm run lint` and `npm run format:check` in `frontend/`. The husky pre-commit hook fixes staged frontend files.
-
 
 ## Incremental Implementation and ATDD - mandatory
 

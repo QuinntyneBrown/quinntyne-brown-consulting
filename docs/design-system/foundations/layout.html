@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layout — QBC Workboard design system</title>
+<meta name="description" content="Sidebar shell, responsive columns, gutters and margins, and the breakpoints the mocks already used (760, 1000, 1180px).">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Foundation</p>
+      <h1>Layout</h1>
+      <p class="ds-lead">Sidebar shell, responsive columns, gutters and margins, and the breakpoints the mocks already used (760, 1000, 1180px).</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#breakpoints">Breakpoints</a></li><li><a href="#grid">Columns, gutters, margins</a></li><li><a href="#templates">Page templates</a></li><li><a href="#usage">Usage</a></li><li><a href="#tokens">Tokens</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Desktop: 224px fixed sidebar, 80px sticky top bar, content up to 1440px.</li><li>Phones: sidebar becomes a drawer, top bar compacts to 72px.</li></ul>
+    </section>
+    <section class="ds-section" id="breakpoints"><h2><a href="#breakpoints">Breakpoints</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Token</th><th scope="col">Value</th><th scope="col">What changes</th></tr></thead><tbody><tr><td><code>--layout-breakpoint-sm</code></td><td><span data-token="--layout-breakpoint-sm"></span></td><td>Large phones: inline forms go two-up.</td></tr><tr><td><code>--layout-breakpoint-md</code></td><td><span data-token="--layout-breakpoint-md"></span></td><td>Sidebar fixed, top bar full, form grid two columns, data rows become rows.</td></tr><tr><td><code>--layout-breakpoint-lg</code></td><td><span data-token="--layout-breakpoint-lg"></span></td><td>Board shows three columns; data rows show all cells.</td></tr><tr><td><code>--layout-breakpoint-xl</code></td><td><span data-token="--layout-breakpoint-xl"></span></td><td>Hours page shows its side panel.</td></tr><tr><td><code>--layout-breakpoint-2xl</code></td><td><span data-token="--layout-breakpoint-2xl"></span></td><td>Content stops growing.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="grid"><h2><a href="#grid">Columns, gutters, margins</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Viewport</th><th scope="col">Columns</th><th scope="col">Gutter</th><th scope="col">Margin</th></tr></thead><tbody><tr><td>&lt; 760px</td><td>4</td><td>16px</td><td>16px</td></tr><tr><td>760–999px</td><td>8</td><td>20px</td><td>32px</td></tr><tr><td>≥ 1000px</td><td>12</td><td>24px</td><td>48px</td></tr></tbody></table></div>
+      <h3>Live grid</h3>
+      <div class="ds-grid-demo" aria-label="Live grid demo" role="img"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span></div><p>Resize the window: the column count, gutter and margin follow <code>--layout-columns</code>, <code>--layout-gutter</code> and <code>--layout-margin</code>.</p>
+    </section>
+    <section class="ds-section" id="templates"><h2><a href="#templates">Page templates</a></h2>
+      <ul><li><b>Shell</b>: sidebar + top bar + container (board, backlog, hierarchy, assistants, hours).</li><li><b>Auth</b>: centred panel, no shell (passcode).</li><li><b>Editor</b>: shell with a two-pane write/preview body (initiative editor).</li><li><b>Detail</b>: shell with a page head, stats and lists (assistant hours).</li></ul>
+    </section>
+    <section class="ds-section" id="usage"><h2><a href="#usage">Usage</a></h2>
+      <ul><li>Pages use <code>.container</code>; never set page margins by hand.</li><li>Prose is capped at <code>--layout-measure</code>.</li></ul>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Layout breakpoint sm</td><td><code>--layout-breakpoint-sm</code></td><td colspan="2"><span data-token="--layout-breakpoint-sm"></span></td></tr><tr><td>Layout breakpoint md</td><td><code>--layout-breakpoint-md</code></td><td colspan="2"><span data-token="--layout-breakpoint-md"></span></td></tr><tr><td>Layout breakpoint lg</td><td><code>--layout-breakpoint-lg</code></td><td colspan="2"><span data-token="--layout-breakpoint-lg"></span></td></tr><tr><td>Layout breakpoint xl</td><td><code>--layout-breakpoint-xl</code></td><td colspan="2"><span data-token="--layout-breakpoint-xl"></span></td></tr><tr><td>Layout breakpoint 2xl</td><td><code>--layout-breakpoint-2xl</code></td><td colspan="2"><span data-token="--layout-breakpoint-2xl"></span></td></tr><tr><td>Layout columns</td><td><code>--layout-columns</code></td><td colspan="2"><span data-token="--layout-columns"></span></td></tr><tr><td>Layout gutter</td><td><code>--layout-gutter</code></td><td colspan="2"><span data-token="--layout-gutter"></span></td></tr><tr><td>Layout margin</td><td><code>--layout-margin</code></td><td colspan="2"><span data-token="--layout-margin"></span></td></tr><tr><td>Layout container max</td><td><code>--layout-container-max</code></td><td colspan="2"><span data-token="--layout-container-max"></span></td></tr><tr><td>Layout measure</td><td><code>--layout-measure</code></td><td colspan="2"><span data-token="--layout-measure"></span></td></tr><tr><td>Layout sidebar width</td><td><code>--layout-sidebar-width</code></td><td colspan="2"><span data-token="--layout-sidebar-width"></span></td></tr><tr><td>Layout topbar height</td><td><code>--layout-topbar-height</code></td><td colspan="2"><span data-token="--layout-topbar-height"></span></td></tr><tr><td>Layout topbar height compact</td><td><code>--layout-topbar-height-compact</code></td><td colspan="2"><span data-token="--layout-topbar-height-compact"></span></td></tr></tbody></table></div>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

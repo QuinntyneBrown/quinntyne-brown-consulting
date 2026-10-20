@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>List — QBC Workboard design system</title>
+<meta name="description" content="Data rows for the backlog, hierarchy and sprint lists: a title, metadata and row actions that collapse into cards on phones.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Data display</p>
+      <h1>List</h1>
+      <p class="ds-lead">Data rows for the backlog, hierarchy and sprint lists: a title, metadata and row actions that collapse into cards on phones.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native HTML</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Use for objects with actions (stories in the backlog).</li><li>Use the <a href="table.html">table</a> to compare values.</li></ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy"><figure class="ds-anatomy__figure"><ul class="data-list" style="width: 40rem;"><li class="data-row"><div class="data-row__title"><span class="story-card__key">QBC-269</span><div><strong>Research Caribbean restaurants</strong><small>Sweet Hand · GTA research</small></div></div><div><span class="data-row__label">Assignee</span>Vanessa</div><span class="pill pill--success">Ready</span><div class="data-row__actions"><button class="btn btn--ghost btn--sm" type="button">Edit</button><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="More actions for QBC-269"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button></div></li></ul><span class="ds-callout" style="left: 15%; top: 30%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 30%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 70%; top: 30%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 90%; top: 30%;" aria-hidden="true">4</span></figure><ol class="ds-anatomy__list"><li><div><b>Title block</b><small>Key, title, context.</small></div></li><li><div><b>Metadata cells</b><small>Labels show on phones.</small></div></li><li><div><b>Status</b><small>Badge.</small></div></li><li><div><b>Actions</b><small>Ghost, small.</small></div></li></ol></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Simple</h3>
+      <div class="ds-example"><div class="ds-example__canvas"><ul class="data-list data-list--simple" style="width: 24rem;"><li class="data-row"><span>Sprint 1 · completed</span><span class="pill pill--plain">67 stories</span></li><li class="data-row"><span>Sprint 2 · active</span><span class="pill pill--success">Active</span></li></ul></div><div class="ds-example__caption"><span>Two-cell rows (sprint list).</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;ul class="data-list data-list--simple" style="width: 24rem;"&gt;&lt;li class="data-row"&gt;&lt;span&gt;Sprint 1 · completed&lt;/span&gt;&lt;span class="pill pill--plain"&gt;67 stories&lt;/span&gt;&lt;/li&gt;&lt;li class="data-row"&gt;&lt;span&gt;Sprint 2 · active&lt;/span&gt;&lt;span class="pill pill--success"&gt;Active&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;</code></pre></details></div>
+
+    </section>
+    <section class="ds-section" id="sizes" data-na="Default 72px rows; simple 44px."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">Not applicable: Default 72px rows; simple 44px.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> so they can be reviewed statically; product code gets them from real pseudo-classes and attributes.</p>
+      <ul class="data-list"><li class="data-row"><span>Default</span></li><li class="data-row" data-state="hover"><span>Hover</span></li><li class="data-row" data-selected="true"><span>Selected</span></li></ul>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><ul class="data-list data-list--simple" style="width: 16rem;"><li class="data-row"><span>Sprint 2</span><span class="pill pill--success">Active</span></li></ul></div></div><div data-theme="dark"><div class="ds-example__canvas"><ul class="data-list data-list--simple" style="width: 16rem;"><li class="data-row"><span>Sprint 2</span><span class="pill pill--success">Active</span></li></ul></div></div></div>
+
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li><code>.data-list--responsive</code>: below 760px each row becomes a bordered card with two columns and visible cell labels; the title and actions span both.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The component reads semantic tokens only (listed under <a href="#tokens">Tokens</a>). The dark theme re-maps those tokens; nothing in the component changes.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p><code>&lt;ul&gt;</code> of rows; each row's title is a link or the row has a named action. Hidden cell labels appear for sighted users on phones and stay in the DOM.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves focus to and from the control in DOM order.</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>The shared ring (<code>--focus-ring-width</code> solid <code>--color-focus-ring</code>, <code>--focus-ring-offset</code> gap) appears on <code>:focus-visible</code> only. The mocks drew a 25% green halo (<code>rgba(39,103,73,.25)</code>) that measured 1.3:1; the system ring is solid and passes 3:1 (drift D2).</p>
+      <h3>Labelling</h3>
+      <p>Row actions name the row ("More actions for QBC-269").</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack"><div class="ds-pair"><span>Title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Context</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Hover row text</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div></div>
+      <h3>Motion</h3>
+      <p>No motion beyond colour transitions over <code>--duration-fast</code>, which the tokens zero under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Controls are at least <code>--control-height-md</code> (40px) tall, above the 24px minimum; in dense rows the whole row is also a target and neighbours keep 8px apart.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>Context line: "Initiative · Epic".</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><div class="data-row__actions"><button class="btn btn--ghost btn--sm" type="button">Edit</button><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="More actions"><svg class="icon icon--sm" aria-hidden="true" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg></button></div></div><figcaption>One visible action plus a menu.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><div class="data-row__actions"><button class="btn btn--sm" type="button">Edit</button><button class="btn btn--sm" type="button">Groom</button><button class="btn btn--sm" type="button">Archive</button><button class="btn btn--sm" type="button">Delete</button></div></div><figcaption>Four buttons per row overflow on tablets.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Row border</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr><tr><td>Hover</td><td><code>--color-bg-surface-raised</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-raised" data-swatch></i><span data-token="--color-bg-surface-raised"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-raised" data-swatch></i><span data-token="--color-bg-surface-raised"></span></span></td></tr><tr><td>Selected</td><td><code>--color-accent-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent-subtle" data-swatch></i><span data-token="--color-accent-subtle"></span></span></td></tr><tr><td>Row padding</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;ul class="data-list data-list--responsive"&gt;
+  &lt;li class="data-row"&gt;…&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.data-list</code></td><td>List.</td></tr><tr><td><code>.data-list--responsive</code></td><td>Cards on phones.</td></tr><tr><td><code>.data-list--simple</code></td><td>Two-cell rows.</td></tr><tr><td><code>.data-row</code></td><td>Row.</td></tr><tr><td><code>.data-row__label</code></td><td>Cell label (phones).</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/index.html">index.html</a> (Workboard app: board, backlog, hierarchy, assistants, story and sprint dialogs) — backlog, hierarchy epics, sprint list</li><li><a href="../../mocks/assistant-hours.html">assistant-hours.html</a> (Assistant hours: profile, stats, logged-hours list, log-time dialog) — story list</li></ul>
+      <p>Drift fixed during extraction: row min-height 84px snapped to 72px; five fixed columns (incl. 118px) replaced by a flexible four-column template.</p>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

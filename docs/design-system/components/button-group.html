@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Button group — QBC Workboard design system</title>
+<meta name="description" content="Groups related buttons. The segmented control picks one view from a few, like Write and Preview in the editor.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Actions</p>
+      <h1>Button group</h1>
+      <p class="ds-lead">Groups related buttons. The segmented control picks one view from a few, like Write and Preview in the editor.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native HTML</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li><b>Segmented</b> switches between 2–4 views of the same thing (Write / Preview, Week / Month). One is always pressed.</li><li><b>Toolbar</b> clusters formatting or bulk actions; buttons are independent.</li><li>Use <a href="tabs.html">tabs</a> when the views are separate panels with their own content, and a <a href="select.html">select</a> beyond four options.</li></ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy"><figure class="ds-anatomy__figure"><div class="segmented" role="group" aria-label="Editor view"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button></div><span class="ds-callout" style="left: 10%; top: 50%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 30%; top: 15%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 70%; top: 15%;" aria-hidden="true">3</span></figure><ol class="ds-anatomy__list"><li><div><b>Track</b><small><code>--color-bg-subtle</code>, 2px inset, <code>--radius-md</code>.</small></div></li><li><div><b>Pressed segment</b><small>Surface background, <code>--shadow-1</code>, default text.</small></div></li><li><div><b>Unpressed segment</b><small>Muted text, transparent.</small></div></li></ol></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Segmented</h3>
+      <div class="ds-example"><div class="ds-example__canvas"><div class="segmented" role="group" aria-label="Editor view"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button><button class="btn" type="button" aria-pressed="false">Split</button></div></div><div class="ds-example__caption"><span>Single select via <code>aria-pressed</code>.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="segmented" role="group" aria-label="Editor view"&gt;&lt;button class="btn" type="button" aria-pressed="true"&gt;Write&lt;/button&gt;&lt;button class="btn" type="button" aria-pressed="false"&gt;Preview&lt;/button&gt;&lt;button class="btn" type="button" aria-pressed="false"&gt;Split&lt;/button&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Toolbar</h3>
+      <div class="ds-example"><div class="ds-example__canvas"><div class="btn-group" role="toolbar" aria-label="Formatting"><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Bold"><b>B</b></button><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Italic"><i>I</i></button><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Code">{ }</button></div></div><div class="ds-example__caption"><span>The editor toolbar: independent ghost buttons.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="btn-group" role="toolbar" aria-label="Formatting"&gt;&lt;button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Bold"&gt;&lt;b&gt;B&lt;/b&gt;&lt;/button&gt;&lt;button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Italic"&gt;&lt;i&gt;I&lt;/i&gt;&lt;/button&gt;&lt;button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Code"&gt;{ }&lt;/button&gt;&lt;/div&gt;</code></pre></details></div>
+
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas"><div class="segmented" role="group" aria-label="Small"><button class="btn" type="button" aria-pressed="true">Week</button><button class="btn" type="button" aria-pressed="false">Month</button></div><div class="segmented segmented--sm" role="group" aria-label="Extra small"><button class="btn" type="button" aria-pressed="true">Week</button><button class="btn" type="button" aria-pressed="false">Month</button></div></div><div class="ds-example__caption"><span>Default 32px segments; small 28px for card headers.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="segmented" role="group" aria-label="Small"&gt;&lt;button class="btn" type="button" aria-pressed="true"&gt;Week&lt;/button&gt;&lt;button class="btn" type="button" aria-pressed="false"&gt;Month&lt;/button&gt;&lt;/div&gt;&lt;div class="segmented segmented--sm" role="group" aria-label="Extra small"&gt;&lt;button class="btn" type="button" aria-pressed="true"&gt;Week&lt;/button&gt;&lt;button class="btn" type="button" aria-pressed="false"&gt;Month&lt;/button&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> so they can be reviewed statically; product code gets them from real pseudo-classes and attributes.</p>
+      <div class="ds-matrix"><table><thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Disabled</th></tr></thead><tbody><tr><th scope="row">Pressed</th><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true" >Write</button><button class="btn" type="button" aria-pressed="false">Preview</button></div></td><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true" data-state="hover">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button></div></td><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true" data-state="focus">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button></div></td><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true" disabled>Write</button><button class="btn" type="button" aria-pressed="false">Preview</button></div></td></tr><tr><th scope="row">Unpressed</th><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false" >Preview</button></div></td><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false" data-state="hover">Preview</button></div></td><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false" data-state="focus">Preview</button></div></td><td><div class="segmented" role="group" aria-label="Demo"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false" disabled>Preview</button></div></td></tr></tbody></table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><div class="segmented" role="group" aria-label="Editor view"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button><button class="btn" type="button" aria-pressed="false">Split</button></div></div></div><div data-theme="dark"><div class="ds-example__canvas"><div class="segmented" role="group" aria-label="Editor view"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button><button class="btn" type="button" aria-pressed="false">Split</button></div></div></div></div>
+
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li>Segmented controls never wrap; with more than three segments below 360px, switch to a select.</li><li>Toolbars wrap onto a second row and keep their grouping.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The component reads semantic tokens only (listed under <a href="#tokens">Tokens</a>). The dark theme re-maps those tokens; nothing in the component changes.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p><code>role="group"</code> (segmented) or <code>role="toolbar"</code> with <code>aria-label</code>; each segment is a <code>&lt;button aria-pressed&gt;</code>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves focus to and from the control in DOM order.</td></tr><tr><td><kbd>Enter</kbd>, <kbd>Space</kbd></td><td>Presses the focused segment.</td></tr><tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Toolbar only: moves between buttons (roving tabindex).</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>The shared ring (<code>--focus-ring-width</code> solid <code>--color-focus-ring</code>, <code>--focus-ring-offset</code> gap) appears on <code>:focus-visible</code> only. The mocks drew a 25% green halo (<code>rgba(39,103,73,.25)</code>) that measured 1.3:1; the system ring is solid and passes 3:1 (drift D2).</p>
+      <h3>Labelling</h3>
+      <p>The group label names the choice ("Editor view"); segment labels name each option.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack"><div class="ds-pair"><span>Pressed label</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Unpressed label on track</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div></div>
+      <h3>Motion</h3>
+      <p>No motion beyond colour transitions over <code>--duration-fast</code>, which the tokens zero under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Controls are at least <code>--control-height-md</code> (40px) tall, above the 24px minimum; in dense rows the whole row is also a target and neighbours keep 8px apart.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>Segment labels are nouns or short adjectives: "Write", "Preview".</li><li>Keep labels the same length where possible so segments do not jump.</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><div class="segmented" role="group" aria-label="View"><button class="btn" type="button" aria-pressed="true">Write</button><button class="btn" type="button" aria-pressed="false">Preview</button></div></div><figcaption>Two views of the same content.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><div class="segmented" role="group" aria-label="Actions"><button class="btn" type="button" aria-pressed="false">Save</button><button class="btn" type="button" aria-pressed="false">Delete</button></div></div><figcaption>Actions in a segmented control; use buttons.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Track</td><td><code>--color-bg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-subtle" data-swatch></i><span data-token="--color-bg-subtle"></span></span></td></tr><tr><td>Pressed segment</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr><tr><td>Pressed text</td><td><code>--color-fg-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-default" data-swatch></i><span data-token="--color-fg-default"></span></span></td></tr><tr><td>Unpressed text</td><td><code>--color-fg-muted</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-muted" data-swatch></i><span data-token="--color-fg-muted"></span></span></td></tr><tr><td>Segment height</td><td><code>--control-height-sm</code></td><td colspan="2"><span data-token="--control-height-sm"></span></td></tr><tr><td>Pressed shadow</td><td><code>--shadow-1</code></td><td colspan="2"><span data-token="--shadow-1"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;div class="segmented" role="group" aria-label="Editor view"&gt;
+  &lt;button class="btn" type="button" aria-pressed="true"&gt;Write&lt;/button&gt;
+  &lt;button class="btn" type="button" aria-pressed="false"&gt;Preview&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.segmented</code></td><td>Track; children are .btn.</td></tr><tr><td><code>.segmented--sm</code></td><td>Smaller segments.</td></tr><tr><td><code>.btn-group</code></td><td>Plain cluster / toolbar.</td></tr><tr><td><code>aria-pressed="true"</code></td><td>Selected segment.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/initiative-editor.html">initiative-editor.html</a> (Initiative editor: write/preview panes, toolbar, save state, confirm) — Write / Preview segmented, formatting toolbar</li><li><a href="../../mocks/assistant-hours.html">assistant-hours.html</a> (Assistant hours: profile, stats, logged-hours list, log-time dialog) — period segmented control</li></ul>
+      <p>Drift fixed during extraction: the editor toolbar used a separate <code>.tool</code> class with 13 instances; it is now <code>.btn--ghost.btn--icon.btn--sm</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>
