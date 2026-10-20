@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dialog — QBC Workboard design system</title>
+<meta name="description" content="A modal window for focused tasks: edit a story, plan a sprint, log time, confirm a delete.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Containers</p>
+      <h1>Dialog</h1>
+      <p class="ds-lead">A modal window for focused tasks: edit a story, plan a sprint, log time, confirm a delete.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">APG Dialog</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Use for a task that must finish or be cancelled before returning (forms, confirmations).</li><li>Use a page for long, linkable work (the initiative editor).</li><li>Confirmation dialogs name the object and the loss.</li></ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy"><figure class="ds-anatomy__figure"><div class="dialog dialog--static dialog--sm" role="dialog" aria-modal="true" aria-labelledby="dlg-5346"><div class="dialog__head"><div><h2 class="dialog__title" id="dlg-5346">Edit story</h2><p class=dialog__subtitle>QBC-269 · Sweet Hand</p></div><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body"><div class="field"><label class="field__label" for="dl1">Title</label><input class="input" id="dl1" value="Research Caribbean restaurants"></div></div><div class="dialog__actions"><button class="btn" type="button">Cancel</button><button class="btn btn--primary" type="button">Save story</button></div></div><span class="ds-callout" style="left: 30%; top: 12%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 50%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 75%; top: 88%;" aria-hidden="true">3</span></figure><ol class="ds-anatomy__list"><li><div><b>Head</b><small>Title, subtitle, close.</small></div></li><li><div><b>Body</b><small>Scrolls; <code>--space-6</code> padding.</small></div></li><li><div><b>Actions</b><small>Sunken footer, primary last.</small></div></li></ol></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <h3>Destructive confirmation</h3>
+      <div class="ds-example"><div class="ds-example__canvas"><div class="dialog dialog--static dialog--sm dialog--confirm" role="alertdialog" aria-modal="true" aria-labelledby="cd1" aria-describedby="cd1d"><div class="dialog__body"><span class="dialog-icon dialog-icon--danger"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><h2 class="dialog__title" id="cd1">Delete QBC-269?</h2><p class="card__body" id="cd1d">Its tasks, time entries and files are deleted too. This can't be undone.</p></div><div class="dialog__actions"><button class="btn" type="button">Keep story</button><button class="btn btn--danger" type="button">Delete story</button></div></div></div><div class="ds-example__caption"><span><code>role="alertdialog"</code>, danger icon and button.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="dialog dialog--static dialog--sm dialog--confirm" role="alertdialog" aria-modal="true" aria-labelledby="cd1" aria-describedby="cd1d"&gt;&lt;div class="dialog__body"&gt;&lt;span class="dialog-icon dialog-icon--danger"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;h2 class="dialog__title" id="cd1"&gt;Delete QBC-269?&lt;/h2&gt;&lt;p class="card__body" id="cd1d"&gt;Its tasks, time entries and files are deleted too. This can't be undone.&lt;/p&gt;&lt;/div&gt;&lt;div class="dialog__actions"&gt;&lt;button class="btn" type="button"&gt;Keep story&lt;/button&gt;&lt;button class="btn btn--danger" type="button"&gt;Delete story&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+      <h3>Mobile sheet</h3>
+      <div class="ds-example"><div class="ds-example__canvas"><div class="dialog dialog--static dialog--sheet" role="dialog" aria-modal="true" aria-labelledby="sh1" style="max-width: 22rem;"><div class="dialog__head"><h2 class="dialog__title" id="sh1">Log time</h2><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body"><div class="field"><label class="field__label" for="sh1h">Hours</label><input class="input" id="sh1h"></div></div><div class="dialog__actions"><button class="btn btn--primary btn--block" type="button">Log time</button></div></div></div><div class="ds-example__caption"><span>Below 760px dialogs dock to the bottom.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="dialog dialog--static dialog--sheet" role="dialog" aria-modal="true" aria-labelledby="sh1" style="max-width: 22rem;"&gt;&lt;div class="dialog__head"&gt;&lt;h2 class="dialog__title" id="sh1"&gt;Log time&lt;/h2&gt;&lt;button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"&gt;&lt;svg class="icon" aria-hidden="true" viewBox="0 0 24 24"&gt;&lt;path d="M6 6l12 12M18 6 6 18"/&gt;&lt;/svg&gt;&lt;/button&gt;&lt;/div&gt;&lt;div class="dialog__body"&gt;&lt;div class="field"&gt;&lt;label class="field__label" for="sh1h"&gt;Hours&lt;/label&gt;&lt;input class="input" id="sh1h"&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="dialog__actions"&gt;&lt;button class="btn btn--primary btn--block" type="button"&gt;Log time&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;</code></pre></details></div>
+
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas"><div class="cluster"><span class="pill pill--plain">Small 432px · confirmations</span><span class="pill pill--plain">Medium 680px · forms</span><span class="pill pill--plain">Large 896px · attachment preview</span></div></div><div class="ds-example__caption"><span>Width from <code>--dialog-width</code>; height caps at the viewport minus 48px.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div class="cluster"&gt;&lt;span class="pill pill--plain"&gt;Small 432px · confirmations&lt;/span&gt;&lt;span class="pill pill--plain"&gt;Medium 680px · forms&lt;/span&gt;&lt;span class="pill pill--plain"&gt;Large 896px · attachment preview&lt;/span&gt;&lt;/div&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> so they can be reviewed statically; product code gets them from real pseudo-classes and attributes.</p>
+      <div class="ds-example__canvas"><div class="dialog dialog--static dialog--sm" role="dialog" aria-modal="true" aria-labelledby="dlg-8669" aria-busy="true"><div class="dialog__head"><div><h2 class="dialog__title" id="dlg-8669">Busy</h2></div><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body"><p class="loading-inline"><span class="spinner spinner--sm" aria-hidden="true"></span>Saving the story…</p></div><div class="dialog__actions"><button class="btn" type="button" disabled>Cancel</button><button class="btn btn--primary" type="button" aria-busy="true">Save story</button></div></div><div class="dialog dialog--static dialog--sm" role="dialog" aria-modal="true" aria-labelledby="dlg-7871"><div class="dialog__head"><div><h2 class="dialog__title" id="dlg-7871">Failed</h2></div><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body"><div class="alert alert--danger" role="alert"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16h.01"/></svg><div class="alert__body"><span class="alert__title">The story wasn't saved</span>Check your connection and try again.</div></div></div><div class="dialog__actions"><button class="btn" type="button">Cancel</button><button class="btn btn--primary" type="button">Try again</button></div></div></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><div class="dialog dialog--static dialog--sm" role="dialog" aria-modal="true" aria-labelledby="dlg-1637"><div class="dialog__head"><div><h2 class="dialog__title" id="dlg-1637">Start sprint</h2></div><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body"><p class="card__body">Sprint 2 runs Oct 16 – Oct 29.</p></div><div class="dialog__actions"><button class="btn" type="button">Cancel</button><button class="btn btn--primary" type="button">Start</button></div></div></div></div><div data-theme="dark"><div class="ds-example__canvas"><div class="dialog dialog--static dialog--sm" role="dialog" aria-modal="true" aria-labelledby="dlg-1637"><div class="dialog__head"><div><h2 class="dialog__title" id="dlg-1637">Start sprint</h2></div><button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><div class="dialog__body"><p class="card__body">Sprint 2 runs Oct 16 – Oct 29.</p></div><div class="dialog__actions"><button class="btn" type="button">Cancel</button><button class="btn btn--primary" type="button">Start</button></div></div></div></div></div>
+      <ul><li><b>Invalid</b>: fields show errors and the summary takes focus.</li><li><b>Busy</b>: <code>aria-busy</code> on the dialog, body dims, actions disabled except the loading primary.</li></ul>
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li>Below 760px: full width bottom sheet, padding <code>--space-5</code>, actions stack full width.</li><li>Body scrolls; head and actions stay pinned.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Component tokens: <code>--dialog-width</code>. Each aliases a semantic token, so a theme re-colours the component by overriding semantic tokens and a product re-skin overrides the component tokens; neither edits the component CSS.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>APG Dialog (Modal): native <code>&lt;dialog&gt;</code> opened with <code>showModal()</code>, which makes the page inert. <code>aria-labelledby</code> the title; confirmations use <code>role="alertdialog"</code> with <code>aria-describedby</code>.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Cycles inside the dialog.</td></tr><tr><td><kbd>Esc</kbd></td><td>Closes (Cancel).</td></tr><tr><td><kbd>Enter</kbd></td><td>In a field: submits the form.</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>Focus moves to the first field (forms) or the safe button (confirmations) and returns to the trigger on close.</p>
+      <h3>Labelling</h3>
+      <p>Close button named "Close"; the title names the task.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack"><div class="ds-pair"><span>Text on dialog</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-raised" data-min="4.5"></span></div><div class="ds-pair"><span>Subtitle</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface-raised" data-min="4.5"></span></div><div class="ds-pair"><span>Text in actions bar</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface-sunken" data-min="4.5"></span></div></div>
+      <h3>Motion</h3>
+      <p>Fades and rises over <code>--duration-base</code>; reduced motion shows it instantly.</p>
+      <h3>Touch</h3>
+      <p>Controls are at least <code>--control-height-md</code> (40px) tall, above the 24px minimum; in dense rows the whole row is also a target and neighbours keep 8px apart.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>Title is the task: "Edit story", "Log time".</li><li>Confirmation title is a question with the object: "Delete QBC-269?"</li><li>Buttons repeat the verb: "Delete story" / "Keep story".</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><div class="dialog__actions" style="width: 16rem;"><button class="btn" type="button">Keep story</button><button class="btn btn--danger" type="button">Delete story</button></div></div><figcaption>Verbs on both buttons.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><div class="dialog__actions" style="width: 16rem;"><button class="btn" type="button">No</button><button class="btn btn--danger" type="button">Yes</button></div></div><figcaption>Yes / No forces re-reading the question.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Background</td><td><code>--color-bg-surface-raised</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-raised" data-swatch></i><span data-token="--color-bg-surface-raised"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-raised" data-swatch></i><span data-token="--color-bg-surface-raised"></span></span></td></tr><tr><td>Actions bar</td><td><code>--color-bg-surface-sunken</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface-sunken" data-swatch></i><span data-token="--color-bg-surface-sunken"></span></span></td></tr><tr><td>Backdrop</td><td><code>--color-bg-backdrop</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-backdrop" data-swatch></i><span data-token="--color-bg-backdrop"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-backdrop" data-swatch></i><span data-token="--color-bg-backdrop"></span></span></td></tr><tr><td>Shadow</td><td><code>--shadow-4</code></td><td colspan="2"><span data-token="--shadow-4"></span></td></tr><tr><td>Radius</td><td><code>--radius-xl</code></td><td colspan="2"><span data-token="--radius-xl"></span></td></tr><tr><td>Layer</td><td><code>--z-modal</code></td><td colspan="2"><span data-token="--z-modal"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;dialog class="dialog" aria-labelledby="t"&gt;
+  &lt;div class="dialog__head"&gt;&lt;h2 class="dialog__title" id="t"&gt;Edit story&lt;/h2&gt;…&lt;/div&gt;
+  &lt;div class="dialog__body"&gt;…&lt;/div&gt;
+  &lt;div class="dialog__actions"&gt;…&lt;/div&gt;
+&lt;/dialog&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.dialog</code></td><td>Panel (use on &lt;dialog&gt;).</td></tr><tr><td><code>.dialog--sm / --lg</code></td><td>Width.</td></tr><tr><td><code>.dialog--confirm</code></td><td>Centred confirmation.</td></tr><tr><td><code>.dialog--sheet</code></td><td>Bottom sheet.</td></tr><tr><td><code>.dialog-icon--danger</code></td><td>Danger icon.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/index.html">index.html</a> (Workboard app: board, backlog, hierarchy, assistants, story and sprint dialogs) — story, sprint, assistant and confirm dialogs</li><li><a href="../../mocks/assistant-hours.html">assistant-hours.html</a> (Assistant hours: profile, stats, logged-hours list, log-time dialog) — log-time dialog</li><li><a href="../../mocks/work-item-attachments.html">work-item-attachments.html</a> (Work item attachments: drop zone, upload progress, file list, preview) — preview dialog</li><li><a href="../../mocks/initiative-editor.html">initiative-editor.html</a> (Initiative editor: write/preview panes, toolbar, save state, confirm) — discard confirmation</li></ul>
+      <p>Drift fixed during extraction: the mocks' backdrop blurred the page (<code>backdrop-filter: blur(2px)</code>); dropped for performance and because the dimmed backdrop already separates layers. Footer used raw <code>#fbfcfb</code>; now <code>--color-bg-surface-sunken</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

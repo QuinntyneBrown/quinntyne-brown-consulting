@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theming — QBC Workboard design system</title>
+<meta name="description" content="Light by default, dark from the OS or a switch, and room for brand themes, all by overriding semantic tokens.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Foundation</p>
+      <h1>Theming</h1>
+      <p class="ds-lead">Light by default, dark from the OS or a switch, and room for brand themes, all by overriding semantic tokens.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#tiers">Token tiers</a></li><li><a href="#compare">Light and dark</a></li><li><a href="#dark-rules">How dark is built</a></li><li><a href="#add">Adding a theme</a></li><li><a href="#json">tokens.json</a></li><li><a href="#usage">Do and don't</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Light is <code>:root</code>; dark is <code>[data-theme="dark"]</code> and the same block under <code>prefers-color-scheme: dark</code> unless the page forces light.</li><li>Each theme sets <code>color-scheme</code> so native controls follow.</li><li>The mocks had no dark theme; it is built from the roles, not by inverting light.</li></ul>
+    </section>
+    <section class="ds-section" id="tiers"><h2><a href="#tiers">Token tiers</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Tier</th><th scope="col">Example</th><th scope="col">Who reads it</th></tr></thead><tbody><tr><td>Primitive</td><td><code>--palette-green-600</code></td><td>Semantic tokens only</td></tr><tr><td>Semantic</td><td><code>--color-accent</code></td><td>Components and pages; themes override these</td></tr><tr><td>Component</td><td><code>--btn-bg</code></td><td>One component, in components.css</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="compare"><h2><a href="#compare">Light and dark</a></h2>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><div class="alert alert--info"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div class="alert__body">Points are required.</div></div><div class="cluster"><button class="btn btn--primary" type="button">Save story</button><button class="btn" type="button">Cancel</button><span class="pill pill--warning">In progress</span></div></div></div></div><div data-theme="dark"><div class="ds-example__canvas"><div class="stack" style="width: 100%;"><div class="alert alert--info"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><div class="alert__body">Points are required.</div></div><div class="cluster"><button class="btn btn--primary" type="button">Save story</button><button class="btn" type="button">Cancel</button><span class="pill pill--warning">In progress</span></div></div></div></div></div>
+    </section>
+    <section class="ds-section" id="dark-rules"><h2><a href="#dark-rules">How dark is built</a></h2>
+      <ul><li>Surfaces lighten as they rise: canvas <code>--palette-gray-950</code> &lt; surface 900 &lt; raised 800.</li><li>Accent lightens to green-300 and text on accent flips to deep green.</li><li>Status backgrounds are deep tints with light text.</li><li>Shadows use black at 40–60%.</li></ul>
+    </section>
+    <section class="ds-section" id="add"><h2><a href="#add">Adding a theme</a></h2>
+      <pre><code>[data-theme="partner"] {
+  --color-accent: var(--palette-blue-600);
+  --color-fg-accent: var(--palette-blue-700);
+}</code></pre>      <ul><li>Override semantic tokens only.</li><li>Add pairs to <code>contrast-pairs.json</code> and run the checker.</li><li>Never override primitives inside a theme.</li></ul>
+    </section>
+    <section class="ds-section" id="json"><h2><a href="#json">tokens.json</a></h2>
+      <p><code>tokens/tokens.json</code> is a DTCG export generated from <code>tokens.css</code> (<code>$type</code>, <code>$value</code>, aliases as <code>{group.token}</code>, dark under <code>$extensions</code>). Use it to generate TypeScript or SCSS constants; never edit it by hand.</p>
+    </section>
+    <section class="ds-section" id="usage"><h2><a href="#usage">Do and don't</a></h2>
+      <ul><li>Do read <code>var(--color-*)</code> in components.</li><li>Don't write hex values outside <code>tokens.css</code>.</li><li>Don't detect the theme in script to pick colours.</li></ul>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

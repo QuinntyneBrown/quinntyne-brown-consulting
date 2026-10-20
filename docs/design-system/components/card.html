@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card — QBC Workboard design system</title>
+<meta name="description" content="A bordered container for one thing: an assistant, an initiative, a sprint hero.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Containers</p>
+      <h1>Card</h1>
+      <p class="ds-lead">A bordered container for one thing: an assistant, an initiative, a sprint hero.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native HTML</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Use to group content about one object.</li><li>A clickable card has one real link (the title); the whole card is the hit area through a pseudo-element.</li><li>Board stories use the denser <a href="story-card.html">story card</a>.</li></ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy"><figure class="ds-anatomy__figure"><article class="card" style="width: 20rem;"><div class="card__head"><div class="cluster"><span class="avatar avatar--lg" aria-hidden="true">VA</span><div><h3 class="card__title">Vanessa</h3><p class="card__body">Research assistant</p></div></div><span class="pill pill--success">Available</span></div><ul class="tag-list"><li class="tag">Research</li><li class="tag">Outreach</li></ul><div class="card__foot"><span class="card__body">12.5 h this sprint</span><a class="link link--standalone" href="#top">Hours</a></div></article><span class="ds-callout" style="left: 10%; top: 15%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 20%; top: 55%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 50%; top: 88%;" aria-hidden="true">3</span></figure><ol class="ds-anatomy__list"><li><div><b>Head</b><small>Identity and status.</small></div></li><li><div><b>Body</b><small>Tags or summary.</small></div></li><li><div><b>Foot</b><small>Metric and link, hairline above.</small></div></li></ol></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas"><article class="card card--interactive" style="width: 16rem;"><h3 class="card__title"><a class="card__link" href="#top">Sweet Hand</a></h3><p class="card__body">Research for sweethand.ca</p></article><article class="card card--raised" style="width: 16rem;"><h3 class="card__title">Raised</h3><p class="card__body">Initiative head background.</p></article><article class="card card--hero" style="width: 16rem;"><p class="eyebrow">Active sprint</p><h3 class="card__title">Sprint 2</h3><p class="card__body">Ends Oct 29</p></article><article class="card" data-selected="true" style="width: 16rem;"><h3 class="card__title">Selected</h3><p class="card__body">Chosen in a picker.</p></article></div><div class="ds-example__caption"><span>Interactive, raised, hero, selected.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;article class="card card--interactive" style="width: 16rem;"&gt;&lt;h3 class="card__title"&gt;&lt;a class="card__link" href="#top"&gt;Sweet Hand&lt;/a&gt;&lt;/h3&gt;&lt;p class="card__body"&gt;Research for sweethand.ca&lt;/p&gt;&lt;/article&gt;&lt;article class="card card--raised" style="width: 16rem;"&gt;&lt;h3 class="card__title"&gt;Raised&lt;/h3&gt;&lt;p class="card__body"&gt;Initiative head background.&lt;/p&gt;&lt;/article&gt;&lt;article class="card card--hero" style="width: 16rem;"&gt;&lt;p class="eyebrow"&gt;Active sprint&lt;/p&gt;&lt;h3 class="card__title"&gt;Sprint 2&lt;/h3&gt;&lt;p class="card__body"&gt;Ends Oct 29&lt;/p&gt;&lt;/article&gt;&lt;article class="card" data-selected="true" style="width: 16rem;"&gt;&lt;h3 class="card__title"&gt;Selected&lt;/h3&gt;&lt;p class="card__body"&gt;Chosen in a picker.&lt;/p&gt;&lt;/article&gt;</code></pre></details></div>
+
+    </section>
+    <section class="ds-section" id="sizes" data-na="Padding &lt;code&gt;--space-6&lt;/code&gt;; dense contexts override &lt;code&gt;--card-padding&lt;/code&gt;."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">Not applicable: Padding <code>--space-6</code>; dense contexts override <code>--card-padding</code>.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> so they can be reviewed statically; product code gets them from real pseudo-classes and attributes.</p>
+      <div class="ds-matrix"><table><thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Selected</th></tr></thead><tbody><tr><th scope="row">Interactive</th><td><article class="card card--interactive" style="width: 10rem;" ><h3 class="card__title"><a class="card__link" href="#top">Initiative</a></h3></article></td><td><article class="card card--interactive" style="width: 10rem;" data-state="hover"><h3 class="card__title"><a class="card__link" href="#top">Initiative</a></h3></article></td><td><article class="card card--interactive" style="width: 10rem;" data-state="focus"><h3 class="card__title"><a class="card__link" href="#top">Initiative</a></h3></article></td><td><article class="card card--interactive" style="width: 10rem;" data-selected="true"><h3 class="card__title"><a class="card__link" href="#top">Initiative</a></h3></article></td></tr></tbody></table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><article class="card card--interactive" style="width: 16rem;"><h3 class="card__title"><a class="card__link" href="#top">Sweet Hand</a></h3><p class="card__body">Research for sweethand.ca</p></article><article class="card card--raised" style="width: 16rem;"><h3 class="card__title">Raised</h3><p class="card__body">Initiative head background.</p></article><article class="card card--hero" style="width: 16rem;"><p class="eyebrow">Active sprint</p><h3 class="card__title">Sprint 2</h3><p class="card__body">Ends Oct 29</p></article><article class="card" data-selected="true" style="width: 16rem;"><h3 class="card__title">Selected</h3><p class="card__body">Chosen in a picker.</p></article></div></div><div data-theme="dark"><div class="ds-example__canvas"><article class="card card--interactive" style="width: 16rem;"><h3 class="card__title"><a class="card__link" href="#top">Sweet Hand</a></h3><p class="card__body">Research for sweethand.ca</p></article><article class="card card--raised" style="width: 16rem;"><h3 class="card__title">Raised</h3><p class="card__body">Initiative head background.</p></article><article class="card card--hero" style="width: 16rem;"><p class="eyebrow">Active sprint</p><h3 class="card__title">Sprint 2</h3><p class="card__body">Ends Oct 29</p></article><article class="card" data-selected="true" style="width: 16rem;"><h3 class="card__title">Selected</h3><p class="card__body">Chosen in a picker.</p></article></div></div></div>
+
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li>Assistant cards sit in <code>.grid--auto</code> (min 16rem), giving 1–4 columns.</li><li>The sprint hero stacks its meta under the title below 760px.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Component tokens: <code>--card-padding</code>. Each aliases a semantic token, so a theme re-colours the component by overriding semantic tokens and a product re-skin overrides the component tokens; neither edits the component CSS.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p><code>&lt;article&gt;</code> with a heading; interactive cards contain one link and the card is not itself focusable.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves focus to and from the control in DOM order.</td></tr><tr><td><kbd>Enter</kbd></td><td>Follows the title link.</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>Focus on the title link draws the ring around the whole card (<code>:has(:focus-visible)</code>).</p>
+      <h3>Labelling</h3>
+      <p>The heading names the card.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack"><div class="ds-pair"><span>Title</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Body</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Selected text</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-accent-subtle" data-min="4.5"></span></div></div>
+      <h3>Motion</h3>
+      <p>No motion beyond colour transitions over <code>--duration-fast</code>, which the tokens zero under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Controls are at least <code>--control-height-md</code> (40px) tall, above the 24px minimum; in dense rows the whole row is also a target and neighbours keep 8px apart.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>Title is the object's name; body is one line.</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><article class="card card--interactive" style="width: 14rem;"><h3 class="card__title"><a class="card__link" href="#top">Sweet Hand</a></h3></article></div><figcaption>One link; the card is the hit area.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><div class="card" style="width: 14rem;" onclick="" role="button" tabindex="0"><h3 class="card__title">Sweet Hand</h3></div></div><figcaption>A div with a click handler.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Background</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr><tr><td>Border</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr><tr><td>Hover border</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr><tr><td>Hover shadow</td><td><code>--shadow-2</code></td><td colspan="2"><span data-token="--shadow-2"></span></td></tr><tr><td>Radius</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr><tr><td>Padding</td><td><code>--space-6</code></td><td colspan="2"><span data-token="--space-6"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;article class="card card--interactive"&gt;
+  &lt;h3 class="card__title"&gt;&lt;a class="card__link" href="/assistants/vanessa"&gt;Vanessa&lt;/a&gt;&lt;/h3&gt;
+&lt;/article&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.card</code></td><td>Base.</td></tr><tr><td><code>.card--interactive</code></td><td>Clickable.</td></tr><tr><td><code>.card--raised</code></td><td>Raised surface.</td></tr><tr><td><code>.card--hero</code></td><td>Gradient hero.</td></tr><tr><td><code>data-selected="true"</code></td><td>Selected.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/index.html">index.html</a> (Workboard app: board, backlog, hierarchy, assistants, story and sprint dialogs) — assistant cards, initiative cards</li><li><a href="../../mocks/board-assistant-filter.html">board-assistant-filter.html</a> (Board filtered by assistant: sprint hero, columns, story cards) — sprint hero</li><li><a href="../../mocks/assistant-hours.html">assistant-hours.html</a> (Assistant hours: profile, stats, logged-hours list, log-time dialog) — profile</li></ul>
+      <p>Drift fixed during extraction: card radius was 14px in three places and 11px in two; unified at <code>--radius-lg</code> (12px). Hero gradient used raw <code>#f8fbf9</code>; now <code>--color-bg-surface-raised</code>.</p>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

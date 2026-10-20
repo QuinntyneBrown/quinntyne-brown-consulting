@@ -1,7 +1,7 @@
 # QBC Workboard documentation
 
 This directory contains the product requirements, feature designs, deployment
-planning, acceptance evidence, and original interaction baseline for QBC
+planning, and original interaction baseline for QBC
 Workboard.
 
 ## Start here
@@ -12,8 +12,6 @@ Workboard.
 | [L2 detailed requirements](specs/L2.md) | Implementers and reviewers | Defines traceable requirements and Given/When/Then acceptance criteria |
 | [Detailed designs](detailed-designs/) | Implementers and maintainers | Describes each vertical feature with C4, class, and sequence diagrams |
 | [Cheapest Azure deployment plan](azure-deployment-plan.md) | Operators and maintainers | Defines the zero-cost App Service and Azure SQL deployment, safeguards, limits, and priced upgrade triggers |
-| [Acceptance evidence](acceptance-evidence.md) | Reviewers and release owners | Records selected ATDD red states and green regression evidence |
-| [Implementation alignment](implementation-design-alignment.md) | Maintainers | Tracks differences between current source and detailed designs |
 
 The root [README](../README.md) contains setup, operation, test, and publish
 instructions. [CONTRIBUTING.md](../CONTRIBUTING.md) defines the change workflow.
@@ -132,8 +130,8 @@ and five rendered PNG diagrams.
 
 Product behavior starts in the requirements. An L2 change should preserve its
 L1 trace and update affected acceptance criteria. An architecture or behavior
-change should update the corresponding feature README, PlantUML source, rendered
-PNG, and acceptance evidence in the same pull request.
+change should update the corresponding feature README, PlantUML source, and rendered
+PNG in the same pull request.
 
 Detailed-design prose uses third-person, present-tense, neutral language.
 Unknown design facts are marked `<TO SUPPLY>` rather than invented.

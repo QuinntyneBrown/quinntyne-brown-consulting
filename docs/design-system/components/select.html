@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select — QBC Workboard design system</title>
+<meta name="description" content="Choose one value from a list: epic, assistant, sprint, priority.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Inputs</p>
+      <h1>Select</h1>
+      <p class="ds-lead">Choose one value from a list: epic, assistant, sprint, priority.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Native HTML</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Native <code>&lt;select&gt;</code> by default; it is accessible and works on phones.</li><li>Use a <a href="radio-group.html">radio group</a> for 2-4 visible options, a <a href="button-group.html">segmented control</a> for views.</li></ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy"><figure class="ds-anatomy__figure"><div class="field" style="width: 16rem;"><label class="field__label" for="s1">Assistant</label><select class="select" id="s1"><option>Vanessa</option><option>Quinntyne</option><option>Unassigned</option></select></div><span class="ds-callout" style="left: 8%; top: 12%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 50%; top: 70%;" aria-hidden="true">2</span></figure><ol class="ds-anatomy__list"><li><div><b>Label</b><small>Noun.</small></div></li><li><div><b>Control</b><small>Native select, 40px, chevron by the platform.</small></div></li></ol></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas"><select class="select" style="width: 12rem;" aria-label="Filter by assistant"><option>All assistants</option><option>Vanessa</option></select><select class="select" style="width: 12rem;" aria-label="Priority"><option value="">Choose priority</option><option>High</option></select></div><div class="ds-example__caption"><span>Filter (toolbar) and with placeholder option.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;select class="select" style="width: 12rem;" aria-label="Filter by assistant"&gt;&lt;option&gt;All assistants&lt;/option&gt;&lt;option&gt;Vanessa&lt;/option&gt;&lt;/select&gt;&lt;select class="select" style="width: 12rem;" aria-label="Priority"&gt;&lt;option value=""&gt;Choose priority&lt;/option&gt;&lt;option&gt;High&lt;/option&gt;&lt;/select&gt;</code></pre></details></div>
+
+    </section>
+    <section class="ds-section" id="sizes"><h2><a href="#sizes">Sizes</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas"><select class="select select--sm" style="width: 10rem;" aria-label="Small"><option>Small</option></select><select class="select" style="width: 10rem;" aria-label="Medium"><option>Medium</option></select><select class="select select--lg" style="width: 10rem;" aria-label="Large"><option>Large</option></select></div><div class="ds-example__caption"><span>32 / 40 / 48px.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;select class="select select--sm" style="width: 10rem;" aria-label="Small"&gt;&lt;option&gt;Small&lt;/option&gt;&lt;/select&gt;&lt;select class="select" style="width: 10rem;" aria-label="Medium"&gt;&lt;option&gt;Medium&lt;/option&gt;&lt;/select&gt;&lt;select class="select select--lg" style="width: 10rem;" aria-label="Large"&gt;&lt;option&gt;Large&lt;/option&gt;&lt;/select&gt;</code></pre></details></div>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> so they can be reviewed statically; product code gets them from real pseudo-classes and attributes.</p>
+      <div class="ds-matrix"><table><thead><tr><th scope="col">Variant</th><th scope="col">Default</th><th scope="col">Hover</th><th scope="col">Focus</th><th scope="col">Invalid</th><th scope="col">Disabled</th></tr></thead><tbody><tr><th scope="row">Select</th><td><select class="select" style="width: 8rem;" aria-label="Demo" ><option>Vanessa</option></select></td><td><select class="select" style="width: 8rem;" aria-label="Demo" data-state="hover"><option>Vanessa</option></select></td><td><select class="select" style="width: 8rem;" aria-label="Demo" data-state="focus"><option>Vanessa</option></select></td><td><select class="select" style="width: 8rem;" aria-label="Demo" aria-invalid="true"><option>Vanessa</option></select></td><td><select class="select" style="width: 8rem;" aria-label="Demo" disabled><option>Vanessa</option></select></td></tr></tbody></table></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><select class="select" style="width: 12rem;" aria-label="Demo"><option>Vanessa</option></select></div></div><div data-theme="dark"><div class="ds-example__canvas"><select class="select" style="width: 12rem;" aria-label="Demo"><option>Vanessa</option></select></div></div></div>
+
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li>Toolbar filters keep a 150px minimum and stack full-width below 760px.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>Component tokens: <code>--field-bg</code>, <code>--field-border</code>, <code>--field-height</code>. Each aliases a semantic token, so a theme re-colours the component by overriding semantic tokens and a product re-skin overrides the component tokens; neither edits the component CSS.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p>Native <code>&lt;select&gt;</code>; custom listboxes only when native cannot do the job, then APG Listbox.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves focus to and from the control in DOM order.</td></tr><tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Changes the value.</td></tr><tr><td><kbd>Alt</kbd>+<kbd>↓</kbd></td><td>Opens the list.</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>The shared ring (<code>--focus-ring-width</code> solid <code>--color-focus-ring</code>, <code>--focus-ring-offset</code> gap) appears on <code>:focus-visible</code> only. The mocks drew a 25% green halo (<code>rgba(39,103,73,.25)</code>) that measured 1.3:1; the system ring is solid and passes 3:1 (drift D2).</p>
+      <h3>Labelling</h3>
+      <p>Visible label, or <code>aria-label</code> on toolbar filters ("Filter by assistant").</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack"><div class="ds-pair"><span>Value</span><span class="ds-pair__ratio" data-contrast="--color-fg-default|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Border</span><span class="ds-pair__ratio" data-contrast="--color-border-strong|--color-bg-surface" data-min="3"></span></div></div>
+      <h3>Motion</h3>
+      <p>No motion beyond colour transitions over <code>--duration-fast</code>, which the tokens zero under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>Controls are at least <code>--control-height-md</code> (40px) tall, above the 24px minimum; in dense rows the whole row is also a target and neighbours keep 8px apart.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>Placeholder option reads "Choose …" and is not a valid value.</li><li>"Unassigned" is a real option for assistant pickers.</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><select class="select" style="width: 12rem;" aria-label="Assistant"><option>Vanessa</option><option>Unassigned</option></select></div><figcaption>Native select with a clear empty option.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><select class="select" style="width: 12rem;" aria-label="Assistant"><option>-</option></select></div><figcaption>A dash as the empty value.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Border</td><td><code>--color-border-strong</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-strong" data-swatch></i><span data-token="--color-border-strong"></span></span></td></tr><tr><td>Focus</td><td><code>--color-accent</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-accent" data-swatch></i><span data-token="--color-accent"></span></span></td></tr><tr><td>Height</td><td><code>--control-height-md</code></td><td colspan="2"><span data-token="--control-height-md"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;select class="select" id="assistant"&gt;&lt;option&gt;Vanessa&lt;/option&gt;&lt;/select&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.select</code></td><td>Base.</td></tr><tr><td><code>.select--sm / --lg</code></td><td>Size.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/index.html">index.html</a> (Workboard app: board, backlog, hierarchy, assistants, story and sprint dialogs) — story dialog epic and assistant pickers, backlog filters</li><li><a href="../../mocks/board-assistant-filter.html">board-assistant-filter.html</a> (Board filtered by assistant: sprint hero, columns, story cards) — board assistant filter</li><li><a href="../../mocks/initiative-editor.html">initiative-editor.html</a> (Initiative editor: write/preview panes, toolbar, save state, confirm) — parent select</li></ul>
+      <p>Drift fixed during extraction: none; the mocks used one consistent treatment.</p>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>

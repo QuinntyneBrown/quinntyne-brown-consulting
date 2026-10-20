@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Story card — QBC Workboard design system</title>
+<meta name="description" content="A story on the sprint board: key, title, epic context, points and assignee.">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../assets/components.css">
+<link rel="stylesheet" href="../assets/ds.css">
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="ds-shell">
+  <nav class="ds-nav" aria-label="Design system">
+    <div class="ds-nav__brand"><a href="../index.html">QBC DS</a><button class="ds-theme-toggle" type="button" aria-pressed="false">☾ Dark</button></div>
+    <details open><summary>Foundations</summary><ul>
+      <li><a href="../foundations/color.html">Color</a></li>
+      <li><a href="../foundations/typography.html">Typography</a></li>
+      <li><a href="../foundations/spacing.html">Spacing</a></li>
+      <li><a href="../foundations/layout.html">Layout</a></li>
+      <li><a href="../foundations/elevation.html">Elevation</a></li>
+      <li><a href="../foundations/shape.html">Shape</a></li>
+      <li><a href="../foundations/motion.html">Motion</a></li>
+      <li><a href="../foundations/iconography.html">Iconography</a></li>
+      <li><a href="../foundations/theming.html">Theming</a></li>
+      <li><a href="../foundations/responsive.html">Responsive</a></li>
+      <li><a href="../foundations/accessibility.html">Accessibility</a></li>
+      <li><a href="../foundations/content.html">Content</a></li>
+    </ul></details>
+    <details open><summary>Components</summary><ul>
+      <li><a href="../components/button.html">Button</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+      <li><a href="../components/link.html">Link</a></li>
+      <li><a href="../components/menu.html">Menu</a></li>
+      <li><a href="../components/text-field.html">Text field</a></li>
+      <li><a href="../components/textarea.html">Textarea</a></li>
+      <li><a href="../components/select.html">Select</a></li>
+      <li><a href="../components/checkbox.html">Checkbox</a></li>
+      <li><a href="../components/radio-group.html">Radio group</a></li>
+      <li><a href="../components/switch.html">Switch</a></li>
+      <li><a href="../components/passcode-input.html">Passcode input</a></li>
+      <li><a href="../components/file-upload.html">File upload</a></li>
+      <li><a href="../components/form-field.html">Form field</a></li>
+      <li><a href="../components/form-layout.html">Form layout</a></li>
+      <li><a href="../components/top-bar.html">Top bar</a></li>
+      <li><a href="../components/sidebar.html">Sidebar navigation</a></li>
+      <li><a href="../components/tabs.html">Tabs</a></li>
+      <li><a href="../components/breadcrumb.html">Breadcrumb</a></li>
+      <li><a href="../components/pagination.html">Pagination</a></li>
+      <li><a href="../components/skip-link.html">Skip link</a></li>
+      <li><a href="../components/card.html">Card</a></li>
+      <li><a href="../components/story-card.html">Story card</a></li>
+      <li><a href="../components/board-column.html">Board column</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/tooltip.html">Tooltip</a></li>
+      <li><a href="../components/divider.html">Divider</a></li>
+      <li><a href="../components/layout.html">Layout primitives</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/list.html">List</a></li>
+      <li><a href="../components/description-list.html">Description list</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/badge.html">Badge</a></li>
+      <li><a href="../components/chip.html">Chip and tag</a></li>
+      <li><a href="../components/estimate.html">Estimate chips</a></li>
+      <li><a href="../components/stat.html">Stat</a></li>
+      <li><a href="../components/toast.html">Toast</a></li>
+      <li><a href="../components/alert.html">Alert</a></li>
+      <li><a href="../components/inline-message.html">Inline message</a></li>
+      <li><a href="../components/progress.html">Progress bar</a></li>
+      <li><a href="../components/spinner.html">Spinner</a></li>
+      <li><a href="../components/skeleton.html">Skeleton</a></li>
+      <li><a href="../components/empty-state.html">Empty state</a></li>
+      <li><a href="../components/error-page.html">Error page</a></li>
+    </ul></details>
+    <details open><summary>Patterns</summary><ul>
+      <li><a href="../patterns/forms.html">Forms</a></li>
+      <li><a href="../patterns/feedback.html">Feedback and loading</a></li>
+      <li><a href="../patterns/empty-and-error.html">Empty and error states</a></li>
+      <li><a href="../patterns/navigation.html">Navigation and page structure</a></li>
+      <li><a href="../patterns/dialogs.html">Dialogs and overlays</a></li>
+      <li><a href="../patterns/data-lists.html">Data tables and lists</a></li>
+      <li><a href="../patterns/notifications.html">Notifications</a></li>
+      <li><a href="../patterns/content-tone.html">Content and tone</a></li>
+    </ul></details>
+  </nav>
+  <main id="main" class="ds-main">
+    <header class="ds-header">
+      <p class="ds-kicker">Component · Containers</p>
+      <h1>Story card</h1>
+      <p class="ds-lead">A story on the sprint board: key, title, epic context, points and assignee.</p>
+      <div class="ds-meta"><span class="ds-pill ds-pill--ok">WCAG 2.2 AA</span><span class="ds-pill">Status: stable</span><span class="ds-pill">Product component</span></div>
+      <ul class="ds-toc"><li><a href="#overview">Overview</a></li><li><a href="#anatomy">Anatomy</a></li><li><a href="#variants">Variants</a></li><li><a href="#sizes">Sizes</a></li><li><a href="#states">States</a></li><li><a href="#responsive">Responsive behaviour</a></li><li><a href="#theming">Theming</a></li><li><a href="#accessibility">Accessibility</a></li><li><a href="#content">Content</a></li><li><a href="#do-dont">Do and don't</a></li><li><a href="#tokens">Tokens</a></li><li><a href="#code">Code</a></li><li><a href="#sources">Sources</a></li></ul>
+    </header>
+    <section class="ds-section" id="overview"><h2><a href="#overview">Overview</a></h2>
+      <ul><li>Only on the board columns.</li><li>Drag between columns, or move with its card actions (keyboard and touch alternative).</li><li>Opens the story dialog from its title.</li></ul>
+    </section>
+    <section class="ds-section" id="anatomy"><h2><a href="#anatomy">Anatomy</a></h2>
+      <div class="ds-anatomy"><figure class="ds-anatomy__figure"><div style="width: 18rem;"><article class="story-card" aria-labelledby="t-QBC-269"><div class="story-card__top"><span class="story-card__key">QBC-269</span><span class="pill pill--warning">In progress</span></div><h3 class="story-card__title" id="t-QBC-269"><a href="#top">Research all Caribbean restaurants in the GTA</a></h3><p class="story-card__context">Sweet Hand · GTA restaurant research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="8 points">8</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div><span class="ds-callout" style="left: 24%; top: 22%;" aria-hidden="true">1</span><span class="ds-callout" style="left: 76%; top: 22%;" aria-hidden="true">2</span><span class="ds-callout" style="left: 24%; top: 42%;" aria-hidden="true">3</span><span class="ds-callout" style="left: 24%; top: 60%;" aria-hidden="true">4</span><span class="ds-callout" style="left: 24%; top: 86%;" aria-hidden="true">5</span><span class="ds-callout" style="left: 76%; top: 86%;" aria-hidden="true">6</span></figure><ol class="ds-anatomy__list"><li><div><b>Key</b><small>Overline, subtle.</small></div></li><li><div><b>Status</b><small>Badge, optional.</small></div></li><li><div><b>Title</b><small>Link that opens the story.</small></div></li><li><div><b>Context</b><small>Initiative · epic, one line, ellipsis.</small></div></li><li><div><b>Points</b><small>Estimate chip.</small></div></li><li><div><b>Assignee</b><small>Avatar.</small></div></li></ol></div>
+    </section>
+    <section class="ds-section" id="variants"><h2><a href="#variants">Variants</a></h2>
+      <div class="ds-example"><div class="ds-example__canvas"><div style="width: 16rem;"><article class="story-card" aria-labelledby="t-QBC-301"><div class="story-card__top"><span class="story-card__key">QBC-301</span></div><h3 class="story-card__title" id="t-QBC-301"><a href="#top">Draft outreach email</a></h3><p class="story-card__context">Sweet Hand · Outreach</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="3 points">3</span></span><span class="avatar avatar--unassigned" aria-hidden="true">?</span></div></article></div><div style="width: 16rem;"><article class="story-card" aria-labelledby="t-QBC-288"><div class="story-card__top"><span class="story-card__key">QBC-288</span><span class="hours">2.5 h</span></div><h3 class="story-card__title" id="t-QBC-288"><a href="#top">Collect Instagram handles</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="2 points">2</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div></div><div class="ds-example__caption"><span>Unassigned; with logged hours.</span></div><details class="ds-example__code"><summary>HTML</summary><pre><code>&lt;div style="width: 16rem;"&gt;&lt;article class="story-card" aria-labelledby="t-QBC-301"&gt;&lt;div class="story-card__top"&gt;&lt;span class="story-card__key"&gt;QBC-301&lt;/span&gt;&lt;/div&gt;&lt;h3 class="story-card__title" id="t-QBC-301"&gt;&lt;a href="#top"&gt;Draft outreach email&lt;/a&gt;&lt;/h3&gt;&lt;p class="story-card__context"&gt;Sweet Hand · Outreach&lt;/p&gt;&lt;div class="story-card__foot"&gt;&lt;span class="story-card__meta"&gt;&lt;span class="points" aria-label="3 points"&gt;3&lt;/span&gt;&lt;/span&gt;&lt;span class="avatar avatar--unassigned" aria-hidden="true"&gt;?&lt;/span&gt;&lt;/div&gt;&lt;/article&gt;&lt;/div&gt;&lt;div style="width: 16rem;"&gt;&lt;article class="story-card" aria-labelledby="t-QBC-288"&gt;&lt;div class="story-card__top"&gt;&lt;span class="story-card__key"&gt;QBC-288&lt;/span&gt;&lt;span class="hours"&gt;2.5 h&lt;/span&gt;&lt;/div&gt;&lt;h3 class="story-card__title" id="t-QBC-288"&gt;&lt;a href="#top"&gt;Collect Instagram handles&lt;/a&gt;&lt;/h3&gt;&lt;p class="story-card__context"&gt;Sweet Hand · Research&lt;/p&gt;&lt;div class="story-card__foot"&gt;&lt;span class="story-card__meta"&gt;&lt;span class="points" aria-label="2 points"&gt;2&lt;/span&gt;&lt;/span&gt;&lt;span class="avatar" aria-hidden="true"&gt;VA&lt;/span&gt;&lt;/div&gt;&lt;/article&gt;&lt;/div&gt;</code></pre></details></div>
+
+    </section>
+    <section class="ds-section" id="sizes" data-na="One size; fills the column."><h2><a href="#sizes">Sizes</a></h2>
+      <p class="ds-na">Not applicable: One size; fills the column.</p>
+    </section>
+    <section class="ds-section" id="states"><h2><a href="#states">States</a></h2>
+      <p>Pointer and focus states are forced with <code>data-state</code> so they can be reviewed statically; product code gets them from real pseudo-classes and attributes.</p>
+      <div class="ds-example__canvas"><div style="width: 13rem;"><p class="ds-specimen__meta">Default</p><article class="story-card" aria-labelledby="t-QBC-1"><div class="story-card__top"><span class="story-card__key">QBC-1</span></div><h3 class="story-card__title" id="t-QBC-1"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div><div style="width: 13rem;"><p class="ds-specimen__meta">Hover</p><article class="story-card" aria-labelledby="t-QBC-2" data-state="hover"><div class="story-card__top"><span class="story-card__key">QBC-2</span></div><h3 class="story-card__title" id="t-QBC-2"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div><div style="width: 13rem;"><p class="ds-specimen__meta">Focus</p><article class="story-card" aria-labelledby="t-QBC-3" data-state="focus"><div class="story-card__top"><span class="story-card__key">QBC-3</span></div><h3 class="story-card__title" id="t-QBC-3"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div><div style="width: 13rem;"><p class="ds-specimen__meta">Dragging</p><article class="story-card" aria-labelledby="t-QBC-4" data-dragging="true" draggable="true"><div class="story-card__top"><span class="story-card__key">QBC-4</span></div><h3 class="story-card__title" id="t-QBC-4"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div></div>
+      <h3>Both themes</h3>
+      <div class="ds-themes"><div data-theme="light"><div class="ds-example__canvas"><div style="width: 14rem;"><article class="story-card" aria-labelledby="t-QBC-9"><div class="story-card__top"><span class="story-card__key">QBC-9</span></div><h3 class="story-card__title" id="t-QBC-9"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div></div></div><div data-theme="dark"><div class="ds-example__canvas"><div style="width: 14rem;"><article class="story-card" aria-labelledby="t-QBC-9"><div class="story-card__top"><span class="story-card__key">QBC-9</span></div><h3 class="story-card__title" id="t-QBC-9"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div></div></div></div>
+
+    </section>
+    <section class="ds-section" id="responsive"><h2><a href="#responsive">Responsive behaviour</a></h2>
+      <ul><li>Cards fill the column; below 1000px the board stacks columns and cards go full width.</li></ul>
+    </section>
+    <section class="ds-section" id="theming"><h2><a href="#theming">Theming</a></h2>
+      <p>The component reads semantic tokens only (listed under <a href="#tokens">Tokens</a>). The dark theme re-maps those tokens; nothing in the component changes.</p>
+    </section>
+    <section class="ds-section" id="accessibility"><h2><a href="#accessibility">Accessibility</a></h2>
+      <h3>Role and pattern</h3>
+      <p><code>&lt;article aria-labelledby&gt;</code>; the title is a link. Drag and drop has a keyboard alternative: the card's actions ("Move to In progress") or the story dialog's status field.</p>
+      <h3>Keyboard</h3>
+      <div class="ds-table-wrap"><table class="ds-table ds-keys"><thead><tr><th scope="col">Key</th><th scope="col">Action</th></tr></thead><tbody><tr><td><kbd>Tab</kbd> / <kbd>Shift</kbd>+<kbd>Tab</kbd></td><td>Moves focus to and from the control in DOM order.</td></tr><tr><td><kbd>Enter</kbd></td><td>On the title: opens the story.</td></tr></tbody></table></div>
+      <h3>Focus</h3>
+      <p>The shared ring (<code>--focus-ring-width</code> solid <code>--color-focus-ring</code>, <code>--focus-ring-offset</code> gap) appears on <code>:focus-visible</code> only. The mocks drew a 25% green halo (<code>rgba(39,103,73,.25)</code>) that measured 1.3:1; the system ring is solid and passes 3:1 (drift D2).</p>
+      <h3>Labelling</h3>
+      <p>Points chip has <code>aria-label="8 points"</code>; the avatar is decorative next to the assignee name in the dialog, so the card adds <code>aria-label</code> on the avatar ("Assigned to Vanessa") in product code.</p>
+      <h3>Contrast</h3>
+      <div class="ds-example__canvas ds-example__canvas--stack"><div class="ds-pair"><span>Key</span><span class="ds-pair__ratio" data-contrast="--color-fg-subtle|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Context</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-surface" data-min="4.5"></span></div><div class="ds-pair"><span>Points</span><span class="ds-pair__ratio" data-contrast="--color-fg-muted|--color-bg-subtle" data-min="4.5"></span></div></div>
+      <h3>Motion</h3>
+      <p>No motion beyond colour transitions over <code>--duration-fast</code>, which the tokens zero under <code>prefers-reduced-motion</code>.</p>
+      <h3>Touch</h3>
+      <p>The title link and the action buttons are the targets; dragging needs a long-press on touch.</p>
+    </section>
+    <section class="ds-section" id="content"><h2><a href="#content">Content</a></h2>
+      <ul><li>Titles are verb-first tasks, sentence case.</li><li>Context is "Initiative · Epic".</li></ul>
+    </section>
+    <section class="ds-section" id="do-dont"><h2><a href="#do-dont">Do and don't</a></h2>
+      <div class="ds-dodont"><figure class="ds-do"><div class="ds-example__canvas"><div style="width: 14rem;"><article class="story-card" aria-labelledby="t-QBC-10"><div class="story-card__top"><span class="story-card__key">QBC-10</span></div><h3 class="story-card__title" id="t-QBC-10"><a href="#top">Collect phone numbers</a></h3><p class="story-card__context">Sweet Hand · Research</p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div></div><figcaption>Task-shaped title.</figcaption></figure><figure class="ds-dont"><div class="ds-example__canvas"><div style="width: 14rem;"><article class="story-card" aria-labelledby="t-QBC-11"><div class="story-card__top"><span class="story-card__key">QBC-11</span></div><h3 class="story-card__title" id="t-QBC-11"><a href="#top">PHONE NUMBERS!!!</a></h3><p class="story-card__context"></p><div class="story-card__foot"><span class="story-card__meta"><span class="points" aria-label="5 points">5</span></span><span class="avatar" aria-hidden="true">VA</span></div></article></div></div><figcaption>Shouting title and no context.</figcaption></figure></div>
+    </section>
+    <section class="ds-section" id="tokens"><h2><a href="#tokens">Tokens</a></h2>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Part</th><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody><tr><td>Background</td><td><code>--color-bg-surface</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-bg-surface" data-swatch></i><span data-token="--color-bg-surface"></span></span></td></tr><tr><td>Border</td><td><code>--color-border-default</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-border-default" data-swatch></i><span data-token="--color-border-default"></span></span></td></tr><tr><td>Shadow</td><td><code>--shadow-1</code></td><td colspan="2"><span data-token="--shadow-1"></span></td></tr><tr><td>Key</td><td><code>--color-fg-subtle</code></td><td><span class="ds-swatch-cell" data-theme="light"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td><td><span class="ds-swatch-cell" data-theme="dark"><i data-token="--color-fg-subtle" data-swatch></i><span data-token="--color-fg-subtle"></span></span></td></tr><tr><td>Radius</td><td><code>--radius-lg</code></td><td colspan="2"><span data-token="--radius-lg"></span></td></tr><tr><td>Padding</td><td><code>--space-4</code></td><td colspan="2"><span data-token="--space-4"></span></td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="code"><h2><a href="#code">Code</a></h2>
+      <pre><code>&lt;article class="story-card" aria-labelledby="t-269"&gt;
+  &lt;div class="story-card__top"&gt;&lt;span class="story-card__key"&gt;QBC-269&lt;/span&gt;&lt;/div&gt;
+  &lt;h3 class="story-card__title" id="t-269"&gt;&lt;a href="/stories/QBC-269"&gt;…&lt;/a&gt;&lt;/h3&gt;
+  …
+&lt;/article&gt;</code></pre>
+      <div class="ds-table-wrap"><table class="ds-table"><thead><tr><th scope="col">Class / attribute</th><th scope="col">Effect</th></tr></thead><tbody><tr><td><code>.story-card</code></td><td>Card.</td></tr><tr><td><code>.story-card__key / __title / __context / __foot</code></td><td>Parts.</td></tr><tr><td><code>data-dragging="true"</code></td><td>Being dragged.</td></tr></tbody></table></div>
+    </section>
+    <section class="ds-section" id="sources"><h2><a href="#sources">Sources</a></h2>
+      <p>Extracted from these mocks:</p>
+      <ul><li><a href="../../mocks/index.html">index.html</a> (Workboard app: board, backlog, hierarchy, assistants, story and sprint dialogs) — board</li><li><a href="../../mocks/board-assistant-filter.html">board-assistant-filter.html</a> (Board filtered by assistant: sprint hero, columns, story cards) — board filtered by assistant</li></ul>
+      <p>Drift fixed during extraction: story key <code>#87918c</code> measured 3.3:1; now <code>--color-fg-subtle</code> (5.0:1). Padding 18px snapped to 16px.</p>
+    </section>
+
+    <footer class="ds-footer"><span>QBC Workboard design system · extracted from <a href="../../mocks/index.html">docs/mocks</a> on 2026-10-16</span><a href="#top">Back to top</a></footer>
+  </main>
+</div>
+<script src="../assets/ds.js"></script>
+</body>
+</html>
